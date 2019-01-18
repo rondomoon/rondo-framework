@@ -1,4 +1,6 @@
 {
+  "name": "@rondo/server",
+  "private": true,
   "scripts": {
     "test": "jest",
     "lint": "tslint --project .",
