@@ -40,6 +40,8 @@
   },
   "name": "node",
   "dependencies": {
+    "@rondo/client": "file:packages/client",
+    "@rondo/common": "file:packages/common",
     "@rondo/server": "file:packages/server"
   }
 }
