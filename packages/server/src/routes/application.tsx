@@ -45,5 +45,5 @@ export const application = Router()
 // })
 
 application.get('/', (req, res) => {
-  res.json({csrfToken: req.csrfToken})
+  res.json({csrfToken: req.csrfToken()})
 })

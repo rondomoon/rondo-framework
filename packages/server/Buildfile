@@ -16,3 +16,6 @@ migrate-revert:
 
 start:
   ts-node $server
+
+test:
+  jest $args
