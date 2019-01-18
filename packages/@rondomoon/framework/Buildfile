@@ -1,0 +1,18 @@
+server := src/server/index.ts
+typeorm := ts-node ./node_modules/.bin/typeorm
+
+orm:
+  typeorm $args
+
+migration:
+  # typeorm migration:create -n $name
+  $typeorm migration:generate -n $name
+
+migrate:
+  $typeorm migration:run
+
+migrate-revert:
+  $typeorm migration:revert
+
+start:
+  ts-node $server

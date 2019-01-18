@@ -1,0 +1,25 @@
+---
+app:
+  name: Notify
+  baseUrl: http://localhost:3000/notify
+  session:
+    httpsOnly: false
+    secret:
+      - thisisasecret
+    name: notify.sid
+    cookie:
+      maxAge: 3600
+  db:
+    type: sqlite
+    database: data/data.db
+    synchronize: false
+    dropSchema: false
+    migrationsRun: false
+    logging: true
+    entities:
+      - src/server/entities/*.ts
+    migrations:
+      - src/server/migrations/*.ts
+    cli:
+      migrationsDir: src/server/migrations
+      entitiesDir: src/server/entities
