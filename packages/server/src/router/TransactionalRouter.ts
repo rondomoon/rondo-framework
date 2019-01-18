@@ -1,6 +1,6 @@
 import express from 'express'
 import {AsyncRouter, IHandler} from './AsyncRouter'
-import {IRoutes, IMethod} from '../../common/REST'
+import {IRoutes, IMethod} from '@rondo/common'
 import {ITransactionManager} from '../database/ITransactionManager'
 
 export class TransactionalRouter<R extends IRoutes> extends AsyncRouter<R> {

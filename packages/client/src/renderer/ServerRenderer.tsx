@@ -1,18 +1,22 @@
+import React from 'react'
+import {Component} from 'react'
 import {IRenderer} from './IRenderer'
+import {IStoreFactory} from './IStoreFactory'
+import {Provider} from 'react-redux'
 import {renderToNodeStream} from 'react-dom/server'
 
 export class ServerRenderer implements IRenderer {
   constructor(
     readonly createStore: IStoreFactory,
-    readonly Component: Component,
+    readonly RootComponent: typeof Component,
   ) {}
-  render() {
-    const {Component} = this
+  render(state?: any) {
+    const {RootComponent} = this
     const store = this.createStore(state)
 
     const stream = renderToNodeStream(
       <Provider store={store}>
-        <Component />
+        <RootComponent />
       </Provider>,
     )
     return stream

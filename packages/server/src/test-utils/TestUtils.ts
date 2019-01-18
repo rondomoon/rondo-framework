@@ -4,7 +4,7 @@ import {Connection, QueryRunner} from 'typeorm'
 import {
   ENTITY_MANAGER, ITransactionManager,
 } from '../database/ITransactionManager'
-import {IRoutes} from '../../common/REST'
+import {IRoutes} from '@rondo/common'
 import {IBootstrap} from '../application/IBootstrap'
 import {RequestTester} from './RequestTester'
 

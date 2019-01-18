@@ -1,5 +1,5 @@
 import supertest from 'supertest'
-import {IMethod, IRoutes} from '../../common/REST'
+import {IMethod, IRoutes} from '@rondo/common'
 
 // https://stackoverflow.com/questions/48215950/exclude-property-from-type
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>

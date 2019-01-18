@@ -1,6 +1,6 @@
 import {AsyncRouter} from '../router'
 import {BaseRoute} from './BaseRoute'
-import {IAPIDef} from '../../common/IAPIDef'
+import {IAPIDef} from '@rondo/common'
 import {IUserService} from '../services'
 import {Authenticator} from '../middleware'
 

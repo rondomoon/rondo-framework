@@ -1,4 +1,4 @@
-import {IRoutes, IRoute, IMethod} from '../../common/REST'
+import {IRoutes, IRoute, IMethod} from '@rondo/common'
 import express, {NextFunction} from 'express'
 
 export interface IRequest<T extends IRoute> extends express.Request {

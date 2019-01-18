@@ -1,3 +1,3 @@
 export interface IRenderer {
-  render(): any
+  render(state?: any): any
 }

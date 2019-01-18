@@ -1,8 +1,8 @@
 import {IHandler} from '../middleware/IHandler'
 import {AsyncRouter} from '../router'
-import {IAPIDef} from '../../common/IAPIDef'
+import {IRoutes} from '@rondo/common'
 
-export abstract class BaseRoute<T extends IAPIDef> {
+export abstract class BaseRoute<T extends IRoutes> {
   readonly handle: IHandler
 
   constructor(protected readonly t: AsyncRouter<T>)  {

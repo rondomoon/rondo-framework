@@ -7,19 +7,18 @@ import {IRenderer} from './IRenderer'
 export class ClientRenderer implements IRenderer {
   constructor(
     readonly createStore: IStoreFactory,
-    readonly Component: Component,
+    readonly RootComponent: typeof Component,
     readonly target = document.body,
   ) {}
 
-  render() {
-    const state = (window as any).__PRELOADED_STATE__
-    const {Component} = this
+  render(state = (window as any).__PRELOADED_STATE__) {
+    const {RootComponent} = this
 
     if (state) {
       const store = this.createStore(state)
       ReactDOM.hydrate(
         <Provider store={store}>
-          <Component />
+          <RootComponent />
         </Provider>,
         this.target,
       )
@@ -27,11 +26,10 @@ export class ClientRenderer implements IRenderer {
       const store = this.createStore()
       ReactDOM.render(
         <Provider store={store}>
-          <Component />
+          <RootComponent />
         </Provider>,
         this.target,
       )
     }
   }
 }
-
