@@ -60,3 +60,4 @@ typings/
 
 build/
 data/
+packages/*/lib
