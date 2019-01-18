@@ -1,5 +1,5 @@
 server := src/server/index.ts
-typeorm := ts-node ./node_modules/.bin/typeorm
+typeorm := ts-node ../../node_modules/.bin/typeorm
 
 orm:
   typeorm $args
