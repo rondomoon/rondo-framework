@@ -14,7 +14,7 @@ export interface ISessionOptions {
   sessionSecret: string | string[],
 }
 
-export class Session implements IMiddleware {
+export class SessionMiddleware implements IMiddleware {
   readonly handle: IHandler
 
   constructor(readonly params: ISessionOptions) {
@@ -49,4 +49,3 @@ export class Session implements IMiddleware {
     return this.params.transactionManager.getRepository(SessionEntity)
   }
 }
-

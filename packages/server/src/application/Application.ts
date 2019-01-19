@@ -54,7 +54,7 @@ export class Application implements IApplication {
 
     router.use('/app', urlencoded({ extended: false }))
 
-    router.use(new middleware.Session({
+    router.use(new middleware.SessionMiddleware({
       transactionManager,
       baseUrl: this.config.app.baseUrl,
       sessionName: this.config.app.session.name,

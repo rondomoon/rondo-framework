@@ -1,15 +1,6 @@
-import {IRoutes, IRoute, IMethod} from '@rondo/common'
-import express, {NextFunction} from 'express'
-
-export interface IRequest<T extends IRoute> extends express.Request {
-  body: T['body']
-  params: T['params']
-  query: T['query']
-}
-
-export type IHandler<R extends IRoutes, P extends keyof R, M extends IMethod> =
-  (req: IRequest<R[P][M]>, res: express.Response, next: NextFunction) =>
-    Promise<R[P][M]['response']>
+import express from 'express'
+import {IRoutes, IMethod} from '@rondo/common'
+import {ITypedHandler} from './ITypedHandler'
 
 export class AsyncRouter<R extends IRoutes> {
   readonly router: express.Router
@@ -23,7 +14,7 @@ export class AsyncRouter<R extends IRoutes> {
   protected addRoute<M extends IMethod, P extends keyof R & string>(
     method: M,
     path: P,
-    handler: IHandler<R, P, M>,
+    handler: ITypedHandler<R, P, M>,
   ) {
     const addRoute = this.router[method].bind(this.router)
 
@@ -31,7 +22,7 @@ export class AsyncRouter<R extends IRoutes> {
   }
 
   protected wrapHandler<M extends IMethod, P extends keyof R & string>(
-    handler: IHandler<R, P, M>,
+    handler: ITypedHandler<R, P, M>,
   ): express.RequestHandler {
     return (req, res, next) => {
       handler(req, res, next)
@@ -42,34 +33,45 @@ export class AsyncRouter<R extends IRoutes> {
     }
   }
 
-  get<P extends keyof R & string>(path: P, handler: IHandler<R, P, 'get'>) {
+  get<P extends keyof R & string>(
+    path: P,
+    handler: ITypedHandler<R, P, 'get'>,
+  ) {
     this.addRoute('get', path, handler)
   }
 
-  post<P extends keyof R & string>(path: P, handler: IHandler<R, P, 'post'>) {
+  post<P extends keyof R & string>(
+    path: P,
+    handler: ITypedHandler<R, P, 'post'>,
+  ) {
     this.addRoute('post', path, handler)
   }
 
-  put<P extends keyof R & string>(path: P, handler: IHandler<R, P, 'put'>) {
+  put<P extends keyof R & string>(
+    path: P, handler: ITypedHandler<R, P, 'put'>,
+  ) {
     this.addRoute('put', path, handler)
   }
 
   delete<P extends keyof R & string>(
-    path: P, handler: IHandler<R, P, 'delete'>) {
+    path: P, handler: ITypedHandler<R, P, 'delete'>) {
     this.addRoute('delete', path, handler)
   }
 
-  head<P extends keyof R & string>(path: P, handler: IHandler<R, P, 'head'>) {
+  head<P extends keyof R & string>(
+    path: P,
+    handler: ITypedHandler<R, P, 'head'>,
+  ) {
     this.addRoute('head', path, handler)
   }
 
   options<P extends keyof R & string>(
-    path: P, handler: IHandler<R, P, 'options'>) {
+    path: P, handler: ITypedHandler<R, P, 'options'>) {
     this.addRoute('options', path, handler)
   }
 
   patch<P extends keyof R & string>(
-    path: P, handler: IHandler<R, P, 'patch'>) {
+    path: P, handler: ITypedHandler<R, P, 'patch'>) {
     this.addRoute('patch', path, handler)
   }
 

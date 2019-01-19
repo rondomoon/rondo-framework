@@ -1,7 +1,8 @@
 import express from 'express'
-import {AsyncRouter, IHandler} from './AsyncRouter'
+import {AsyncRouter} from './AsyncRouter'
 import {IRoutes, IMethod} from '@rondo/common'
 import {ITransactionManager} from '../database/ITransactionManager'
+import {ITypedHandler} from './ITypedHandler'
 
 export class TransactionalRouter<R extends IRoutes> extends AsyncRouter<R> {
   constructor(readonly transactionManager: ITransactionManager) {
@@ -9,7 +10,7 @@ export class TransactionalRouter<R extends IRoutes> extends AsyncRouter<R> {
   }
 
   protected wrapHandler<M extends IMethod, P extends keyof R & string>(
-    handler: IHandler<R, P, M>,
+    handler: ITypedHandler<R, P, M>,
   ): express.RequestHandler {
     return async (req, res, next) => {
       await this.transactionManager
