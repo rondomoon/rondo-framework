@@ -1,10 +1,8 @@
-import {ActionTypes} from './ActionTypes'
+import {IAction, IErrorAction, ActionTypes} from '../actions'
 import {IAPIDef, ICredentials, IUser} from '@rondo/common'
-import {IAction} from './IAction'
-import {IErrorAction} from './IErrorAction'
 import {IHTTPClient} from '../http/IHTTPClient'
 
-export enum UserActionKeys {
+export enum LoginActionKeys {
   USER_LOG_IN = 'USER_LOG_IN',
   USER_LOG_IN_PENDING = 'USER_LOG_IN_PENDING',
   USER_LOG_IN_REJECTED = 'USER_LOG_IN_REJECTED',
@@ -14,32 +12,32 @@ export enum UserActionKeys {
   USER_LOG_OUT_REJECTED = 'USER_LOG_OUT_REJECTED',
 }
 
-export class UserActions {
+export class LoginActions {
   constructor(protected readonly http: IHTTPClient<IAPIDef>) {}
 
-  logIn =
-    (credentials: ICredentials): IAction<IUser, UserActionKeys.USER_LOG_IN> => {
+  logIn = (credentials: ICredentials)
+  : IAction<IUser, LoginActionKeys.USER_LOG_IN> => {
     return {
       payload: this.http.post('/auth/login', credentials),
-      type: UserActionKeys.USER_LOG_IN,
+      type: LoginActionKeys.USER_LOG_IN,
     }
   }
 
-  logInError =
-    (error: Error): IErrorAction<UserActionKeys.USER_LOG_IN_REJECTED> => {
+  logInError = (error: Error)
+  : IErrorAction<LoginActionKeys.USER_LOG_IN_REJECTED> => {
     return {
       error,
-      type: UserActionKeys.USER_LOG_IN_REJECTED,
+      type: LoginActionKeys.USER_LOG_IN_REJECTED,
     }
   }
 
-  logOut = (): IAction<unknown, UserActionKeys.USER_LOG_OUT> => {
+  logOut = (): IAction<unknown, LoginActionKeys.USER_LOG_OUT> => {
     return {
       payload: this.http.get('/auth/logout'),
-      type: UserActionKeys.USER_LOG_OUT,
+      type: LoginActionKeys.USER_LOG_OUT,
     }
   }
 }
 
 // This makes it very easy to write reducer code.
-export type UserActionType = ActionTypes<UserActions>
+export type LoginActionType = ActionTypes<LoginActions>

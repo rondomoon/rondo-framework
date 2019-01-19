@@ -1,7 +1,6 @@
 import React from 'react'
-import {Input} from './Input'
+import {Input} from '../components/Input'
 import {ICredentials} from '@rondo/common'
-import {IState} from '../reducers'
 
 export interface ILoginFormProps {
   error?: string
