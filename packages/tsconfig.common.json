@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    // following settings required for referenced projects
     "composite": true,
     "declaration": true,
     "declarationMap": true,
