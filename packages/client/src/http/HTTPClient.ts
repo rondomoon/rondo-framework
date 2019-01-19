@@ -27,12 +27,14 @@ export class HTTPClient<T extends IRoutes> implements IHTTPClient<T> {
       return params.params![key]
     })
 
-    return this.axios.request({
+    const response = await this.axios.request({
       method: params.method,
       url,
       params: params.query,
       data: params.body,
     })
+
+    return response.data
   }
 
   get<P extends keyof T & string>(
