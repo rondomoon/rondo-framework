@@ -1,5 +1,4 @@
 import React from 'react'
-import {Component} from 'react'
 import {IRenderer} from './IRenderer'
 import {IStoreFactory} from './IStoreFactory'
 import {Provider} from 'react-redux'
@@ -8,7 +7,7 @@ import {renderToNodeStream} from 'react-dom/server'
 export class ServerRenderer implements IRenderer {
   constructor(
     readonly createStore: IStoreFactory,
-    readonly RootComponent: typeof Component,
+    readonly RootComponent: React.ComponentType,
   ) {}
   render(state?: any) {
     const {RootComponent} = this

@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom'
-import React, {Component} from 'react'
+import React from 'react'
 import {Provider} from 'react-redux'
 import {IStoreFactory} from './IStoreFactory'
 import {IRenderer} from './IRenderer'
@@ -7,7 +7,7 @@ import {IRenderer} from './IRenderer'
 export class ClientRenderer implements IRenderer {
   constructor(
     readonly createStore: IStoreFactory,
-    readonly RootComponent: typeof Component,
+    readonly RootComponent: React.ComponentType,
     readonly target = document.body,
   ) {}
 

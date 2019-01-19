@@ -17,21 +17,23 @@ export enum UserActionKeys {
 export class UserActions {
   constructor(protected readonly http: IHTTPClient<IAPIDef>) {}
 
-  logIn(credentials: ICredentials): IAction<IUser, UserActionKeys.USER_LOG_IN> {
+  logIn =
+    (credentials: ICredentials): IAction<IUser, UserActionKeys.USER_LOG_IN> => {
     return {
       payload: this.http.post('/auth/login', credentials),
       type: UserActionKeys.USER_LOG_IN,
     }
   }
 
-  logInError(error: Error): IErrorAction<UserActionKeys.USER_LOG_IN_REJECTED> {
+  logInError =
+    (error: Error): IErrorAction<UserActionKeys.USER_LOG_IN_REJECTED> => {
     return {
       error,
       type: UserActionKeys.USER_LOG_IN_REJECTED,
     }
   }
 
-  logOut(): IAction<unknown, UserActionKeys.USER_LOG_OUT> {
+  logOut = (): IAction<unknown, UserActionKeys.USER_LOG_OUT> => {
     return {
       payload: this.http.get('/auth/logout'),
       type: UserActionKeys.USER_LOG_OUT,

@@ -1,21 +1,7 @@
-export interface IState {
-  csrfToken: string
-  value: string
-}
+export * from './user'
 
-const defaultState: IState = {
-  csrfToken: '',
-  value: '',
-}
+import {combineReducers} from 'redux'
+import * as user from './user'
 
-export function value(state: IState = defaultState, action: any): IState {
-  switch (action && action.type) {
-    case 'VALUE_SET':
-      return {
-        ...state,
-        value: action!.payload as string,
-      }
-    default:
-      return state || {value: ''}
-  }
-}
+export const reducers = combineReducers(user)
+export type IState = ReturnType<typeof reducers>
