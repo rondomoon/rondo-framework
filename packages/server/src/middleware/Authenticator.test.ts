@@ -1,7 +1,8 @@
 import express, {Application} from 'express'
 import request from 'supertest'
 import {Authenticator} from './Authenticator'
-import {ICredentials, IUserService} from '../services'
+import {ICredentials} from '@rondo/common'
+import {IUserService} from '../services'
 import {handlePromise} from './handlePromise'
 import {urlencoded} from 'body-parser'
 

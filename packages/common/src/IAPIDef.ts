@@ -1,18 +1,16 @@
+import {ICredentials} from './ICredentials'
+import {IUser} from './IUser'
+
 export interface IAPIDef {
   '/auth/register': {
     'post': {
-      body: {
-        username: string
-        password: string
-      }
+      body: ICredentials
     }
   }
   '/auth/login': {
     'post': {
-      body: {
-        username: string
-        password: string
-      }
+      body: ICredentials
+      response: IUser
     }
   }
   '/auth/logout': {

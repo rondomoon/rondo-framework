@@ -1,5 +1,5 @@
-import {ICredentials} from './ICredentials'
-import {IUser} from './IUser'
+import {ICredentials} from '@rondo/common'
+import {IUser} from '@rondo/common'
 
 export interface IUserService {
   createUser(credentials: ICredentials): Promise<IUser>

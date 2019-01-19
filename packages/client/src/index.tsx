@@ -1,10 +1,4 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-
 export * from './renderer'
-
-export {React}
-export {ReactDOM}
 
 // import ReactDOM from 'react-dom'
 // import React from 'react'
