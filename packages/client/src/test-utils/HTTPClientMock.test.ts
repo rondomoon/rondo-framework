@@ -24,6 +24,18 @@ describe('HTTPClientMock', () => {
       const error = await getError(http.get('/test'))
       expect(error.message).toMatch(/mock/i)
     })
+
+    it('can add a mock for custom status code', async () => {
+      http.mockClear().mockAdd(
+        {method: 'get', url: '/test'},
+        {error: 'Internal'}, 500)
+
+      const waitPromise = http.wait()
+      const error = await getError(http.get('/test'))
+      const error2 = await getError(waitPromise)
+      expect(error.message).toEqual('HTTP Status: 500')
+      expect(error2).toBe(error)
+    })
   })
 
   describe('await wait', () => {

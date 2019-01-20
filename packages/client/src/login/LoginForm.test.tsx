@@ -1,11 +1,11 @@
 import * as Feature from './'
-import {HTTPClientMock, TestUtils} from '../test-utils'
+import {HTTPClientMock, TestUtils, getError} from '../test-utils'
 import {IAPIDef} from '@rondo/common'
 import T from 'react-dom/test-utils'
 
 const test = new TestUtils()
 
-describe('Login', () => {
+describe('LoginForm', () => {
 
   const http = new HTTPClientMock<IAPIDef>()
   const loginActions = new Feature.LoginActions(http)
@@ -31,7 +31,7 @@ describe('Login', () => {
         method: 'post',
         url: '/auth/login',
         data,
-      }, { id: 123 })
+      }, {id: 123})
 
       node = t.render({onSuccess}).node
       T.Simulate.change(
@@ -53,6 +53,18 @@ describe('Login', () => {
         data,
       })
       expect(onSuccess.mock.calls.length).toBe(1)
+    })
+
+    it('sets the error message on failure', async () => {
+      http.mockAdd({
+        method: 'post',
+        url: '/auth/login',
+        data,
+      }, {error: 'test'}, 500)
+      T.Simulate.submit(node)
+      await getError(http.wait())
+      expect(node.querySelector('.error')!.textContent)
+      .toMatch(/HTTP Status: 500/i)
     })
 
   })
