@@ -1,12 +1,14 @@
 import * as Feature from './'
-// import React from 'react'
-import {TestUtils} from '../test-utils'
+import {HTTPClientMock, TestUtils} from '../test-utils'
+import {IAPIDef} from '@rondo/common'
+import T from 'react-dom/test-utils'
 
 const test = new TestUtils()
 
 describe('Login', () => {
 
-  const loginActions = new Feature.LoginActions({} as any)
+  const http = new HTTPClientMock<IAPIDef>()
+  const loginActions = new Feature.LoginActions(http)
 
   const t = test.withProvider({
     reducers: {Login: Feature.Login},
@@ -17,6 +19,42 @@ describe('Login', () => {
 
   it('should render', () => {
     t.render()
+  })
+
+  describe('submit', () => {
+
+    const data = {username: 'user', password: 'pass'}
+    const onSuccess = jest.fn()
+    let node: Element
+    beforeEach(() => {
+      http.mockAdd({
+        method: 'post',
+        url: '/auth/login',
+        data,
+      }, { id: 123 })
+
+      node = t.render({onSuccess}).node
+      T.Simulate.change(
+        node.querySelector('input[name="username"]')!,
+        {target: {value: 'user'}} as any,
+      )
+      T.Simulate.change(
+        node.querySelector('input[name="password"]')!,
+        {target: {value: 'pass'}} as any,
+      )
+    })
+
+    it('should submit a form', async () => {
+      T.Simulate.submit(node)
+      const {req} = await http.wait()
+      expect(req).toEqual({
+        method: 'post',
+        url: '/auth/login',
+        data,
+      })
+      expect(onSuccess.mock.calls.length).toBe(1)
+    })
+
   })
 
 })

@@ -33,7 +33,7 @@ interface IRenderParams<State> {
 export class TestUtils {
   render(jsx: JSX.Element) {
     const component = T.renderIntoDocument(jsx) as React.Component<any>
-    const node = ReactDOM.findDOMNode(component)
+    const node = ReactDOM.findDOMNode(component) as Element
     return {component, node}
   }
 
@@ -64,10 +64,10 @@ export class TestUtils {
     })
     const Component = params.connector.connect(params.select)
 
-    const render = () => {
+    const render = (additionalProps: {[key: string]: any} = {}) => {
       return this.render(
         <Provider store={store}>
-          <Component />
+          <Component {...additionalProps} />
         </Provider>,
       )
     }
