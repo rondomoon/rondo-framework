@@ -6,6 +6,19 @@ function isPromise(value: any): value is Promise<any> {
     typeof (value as any).then === 'function'
 }
 
+/**
+ * Handles promises returned from Actions.
+ *
+ * If `action.payload` is a `Promise`, it will be handled by this class. It
+ * differs from other promise middlewares for redux because by default it does
+ * not add an extension to action dispatched after a promise is fulfilled. This
+ * makes it easier to infer types from the API endpoints so they can be used in
+ * both Action creators and Reducers.
+ *
+ * Usage:
+ *
+ *     const middleware = applyMiddleware(new PromiseMiddleware().handle)
+ */
 export class PromiseMiddleware {
   constructor(
     readonly pendingExtension = '_PENDING',

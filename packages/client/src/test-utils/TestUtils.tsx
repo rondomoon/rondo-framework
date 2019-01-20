@@ -44,6 +44,9 @@ export class TestUtils {
     return combineReducers(reducers)
   }
 
+  /**
+   * Create a redux store
+   */
   createStore<State, A extends Action<any> = AnyAction>(
     params: IStoreParams<State, A>,
   ): Store<State, A> {
@@ -55,6 +58,10 @@ export class TestUtils {
     )
   }
 
+  /**
+   * Creates a redux store, connects a component, and provides the `render`
+   * method to render the connected component with a `Provider`.
+   */
   withProvider<State, A extends Action<any> = AnyAction>(
     params: IRenderParams<State>,
   ) {

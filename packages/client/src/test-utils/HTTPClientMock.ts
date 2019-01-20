@@ -28,6 +28,9 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
     super()
   }
 
+  /**
+   * Mock the http client.
+   */
   createRequestor() {
     return {
       request: (req: IRequest): Promise<IResponse> => {
@@ -62,11 +65,19 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
     return JSON.stringify(req, null, '  ')
   }
 
+  /**
+   * Adds a new mock. If a mock with the same signature exists, it will be
+   * replaced. The signature is calculated using the `serialize()` method,
+   * which just does a `JSON.stringify(req)`.
+   */
   mockAdd(req: IRequest, data: any, status = 200): this {
     this.mocks[this.serialize(req)] = {data, status}
     return this
   }
 
+  /**
+   * Clear all mocks and recorded requests
+   */
   mockClear(): this {
     this.requests = []
     this.mocks = {}
@@ -86,6 +97,17 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
     waitPromise.resolve(r)
   }
 
+  /**
+   * Returns a new promise which will be resolve/rejected as soon as the next
+   * HTTP promise is resolved or rejected. Useful during testing, when the
+   * actual request promise is inaccessible.
+   *
+   * Example usage:
+   *
+   *     TestUtils.Simulate.submit(node)  // This triggers a HTTP request
+   *     const {req, res} = await httpMock.wait()
+   *     expect(req).toEqual({method:'get', url:'/auth/post', data: {...}})
+   */
   async wait(): Promise<IReqRes> {
     expect(this.waitPromise).toBe(undefined)
     return new Promise((resolve, reject) => {
