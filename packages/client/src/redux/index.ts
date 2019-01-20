@@ -1,1 +1,2 @@
-export * from './IStateSlicer'
+export * from './Connector'
+export * from './IStateSelector'

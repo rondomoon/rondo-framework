@@ -1,35 +1,27 @@
 import {ILoginState} from './LoginReducer'
 import {LoginActions} from './LoginActions'
 import {LoginForm} from './LoginForm'
-import {bindActionCreators, Dispatch} from 'redux'
-import {connect} from 'react-redux'
-import {IStateSlicer} from '../redux'
+import {bindActionCreators} from 'redux'
+import {IStateSelector} from '../redux'
+import {Connector} from '../redux/Connector'
 
-export class LoginConnector<GlobalState> {
-  constructor(
-    protected readonly loginActions: LoginActions,
-    protected readonly slice: IStateSlicer<GlobalState, ILoginState>,
-  ) {}
+export class LoginConnector extends Connector {
 
-  connect() {
-    return connect(
-      this.mapStateToProps,
-      this.mapDispatchToProps,
-    )(LoginForm)
+  constructor(protected readonly loginActions: LoginActions) {
+    super()
   }
 
-  mapStateToProps = (globalState: GlobalState) => {
-    const state = this.slice(globalState)
-    return {
-      csrfToken: '123',  // TODO this should be read from the state too
-      error: state.error,
-      user: state.user,
-    }
-  }
-
-  mapDispatchToProps = (dispatch: Dispatch) => {
-    return {
-      onSubmit: bindActionCreators(this.loginActions.logIn, dispatch),
-    }
+  connect<State>(getLocalState: IStateSelector<State, ILoginState>) {
+    return this.wrap(
+      getLocalState,
+      state => ({
+        error: state.error,
+        user: state.user,
+      }),
+      dispatch => ({
+        onSubmit: bindActionCreators(this.loginActions.logIn, dispatch),
+      }),
+      LoginForm,
+    )
   }
 }

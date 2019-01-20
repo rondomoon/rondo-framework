@@ -22,5 +22,7 @@ export function Login(
       return {...state, user: undefined}
     case LoginActionKeys.USER_LOG_IN_REJECTED:
       return {...state, error: action.error.message}
+    default:
+      return state
   }
 }

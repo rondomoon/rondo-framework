@@ -1,17 +1,30 @@
 import assert from 'assert'
-import axios, {AxiosInstance} from 'axios'
+import axios from 'axios'
 import {IHTTPClient} from './IHTTPClient'
 import {IHeader} from './IHeader'
 import {IMethod, IRoutes} from '@rondo/common'
+import {IRequest} from './IRequest'
+import {IResponse} from './IResponse'
 import {ITypedRequestParams} from './ITypedRequestParams'
 
-export class HTTPClient<T extends IRoutes> implements IHTTPClient<T> {
-  protected readonly axios: AxiosInstance
+interface IRequestor {
+  request: (params: IRequest) => Promise<IResponse>
+}
 
-  constructor(baseURL = '', headers?: IHeader) {
-    this.axios = axios.create({
-      baseURL,
-      headers,
+export class HTTPClient<T extends IRoutes> implements IHTTPClient<T> {
+  protected readonly requestor: IRequestor
+
+  constructor(
+    protected readonly baseURL = '',
+    protected readonly headers?: IHeader,
+  ) {
+    this.requestor = this.createRequestor()
+  }
+
+  protected createRequestor(): IRequestor {
+    return axios.create({
+      baseURL: this.baseURL,
+      headers: this.headers,
     })
   }
 
@@ -27,7 +40,7 @@ export class HTTPClient<T extends IRoutes> implements IHTTPClient<T> {
       return params.params![key]
     })
 
-    const response = await this.axios.request({
+    const response = await this.requestor.request({
       method: params.method,
       url,
       params: params.query,

@@ -1,18 +1,8 @@
 import {createStore, applyMiddleware, Store} from 'redux'
 import {PromiseMiddleware} from './PromiseMiddleware'
+import {getError} from '../test-utils'
 
 describe('PromiseMiddleware', () => {
-
-  async function getError(promise: Promise<any>): Promise<Error> {
-    let error: Error
-    try {
-      await promise
-    } catch (err) {
-      error = err
-    }
-    expect(error!).toBeTruthy()
-    return error!
-  }
 
   describe('constructor', () => {
     it('throws an error when action types are the same', () => {

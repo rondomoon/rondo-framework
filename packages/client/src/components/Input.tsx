@@ -2,15 +2,16 @@ import React from 'react'
 
 export interface IInputProps {
   name: string
-  type: 'text' | 'password' | 'hidden'
+  type: 'text' | 'password' | 'hidden' | 'submit'
   value?: string
-  onChange?: (name: string, value: string) => void
+  onChange?: (name: this['name'], value: string) => void
+  readOnly?: boolean
 }
 
 export class Input extends React.PureComponent<IInputProps> {
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (this.props.onChange) {
-      this.props.onChange(e.target.name, e.target.value)
+      this.props.onChange(this.props.name, e.target.value)
     }
   }
   render() {
@@ -19,6 +20,8 @@ export class Input extends React.PureComponent<IInputProps> {
         name={this.props.name}
         type={this.props.type}
         value={this.props.value}
+        onChange={this.handleChange}
+        readOnly={!!this.props.readOnly}
       />
     )
   }
