@@ -1,4 +1,5 @@
 export * from './IAPIDef'
+export * from './IComment'
 export * from './ICredentials'
 export * from './IRoutes'
 export * from './IUser'
