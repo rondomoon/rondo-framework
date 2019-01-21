@@ -1,8 +1,9 @@
+import {BaseEntity} from './BaseEntity'
 import {Column, Entity, PrimaryGeneratedColumn, ManyToOne} from 'typeorm'
 import {User} from './User'
 
 @Entity()
-export class UserEmail {
+export class UserEmail extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number
 
