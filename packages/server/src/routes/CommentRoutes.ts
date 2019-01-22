@@ -1,6 +1,7 @@
 import {AsyncRouter} from '../router'
 import {BaseRoute} from './BaseRoute'
 import {IAPIDef} from '@rondo/common'
+import {ICommentService} from '../services/ICommentService'
 import {ensureLoggedInApi} from '../middleware'
 
 export class CommentRoutes extends BaseRoute<IAPIDef> {
@@ -15,53 +16,54 @@ export class CommentRoutes extends BaseRoute<IAPIDef> {
 
     t.get('/story/:storyId/comments', async req => {
       const {storyId} = req.params
-      // TODO retrieve comments from story
-      return []
+      return this.commentService.find(storyId)
     })
 
     t.use(ensureLoggedInApi)
 
     t.post('/story/:storyId/comments', async req => {
+      const {storyId} = req.params
       const comment = req.body
-      // TODO save a comment
-      return comment
+      comment.storyId = storyId
+      return this.commentService.saveRoot(comment, req.user!.id)
     })
 
     t.post('/comments/:parentId', async req => {
+      const {parentId} = req.params
       const comment = req.body
-      // TODO save a comment
-      return comment
+      comment.parentId = parentId
+      return this.commentService.save(comment, req.user!.id)
     })
 
     t.put('/comments/:commentId', async req => {
       const comment = req.body
-      // TODO edit a comment
-      return comment
+      comment.id = req.params.commentId
+      return this.commentService.edit(comment, req.user!.id)
     })
 
     t.delete('/comments/:commentId', async req => {
       const {commentId} = req.params
-      // TODO delete a comment
+      return this.commentService.delete(commentId, req.user!.id)
     })
 
     t.post('/comments/:commentId/vote', async req => {
       const {commentId} = req.params
-      // TODO upvote a comment
+      return this.commentService.upVote(commentId, req.user!.id)
     })
 
     t.delete('/comments/:commentId/vote', async req => {
       const {commentId} = req.params
-      // TODO delete a vote
+      return this.commentService.deleteVote(commentId, req.user!.id)
     })
 
     t.post('/comments/:commentId/spam', async req => {
       const {commentId} = req.params
-      // TODO report comment as spam
+      return this.commentService.markAsSpam(commentId, req.user!.id)
     })
 
     t.delete('/comments/:commentId/spam', async req => {
       const {commentId} = req.params
-      // TODO delete spam report
+      return this.commentService.unmarkAsSpam(commentId, req.user!.id)
     })
 
   }

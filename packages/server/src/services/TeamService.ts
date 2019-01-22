@@ -3,6 +3,7 @@ import {ITeamService} from './ITeamService'
 import {Team} from '../entities/Team'
 
 export class TeamService extends BaseService implements ITeamService {
+  // TODO check team limit per user
   async create(name: string, userId: number) {
     return this.getRepository(Team).save({
       name,

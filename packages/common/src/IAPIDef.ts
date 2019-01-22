@@ -1,5 +1,6 @@
-import {ICredentials} from './ICredentials'
+import {ICommentTree} from './ICommentTree'
 import {IComment} from './IComment'
+import {ICredentials} from './ICredentials'
 import {IUser} from './IUser'
 
 export interface IAPIDef {
@@ -34,13 +35,14 @@ export interface IAPIDef {
   }
   '/story/:storyId/comments': {
     'get': {
-      response: IComment[],
+      response: ICommentTree,
       params: {
-        storyId: number  // TODO might have to change to string (url)
+        storyId: number
       }
     }
     'post': {
       response: IComment,
+      body: IComment,
       params: {
         storyId: number
       }

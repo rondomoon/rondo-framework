@@ -11,7 +11,7 @@ export interface ICommentService {
 
   edit(comment: IComment, userId: number): Promise<IComment>
 
-  delete(comment: IComment, userId: number): Promise<IComment | undefined>
+  delete(commentId: number, userId: number): Promise<IComment | undefined>
 
   upVote(commentId: number, userId: number): Promise<void>
 

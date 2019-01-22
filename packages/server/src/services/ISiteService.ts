@@ -7,5 +7,7 @@ export interface ISiteService {
 
   find(userId: number): Promise<ISite[]>
 
+  findByDomain(domain: string): Promise<ISite | undefined>
+
   // TODO add other methods
 }

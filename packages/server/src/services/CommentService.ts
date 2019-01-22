@@ -89,20 +89,16 @@ export class CommentService extends BaseService implements ICommentService {
     return editedComment
   }
 
-  async delete(comment: IComment, userId: number) {
-    new Validator(comment)
-    .ensure('id')
-    .throw()
-
+  async delete(commentId: number, userId: number) {
     await this.getRepository(Comment)
     .update({
-      id: comment.id,
+      id: commentId,
       userId,
     }, {
       message: '(this message has been removed by the user)',
     })
 
-    return this.findOne(comment.id)
+    return this.findOne(commentId)
   }
 
   async upVote(commentId: number, userId: number) {
