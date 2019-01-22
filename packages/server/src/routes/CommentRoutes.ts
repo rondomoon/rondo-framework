@@ -14,14 +14,14 @@ export class CommentRoutes extends BaseRoute<IAPIDef> {
 
   setup(t: AsyncRouter<IAPIDef>) {
 
-    t.get('/story/:storyId/comments', async req => {
+    t.get('/stories/:storyId/comments', async req => {
       const {storyId} = req.params
       return this.commentService.find(storyId)
     })
 
     t.use(ensureLoggedInApi)
 
-    t.post('/story/:storyId/comments', async req => {
+    t.post('/stories/:storyId/comments', async req => {
       const {storyId} = req.params
       const comment = req.body
       comment.storyId = storyId

@@ -1,6 +1,9 @@
 import {ICommentTree} from './ICommentTree'
 import {IComment} from './IComment'
 import {ICredentials} from './ICredentials'
+import {ISite} from './ISite'
+import {IStory} from './IStory'
+import {ITeam} from './ITeam'
 import {IUser} from './IUser'
 
 export interface IAPIDef {
@@ -33,7 +36,86 @@ export interface IAPIDef {
       }
     }
   }
-  '/story/:storyId/comments': {
+
+  // TEAM
+
+  '/teams': {
+    post: {
+      body: {
+        name: string
+      }
+      response: ITeam
+    }
+  }
+
+  '/teams/:id': {
+    get: {
+      params: {
+        id: number
+      }
+      response: ITeam | undefined
+    }
+  }
+
+  '/my/teams': {
+    get: {
+      response: ITeam[]
+    }
+  }
+
+  // SITE
+
+  '/sites/:domain': {
+    'get': {
+      params: {domain: string}
+    }
+  }
+
+  '/teams/:teamId/sites/:id': {
+    get: {
+      params: {
+        teamId: number
+        id: number
+      }
+      response: ISite | undefined
+    }
+  }
+
+  '/teams/:teamId/sites': {
+    get: {
+      params: {
+        teamId: number
+      }
+      response: ISite[]
+    }
+    post: {
+      params: {
+        teamId: number
+      }
+      body: {
+        name: string
+      }
+      response: ISite
+    }
+  }
+
+  '/my/sites': {
+    get: {
+      response: ISite[]
+    }
+  }
+
+  // STORY
+
+  '/stories/by-url': {
+    'get': {
+      response: IStory | undefined
+      query: {
+        url: string
+      }
+    }
+  }
+  '/stories/:storyId/comments': {
     'get': {
       response: ICommentTree,
       params: {

@@ -7,7 +7,7 @@ import {User} from './User'
 @Entity()
 export class Team extends BaseEntity {
   @Column()
-  url!: string
+  name!: string
 
   @Column()
   @Index()

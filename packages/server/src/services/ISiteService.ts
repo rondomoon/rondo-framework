@@ -5,7 +5,9 @@ export interface ISiteService {
 
   findOne(id: number, teamId: number): Promise<ISite | undefined>
 
-  find(userId: number): Promise<ISite[]>
+  findByUser(userId: number): Promise<ISite[]>
+
+  findByTeam(teamId: number): Promise<ISite[]>
 
   findByDomain(domain: string): Promise<ISite | undefined>
 

@@ -29,7 +29,13 @@ export class SiteService extends BaseService implements ISiteService {
     })
   }
 
-  async find(teamId: number) {
+  async findByUser(userId: number) {
+    return this.getRepository(Site).find({
+      where: { userId },
+    })
+  }
+
+  async findByTeam(teamId: number) {
     return this.getRepository(Site).find({
       where: { teamId },
     })
