@@ -1,4 +1,4 @@
-import {Column, Entity, ManyToOne} from 'typeorm'
+import {Column, Entity, Index, ManyToOne} from 'typeorm'
 import {User} from './User'
 import {Story} from './Story'
 import {BaseEntity} from './BaseEntity'
@@ -12,6 +12,7 @@ export class Comment extends BaseEntity {
   story?: Story
 
   @Column()
+  @Index()
   storyId!: number
 
   @ManyToOne(type => User, user => user.comments)

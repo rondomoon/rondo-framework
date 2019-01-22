@@ -1,7 +1,16 @@
 import {IComment} from '@rondo/common'
 
+export interface ICommentTree {
+  rootIds: number[],
+  commentsById: {
+    [key: number]: IComment
+  }
+}
+
 export interface ICommentService {
-  find(storyId: number): Promise<IComment>
+  find(storyId: number): Promise<ICommentTree>
+
+  findOne(commentId: number): Promise<IComment | undefined>
 
   saveRoot(comment: IComment, userId: number): Promise<IComment>
 
@@ -9,7 +18,7 @@ export interface ICommentService {
 
   edit(comment: IComment, userId: number): Promise<IComment>
 
-  delete(comment: IComment, userId: number): Promise<IComment>
+  delete(comment: IComment, userId: number): Promise<IComment | undefined>
 
   upVote(commentId: number, userId: number): Promise<void>
 

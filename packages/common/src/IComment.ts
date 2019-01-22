@@ -2,7 +2,9 @@ export interface IComment {
   id: number
   storyId: number
   message: string
-  score: number
+  votes: number
+  spams: number
   parentId: number
-  children: IComment[]
+  userId: number
+  childrenIds?: number[]
 }
