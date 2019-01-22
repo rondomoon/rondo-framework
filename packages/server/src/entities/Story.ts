@@ -5,7 +5,7 @@ import {Site} from './Site'
 
 @Entity()
 export class Story extends BaseEntity {
-  @Column()
+  @Column({ unique: true })
   url!: string
 
   @Column()
