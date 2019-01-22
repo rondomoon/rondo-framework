@@ -1,11 +1,4 @@
-import {IComment} from '@rondo/common'
-
-export interface ICommentTree {
-  rootIds: number[],
-  commentsById: {
-    [key: number]: IComment
-  }
-}
+import {IComment, ICommentTree} from '@rondo/common'
 
 export interface ICommentService {
   find(storyId: number): Promise<ICommentTree>
