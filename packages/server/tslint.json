@@ -36,7 +36,7 @@
     },
     "linterOptions": {
         "exclude": [
-            "src/server/migrations/*.ts"
+            "src/migrations/*.ts"
         ]
     },
     "rulesDirectory": []
