@@ -1,4 +1,5 @@
 export interface IComment {
+  // TODO make readonly
   id: number
   storyId: number
   message: string

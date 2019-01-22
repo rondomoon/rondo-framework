@@ -1,5 +1,5 @@
 import {BaseEntity} from './BaseEntity'
-import {Column, Entity, ManyToOne, OneToMany} from 'typeorm'
+import {Column, Entity, Index, ManyToOne, OneToMany} from 'typeorm'
 import {User} from './User'
 import {Story} from './Story'
 import {Team} from './Team'
@@ -9,15 +9,17 @@ export class Site extends BaseEntity {
   @Column()
   name!: string
 
-  @Column()
+  @Column({ unique: true })
   domain!: string
 
+  @Index()
   @Column()
   userId!: number
 
   @ManyToOne(type => User, user => user.sites)
   user?: User
 
+  @Index()
   @Column()
   teamId!: number
 
