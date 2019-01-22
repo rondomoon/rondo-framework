@@ -45,6 +45,7 @@ export class CommentService extends BaseService implements ICommentService {
     .ensure('storyId')
     .throw()
 
+    delete comment.id
     comment.parentId = 0
     comment.userId = userId
     comment.votes = 0
@@ -53,17 +54,18 @@ export class CommentService extends BaseService implements ICommentService {
   }
 
   async save(comment: IComment, userId: number) {
-
-    comment.votes = 0
-    comment.spams = 0
-    comment.userId = userId
-
     new Validator(comment)
     .ensure('message')
     .ensure('userId')
     .ensure('storyId')
     .ensure('parentId')
     .throw()
+
+    delete comment.id
+
+    comment.votes = 0
+    comment.spams = 0
+    comment.userId = userId
 
     return this.getRepository(Comment).save(comment)
   }
