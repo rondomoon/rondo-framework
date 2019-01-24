@@ -1,8 +1,7 @@
-import assert from 'assert'
 import axios from 'axios'
 import {IHTTPClient} from './IHTTPClient'
 import {IHeader} from './IHeader'
-import {IMethod, IRoutes} from '@rondo/common'
+import {IMethod, IRoutes, URLFormatter} from '@rondo/common'
 import {IRequest} from './IRequest'
 import {IResponse} from './IResponse'
 import {ITypedRequestParams} from './ITypedRequestParams'
@@ -13,12 +12,14 @@ interface IRequestor {
 
 export class HTTPClient<T extends IRoutes> implements IHTTPClient<T> {
   protected readonly requestor: IRequestor
+  protected readonly formatter: URLFormatter
 
   constructor(
     protected readonly baseURL = '',
     protected readonly headers?: IHeader,
   ) {
     this.requestor = this.createRequestor()
+    this.formatter = new URLFormatter()
   }
 
   protected createRequestor(): IRequestor {
@@ -33,12 +34,7 @@ export class HTTPClient<T extends IRoutes> implements IHTTPClient<T> {
     M extends IMethod,
   >(params: ITypedRequestParams<T, P, M>): Promise<T[P][M]['response']> {
 
-    const url = params.path.replace(/:[a-zA-Z0-9-]+/g, (match) => {
-      const key = match.substring(1)
-      assert(params.params, 'Params is required, but not defined')
-      assert(params.params!.hasOwnProperty(key))
-      return params.params![key]
-    })
+    const url = this.formatter.format(params.path, params.params)
 
     const response = await this.requestor.request({
       method: params.method,

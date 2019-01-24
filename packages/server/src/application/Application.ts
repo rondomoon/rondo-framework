@@ -8,7 +8,7 @@ import {IDatabase} from '../database/IDatabase'
 import {ILogger} from '../logger/ILogger'
 import {IRoutes} from '@rondo/common'
 import {ITransactionManager} from '../database/ITransactionManager'
-import {IUserService, UserService} from '../services'
+import * as services from '../services'
 import {loggerFactory, LoggerFactory} from '../logger/LoggerFactory'
 import {urlencoded, json} from 'body-parser'
 
@@ -16,14 +16,26 @@ export class Application implements IApplication {
   readonly transactionManager: ITransactionManager
   readonly server: express.Application
 
-  readonly userService: IUserService
+  readonly userService: services.IUserService
+  readonly teamService: services.ITeamService
+  readonly siteService: services.ISiteService
+  readonly storyService: services.IStoryService
+  readonly commentService: services.ICommentService
+
   readonly authenticator: middleware.Authenticator
 
   readonly loggerFactory: LoggerFactory = loggerFactory
 
   constructor(readonly config: IConfig, readonly database: IDatabase) {
     this.transactionManager = database.transactionManager
-    this.userService = new UserService(this.transactionManager)
+    this.userService = new services.UserService(this.transactionManager)
+
+    this.teamService = new services.TeamService(this.transactionManager)
+    this.siteService = new services.SiteService(this.transactionManager)
+    this.storyService = new services.StoryService(
+      this.transactionManager, this.siteService)
+    this.commentService = new services.CommentService(this.transactionManager)
+
     this.authenticator = new middleware.Authenticator(this.userService)
 
     this.server = this.createServer()
@@ -78,8 +90,29 @@ export class Application implements IApplication {
     router.use('/app', routes.application)
 
     router.use('/api', json())
+
     router.use('/api', new routes.UserRoutes(
       this.userService,
+      this.createTransactionalRouter(),
+    ).handle)
+
+    router.use('/api', new routes.TeamRoutes(
+      this.teamService,
+      this.createTransactionalRouter(),
+    ).handle)
+
+    router.use('/api', new routes.SiteRoutes(
+      this.siteService,
+      this.createTransactionalRouter(),
+    ).handle)
+
+    router.use('/api', new routes.StoryRoutes(
+      this.storyService,
+      this.createTransactionalRouter(),
+    ).handle)
+
+    router.use('/api', new routes.CommentRoutes(
+      this.commentService,
       this.createTransactionalRouter(),
     ).handle)
 

@@ -8,7 +8,6 @@ export interface ICommentProps {
 export class CommentVote extends React.PureComponent {
   render() {
     return (
-
     )
   }
 }

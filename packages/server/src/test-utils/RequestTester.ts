@@ -1,5 +1,10 @@
 import supertest from 'supertest'
-import {IMethod, IRoutes} from '@rondo/common'
+import {
+  IMethod,
+  IRequestParams,
+  IRoutes,
+  URLFormatter,
+} from '@rondo/common'
 
 // https://stackoverflow.com/questions/48215950/exclude-property-from-type
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
@@ -37,6 +42,7 @@ export interface IHeaders {
 export class RequestTester<R extends IRoutes> {
 
   protected headers: IHeaders = {}
+  protected formatter: URLFormatter = new URLFormatter()
 
   constructor(
     readonly app: Express.Application,
@@ -49,21 +55,22 @@ export class RequestTester<R extends IRoutes> {
   }
 
   request<M extends IMethod, P extends keyof R & string>(
-    method: M, path: P,
+    method: M, path: P, params?: IRequestParams,
   )
   : IRequest<R, P, M> {
-    const test = supertest(this.app)[method](`${this.baseUrl}${path}`)
+    const url = this.formatter.format(path, params)
+    const test = supertest(this.app)[method](`${this.baseUrl}${url}`)
     Object.keys(this.headers).forEach(key => {
       test.set(key, this.headers[key])
     })
     return test
   }
 
-  get<P extends keyof R & string>(path: P) {
-    return this.request('get', path)
+  get<P extends keyof R & string>(path: P, params?: IRequestParams) {
+    return this.request('get', path, params)
   }
 
-  post<P extends keyof R & string>(path: P) {
+  post<P extends keyof R & string>(path: P, params?: IRequestParams) {
     return this.request('post', path)
   }
 }

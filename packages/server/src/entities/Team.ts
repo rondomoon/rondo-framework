@@ -14,7 +14,6 @@ export class Team extends BaseEntity {
   userId!: number
 
   @ManyToOne(type => User)
-  @Column()
   user?: User
 
   @OneToMany(type => Site, site => site.team)

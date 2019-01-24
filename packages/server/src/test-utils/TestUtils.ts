@@ -101,6 +101,7 @@ export class TestUtils<T extends IRoutes> {
     return {
       cookie: response.header['set-cookie'] as string,
       userId: response.body.userId,
+      token,
     }
   }
 
