@@ -3,11 +3,13 @@ import {BaseRoute} from '../routes/BaseRoute'
 import {IAPIDef} from '@rondo/common'
 import {ISiteService} from './ISiteService'
 import {ensureLoggedInApi} from '../middleware'
+import {IUserPermissions} from '../user/IUserPermissions'
 
 export class SiteRoutes extends BaseRoute<IAPIDef> {
   constructor(
     protected readonly siteService: ISiteService,
-    protected readonly t: AsyncRouter<IAPIDef>,
+    protected readonly permissions: IUserPermissions,
+    t: AsyncRouter<IAPIDef>,
   ) {
     super(t)
   }
@@ -35,9 +37,19 @@ export class SiteRoutes extends BaseRoute<IAPIDef> {
     })
 
     t.post('/teams/:teamId/sites', async req => {
-      const {name} = req.body
+      const {name, domain} = req.body
       const {teamId} = req.params
-      return this.siteService.create(name, teamId, req.user!.id)
+
+      await this.permissions.belongsToTeam({
+        teamId,
+        userId: req.user!.id,
+      })
+      return this.siteService.create({
+        name,
+        domain,
+        teamId,
+        userId: req.user!.id,
+      })
     })
 
   }

@@ -5,6 +5,7 @@ import {ISite} from './ISite'
 import {IStory} from './IStory'
 import {ITeam} from './ITeam'
 import {IUser} from './IUser'
+import {IUserTeam} from './IUserTeam'
 
 export interface IAPIDef {
   '/auth/register': {
@@ -59,7 +60,7 @@ export interface IAPIDef {
 
   '/my/teams': {
     get: {
-      response: ITeam[]
+      response: IUserTeam[]
     }
   }
 
@@ -94,6 +95,7 @@ export interface IAPIDef {
       }
       body: {
         name: string
+        domain: string
       }
       response: ISite
     }

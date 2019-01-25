@@ -5,6 +5,7 @@ import * as services from '../services'
 import * as site from '../site'
 import * as story from '../story'
 import * as team from '../team'
+import * as user from '../user'
 import express from 'express'
 import {AsyncRouter, TransactionalRouter} from '../router'
 import {IApplication} from './IApplication'
@@ -25,6 +26,7 @@ export class Application implements IApplication {
   readonly siteService: site.ISiteService
   readonly storyService: story.IStoryService
   readonly commentService: comment.ICommentService
+  readonly userPermissions: user.IUserPermissions
 
   readonly authenticator: middleware.Authenticator
 
@@ -39,6 +41,7 @@ export class Application implements IApplication {
     this.storyService = new story.StoryService(
       this.transactionManager, this.siteService)
     this.commentService = new comment.CommentService(this.transactionManager)
+    this.userPermissions = new user.UserPermissions(this.transactionManager)
 
     this.authenticator = new middleware.Authenticator(this.userService)
 
@@ -107,6 +110,7 @@ export class Application implements IApplication {
 
     router.use('/api', new site.SiteRoutes(
       this.siteService,
+      this.userPermissions,
       this.createTransactionalRouter(),
     ).handle)
 

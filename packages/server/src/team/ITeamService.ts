@@ -1,11 +1,17 @@
 import {Team} from '../entities/Team'
+import {UserTeam} from '../entities/UserTeam'
+import {IUserTeamParams} from './IUserTeamParams'
 
 export interface ITeamService {
-  create(name: string, userId: number): Promise<Team>
+  create(params: {name: string, userId: number}): Promise<Team>
 
-  findOne(id: number, userId: number): Promise<Team | undefined>
+  addUser(params: IUserTeamParams): Promise<UserTeam>
 
-  find(userId: number): Promise<Team[]>
+  removeUser(params: IUserTeamParams): Promise<void>
+
+  findOne(id: number): Promise<Team | undefined>
+
+  find(userId: number): Promise<UserTeam[]>
 
   // TODO add other methods
 }

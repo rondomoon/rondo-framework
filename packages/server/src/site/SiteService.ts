@@ -1,15 +1,12 @@
 import {BaseService} from '../services/BaseService'
+import {ISiteCreateParams} from './ISiteCreateParams'
 import {ISiteService} from './ISiteService'
 import {Site} from '../entities/Site'
 
 export class SiteService extends BaseService implements ISiteService {
-  async create(name: string, teamId: number, userId: number) {
+  async create(params: ISiteCreateParams) {
     // TODO check site limit per user
-    return this.getRepository(Site).save({
-      name,
-      teamId,
-      userId,
-    })
+    return this.getRepository(Site).save(params)
   }
 
   async findOne(id: number, teamId: number) {

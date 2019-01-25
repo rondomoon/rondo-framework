@@ -71,6 +71,6 @@ export class RequestTester<R extends IRoutes> {
   }
 
   post<P extends keyof R & string>(path: P, params?: IRequestParams) {
-    return this.request('post', path)
+    return this.request('post', path, params)
   }
 }

@@ -1,4 +1,5 @@
 import {test} from '../test'
+import {createTeam} from './TeamTestUtils'
 
 describe('team', () => {
 
@@ -14,27 +15,16 @@ describe('team', () => {
     t.setHeaders({ cookie, 'x-csrf-token': token })
   })
 
-  async function createTeam(name: string) {
-    const response = await t
-    .post('/teams')
-    .send({
-      name: 'test',
-    })
-    .expect(200)
-    expect(response.body.id).toBeTruthy()
-    return response.body
-  }
-
   describe('POST /teams', () => {
     it('creates a new team', async () => {
-      const team = await createTeam('test')
+      const team = await createTeam(t, 'test')
       expect(team.name).toEqual('test')
     })
   })
 
   describe('GET /teams/:id', () => {
     it('retrieves a team by id', async () => {
-      const team = await createTeam('test')
+      const team = await createTeam(t, 'test')
       const response = await t
       .get('/teams/:id', {
         id: team.id,
@@ -46,11 +36,14 @@ describe('team', () => {
 
   describe('GET /my/teams', () => {
     it('retrieves all teams belonging to current user', async () => {
-      const team = await createTeam('test')
+      const team = await createTeam(t, 'test')
       const response = await t
       .get('/my/teams')
       .expect(200)
-      expect(response.body).toContainEqual(team)
+      expect(response.body.map(ut => ({teamId: ut.teamId})))
+      .toContainEqual({
+        teamId: team.id,
+      })
     })
   })
 

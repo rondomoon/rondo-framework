@@ -1,7 +1,8 @@
 import {ISite} from '@rondo/common'
+import {ISiteCreateParams} from './ISiteCreateParams'
 
 export interface ISiteService {
-  create(name: string, teamId: number, userId: number): Promise<ISite>
+  create(params: ISiteCreateParams): Promise<ISite>
 
   findOne(id: number, teamId: number): Promise<ISite | undefined>
 

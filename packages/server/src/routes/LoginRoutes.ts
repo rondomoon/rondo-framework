@@ -20,7 +20,7 @@ export class LoginRoutes extends BaseRoute<IAPIDef> {
         password: req.body.password,
       })
       await req.logInPromise(user)
-      res.redirect(req.baseUrl)
+      return user
     })
 
     t.post('/auth/login', async (req, res, next) => {
@@ -28,11 +28,10 @@ export class LoginRoutes extends BaseRoute<IAPIDef> {
       .authenticate('local')(req, res, next)
 
       if (!user) {
-        res.redirect(`${req.baseUrl}/auth/login`)
+        res.status(401)
         return
       }
       await req.logInPromise(user)
-      res.redirect(req.baseUrl)
       return user
     })
 

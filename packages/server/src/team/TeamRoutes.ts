@@ -16,7 +16,7 @@ export class TeamRoutes extends BaseRoute<IAPIDef> {
 
     t.get('/teams/:id', async req => {
       const {id} = req.params
-      return this.teamService.findOne(id, req.user!.id)
+      return this.teamService.findOne(id)
     })
 
     t.use(ensureLoggedInApi)
@@ -27,7 +27,10 @@ export class TeamRoutes extends BaseRoute<IAPIDef> {
 
     t.post('/teams', async req => {
       const {name} = req.body
-      return this.teamService.create(name, req.user!.id)
+      return this.teamService.create({
+        name,
+        userId: req.user!.id,
+      })
     })
 
   }

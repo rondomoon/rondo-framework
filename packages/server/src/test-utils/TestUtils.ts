@@ -7,6 +7,7 @@ import {
 import {IRoutes} from '@rondo/common'
 import {IBootstrap} from '../application/IBootstrap'
 import {RequestTester} from './RequestTester'
+import {Role} from '../entities/Role'
 
 export class TestUtils<T extends IRoutes> {
   readonly username = 'test@user.com'
@@ -52,6 +53,12 @@ export class TestUtils<T extends IRoutes> {
     })
   }
 
+  async createRole(name: string) {
+    return this.transactionManager
+    .getRepository(Role)
+    .save({name})
+  }
+
   async getError(promise: Promise<any>): Promise<Error> {
     let error!: Error
     try {
@@ -95,12 +102,11 @@ export class TestUtils<T extends IRoutes> {
     .post(`${context}/app/auth/register`)
     .set('cookie', cookie)
     .send(this.getLoginBody(token))
-    .expect(302)
-    .expect('location', `${context}/app`)
+    .expect(200)
 
     return {
       cookie: response.header['set-cookie'] as string,
-      userId: response.body.userId,
+      userId: response.body.id,
       token,
     }
   }
@@ -113,8 +119,7 @@ export class TestUtils<T extends IRoutes> {
     .post(`${context}/app/auth/login`)
     .set('cookie', cookie)
     .send(`username=${_username}&password=${_password}&_csrf=${token}`)
-    .expect(302)
-    .expect('location', `${context}/app`)
+    .expect(200)
 
     return {cookie: response.header['set-cookie'] as string, token}
   }
