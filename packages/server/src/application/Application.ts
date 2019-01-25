@@ -1,5 +1,10 @@
+import * as comment from '../comment'
 import * as middleware from '../middleware'
 import * as routes from '../routes'
+import * as services from '../services'
+import * as site from '../site'
+import * as story from '../story'
+import * as team from '../team'
 import express from 'express'
 import {AsyncRouter, TransactionalRouter} from '../router'
 import {IApplication} from './IApplication'
@@ -8,7 +13,6 @@ import {IDatabase} from '../database/IDatabase'
 import {ILogger} from '../logger/ILogger'
 import {IRoutes} from '@rondo/common'
 import {ITransactionManager} from '../database/ITransactionManager'
-import * as services from '../services'
 import {loggerFactory, LoggerFactory} from '../logger/LoggerFactory'
 import {urlencoded, json} from 'body-parser'
 
@@ -17,10 +21,10 @@ export class Application implements IApplication {
   readonly server: express.Application
 
   readonly userService: services.IUserService
-  readonly teamService: services.ITeamService
-  readonly siteService: services.ISiteService
-  readonly storyService: services.IStoryService
-  readonly commentService: services.ICommentService
+  readonly teamService: team.ITeamService
+  readonly siteService: site.ISiteService
+  readonly storyService: story.IStoryService
+  readonly commentService: comment.ICommentService
 
   readonly authenticator: middleware.Authenticator
 
@@ -30,11 +34,11 @@ export class Application implements IApplication {
     this.transactionManager = database.transactionManager
     this.userService = new services.UserService(this.transactionManager)
 
-    this.teamService = new services.TeamService(this.transactionManager)
-    this.siteService = new services.SiteService(this.transactionManager)
-    this.storyService = new services.StoryService(
+    this.teamService = new team.TeamService(this.transactionManager)
+    this.siteService = new site.SiteService(this.transactionManager)
+    this.storyService = new story.StoryService(
       this.transactionManager, this.siteService)
-    this.commentService = new services.CommentService(this.transactionManager)
+    this.commentService = new comment.CommentService(this.transactionManager)
 
     this.authenticator = new middleware.Authenticator(this.userService)
 
@@ -96,22 +100,22 @@ export class Application implements IApplication {
       this.createTransactionalRouter(),
     ).handle)
 
-    router.use('/api', new routes.TeamRoutes(
+    router.use('/api', new team.TeamRoutes(
       this.teamService,
       this.createTransactionalRouter(),
     ).handle)
 
-    router.use('/api', new routes.SiteRoutes(
+    router.use('/api', new site.SiteRoutes(
       this.siteService,
       this.createTransactionalRouter(),
     ).handle)
 
-    router.use('/api', new routes.StoryRoutes(
+    router.use('/api', new story.StoryRoutes(
       this.storyService,
       this.createTransactionalRouter(),
     ).handle)
 
-    router.use('/api', new routes.CommentRoutes(
+    router.use('/api', new comment.CommentRoutes(
       this.commentService,
       this.createTransactionalRouter(),
     ).handle)

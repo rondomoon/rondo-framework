@@ -1,7 +1,7 @@
 import {AsyncRouter} from '../router'
-import {BaseRoute} from './BaseRoute'
+import {BaseRoute} from '../routes/BaseRoute'
 import {IAPIDef} from '@rondo/common'
-import {ICommentService} from '../services/ICommentService'
+import {ICommentService} from './ICommentService'
 import {ensureLoggedInApi} from '../middleware'
 
 export class CommentRoutes extends BaseRoute<IAPIDef> {

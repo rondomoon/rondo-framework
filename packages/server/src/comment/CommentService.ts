@@ -1,4 +1,4 @@
-import {BaseService} from './BaseService'
+import {BaseService} from '../services/BaseService'
 import {Comment} from '../entities/Comment'
 import {ICommentService} from './ICommentService'
 import {IComment, ICommentTree} from '@rondo/common'

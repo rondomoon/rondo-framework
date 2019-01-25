@@ -1,7 +1,7 @@
 import {AsyncRouter} from '../router'
-import {BaseRoute} from './BaseRoute'
+import {BaseRoute} from '../routes/BaseRoute'
 import {IAPIDef} from '@rondo/common'
-import {ISiteService} from '../services/ISiteService'
+import {ISiteService} from './ISiteService'
 import {ensureLoggedInApi} from '../middleware'
 
 export class SiteRoutes extends BaseRoute<IAPIDef> {

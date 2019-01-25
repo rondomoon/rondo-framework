@@ -1,7 +1,7 @@
 import {AsyncRouter} from '../router'
-import {BaseRoute} from './BaseRoute'
+import {BaseRoute} from '../routes/BaseRoute'
 import {IAPIDef} from '@rondo/common'
-import {ITeamService} from '../services/ITeamService'
+import {ITeamService} from './ITeamService'
 import {ensureLoggedInApi} from '../middleware'
 
 export class TeamRoutes extends BaseRoute<IAPIDef> {

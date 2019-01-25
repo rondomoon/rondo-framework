@@ -1,7 +1,7 @@
 import {AsyncRouter} from '../router'
-import {BaseRoute} from './BaseRoute'
+import {BaseRoute} from '../routes/BaseRoute'
 import {IAPIDef} from '@rondo/common'
-import {IStoryService} from '../services/IStoryService'
+import {IStoryService} from './IStoryService'
 
 export class StoryRoutes extends BaseRoute<IAPIDef> {
   constructor(

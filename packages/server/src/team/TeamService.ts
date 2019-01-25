@@ -1,4 +1,4 @@
-import {BaseService} from './BaseService'
+import {BaseService} from '../services/BaseService'
 import {ITeamService} from './ITeamService'
 import {Team} from '../entities/Team'
 
