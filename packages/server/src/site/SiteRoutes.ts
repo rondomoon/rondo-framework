@@ -32,6 +32,7 @@ export class SiteRoutes extends BaseRoute<IAPIDef> {
 
     t.use(ensureLoggedInApi)
 
+    // TODO do not use this one without teamId
     t.get('/my/sites', async req => {
       return this.siteService.findByUser(req.user!.id)
     })

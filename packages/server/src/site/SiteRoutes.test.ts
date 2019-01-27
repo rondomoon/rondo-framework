@@ -51,4 +51,26 @@ describe('team', () => {
 
   })
 
+  describe('GET /teams/:teamId/sites/:id', () => {
+    it('fetches a site belonging to a team', async () => {
+      const site = await createSite(t, 'test.example.com')
+      const response = await t.get('/teams/:teamId/sites/:id', {
+        teamId: site.teamId,
+        id: site.id,
+      })
+      .expect(200)
+      expect(response.body!.id).toEqual(site.id)
+    })
+  })
+
+  describe('GET /teams/:teamId/sites', () => {
+    it('fetches all sites belonging to a team', async () => {
+      const site = await createSite(t, 'test.example.com')
+      const response = await t.get('/teams/:teamId/sites', {
+        teamId: site.teamId,
+      })
+      expect(response.body.map(s => s.id)).toContain(site.id)
+    })
+  })
+
 })
