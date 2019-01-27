@@ -18,22 +18,24 @@ export class URLFormatter {
     params?: IRequestParams,
     query?: IRequestQuery,
   ) {
-    if (!params) {
-      return url
+    let formattedUrl = url
+    if (params) {
+      formattedUrl = url.replace(this.params.regex, match => {
+        const key = match.substring(1)
+        assert(params.hasOwnProperty(key))
+        return String(params![key])
+      })
     }
-    const formattedUrl = url.replace(this.params.regex, match => {
-      const key = match.substring(1)
-      assert(params.hasOwnProperty(key))
-      return String(params![key])
-    })
+    let qs = ''
     if (query) {
-      Object.keys(query).reduce((queryString, key) => {
+      qs = Object.keys(query).reduce((queryString, key) => {
         return queryString +
           encodeURIComponent(key) + '=' +
           encodeURIComponent(String(query[key])) + '&'
       }, '?')
+      .replace(/&$/, '')
     }
 
-    return this.params.baseURL + formattedUrl
+    return this.params.baseURL + formattedUrl + qs
   }
 }
