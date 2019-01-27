@@ -1,5 +1,6 @@
 import assert from 'assert'
 import {IRequestParams} from './IRequestParams'
+import {IRequestQuery} from './IRequestQuery'
 
 export interface IURLFormatterOptions {
   readonly baseURL: string
@@ -12,7 +13,11 @@ export class URLFormatter {
     regex: /:[a-zA-Z0-9-]+/g,
   }) {}
 
-  format(url: string, params?: IRequestParams) {
+  format(
+    url: string,
+    params?: IRequestParams,
+    query?: IRequestQuery,
+  ) {
     if (!params) {
       return url
     }
@@ -21,6 +26,13 @@ export class URLFormatter {
       assert(params.hasOwnProperty(key))
       return String(params![key])
     })
+    if (query) {
+      Object.keys(query).reduce((queryString, key) => {
+        return queryString +
+          encodeURIComponent(key) + '=' +
+          encodeURIComponent(String(query[key])) + '&'
+      }, '?')
+    }
 
     return this.params.baseURL + formattedUrl
   }

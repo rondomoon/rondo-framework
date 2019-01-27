@@ -27,7 +27,9 @@ describe('team', () => {
       const team = await createTeam(t, 'test')
       const response = await t
       .get('/teams/:id', {
-        id: team.id,
+        params: {
+          id: team.id,
+        },
       })
       .expect(200)
       expect(response.body).toEqual(team)

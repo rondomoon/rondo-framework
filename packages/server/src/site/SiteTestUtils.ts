@@ -6,7 +6,9 @@ export async function createSite(t: RequestTester<IAPIDef>, domain: string) {
   const team = await createTeam(t, 'test')
   const response = await t
   .post('/teams/:teamId/sites', {
-    teamId: team.id,
+    params: {
+      teamId: team.id,
+    },
   })
   .send({
     domain,

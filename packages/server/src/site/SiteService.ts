@@ -5,6 +5,8 @@ import {Site} from '../entities/Site'
 
 export class SiteService extends BaseService implements ISiteService {
   async create(params: ISiteCreateParams) {
+    // TODO validate params.domain
+
     // TODO check site limit per user
     return this.getRepository(Site).save(params)
   }

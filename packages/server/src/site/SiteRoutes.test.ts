@@ -40,7 +40,11 @@ describe('team', () => {
 
       it('results with 403 when user does not have team access ', async () => {
         await t
-        .post('/teams/:teamId/sites', {teamId: team.id})
+        .post('/teams/:teamId/sites', {
+          params: {
+            teamId: team.id,
+          },
+        })
         .send({
           domain: 'test.example.com',
           name: 'test',
@@ -55,8 +59,10 @@ describe('team', () => {
     it('fetches a site belonging to a team', async () => {
       const site = await createSite(t, 'test.example.com')
       const response = await t.get('/teams/:teamId/sites/:id', {
-        teamId: site.teamId,
-        id: site.id,
+        params: {
+          teamId: site.teamId,
+          id: site.id,
+        },
       })
       .expect(200)
       expect(response.body!.id).toEqual(site.id)
@@ -67,7 +73,9 @@ describe('team', () => {
     it('fetches all sites belonging to a team', async () => {
       const site = await createSite(t, 'test.example.com')
       const response = await t.get('/teams/:teamId/sites', {
-        teamId: site.teamId,
+        params: {
+          teamId: site.teamId,
+        },
       })
       expect(response.body.map(s => s.id)).toContain(site.id)
     })

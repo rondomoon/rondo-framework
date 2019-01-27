@@ -1,7 +1,6 @@
 import supertest from 'supertest'
 import {
   IMethod,
-  IRequestParams,
   IRoutes,
   URLFormatter,
 } from '@rondo/common'
@@ -35,6 +34,15 @@ interface IRequest<
   // type definition
 }
 
+interface IRequestOptions<
+  R extends IRoutes,
+  P extends keyof R,
+  M extends IMethod,
+> {
+  params?: R[P][M]['params'],
+  query?: R[P][M]['query'],
+}
+
 export interface IHeaders {
   [key: string]: string
 }
@@ -55,10 +63,10 @@ export class RequestTester<R extends IRoutes> {
   }
 
   request<M extends IMethod, P extends keyof R & string>(
-    method: M, path: P, params?: IRequestParams,
+    method: M, path: P, options: IRequestOptions<R, P, 'post'> = {},
   )
   : IRequest<R, P, M> {
-    const url = this.formatter.format(path, params)
+    const url = this.formatter.format(path, options.params, options.query)
     const test = supertest(this.app)[method](`${this.baseUrl}${url}`)
     Object.keys(this.headers).forEach(key => {
       test.set(key, this.headers[key])
@@ -66,11 +74,17 @@ export class RequestTester<R extends IRoutes> {
     return test
   }
 
-  get<P extends keyof R & string>(path: P, params?: IRequestParams) {
-    return this.request('get', path, params)
+  get<P extends keyof R & string>(
+    path: P,
+    options?: IRequestOptions<R, P, 'get'>,
+  ) {
+    return this.request('get', path, options)
   }
 
-  post<P extends keyof R & string>(path: P, params?: IRequestParams) {
-    return this.request('post', path, params)
+  post<P extends keyof R & string>(
+    path: P,
+    options?: IRequestOptions<R, P, 'post'>,
+  ) {
+    return this.request('post', path, options)
   }
 }
