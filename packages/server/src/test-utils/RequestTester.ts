@@ -87,4 +87,18 @@ export class RequestTester<R extends IRoutes> {
   ) {
     return this.request('post', path, options)
   }
+
+  put<P extends keyof R & string>(
+    path: P,
+    options?: IRequestOptions<R, P, 'put'>,
+  ) {
+    return this.request('put', path, options)
+  }
+
+  delete<P extends keyof R & string>(
+    path: P,
+    options?: IRequestOptions<R, P, 'delete'>,
+  ) {
+    return this.request('delete', path, options)
+  }
 }

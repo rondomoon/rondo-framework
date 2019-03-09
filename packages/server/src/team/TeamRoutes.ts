@@ -33,6 +33,23 @@ export class TeamRoutes extends BaseRoute<IAPIDef> {
       })
     })
 
+    t.put('/teams/:id', async req => {
+      const id = Number(req.params.id)
+      return this.teamService.update({
+        id,
+        name: req.body.name,
+        userId: req.user!.id,
+      })
+    })
+
+    t.delete('/teams/:id', async req => {
+      const id = Number(req.params.id)
+      return this.teamService.remove({
+        id,
+        userId: req.user!.id,
+      })
+    })
+
   }
 
 }

@@ -56,6 +56,20 @@ export interface IAPIDef {
       }
       response: ITeam | undefined
     }
+    put: {
+      params: {
+        id: number
+      }
+      body: {
+        name: string
+      }
+      response: ITeam
+    }
+    delete: {
+      params: {
+        id: number
+      }
+    }
   }
 
   '/my/teams': {
