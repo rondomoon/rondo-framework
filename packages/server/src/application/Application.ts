@@ -105,6 +105,7 @@ export class Application implements IApplication {
 
     router.use('/api', new team.TeamRoutes(
       this.teamService,
+      this.userPermissions,
       this.createTransactionalRouter(),
     ).handle)
 

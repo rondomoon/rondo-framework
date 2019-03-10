@@ -2,11 +2,13 @@ import {AsyncRouter} from '../router'
 import {BaseRoute} from '../routes/BaseRoute'
 import {IAPIDef} from '@rondo/common'
 import {ITeamService} from './ITeamService'
+import {IUserPermissions} from '../user/IUserPermissions'
 import {ensureLoggedInApi} from '../middleware'
 
 export class TeamRoutes extends BaseRoute<IAPIDef> {
   constructor(
     protected readonly teamService: ITeamService,
+    protected readonly permissions: IUserPermissions,
     protected readonly t: AsyncRouter<IAPIDef>,
   ) {
     super(t)
@@ -35,6 +37,12 @@ export class TeamRoutes extends BaseRoute<IAPIDef> {
 
     t.put('/teams/:id', async req => {
       const id = Number(req.params.id)
+
+      await this.permissions.belongsToTeam({
+        teamId: id,
+        userId: req.user!.id,
+      })
+
       return this.teamService.update({
         id,
         name: req.body.name,
@@ -44,6 +52,12 @@ export class TeamRoutes extends BaseRoute<IAPIDef> {
 
     t.delete('/teams/:id', async req => {
       const id = Number(req.params.id)
+
+      await this.permissions.belongsToTeam({
+        teamId: id,
+        userId: req.user!.id,
+      })
+
       return this.teamService.remove({
         id,
         userId: req.user!.id,
