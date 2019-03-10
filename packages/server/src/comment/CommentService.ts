@@ -1,7 +1,9 @@
 import {BaseService} from '../services/BaseService'
 import {Comment} from '../entities/Comment'
-import {ICommentService} from './ICommentService'
 import {IComment, ICommentTree} from '@rondo/common'
+import {ICommentService} from './ICommentService'
+import {INewCommentParams} from './INewCommentParams'
+import {INewRootCommentParams} from './INewRootCommentParams'
 import {Spam} from '../entities/Spam'
 import {Validator} from '../validator'
 import {Vote} from '../entities/Vote'
@@ -40,20 +42,31 @@ export class CommentService extends BaseService implements ICommentService {
     return this.getRepository(Comment).findOne(commentId)
   }
 
-  async saveRoot(comment: IComment, userId: number) {
+  async saveRoot(comment: INewRootCommentParams) {
     new Validator(comment)
+    .ensure('message')
     .ensure('storyId')
+    .ensure('userId')
     .throw()
 
-    delete comment.id
-    comment.parentId = 0
-    comment.userId = userId
-    comment.votes = 0
-    comment.spams = 0
-    return this.getRepository(Comment).save(comment)
+    const {
+      message,
+      userId,
+      storyId,
+    } = comment
+
+    return this.getRepository(Comment).save({
+      message: message.trim(),
+      userId,
+      storyId,
+      parentId: undefined,
+
+      votes: 0,
+      spams: 0,
+    })
   }
 
-  async save(comment: IComment, userId: number) {
+  async save(comment: INewCommentParams) {
     new Validator(comment)
     .ensure('message')
     .ensure('userId')
@@ -61,13 +74,22 @@ export class CommentService extends BaseService implements ICommentService {
     .ensure('parentId')
     .throw()
 
-    delete comment.id
+    const {
+      message,
+      userId,
+      storyId,
+      parentId,
+    } = comment
 
-    comment.votes = 0
-    comment.spams = 0
-    comment.userId = userId
+    return this.getRepository(Comment).save({
+      message: message.trim(),
+      userId,
+      storyId,
+      parentId,
 
-    return this.getRepository(Comment).save(comment)
+      votes: 0,
+      spams: 0,
+    })
   }
 
   async edit(comment: IComment, userId: number) {
@@ -77,9 +99,11 @@ export class CommentService extends BaseService implements ICommentService {
     .throw()
 
     await this.getRepository(Comment)
-    .update(comment.id, {
-      message: comment.message,
+    .update({
+      id: comment.id,
       userId,
+    }, {
+      message: comment.message,
     })
     const editedComment = await this.findOne(comment.id)
 

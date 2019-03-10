@@ -1,11 +1,12 @@
 import {ICommentTree} from './ICommentTree'
 import {IComment} from './IComment'
 import {ICredentials} from './ICredentials'
+import {INewComment} from './INewComment'
 import {ISite} from './ISite'
 import {IStory} from './IStory'
 import {ITeam} from './ITeam'
-import {IUser} from './IUser'
 import {IUserTeam} from './IUserTeam'
+import {IUser} from './IUser'
 
 export interface IAPIDef {
   '/auth/register': {
@@ -157,30 +158,37 @@ export interface IAPIDef {
     }
     'post': {
       response: IComment,
-      body: IComment,
+      body: INewComment,
       params: {
         storyId: number
       }
     }
   }
-  '/comments/:parentId': {
-    'post': {
+  '/stories/:storyId/comments/:parentId': {
+    post: {
       response: IComment,
       params: {
         parentId: number
+        storyId: number
       },
-      body: IComment,
+      body: INewComment,
     }
   }
   '/comments/:commentId': {
-    'put': {
+    get: {
+      response: IComment
+      params: {
+        commentId: number
+      }
+    }
+    put: {
       response: IComment,
       body: IComment,
       params: {
         commentId: number
       }
     }
-    'delete': {
+    delete: {
       params: {
         commentId: number
       }

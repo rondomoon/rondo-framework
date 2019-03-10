@@ -21,7 +21,7 @@ export class Comment extends BaseEntity {
   @Column()
   userId!: number
 
-  @Column()
+  @Column({nullable: true})
   parentId!: number
 
   @Column()

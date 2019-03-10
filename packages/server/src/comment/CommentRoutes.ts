@@ -22,17 +22,34 @@ export class CommentRoutes extends BaseRoute<IAPIDef> {
     t.use(ensureLoggedInApi)
 
     t.post('/stories/:storyId/comments', async req => {
-      const {storyId} = req.params
-      const comment = req.body
-      comment.storyId = storyId
-      return this.commentService.saveRoot(comment, req.user!.id)
+      const userId = req.user!.id
+      const storyId = Number(req.params.storyId)
+      const {message} = req.body
+      return this.commentService.saveRoot({
+        message,
+        storyId,
+        userId,
+      })
     })
 
-    t.post('/comments/:parentId', async req => {
-      const {parentId} = req.params
-      const comment = req.body
-      comment.parentId = parentId
-      return this.commentService.save(comment, req.user!.id)
+    t.post('/stories/:storyId/comments/:parentId', async req => {
+      const userId = req.user!.id
+      const parentId = Number(req.params.parentId)
+      const storyId = Number(req.params.storyId)
+      const {message} = req.body
+      return this.commentService.save({
+        message,
+        userId,
+        parentId,
+        storyId,
+      })
+    })
+
+    t.get('/comments/:commentId', async req => {
+      const commentId = req.params.commentId
+      const comment = await this.commentService.findOne(commentId)
+      // TODO return status code 404 when not found
+      return comment!
     })
 
     t.put('/comments/:commentId', async req => {

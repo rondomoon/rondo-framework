@@ -1,5 +1,6 @@
 import {ISite} from '@rondo/common'
 import {createSite} from '../site/SiteTestUtils'
+import {getStory} from './StoryTestUtils'
 import {test} from '../test'
 
 describe('story', () => {
@@ -22,15 +23,6 @@ describe('story', () => {
   const invalidUrl = 'https://invalid.example.com/test'
   const validUrl = 'https://test.example.com/test'
 
-  async function getStory() {
-    const response = await t
-    .get('/stories/by-url', {
-      query: { url: validUrl },
-    })
-    .expect(200)
-    return response.body!
-  }
-
   describe('/stories/by-url', () => {
     it('returns undefined when a site is not configured', async () => {
       const response = await t
@@ -42,21 +34,21 @@ describe('story', () => {
     })
 
     it('creates a story when it does not exist', async () => {
-      const story = await getStory()
+      const story = await getStory(t, validUrl)
       expect(story.id).toBeTruthy()
       expect(story.siteId).toEqual(site.id)
     })
 
     it('retrieves existing story after it is created', async () => {
-      const story1 = await getStory()
-      const story2 = await getStory()
+      const story1 = await getStory(t, validUrl)
+      const story2 = await getStory(t, validUrl)
       expect(story1.id).toBeTruthy()
       expect(story1).toEqual(story2)
     })
 
     it('prevents unique exceptions', async () => {
-      const p1 = getStory()
-      const p2 = getStory()
+      const p1 = getStory(t, validUrl)
+      const p2 = getStory(t, validUrl)
       const [story1, story2] = await Promise.all([p1, p2])
       expect(story1.id).toBeTruthy()
       expect(story1).toEqual(story2)
