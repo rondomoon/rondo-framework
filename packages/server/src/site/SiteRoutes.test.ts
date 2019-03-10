@@ -81,4 +81,35 @@ describe('team', () => {
     })
   })
 
+  describe('PUT /teams/:teamId/sites/:id', () => {
+    it('updates site belonging to a team', async () => {
+      const site = await createSite(t, 'test.example.com')
+      const response = await t.put('/teams/:teamId/sites/:id', {
+        params: {
+          id: site.id,
+          teamId: site.teamId,
+        },
+      })
+      .send({
+        name: site.name,
+        domain: 'test2.example.com',
+      })
+      .expect(200)
+      expect(response.body.domain).toEqual('test2.example.com')
+    })
+  })
+
+  describe('DELETE /teams/:teamId/sites/:id', () => {
+    it('deletes a site', async () => {
+      const site = await createSite(t, 'test.example.com')
+      await t.delete('/teams/:teamId/sites/:id', {
+        params: {
+          id: site.id,
+          teamId: site.teamId,
+        },
+      })
+      .expect(200)
+    })
+  })
+
 })

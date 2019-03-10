@@ -53,6 +53,39 @@ export class SiteRoutes extends BaseRoute<IAPIDef> {
       })
     })
 
+    t.put('/teams/:teamId/sites/:id', async req => {
+      const {name, domain} = req.body
+      const id = Number(req.params.id)
+      const teamId = Number(req.params.teamId)
+
+      await this.permissions.belongsToTeam({
+        teamId,
+        userId: req.user!.id,
+      })
+
+      return this.siteService.update({
+        id,
+        teamId,
+        name,
+        domain,
+      })
+    })
+
+    t.delete('/teams/:teamId/sites/:id', async req => {
+      const id = Number(req.params.id)
+      const teamId = Number(req.params.teamId)
+
+      await this.permissions.belongsToTeam({
+        teamId,
+        userId: req.user!.id,
+      })
+
+      return this.siteService.remove({
+        id,
+        teamId,
+      })
+    })
+
   }
 
 }

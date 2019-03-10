@@ -94,6 +94,23 @@ export interface IAPIDef {
       }
       response: ISite | undefined
     }
+    put: {
+      params: {
+        teamId: number
+        id: number
+      }
+      body: {
+        name?: string
+        domain?: string
+      }
+      response: ISite
+    }
+    delete: {
+      params: {
+        teamId: number
+        id: number
+      }
+    }
   }
 
   '/teams/:teamId/sites': {
