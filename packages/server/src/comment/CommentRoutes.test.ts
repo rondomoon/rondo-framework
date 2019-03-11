@@ -1,5 +1,5 @@
 import * as CommentTestUtils from './CommentTestUtils'
-import {IStory} from '@rondo/common'
+import {IComment, IStory} from '@rondo/common'
 import {createSite} from '../site/SiteTestUtils'
 import {getStory} from '../story/StoryTestUtils'
 import {test} from '../test'
@@ -78,13 +78,33 @@ describe('comment', () => {
   })
 
   describe('PUT /comments/:commentId', () => {
-    it('updates a comment', () => {
 
+    let comment: IComment
+    beforeEach(async () => {
+      comment = await CommentTestUtils.createRootComment(t, {
+        storyId: story.id,
+        message: 'test',
+      })
+    })
+    it('updates a comment', async () => {
+      await t.put('/comments/:commentId', {
+        params: {
+          commentId: comment.id,
+        },
+      })
+      .send({
+        message: 'test2',
+      })
+      .expect(200)
+
+      const c  = await CommentTestUtils.getCommentById(t, comment.id)
+      expect(c.message).toEqual('test2')
+      // TODO save edit history
     })
 
-    it('fails to update a comment if user is not the owner')
+    // it('fails to update a comment if user is not the owner')
 
-    it('updates a comment if user is site moderator') // TODO later
+    // it('updates a comment if user is site moderator') // TODO later
   })
 
   describe('DELETE /comments/:commentId', () => {

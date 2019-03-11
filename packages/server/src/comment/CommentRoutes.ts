@@ -53,9 +53,13 @@ export class CommentRoutes extends BaseRoute<IAPIDef> {
     })
 
     t.put('/comments/:commentId', async req => {
-      const comment = req.body
-      comment.id = req.params.commentId
-      return this.commentService.edit(comment, req.user!.id)
+      const commentId = Number(req.params.commentId)
+      const {message} = req.body
+      return this.commentService.edit({
+        id: commentId,
+        message,
+        userId: req.user!.id,
+      })
     })
 
     t.delete('/comments/:commentId', async req => {

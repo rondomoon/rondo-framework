@@ -183,7 +183,7 @@ export interface IAPIDef {
     }
     put: {
       response: IComment,
-      body: IComment,
+      body: INewComment,
       params: {
         commentId: number
       }

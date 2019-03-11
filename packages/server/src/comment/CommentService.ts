@@ -1,6 +1,7 @@
 import {BaseService} from '../services/BaseService'
 import {Comment} from '../entities/Comment'
-import {IComment, ICommentTree} from '@rondo/common'
+import {ICommentTree} from '@rondo/common'
+import {IEditCommentParams} from './IEditCommentParams'
 import {ICommentService} from './ICommentService'
 import {INewCommentParams} from './INewCommentParams'
 import {INewRootCommentParams} from './INewRootCommentParams'
@@ -92,22 +93,26 @@ export class CommentService extends BaseService implements ICommentService {
     })
   }
 
-  async edit(comment: IComment, userId: number) {
+  async edit(comment: IEditCommentParams) {
     new Validator(comment)
     .ensure('id')
     .ensure('message')
+    .ensure('userId')
     .throw()
+
+    const {id, message, userId} = comment
 
     await this.getRepository(Comment)
     .update({
-      id: comment.id,
+      id,
       userId,
     }, {
-      message: comment.message,
+      message,
     })
     const editedComment = await this.findOne(comment.id)
 
     if (!editedComment) {
+      // TODO 400 or 404
       throw new Error('Comment not found')
     }
     return editedComment

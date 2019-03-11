@@ -52,3 +52,16 @@ export async function getComments(
 
   return response.body!
 }
+
+export async function getCommentById(
+  t: RequestTester<IAPIDef>,
+  commentId: number,
+) {
+  const response = await t
+  .get('/comments/:commentId', {
+    params: {commentId},
+  })
+  .expect(200)
+
+  return response.body!
+}

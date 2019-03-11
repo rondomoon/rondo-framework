@@ -1,4 +1,5 @@
 import {IComment, ICommentTree} from '@rondo/common'
+import {IEditCommentParams} from './IEditCommentParams'
 import {INewCommentParams} from './INewCommentParams'
 import {INewRootCommentParams} from './INewRootCommentParams'
 
@@ -11,7 +12,7 @@ export interface ICommentService {
 
   save(comment: INewCommentParams): Promise<IComment>
 
-  edit(comment: IComment, userId: number): Promise<IComment>
+  edit(comment: IEditCommentParams): Promise<IComment>
 
   delete(commentId: number, userId: number): Promise<IComment | undefined>
 
