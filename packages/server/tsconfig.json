@@ -5,7 +5,6 @@
     "rootDir": "src"
   },
   "references": [
-    {"path": "../client"},
     {"path": "../common"}
   ]
 }
