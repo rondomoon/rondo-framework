@@ -1,5 +1,5 @@
 import * as CommentTestUtils from './CommentTestUtils'
-import {IComment, IStory} from '@rondo/common'
+import {IStory} from '@rondo/common'
 import {createSite} from '../site/SiteTestUtils'
 import {getStory} from '../story/StoryTestUtils'
 import {test} from '../test'
@@ -24,6 +24,13 @@ describe('comment', () => {
     await createSite(t, 'test.example.com')
     story = await getStory(t, storyUrl)
   })
+
+  async function createComment() {
+    return CommentTestUtils.createRootComment(t, {
+      storyId: story.id,
+      message: 'test',
+    })
+  }
 
   async function createChildComment() {
     const parent = await CommentTestUtils.createRootComment(t, {
@@ -79,14 +86,8 @@ describe('comment', () => {
 
   describe('PUT /comments/:commentId', () => {
 
-    let comment: IComment
-    beforeEach(async () => {
-      comment = await CommentTestUtils.createRootComment(t, {
-        storyId: story.id,
-        message: 'test',
-      })
-    })
     it('updates a comment', async () => {
+      const comment = await createComment()
       await t.put('/comments/:commentId', {
         params: {
           commentId: comment.id,
@@ -99,6 +100,7 @@ describe('comment', () => {
 
       const c  = await CommentTestUtils.getCommentById(t, comment.id)
       expect(c.message).toEqual('test2')
+
       // TODO save edit history
     })
 
@@ -108,23 +110,122 @@ describe('comment', () => {
   })
 
   describe('DELETE /comments/:commentId', () => {
-
+    it('soft deletes a comment', async () => {
+      const comment = await createComment()
+      await t.delete('/comments/:commentId', {
+        params: {
+          commentId: comment.id,
+        },
+      })
+      .expect(200)
+      const comment2 = await CommentTestUtils.getCommentById(t, comment.id)
+      expect(comment2.message)
+      .toEqual('(this message has been removed)')
+    })
   })
 
   describe('POST /comments/:commentId/vote', () => {
+    it('adds a new comment vote', async () => {
+      const comment = await createComment()
+      await CommentTestUtils.upVote(t, comment.id)
+      const c = await CommentTestUtils.getCommentById(t, comment.id)
+      expect(c.votes).toEqual(1)
+    })
+    it('can only upvote once', async () => {
+      const comment = await createComment()
+      async function upVote() {
+        return t.post('/comments/:commentId/vote', {
+          params: {
+            commentId: comment.id,
+          },
+        })
+      }
 
+      const responses = (await Promise.all([
+        upVote(),
+        upVote(),
+      ])).map(r => r.status)
+
+      expect(responses).toContain(200)
+      expect(responses).toContain(400)
+
+      const c = await CommentTestUtils.getCommentById(t, comment.id)
+      expect(c.votes).toEqual(1)
+    })
   })
 
   describe('DELETE /comments/:commentId/vote', () => {
-
+    it('removes a comment vote', async () => {
+      let comment = await createComment()
+      await CommentTestUtils.upVote(t, comment.id)
+      comment = await CommentTestUtils.getCommentById(t, comment.id)
+      expect(comment.votes).toEqual(1)
+      await CommentTestUtils.downVote(t, comment.id)
+      comment = await CommentTestUtils.getCommentById(t, comment.id)
+      expect(comment.votes).toEqual(0)
+    })
+    it('can only downvote once', async () => {
+      let comment = await createComment()
+      await CommentTestUtils.upVote(t, comment.id)
+      await Promise.all([
+        CommentTestUtils.downVote(t, comment.id),
+        CommentTestUtils.downVote(t, comment.id),
+      ])
+      comment = await CommentTestUtils.getCommentById(t, comment.id)
+      expect(comment.votes).toEqual(0)
+    })
   })
 
   describe('POST /comments/:commentId/spam', () => {
+    it('adds a new spam report', async () => {
+      const comment = await createComment()
+      await CommentTestUtils.markAsSpam(t, comment.id)
+      const c = await CommentTestUtils.getCommentById(t, comment.id)
+      expect(c.spams).toEqual(1)
+    })
+    it('can only report a spam once', async () => {
+      const comment = await createComment()
+      async function markAsSpam() {
+        return t.post('/comments/:commentId/spam', {
+          params: {
+            commentId: comment.id,
+          },
+        })
+      }
 
+      const responses = (await Promise.all([
+        markAsSpam(),
+        markAsSpam(),
+      ])).map(r => r.status)
+
+      expect(responses).toContain(200)
+      expect(responses).toContain(400)
+
+      const c = await CommentTestUtils.getCommentById(t, comment.id)
+      expect(c.spams).toEqual(1)
+    })
   })
 
   describe('DELETE /comments/:commentId/spam', () => {
-
+    it('removes a spam report', async () => {
+      let comment = await createComment()
+      await CommentTestUtils.markAsSpam(t, comment.id)
+      comment = await CommentTestUtils.getCommentById(t, comment.id)
+      expect(comment.spams).toEqual(1)
+      await CommentTestUtils.unmarkAsSpam(t, comment.id)
+      comment = await CommentTestUtils.getCommentById(t, comment.id)
+      expect(comment.spams).toEqual(0)
+    })
+    it('can only remove a spam report once', async () => {
+      let comment = await createComment()
+      await CommentTestUtils.markAsSpam(t, comment.id)
+      await Promise.all([
+        CommentTestUtils.unmarkAsSpam(t, comment.id),
+        CommentTestUtils.unmarkAsSpam(t, comment.id),
+      ])
+      comment = await CommentTestUtils.getCommentById(t, comment.id)
+      expect(comment.spams).toEqual(0)
+    })
   })
 
 })

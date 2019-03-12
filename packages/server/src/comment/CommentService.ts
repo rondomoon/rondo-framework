@@ -1,8 +1,9 @@
+import {UniqueTransformer} from '../error/ErrorTransformer'
 import {BaseService} from '../services/BaseService'
 import {Comment} from '../entities/Comment'
+import {ICommentService} from './ICommentService'
 import {ICommentTree} from '@rondo/common'
 import {IEditCommentParams} from './IEditCommentParams'
-import {ICommentService} from './ICommentService'
 import {INewCommentParams} from './INewCommentParams'
 import {INewRootCommentParams} from './INewRootCommentParams'
 import {Spam} from '../entities/Spam'
@@ -124,53 +125,62 @@ export class CommentService extends BaseService implements ICommentService {
       id: commentId,
       userId,
     }, {
-      message: '(this message has been removed by the user)',
+      message: '(this message has been removed)',
     })
 
     return this.findOne(commentId)
   }
 
   async upVote(commentId: number, userId: number) {
-    await this.getRepository(Vote)
-    .save({
-      commentId,
-      userId,
-    })
+    try {
+      await this.getRepository(Vote)
+      .save({
+        commentId,
+        userId,
+      })
+    } catch (err) {
+      UniqueTransformer.transform(err, 'Already upvoted!')
+    }
 
     await this.getRepository(Comment)
     .createQueryBuilder()
     .update()
     .where({ id: commentId })
     .set({
-      score: () => 'score + 1',
+      votes: () => 'votes + 1',
     })
     .execute()
   }
 
   async deleteVote(commentId: number, userId: number) {
-    const result = await this.getRepository(Vote)
+    await this.getRepository(Vote)
     .delete({
       commentId,
       userId,
     })
 
-    if (result.affected && result.affected === 1) {
-      await this.getRepository(Comment)
-      .createQueryBuilder()
-      .update()
-      .where({ id: commentId })
-      .set({
-        score: () => 'score - 1',
-      })
-    }
+    // TODO rows.affected returns undefined or SQLite driver. This is an
+    // alternative query that does not depend on it.
+    await this.getRepository(Comment)
+    .createQueryBuilder()
+    .update()
+    .where({ id: commentId })
+    .set({
+      votes: () => '(select count(*) from vote where commentId = comment.id)',
+    })
+    .execute()
   }
 
   async markAsSpam(commentId: number, userId: number) {
-    await this.getRepository(Spam)
-    .save({
-      commentId,
-      userId,
-    })
+    try {
+      await this.getRepository(Spam)
+      .save({
+        commentId,
+        userId,
+      })
+    } catch (err) {
+      UniqueTransformer.transform(err, 'Already marked as spam!')
+    }
 
     await this.getRepository(Comment)
     .createQueryBuilder()
@@ -183,21 +193,22 @@ export class CommentService extends BaseService implements ICommentService {
   }
 
   async unmarkAsSpam(commentId: number, userId: number) {
-    const result = await this.getRepository(Spam)
+    await this.getRepository(Spam)
     .delete({
       commentId,
       userId,
     })
 
-    if (result.affected && result.affected === 1) {
-      await this.getRepository(Comment)
-      .createQueryBuilder()
-      .update()
-      .where({ id: commentId })
-      .set({
-        spams: () => 'spams - 1',
-      })
-    }
+    // TODO rows.affected returns undefined or SQLite driver. This is an
+    // alternative query that does not depend on it.
+    await this.getRepository(Comment)
+    .createQueryBuilder()
+    .update()
+    .where({ id: commentId })
+    .set({
+      spams: () => '(select count(*) from spam where commentId = comment.id)',
+    })
+    .execute()
   }
 
 }

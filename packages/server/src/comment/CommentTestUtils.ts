@@ -65,3 +65,51 @@ export async function getCommentById(
 
   return response.body!
 }
+
+export async function upVote(
+  t: RequestTester<IAPIDef>,
+  commentId: number,
+) {
+  await t.post('/comments/:commentId/vote', {
+    params: {
+      commentId,
+    },
+  })
+  .expect(200)
+}
+
+export async function downVote(
+  t: RequestTester<IAPIDef>,
+  commentId: number,
+) {
+  await t.delete('/comments/:commentId/vote', {
+    params: {
+      commentId,
+    },
+  })
+  .expect(200)
+}
+
+export async function markAsSpam(
+  t: RequestTester<IAPIDef>,
+  commentId: number,
+) {
+  await t.post('/comments/:commentId/spam', {
+    params: {
+      commentId,
+    },
+  })
+  .expect(200)
+}
+
+export async function unmarkAsSpam(
+  t: RequestTester<IAPIDef>,
+  commentId: number,
+) {
+  await t.delete('/comments/:commentId/spam', {
+    params: {
+      commentId,
+    },
+  })
+  .expect(200)
+}
