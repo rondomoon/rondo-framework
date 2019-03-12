@@ -1,0 +1,5 @@
+c:
+  d: value
+  e:
+    - entry 3
+  f: extra value
