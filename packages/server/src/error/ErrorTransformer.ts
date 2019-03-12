@@ -20,6 +20,12 @@ export class ErrorTransformer {
     }
     return match === err.message
   }
+
+  throwIfNotMatch(err: Error) {
+    if (!this.isMatch(err)) {
+      throw err
+    }
+  }
 }
 
 export const UniqueTransformer = new ErrorTransformer(400, /unique/i)

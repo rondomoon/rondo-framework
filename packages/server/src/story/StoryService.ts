@@ -4,6 +4,7 @@ import {ISiteService} from '../site/ISiteService'
 import {IStoryService} from './IStoryService'
 import {ITransactionManager} from '../database/ITransactionManager'
 import {Story} from '../entities/Story'
+import {UniqueTransformer} from '../error/ErrorTransformer'
 
 export class StoryService extends BaseService implements IStoryService {
   constructor(
@@ -35,7 +36,8 @@ export class StoryService extends BaseService implements IStoryService {
         siteId: site.id,
       })
     } catch (err) {
-      // TODO check if unique constrint error
+      // throw if not a unique constraint error
+      UniqueTransformer.throwIfNotMatch(err)
 
       // This could happen if there are two concurrent requests coming in at
       // the same time, and they both cannot find the story, then decide to
