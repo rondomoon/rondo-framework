@@ -1,6 +1,8 @@
-import cfg from 'config'
+import {ConfigReader} from './config/index'
 import {IConfig} from './application'
 import URL from 'url'
+
+const cfg = new ConfigReader(__dirname).read()
 
 const baseUrl =  URL.parse(cfg.get('app.baseUrl'))
 

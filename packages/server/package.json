@@ -17,7 +17,6 @@
     "bcrypt": "^3.0.3",
     "body-parser": "^1.18.3",
     "cls-hooked": "^4.2.2",
-    "config": "^3.0.1",
     "csurf": "^1.9.0",
     "email-validator": "^2.0.4",
     "express": "^4.16.4",

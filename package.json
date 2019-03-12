@@ -8,7 +8,6 @@
     "@types/bcrypt": "^3.0.0",
     "@types/body-parser": "^1.17.0",
     "@types/cls-hooked": "^4.2.1",
-    "@types/config": "0.0.34",
     "@types/csurf": "^1.9.35",
     "@types/es6-shim": "^0.31.39",
     "@types/express": "^4.16.0",
