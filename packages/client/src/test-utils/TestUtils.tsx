@@ -3,25 +3,15 @@ import ReactDOM from 'react-dom'
 import T from 'react-dom/test-utils'
 import {Connector, IStateSelector} from '../redux'
 import {Provider} from 'react-redux'
-import {PromiseMiddleware} from '../middleware'
+import {createStore} from '../store'
 import {
   Action,
   AnyAction,
   DeepPartial,
-  Middleware,
   Reducer,
   ReducersMapObject,
-  Store,
-  applyMiddleware,
   combineReducers,
-  createStore,
 } from 'redux'
-
-interface IStoreParams<State, A extends Action<any>> {
-  reducer: Reducer<State, A>
-  state?: DeepPartial<State>
-  middleware?: Middleware[]
-}
 
 interface IRenderParams<State> {
   reducers: ReducersMapObject<State, any>
@@ -31,6 +21,11 @@ interface IRenderParams<State> {
 }
 
 export class TestUtils {
+  /**
+   * Create a redux store
+   */
+  readonly createStore = createStore
+
   render(jsx: JSX.Element) {
     const component = T.renderIntoDocument(jsx) as React.Component<any>
     const node = ReactDOM.findDOMNode(component) as Element
@@ -45,20 +40,6 @@ export class TestUtils {
   }
 
   /**
-   * Create a redux store
-   */
-  createStore<State, A extends Action<any> = AnyAction>(
-    params: IStoreParams<State, A>,
-  ): Store<State, A> {
-    const middleware = params.middleware || [new PromiseMiddleware().handle]
-    return createStore(
-      params.reducer,
-      params.state,
-      applyMiddleware(...middleware),
-    )
-  }
-
-  /**
    * Creates a redux store, connects a component, and provides the `render`
    * method to render the connected component with a `Provider`.
    */
@@ -66,7 +47,7 @@ export class TestUtils {
     params: IRenderParams<State>,
   ) {
     const store = this.createStore({
-      reducer: this.combineReducers(params.reducers),
+      reducers: params.reducers,
       state: params.state,
     })
     const Component = params.connector.connect(params.select)
