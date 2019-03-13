@@ -3,6 +3,9 @@
   "references": [
     {"path": "client"},
     {"path": "common"},
-    {"path": "server"}
+    {"path": "server"},
+    {"path": "comments-client"},
+    {"path": "comments-common"},
+    {"path": "comments-server"}
   ]
 }
