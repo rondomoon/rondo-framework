@@ -1,6 +1,5 @@
 import {BaseEntity} from './BaseEntity'
 import {Column, Entity, OneToMany, ManyToOne, Index} from 'typeorm'
-import {Site} from './Site'
 import {UserTeam} from './UserTeam'
 import {User} from './User'
 
@@ -15,9 +14,6 @@ export class Team extends BaseEntity {
 
   @ManyToOne(type => User)
   user?: User
-
-  @OneToMany(type => Site, site => site.team)
-  sites!: Site[]
 
   @OneToMany(type => UserTeam, userTeam => userTeam.team)
   userTeams!: UserTeam[]

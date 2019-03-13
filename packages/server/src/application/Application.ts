@@ -1,9 +1,6 @@
-import * as comment from '../comment'
 import * as middleware from '../middleware'
 import * as routes from '../routes'
 import * as services from '../services'
-import * as site from '../site'
-import * as story from '../story'
 import * as team from '../team'
 import * as user from '../user'
 import express from 'express'
@@ -23,9 +20,6 @@ export class Application implements IApplication {
 
   readonly userService: services.IUserService
   readonly teamService: team.ITeamService
-  readonly siteService: site.ISiteService
-  readonly storyService: story.IStoryService
-  readonly commentService: comment.ICommentService
   readonly userPermissions: user.IUserPermissions
 
   readonly authenticator: middleware.Authenticator
@@ -37,10 +31,6 @@ export class Application implements IApplication {
     this.userService = new services.UserService(this.transactionManager)
 
     this.teamService = new team.TeamService(this.transactionManager)
-    this.siteService = new site.SiteService(this.transactionManager)
-    this.storyService = new story.StoryService(
-      this.transactionManager, this.siteService)
-    this.commentService = new comment.CommentService(this.transactionManager)
     this.userPermissions = new user.UserPermissions(this.transactionManager)
 
     this.authenticator = new middleware.Authenticator(this.userService)
@@ -61,9 +51,10 @@ export class Application implements IApplication {
 
     this.configureMiddleware(router)
     this.configureRouter(router)
+    this.configureApiErrorHandling(router)
 
     server.use(this.config.app.context, router)
-    this.configureErrorHandling(server)
+    this.configureGlobalErrorHandling(server)
     return server
   }
 
@@ -87,8 +78,6 @@ export class Application implements IApplication {
   }
 
   protected configureRouter(router: express.Router) {
-    const apiLogger = this.getApiLogger()
-
     router.use('/app', new routes.LoginRoutes(
       this.userService,
       this.authenticator,
@@ -108,27 +97,14 @@ export class Application implements IApplication {
       this.userPermissions,
       this.createTransactionalRouter(),
     ).handle)
+  }
 
-    router.use('/api', new site.SiteRoutes(
-      this.siteService,
-      this.userPermissions,
-      this.createTransactionalRouter(),
-    ).handle)
-
-    router.use('/api', new story.StoryRoutes(
-      this.storyService,
-      this.createTransactionalRouter(),
-    ).handle)
-
-    router.use('/api', new comment.CommentRoutes(
-      this.commentService,
-      this.createTransactionalRouter(),
-    ).handle)
-
+  protected configureApiErrorHandling(router: express.Router) {
+    const apiLogger = this.getApiLogger()
     router.use('/api', new middleware.ErrorApiHandler(apiLogger).handle)
   }
 
-  protected configureErrorHandling(server: express.Application) {
+  protected configureGlobalErrorHandling(server: express.Application) {
     const apiLogger = this.getApiLogger()
     server.use(new middleware.ErrorPageHandler(apiLogger).handle)
   }
