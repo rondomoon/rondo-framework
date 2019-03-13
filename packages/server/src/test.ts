@@ -11,5 +11,6 @@ const bootstrap = new Bootstrap(
   exit,
 )
 
+// TODO separate IAPIDef between projects
 export const test = new TestUtils<IAPIDef>(bootstrap)
 export const {request} = test
