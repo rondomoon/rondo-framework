@@ -1,15 +1,13 @@
 import {ConfigReader} from './ConfigReader'
 import {join} from 'path'
-import {closeSync, openSync} from 'fs'
+import {writeFileSync} from 'fs'
 
 describe('ConfigReader', () => {
 
   beforeAll(() => {
-    closeSync(
-      openSync(
-        join(__dirname, 'test-files', 'package.json'),
-        'w',
-      ),
+    writeFileSync(
+      join(__dirname, 'test-files', 'package.json'),
+      '{}',
     )
   })
 

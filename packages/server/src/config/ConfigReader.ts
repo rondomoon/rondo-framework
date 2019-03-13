@@ -3,6 +3,7 @@ import {Config} from './Config'
 import {findPackageRoot} from '../files/Find'
 import {join} from 'path'
 import {readFileSync} from 'fs'
+import {apiLogger} from '../logger'
 
 const isObject = (value: any) => value !== null && typeof value === 'object'
 
@@ -40,6 +41,7 @@ export class ConfigReader {
           }
           continue
         }
+        apiLogger.info('config: Found config file: %s', configFilename)
         success += 1
       }
     }
@@ -50,10 +52,12 @@ export class ConfigReader {
     }
 
     if (filename) {
+      apiLogger.info('config: Reading extra config file: %s', filename)
       this.readFile(filename)
     }
 
     if (env) {
+      apiLogger.info('config: Parsing env variable: %s', this.environment)
       this.parse(env)
     }
 
