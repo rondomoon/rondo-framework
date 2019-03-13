@@ -60,6 +60,8 @@ describe('UserService', () => {
         id: jasmine.any(Number),
         userId: id,
         email: username,
+        createDate: jasmine.any(Date),
+        updateDate: jasmine.any(Date),
       }])
     })
   })
