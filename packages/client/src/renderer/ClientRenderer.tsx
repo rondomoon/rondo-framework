@@ -1,34 +1,41 @@
-import ReactDOM from 'react-dom'
 import React from 'react'
-import {Provider} from 'react-redux'
-import {IStoreFactory} from './IStoreFactory'
+import ReactDOM from 'react-dom'
+import {Action} from 'redux'
 import {IRenderer} from './IRenderer'
+import {IStoreFactory} from './IStoreFactory'
+import {Provider} from 'react-redux'
 
-export class ClientRenderer implements IRenderer {
-  constructor(
-    readonly createStore: IStoreFactory,
-    readonly RootComponent: React.ComponentType,
-    readonly target = document.body,
-  ) {}
+export interface IClientRendererParams<State, A extends Action> {
+  readonly createStore: IStoreFactory<State, A | any>,
+  readonly RootComponent: React.ComponentType,
+  readonly target?: HTMLElement
+}
+
+export class ClientRenderer<State, A extends Action> implements IRenderer {
+  constructor(readonly params: IClientRendererParams<State, A>) {}
 
   render(state = (window as any).__PRELOADED_STATE__) {
-    const {RootComponent} = this
+    const {
+      RootComponent,
+      createStore,
+      target = document.body,
+    } = this.params
 
     if (state) {
-      const store = this.createStore(state)
+      const store = createStore(state)
       ReactDOM.hydrate(
         <Provider store={store}>
           <RootComponent />
         </Provider>,
-        this.target,
+        target,
       )
     } else {
-      const store = this.createStore()
+      const store = createStore()
       ReactDOM.render(
         <Provider store={store}>
           <RootComponent />
         </Provider>,
-        this.target,
+        target,
       )
     }
   }

@@ -48,8 +48,7 @@ export class TestUtils {
   ) {
     const store = this.createStore({
       reducers: params.reducers,
-      state: params.state,
-    })
+    })(params.state)
     const Component = params.connector.connect(params.select)
 
     const render = (additionalProps: {[key: string]: any} = {}) => {

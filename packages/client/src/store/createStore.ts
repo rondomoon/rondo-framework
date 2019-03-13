@@ -24,9 +24,9 @@ export function createStore<State, A extends Action>(
   params: ICreateStoreParams<State, A>,
 ) {
   const middleware = params.middleware || [new PromiseMiddleware().handle]
-  return create(
+  return (state?: DeepPartial<State>) => create(
     combineReducers(params.reducers),
-    params.state,
+    state,
     applyMiddleware(...middleware),
   )
 }
