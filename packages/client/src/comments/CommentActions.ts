@@ -1,5 +1,5 @@
 import {IHTTPClient} from '../http'
-import {IComment, IAPIDef} from '@rondo/common'
+import {IComment, ICommentsAPIDef} from '@rondo/comments-common'
 
 export enum ICommentActionTypes {
   VOTE_UP = 'VOTE_UP',
@@ -14,7 +14,7 @@ export enum ICommentActionTypes {
 }
 
 export class CommentActions {
-  constructor(protected readonly http: IHTTPClient<IAPIDef>) {}
+  constructor(protected readonly http: IHTTPClient<ICommentsAPIDef>) {}
 
   voteUp(comment: IComment) {
     return {
@@ -36,7 +36,7 @@ export class CommentActions {
 
   getComments(storyId: number) {
     return {
-      payload: this.http.get('/story/:storyId/comments', null, {
+      payload: this.http.get('/stories/:storyId/comments', null, {
         storyId,
       }),
       type: ICommentActionTypes.COMMENTS_RETRIEVE,
@@ -47,7 +47,7 @@ export class CommentActions {
     if (!comment.parentId) {
       // root comment
       return {
-        payload: this.http.post('/story/:storyId/comments', comment, {
+        payload: this.http.post('/stories/:storyId/comments', comment, {
           storyId: comment.storyId,
         }),
         type: ICommentActionTypes.COMMENT_ADD,
@@ -56,7 +56,9 @@ export class CommentActions {
 
     // nested comment
     return {
-      payload: this.http.post('/comments/:parentId', comment, {
+      payload: this.http
+      .post('/stories/:storyId/comments/:parentId', comment, {
+        storyId: comment.storyId,
         parentId: comment.parentId,
       }),
       type: ICommentActionTypes.COMMENT_ADD,

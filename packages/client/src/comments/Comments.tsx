@@ -1,5 +1,5 @@
 import React from 'react'
-import {IComment} from '@rondo/common'
+import {IComment} from '@rondo/comments-common'
 
 export interface ICommentProps {
   comment: IComment
@@ -7,14 +7,13 @@ export interface ICommentProps {
 
 export class CommentVote extends React.PureComponent {
   render() {
-    return (
-    )
+    return 'vote'
   }
 }
 
 export class CommentButtons extends React.PureComponent {
   render() {
-
+    return 'buttons'
   }
 }
 
@@ -23,10 +22,10 @@ export class Comment extends React.PureComponent<ICommentProps> {
     const {comment} = this.props
     return (
       <div className='comment'>
-        <span className='score'>{comment.score}</span>
+        <span className='score'>{comment.votes}</span>
         <p>{comment.message}</p>
 
-        <Comments comments={comment.children} />
+        // TODO add comment children here
       </div>
     )
   }
