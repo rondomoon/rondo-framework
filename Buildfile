@@ -6,4 +6,4 @@ add:
   cp -r template/* packages/$(name)/
 
 test:
-  jest --runInBand
+  jest
