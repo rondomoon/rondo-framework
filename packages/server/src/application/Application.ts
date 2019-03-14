@@ -52,6 +52,7 @@ export class Application implements IApplication {
     this.configureMiddleware(router)
     this.configureRouter(router)
     this.configureApiErrorHandling(router)
+    this.configureFrontend(router)
 
     server.use(this.config.app.context, router)
     this.configureGlobalErrorHandling(server)
@@ -78,6 +79,7 @@ export class Application implements IApplication {
   }
 
   protected configureRouter(router: express.Router) {
+    // TODO use /api for LoginRoutes
     router.use('/app', new routes.LoginRoutes(
       this.userService,
       this.authenticator,
@@ -102,6 +104,10 @@ export class Application implements IApplication {
   protected configureApiErrorHandling(router: express.Router) {
     const apiLogger = this.getApiLogger()
     router.use('/api', new middleware.ErrorApiHandler(apiLogger).handle)
+  }
+
+  protected configureFrontend(router: express.Router) {
+    // Override this method
   }
 
   protected configureGlobalErrorHandling(server: express.Application) {

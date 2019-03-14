@@ -47,7 +47,7 @@ export class TestUtils {
     params: IRenderParams<State>,
   ) {
     const store = this.createStore({
-      reducers: params.reducers,
+      reducer: this.combineReducers(params.reducers),
     })(params.state)
     const Component = params.connector.connect(params.select)
 

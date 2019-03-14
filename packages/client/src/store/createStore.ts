@@ -2,17 +2,14 @@ import {PromiseMiddleware} from '../middleware'
 import {
   applyMiddleware,
   createStore as create,
-  combineReducers,
   Middleware,
   Action,
-  // AnyAction,
   DeepPartial,
-  ReducersMapObject,
-  // Reducer,
+  Reducer,
 } from 'redux'
 
 export interface ICreateStoreParams<State, A extends Action> {
-  reducers: ReducersMapObject<State, A | any>
+  reducer: Reducer<State, A>
   state?: DeepPartial<State>
   middleware?: Middleware[]
 }
@@ -25,7 +22,7 @@ export function createStore<State, A extends Action>(
 ) {
   const middleware = params.middleware || [new PromiseMiddleware().handle]
   return (state?: DeepPartial<State>) => create(
-    combineReducers(params.reducers),
+    params.reducer,
     state,
     applyMiddleware(...middleware),
   )
