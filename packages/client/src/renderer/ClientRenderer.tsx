@@ -5,6 +5,8 @@ import {IClientConfig} from './IClientConfig'
 import {IRenderer} from './IRenderer'
 import {IStoreFactory} from './IStoreFactory'
 import {Provider} from 'react-redux'
+import {Router} from 'react-router-dom'
+import {createBrowserHistory} from 'history'
 
 export interface IClientRendererParams<State, A extends Action> {
   readonly createStore: IStoreFactory<State, A | any>,
@@ -16,6 +18,7 @@ export class ClientRenderer<State, A extends Action> implements IRenderer {
   constructor(readonly params: IClientRendererParams<State, A>) {}
 
   render(
+    url: string,
     config = (window as any).__APP_CONFIG__ as IClientConfig,
     state = (window as any).__PRELOADED_STATE__,
   ) {
@@ -25,11 +28,17 @@ export class ClientRenderer<State, A extends Action> implements IRenderer {
       target = document.getElementById('container'),
     } = this.params
 
+    const history = createBrowserHistory({
+      basename: config.baseUrl,
+    })
+
     if (state) {
       const store = createStore(state)
       ReactDOM.hydrate(
         <Provider store={store}>
-          <RootComponent config={config} />
+          <Router history={history}>
+            <RootComponent config={config} />
+          </Router>
         </Provider>,
         target,
       )
@@ -37,7 +46,9 @@ export class ClientRenderer<State, A extends Action> implements IRenderer {
       const store = createStore()
       ReactDOM.render(
         <Provider store={store}>
-          <RootComponent config={config} />
+          <Router history={history}>
+            <RootComponent config={config} />
+          </Router>
         </Provider>,
         target,
       )

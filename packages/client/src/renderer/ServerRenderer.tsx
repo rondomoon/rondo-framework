@@ -4,6 +4,7 @@ import {IClientConfig} from './IClientConfig'
 import {IRenderer} from './IRenderer'
 import {IStoreFactory} from './IStoreFactory'
 import {Provider} from 'react-redux'
+import {StaticRouter} from 'react-router-dom'
 import {renderToNodeStream} from 'react-dom/server'
 
 export class ServerRenderer<State, A extends Action> implements IRenderer {
@@ -11,13 +12,16 @@ export class ServerRenderer<State, A extends Action> implements IRenderer {
     readonly createStore: IStoreFactory<State, A | any>,
     readonly RootComponent: React.ComponentType<{config: IClientConfig}>,
   ) {}
-  render(config: IClientConfig, state?: any) {
+  render(url: string, config: IClientConfig, state?: any) {
     const {RootComponent} = this
     const store = this.createStore(state)
 
+    const context = {}
     const stream = renderToNodeStream(
       <Provider store={store}>
-        <RootComponent config={config} />
+        <StaticRouter location={url} context={context} >
+          <RootComponent config={config} />
+        </StaticRouter>
       </Provider>,
     )
     return stream
