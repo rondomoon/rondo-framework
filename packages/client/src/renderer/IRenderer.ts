@@ -1,3 +1,5 @@
+import {IClientConfig} from './IClientConfig'
+
 export interface IRenderer {
-  render(state?: any): any
+  render(config: IClientConfig, state?: any): any
 }
