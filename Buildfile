@@ -1,5 +1,8 @@
-ts:
+build_ts:
   tsc -b packages/
+
+watch_ts:
+  tsc --build packages/ --watch --preserveWatchOutput
 
 add:
   mkdir packages/$(name)
