@@ -5,6 +5,7 @@ export interface IInputProps {
   type: 'text' | 'password' | 'hidden' | 'submit'
   value?: string
   onChange?: (name: this['name'], value: string) => void
+  placeholder?: string
   readOnly?: boolean
 }
 
@@ -21,6 +22,7 @@ export class Input extends React.PureComponent<IInputProps> {
         type={this.props.type}
         value={this.props.value}
         onChange={this.handleChange}
+        placeholder={this.props.placeholder}
         readOnly={!!this.props.readOnly}
       />
     )

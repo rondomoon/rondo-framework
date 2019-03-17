@@ -5,7 +5,7 @@ import {ICredentials} from '@rondo/common'
 export interface ILoginFormProps {
   error?: string
   onSubmit: (credentials: ICredentials) => Promise<void>
-  onSuccess: () => void
+  onSuccess?: () => void
 }
 
 export interface ILoginFormState extends ICredentials {}
@@ -23,8 +23,11 @@ export class LoginForm extends React.PureComponent<
     }
   }
   handleSubmit = async () => {
+    const {onSuccess} = this.props
     await this.props.onSubmit(this.state)
-    this.props.onSuccess()
+    if (onSuccess) {
+      onSuccess()
+    }
   }
   handleChange = (name: string, value: string) => {
     this.setState(
@@ -40,12 +43,14 @@ export class LoginForm extends React.PureComponent<
           type='text'
           onChange={this.handleChange}
           value={this.state.username}
+          placeholder='Username'
         />
         <Input
           name='password'
           type='password'
           onChange={this.handleChange}
           value={this.state.password}
+          placeholder='Password'
         />
         <Input
           name='submit'
