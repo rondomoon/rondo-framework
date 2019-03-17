@@ -12,7 +12,7 @@ import {ILogger} from '../logger/ILogger'
 import {IRoutes} from '@rondo/common'
 import {ITransactionManager} from '../database/ITransactionManager'
 import {loggerFactory, LoggerFactory} from '../logger/LoggerFactory'
-import {urlencoded, json} from 'body-parser'
+import {json} from 'body-parser'
 
 export class Application implements IApplication {
   readonly transactionManager: ITransactionManager
@@ -63,32 +63,29 @@ export class Application implements IApplication {
     const {transactionManager} = this
     const apiLogger = this.getApiLogger()
 
-    router.use('/app', urlencoded({ extended: false }))
-
     router.use(new middleware.SessionMiddleware({
       transactionManager,
       baseUrl: this.config.app.baseUrl,
       sessionName: this.config.app.session.name,
       sessionSecret: this.config.app.session.secret,
     }).handle)
+    router.use(new middleware.RequestLogger(apiLogger).handle)
+    router.use(json())
     router.use(middleware.csrf)
     router.use(new middleware.Transaction(this.database.namespace).handle)
-    router.use(new middleware.RequestLogger(apiLogger).handle)
 
     router.use(this.authenticator.handle)
   }
 
   protected configureRouter(router: express.Router) {
     // TODO use /api for LoginRoutes
-    router.use('/app', new routes.LoginRoutes(
+    router.use('/app', routes.application)
+
+    router.use('/api', new routes.LoginRoutes(
       this.userService,
       this.authenticator,
       this.createTransactionalRouter(),
     ).handle)
-    router.use('/app', routes.application)
-
-    router.use('/api', json())
-
     router.use('/api', new routes.UserRoutes(
       this.userService,
       this.createTransactionalRouter(),

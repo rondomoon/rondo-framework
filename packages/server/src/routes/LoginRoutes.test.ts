@@ -30,11 +30,11 @@ describe('login', () => {
     })
 
     it('should log out the user', async () => {
-      await test.request('/app')
+      await test.request('/api')
       .get('/auth/logout')
       .set('cookie', cookie)
       .expect(302)
-      .expect('location', `${test.context}/app/auth/login`)
+      .expect('location', `${test.context}/api/auth/login`)
     })
   })
 

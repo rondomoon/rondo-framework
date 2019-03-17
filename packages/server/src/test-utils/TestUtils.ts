@@ -91,7 +91,7 @@ export class TestUtils<T extends IRoutes> {
 
   getLoginBody(csrfToken: string) {
     const {username, password} = this
-    return `username=${username}&password=${password}&_csrf=${csrfToken}`
+    return {username, password, _csrf: csrfToken}
   }
 
   async registerAccount() {
@@ -99,7 +99,7 @@ export class TestUtils<T extends IRoutes> {
     const {cookie, token} = await this.getCsrf()
 
     const response = await supertest(this.app)
-    .post(`${context}/app/auth/register`)
+    .post(`${context}/api/auth/register`)
     .set('cookie', cookie)
     .send(this.getLoginBody(token))
     .expect(200)
@@ -111,14 +111,14 @@ export class TestUtils<T extends IRoutes> {
     }
   }
 
-  async login(_username = this.username, _password = this.password) {
+  async login(username = this.username, password = this.password) {
     const {context} = this
     const {cookie, token} = await this.getCsrf()
 
     const response = await supertest(this.app)
-    .post(`${context}/app/auth/login`)
+    .post(`${context}/api/auth/login`)
     .set('cookie', cookie)
-    .send(`username=${_username}&password=${_password}&_csrf=${token}`)
+    .send({username, password, _csrf: token})
     .expect(200)
 
     return {cookie: response.header['set-cookie'] as string, token}
