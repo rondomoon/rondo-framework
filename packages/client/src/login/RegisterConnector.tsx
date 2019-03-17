@@ -26,6 +26,7 @@ export class RegisterConnector extends Connector {
       }),
       dispatch => ({
         onSubmit: bindActionCreators(this.loginActions.register, dispatch),
+        clearOnSuccess: true,
       }),
       withForm(RegisterForm, defaultCredentials),
     )

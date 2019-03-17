@@ -27,6 +27,7 @@ export class LoginConnector extends Connector {
       }),
       dispatch => ({
         onSubmit: bindActionCreators(this.loginActions.logIn, dispatch),
+        clearOnSuccess: true,
       }),
       withForm(LoginForm, defaultCredentials),
     )

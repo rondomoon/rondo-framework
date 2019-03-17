@@ -13,6 +13,7 @@ export interface IFormHOCProps<Data> {
   // TODO figure out what would happen if the underlying child component
   // would have the same required property as the HOC, like onSuccess?
   onSuccess?: () => void
+  clearOnSuccess?: boolean
 }
 
 export function withForm<Data, Props extends IComponentProps<Data>>(
@@ -30,9 +31,12 @@ export function withForm<Data, Props extends IComponentProps<Data>>(
       this.state = initialState
     }
     handleSubmit = async (e: React.FormEvent) => {
-      const {onSuccess} = this.props
+      const {clearOnSuccess, onSuccess} = this.props
       e.preventDefault()
       await this.props.onSubmit(this.state)
+      if (clearOnSuccess) {
+        this.setState(initialState)
+      }
       if (onSuccess) {
         onSuccess()
       }

@@ -33,7 +33,8 @@ describe('LoginForm', () => {
         data,
       }, {id: 123})
 
-      node = t.render({onSuccess}).node
+      const r = t.render({onSuccess})
+      node = r.node
       T.Simulate.change(
         node.querySelector('input[name="username"]')!,
         {target: {value: 'user'}} as any,
@@ -44,7 +45,7 @@ describe('LoginForm', () => {
       )
     })
 
-    it('should submit a form', async () => {
+    it('should submit a form and clear it', async () => {
       T.Simulate.submit(node)
       const {req} = await http.wait()
       expect(req).toEqual({
@@ -53,6 +54,16 @@ describe('LoginForm', () => {
         data,
       })
       expect(onSuccess.mock.calls.length).toBe(1)
+      expect(
+        (node.querySelector('input[name="username"]') as HTMLInputElement)
+        .value,
+      )
+      .toEqual('')
+      expect(
+        (node.querySelector('input[name="password"]') as HTMLInputElement)
+        .value,
+      )
+      .toEqual('')
     })
 
     it('sets the error message on failure', async () => {
