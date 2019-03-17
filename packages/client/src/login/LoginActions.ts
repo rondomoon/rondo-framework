@@ -10,6 +10,10 @@ export enum LoginActionKeys {
   USER_LOG_OUT = 'USER_LOG_OUT',
   USER_LOG_OUT_PENDING = 'USER_LOG_OUT_PENDING',
   USER_LOG_OUT_REJECTED = 'USER_LOG_OUT_REJECTED',
+
+  REGISTER_USER = 'REGISTER_USER',
+  REGISTER_USER_PENDING = 'REGISTER_USER_PENDING',
+  REGISTER_USER_REJECTED = 'REGISTER_USER_REJECTED',
 }
 
 export class LoginActions {
@@ -35,6 +39,22 @@ export class LoginActions {
     return {
       payload: this.http.get('/auth/logout'),
       type: LoginActionKeys.USER_LOG_OUT,
+    }
+  }
+
+  register = (profile: ICredentials):
+  IAction<IUser, LoginActionKeys.REGISTER_USER> => {
+    return {
+      payload: this.http.post('/auth/register', profile),
+      type: LoginActionKeys.REGISTER_USER,
+    }
+  }
+
+  registerError = (error: Error)
+  : IErrorAction<LoginActionKeys.REGISTER_USER_REJECTED> => {
+    return {
+      error,
+      type: LoginActionKeys.REGISTER_USER_REJECTED,
     }
   }
 }

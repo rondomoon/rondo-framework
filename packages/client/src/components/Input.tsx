@@ -2,7 +2,7 @@ import React from 'react'
 
 export interface IInputProps {
   name: string
-  type: 'text' | 'password' | 'hidden' | 'submit'
+  type: 'text' | 'password' | 'hidden' | 'submit' | 'email'
   value?: string
   onChange?: (name: this['name'], value: string) => void
   placeholder?: string

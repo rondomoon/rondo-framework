@@ -3,7 +3,7 @@ import {ICredentials} from '@rondo/common'
 import {ILoginState} from './LoginReducer'
 import {IStateSelector} from '../redux'
 import {LoginActions} from './LoginActions'
-import {LoginForm} from './LoginForm'
+import {RegisterForm} from './RegisterForm'
 import {bindActionCreators} from 'redux'
 import {withForm} from './withForm'
 
@@ -12,7 +12,7 @@ const defaultCredentials: ICredentials = {
   password: '',
 }
 
-export class LoginConnector extends Connector {
+export class RegisterConnector extends Connector {
 
   constructor(protected readonly loginActions: LoginActions) {
     super()
@@ -23,12 +23,11 @@ export class LoginConnector extends Connector {
       getLocalState,
       state => ({
         error: state.error,
-        user: state.user,
       }),
       dispatch => ({
-        onSubmit: bindActionCreators(this.loginActions.logIn, dispatch),
+        onSubmit: bindActionCreators(this.loginActions.register, dispatch),
       }),
-      withForm(LoginForm, defaultCredentials),
+      withForm(RegisterForm, defaultCredentials),
     )
   }
 }

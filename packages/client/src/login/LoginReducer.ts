@@ -17,10 +17,14 @@ export function Login(
 ): ILoginState {
   switch (action.type) {
     case LoginActionKeys.USER_LOG_IN:
-      return {...state, user: action.payload}
+      return {...state, user: action.payload, error: ''}
     case LoginActionKeys.USER_LOG_OUT:
       return {...state, user: undefined}
     case LoginActionKeys.USER_LOG_IN_REJECTED:
+      return {...state, error: action.error.message}
+    case LoginActionKeys.REGISTER_USER:
+      return {...state, user: action.payload, error: ''}
+    case LoginActionKeys.REGISTER_USER_REJECTED:
       return {...state, error: action.error.message}
     default:
       return state

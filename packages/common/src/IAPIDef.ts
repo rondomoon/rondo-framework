@@ -7,6 +7,7 @@ export interface IAPIDef {
   '/auth/register': {
     'post': {
       body: ICredentials
+      response: IUser
     }
   }
   '/auth/login': {

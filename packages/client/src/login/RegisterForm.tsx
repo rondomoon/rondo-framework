@@ -2,26 +2,24 @@ import React from 'react'
 import {ICredentials} from '@rondo/common'
 import {Input} from '../components/Input'
 
-export interface ILoginFormProps {
+export interface IRegisterFormProps {
   error?: string
   onSubmit: () => void
   onChange: (name: string, value: string) => void
   data: ICredentials
 }
 
-// TODO maybe replace this with Formik, which is recommended in React docs
-// https://jaredpalmer.com/formik/docs/overview
-export class LoginForm extends React.PureComponent<ILoginFormProps> {
+export class RegisterForm extends React.PureComponent<IRegisterFormProps> {
   render() {
     return (
       <form onSubmit={this.props.onSubmit}>
         <p className='error'>{this.props.error}</p>
         <Input
           name='username'
-          type='text'
+          type='email'
           onChange={this.props.onChange}
           value={this.props.data.username}
-          placeholder='Username'
+          placeholder='Email'
         />
         <Input
           name='password'
@@ -33,7 +31,7 @@ export class LoginForm extends React.PureComponent<ILoginFormProps> {
         <Input
           name='submit'
           type='submit'
-          value='Log In'
+          value='Register'
         />
       </form>
     )
