@@ -16,7 +16,7 @@ export class AsyncRouter<R extends IRoutes> {
     path: P,
     handler: ITypedHandler<R, P, M>,
   ) {
-    const addRoute = this.router[method].bind(this.router)
+    const addRoute = this.router[method].bind(this.router as any)
 
     addRoute(path, this.wrapHandler(handler))
   }
