@@ -4,6 +4,7 @@ import {IClientConfig} from './IClientConfig'
 import {IRenderer} from './IRenderer'
 import {IStoreFactory} from './IStoreFactory'
 import {Provider} from 'react-redux'
+import {StaticRouterContext} from 'react-router'
 import {StaticRouter} from 'react-router-dom'
 import {renderToNodeStream} from 'react-dom/server'
 
@@ -16,7 +17,7 @@ export class ServerRenderer<State, A extends Action> implements IRenderer {
     const {RootComponent} = this
     const store = this.createStore(state)
 
-    const context = {}
+    const context: StaticRouterContext = {}
     const stream = renderToNodeStream(
       <Provider store={store}>
         <StaticRouter location={url} context={context} >
