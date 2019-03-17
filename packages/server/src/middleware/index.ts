@@ -1,5 +1,5 @@
 export * from './Authenticator'
-export * from './csrf'
+export * from './CSRFMiddleware'
 export * from './ensureLoggedIn'
 export * from './ErrorApiHandler'
 export * from './ErrorPageHandler'

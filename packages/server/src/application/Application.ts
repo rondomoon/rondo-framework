@@ -3,6 +3,7 @@ import * as routes from '../routes'
 import * as services from '../services'
 import * as team from '../team'
 import * as user from '../user'
+import cookieParser from 'cookie-parser'
 import express from 'express'
 import {AsyncRouter, TransactionalRouter} from '../router'
 import {IApplication} from './IApplication'
@@ -71,7 +72,11 @@ export class Application implements IApplication {
     }).handle)
     router.use(new middleware.RequestLogger(apiLogger).handle)
     router.use(json())
-    router.use(middleware.csrf)
+    router.use(cookieParser(this.config.app.session.secret))
+    router.use(new middleware.CSRFMiddleware({
+      baseUrl: this.config.app.baseUrl,
+      cookieName: this.config.app.session.name + '_csrf',
+    }).handle)
     router.use(new middleware.Transaction(this.database.namespace).handle)
 
     router.use(this.authenticator.handle)
