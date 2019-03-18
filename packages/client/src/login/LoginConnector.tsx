@@ -12,7 +12,7 @@ const defaultCredentials: ICredentials = {
   password: '',
 }
 
-export class LoginConnector extends Connector {
+export class LoginConnector extends Connector<ILoginState> {
 
   constructor(protected readonly loginActions: LoginActions) {
     super()
@@ -24,6 +24,7 @@ export class LoginConnector extends Connector {
       state => ({
         error: state.error,
         user: state.user,
+        redirectTo: state.redirectTo,
       }),
       dispatch => ({
         onSubmit: bindActionCreators(this.loginActions.logIn, dispatch),

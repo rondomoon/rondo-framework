@@ -18,7 +18,7 @@ import {ComponentType} from 'react'
  * easy to mock it during tests, or swap out different dependencies for
  * different applications.
  */
-export abstract class Connector {
+export abstract class Connector<LocalState> {
 
   /**
    * Connects a component using redux. The `selectState` method is used to
@@ -29,13 +29,12 @@ export abstract class Connector {
    *
    * https://stackoverflow.com/questions/54277411
    */
-  abstract connect<State, LocalState>(
+  abstract connect<State>(
     selectState: IStateSelector<State, LocalState>,
   ): ComponentType<any>
 
   protected wrap<
     State,
-    LocalState,
     StateProps,
     DispatchProps,
     Props

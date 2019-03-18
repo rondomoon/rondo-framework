@@ -16,7 +16,7 @@ import {
 interface IRenderParams<State> {
   reducers: ReducersMapObject<State, any>
   state?: DeepPartial<State>
-  connector: Connector
+  connector: Connector<any>
   select: IStateSelector<State, any>
 }
 
