@@ -1,10 +1,13 @@
 server := src/bootstrap.ts
 typeorm := ts-node ../../node_modules/.bin/typeorm
 
+build:
+  tsc --build ./
+
 orm:
   typeorm $args
 
-migration:
+migration: build
   # typeorm migration:create -n $name
   $typeorm migration:generate -n $name
 
