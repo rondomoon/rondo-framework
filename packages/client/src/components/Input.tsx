@@ -1,4 +1,6 @@
 import React from 'react'
+import {Control, Field, Input as I, Label} from 'bloomer'
+import {IconType} from 'react-icons'
 
 export interface IInputProps {
   name: string
@@ -7,6 +9,8 @@ export interface IInputProps {
   onChange?: (name: this['name'], value: string) => void
   placeholder?: string
   readOnly?: boolean
+  label: string
+  Icon?: IconType
 }
 
 export class Input extends React.PureComponent<IInputProps> {
@@ -16,15 +20,25 @@ export class Input extends React.PureComponent<IInputProps> {
     }
   }
   render() {
+    const {Icon} = this.props
     return (
-      <input
-        name={this.props.name}
-        type={this.props.type}
-        value={this.props.value}
-        onChange={this.handleChange}
-        placeholder={this.props.placeholder}
-        readOnly={!!this.props.readOnly}
-      />
+      <Field>
+        <Label>{this.props.label}</Label>
+        <Control hasIcons>
+          <I
+            className='input'
+            name={this.props.name}
+            type={this.props.type}
+            value={this.props.value}
+            onChange={this.handleChange}
+            placeholder={this.props.placeholder}
+            readOnly={!!this.props.readOnly}
+          />
+          {Icon && <span className='icon is-left is-small'>
+            <Icon />
+          </span>}
+        </Control>
+      </Field>
     )
   }
 }

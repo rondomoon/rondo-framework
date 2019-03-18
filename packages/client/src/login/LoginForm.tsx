@@ -2,6 +2,7 @@ import React from 'react'
 import {ICredentials, IUser} from '@rondo/common'
 import {Input} from '../components/Input'
 import {Redirect} from '../components/Redirect'
+import {FaUser, FaLock} from 'react-icons/fa'
 
 export interface ILoginFormProps {
   error?: string
@@ -23,6 +24,8 @@ export class LoginForm extends React.PureComponent<ILoginFormProps> {
       <form onSubmit={this.props.onSubmit}>
         <p className='error'>{this.props.error}</p>
         <Input
+          Icon={FaUser}
+          label='Username'
           name='username'
           type='text'
           onChange={this.props.onChange}
@@ -30,13 +33,16 @@ export class LoginForm extends React.PureComponent<ILoginFormProps> {
           placeholder='Username'
         />
         <Input
+          Icon={FaLock}
+          label='Password'
           name='password'
           type='password'
           onChange={this.props.onChange}
           value={this.props.data.password}
           placeholder='Password'
         />
-        <Input
+        <input
+          className='button is-primary'
           name='submit'
           type='submit'
           value='Log In'

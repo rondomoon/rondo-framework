@@ -21,6 +21,7 @@ export class RegisterForm extends React.PureComponent<IRegisterFormProps> {
       <form onSubmit={this.props.onSubmit}>
         <p className='error'>{this.props.error}</p>
         <Input
+          label='Username'
           name='username'
           type='email'
           onChange={this.props.onChange}
@@ -28,16 +29,18 @@ export class RegisterForm extends React.PureComponent<IRegisterFormProps> {
           placeholder='Email'
         />
         <Input
+          label='Password'
           name='password'
           type='password'
           onChange={this.props.onChange}
           value={this.props.data.password}
           placeholder='Password'
         />
-        <Input
+        <input
+          className='button is-primary'
           name='submit'
           type='submit'
-          value='Register'
+          value='Log In'
         />
       </form>
     )
