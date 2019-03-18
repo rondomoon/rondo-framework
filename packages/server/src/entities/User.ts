@@ -6,6 +6,12 @@ import {UserEmail} from './UserEmail'
 
 @Entity()
 export class User extends BaseEntity {
+  @Column()
+  firstName!: string
+
+  @Column()
+  lastName!: string
+
   @OneToMany(type => UserEmail, email => email.user)
   emails!: UserEmail[]
 
