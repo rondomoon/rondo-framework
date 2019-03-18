@@ -75,7 +75,7 @@ export class TestUtils<T extends IRoutes> {
     const response = await supertest(this.app)
     .get(`${context}/app`)
     .expect(200)
-    const cookie = response.header['set-cookie'] as string
+    const cookie = this.getCookies(response.header['set-cookie'])
     const token = this.getCsrfToken(response.text)
     expect(cookie).toBeTruthy()
     expect(token).toBeTruthy()
@@ -101,11 +101,17 @@ export class TestUtils<T extends IRoutes> {
     const response = await supertest(this.app)
     .post(`${context}/api/auth/register`)
     .set('cookie', cookie)
-    .send(this.getLoginBody(token))
+    .send({
+      firstName: 'test',
+      lastName: 'test',
+      ...this.getLoginBody(token),
+    })
     .expect(200)
 
+    const cookies = this.getCookies(response.header['set-cookie'])
+
     return {
-      cookie: response.header['set-cookie'] as string,
+      cookie: [cookies, cookie].join('; '),
       userId: response.body.id,
       token,
     }
@@ -121,13 +127,22 @@ export class TestUtils<T extends IRoutes> {
     .send({username, password, _csrf: token})
     .expect(200)
 
-    return {cookie: response.header['set-cookie'] as string, token}
+    const cookies = this.getCookies(response.header['set-cookie'])
+
+    return {
+      cookie: [cookies, cookie].join('; '),
+      token,
+    }
   }
 
   request = (baseUrl = '') => {
     return new RequestTester<T>(
       this.app,
       `${this.bootstrap.config.app.baseUrl.path!}${baseUrl}`)
+  }
+
+  private getCookies(setCookiesString: string[]): string {
+    return setCookiesString.map(c => c.split('; ')[0]).join('; ')
   }
 
 }

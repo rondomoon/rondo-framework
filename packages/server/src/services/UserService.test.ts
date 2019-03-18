@@ -14,6 +14,8 @@ describe('UserService', () => {
     return userService.createUser({
       username: u,
       password: p,
+      firstName: 'test',
+      lastName: 'test',
     })
   }
 
@@ -23,7 +25,7 @@ describe('UserService', () => {
       expect(result.id).toBeTruthy()
       const user = await userService.findOne(result.id)
       expect(user).toBeTruthy()
-      expect(user!.password).toBe(undefined)
+      expect(user).not.toHaveProperty('password')
     })
 
     it('throws when username is not an email', async () => {
@@ -88,7 +90,7 @@ describe('UserService', () => {
       await createUser()
       const user =  await userService
       .validateCredentials({ username, password })
-      expect(user!.password).toBe(undefined)
+      expect(user).not.toHaveProperty('password')
     })
   })
 

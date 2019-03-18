@@ -1,8 +1,7 @@
-import {ICredentials} from '@rondo/common'
-import {IUser} from '@rondo/common'
+import {ICredentials, INewUser, IUser} from '@rondo/common'
 
 export interface IUserService {
-  createUser(credentials: ICredentials): Promise<IUser>
+  createUser(credentials: INewUser): Promise<IUser>
   changePassword(params: {
     userId: number,
     oldPassword: string,

@@ -1,38 +1,68 @@
 import createError from 'http-errors'
 import {BaseService} from './BaseService'
-import {ICredentials} from '@rondo/common'
+import {ICredentials, INewUser, IUser} from '@rondo/common'
 import {IUserService} from './IUserService'
 import {UserEmail} from '../entities/UserEmail'
 import {User} from '../entities/User'
 import {compare, hash} from 'bcrypt'
 import {validate as validateEmail} from 'email-validator'
+import {Validator, trim} from '../validator'
 
 const SALT_ROUNDS = 10
 const MIN_PASSWORD_LENGTH = 10
 
 export class UserService extends BaseService implements IUserService {
-  async createUser(payload: ICredentials): Promise<User> {
-    const username = payload.username
-    if (!validateEmail(username)) {
+  async createUser(payload: INewUser): Promise<IUser> {
+    const newUser = {
+      username: trim(payload.username),
+      firstName: trim(payload.firstName),
+      lastName: trim(payload.lastName),
+    }
+
+    if (!validateEmail(newUser.username)) {
       throw createError(400, 'Username is not a valid e-mail')
     }
     if (payload.password.length < MIN_PASSWORD_LENGTH) {
       throw createError(400,
         `Password must be at least ${MIN_PASSWORD_LENGTH} characters long`)
     }
+
+    new Validator(newUser)
+    .ensure('username')
+    .ensure('firstName')
+    .ensure('lastName')
+    .throw()
+
     const password = await this.hash(payload.password)
     const user = await this.getRepository(User).save({
+      ...newUser,
       password,
     })
     await this.getRepository(UserEmail).save({
-      email: username,
+      email: newUser.username,
       userId: user.id,
     })
-    return user
+    return {
+      id: user.id,
+      ...newUser,
+    }
   }
 
   async findOne(id: number) {
-    return this.getRepository(User).findOne(id)
+    const user = await this.getRepository(User).findOne(id, {
+      relations: ['emails'],
+    })
+
+    if (!user) {
+      return undefined
+    }
+
+    return {
+      id: user.id,
+      username: user.emails[0] ? user.emails[0].email : '',
+      firstName: user.firstName,
+      lastName: user.lastName,
+    }
   }
 
   async findUserByEmail(email: string) {
@@ -71,6 +101,7 @@ export class UserService extends BaseService implements IUserService {
     .createQueryBuilder('user')
     .select('user')
     .addSelect('user.password')
+    .addSelect('emails')
     .innerJoin('user.emails', 'emails', 'emails.email = :email', {
       email: username,
     })
@@ -78,8 +109,12 @@ export class UserService extends BaseService implements IUserService {
 
     const isValid = await compare(password, user ? user.password! : '')
     if (user && isValid) {
-      delete user.password
-      return user
+      return {
+        id: user.id,
+        username: user.emails[0].email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      }
     }
   }
 

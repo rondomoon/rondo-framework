@@ -1,4 +1,5 @@
 import {ICredentials} from './ICredentials'
+import {INewUser} from './INewUser'
 import {ITeam} from './ITeam'
 import {IUserTeam} from './IUserTeam'
 import {IUser} from './IUser'
@@ -6,7 +7,7 @@ import {IUser} from './IUser'
 export interface IAPIDef {
   '/auth/register': {
     'post': {
-      body: ICredentials
+      body: INewUser
       response: IUser
     }
   }

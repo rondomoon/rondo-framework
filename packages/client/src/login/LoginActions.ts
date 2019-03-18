@@ -1,5 +1,5 @@
 import {IAction, IErrorAction, ActionTypes} from '../actions'
-import {IAPIDef, ICredentials, IUser} from '@rondo/common'
+import {IAPIDef, ICredentials, INewUser, IUser} from '@rondo/common'
 import {IHTTPClient} from '../http/IHTTPClient'
 
 export enum LoginActionKeys {
@@ -44,7 +44,7 @@ export class LoginActions {
     }
   }
 
-  register = (profile: ICredentials):
+  register = (profile: INewUser):
   IAction<IUser, LoginActionKeys.LOGIN_REGISTER> => {
     return {
       payload: this.http.post('/auth/register', profile),

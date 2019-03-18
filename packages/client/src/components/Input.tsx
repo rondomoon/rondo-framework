@@ -11,6 +11,7 @@ export interface IInputProps {
   readOnly?: boolean
   label: string
   Icon?: IconType
+  required?: boolean
 }
 
 export class Input extends React.PureComponent<IInputProps> {
@@ -33,6 +34,7 @@ export class Input extends React.PureComponent<IInputProps> {
             onChange={this.handleChange}
             placeholder={this.props.placeholder}
             readOnly={!!this.props.readOnly}
+            required={this.props.required}
           />
           {Icon && <span className='icon is-left is-small'>
             <Icon />

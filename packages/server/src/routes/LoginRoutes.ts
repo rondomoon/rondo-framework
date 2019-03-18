@@ -18,6 +18,8 @@ export class LoginRoutes extends BaseRoute<IAPIDef> {
       const user = await this.userService.createUser({
         username: req.body.username,
         password: req.body.password,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
       })
       await req.logInPromise(user)
       return user

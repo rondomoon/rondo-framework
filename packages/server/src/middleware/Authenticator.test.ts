@@ -13,17 +13,22 @@ describe('passport.promise', () => {
   beforeEach(() => {
     app = express()
 
+    const userInfo = {
+      username: 'test@user.com',
+      firstName: 'test',
+      lastName: 'test',
+    }
     const userService = new (class implements IUserService {
       async createUser() {
-        return {id: 1}
+        return {id: 1, ...userInfo}
       }
       async changePassword() {/* empty */}
       async findOne(id: number) {
-        return {id}
+        return {id, ...userInfo}
       }
       async validateCredentials({username, password}: ICredentials) {
         if (username === 'test' && password === 'pass') {
-          return {id: 1}
+          return {id: 1, ...userInfo}
           return
         }
         if (username === 'error') {
