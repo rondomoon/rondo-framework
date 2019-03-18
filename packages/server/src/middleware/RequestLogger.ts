@@ -8,12 +8,14 @@ export class RequestLogger implements IMiddleware {
   handle: IHandler = (req, res, next) => {
     const start = Date.now()
     res.on('finish', () => {
-      const { method, originalUrl } = req
+      const { method, originalUrl, user } = req
+      const username = user ? user.username : ''
       const duration = Date.now() - start
-      this.logger.debug('%s %s %j', method, originalUrl, req.body)
+      this.logger.debug('%s %s [%s] %j',
+        method, originalUrl, username, req.body)
       const { statusCode } = res
-      this.logger.info('%s %s %d %sms',
-        method, originalUrl, statusCode, duration)
+      this.logger.info('%s %s [%s] %d %sms',
+        method, originalUrl, username, statusCode, duration)
     })
     next()
   }

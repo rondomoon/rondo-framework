@@ -1,8 +1,9 @@
 import React from 'react'
+import {FaUser, FaLock} from 'react-icons/fa'
 import {ICredentials, IUser} from '@rondo/common'
 import {Input} from '../components/Input'
+import {Link} from 'react-router-dom'
 import {Redirect} from '../components/Redirect'
-import {FaUser, FaLock} from 'react-icons/fa'
 
 export interface ILoginFormProps {
   error?: string
@@ -47,6 +48,10 @@ export class LoginForm extends React.PureComponent<ILoginFormProps> {
           type='submit'
           value='Log In'
         />
+
+        <p>
+          Do not have an account? <Link to='/auth/register'>Register</Link>
+        </p>
       </form>
     )
   }

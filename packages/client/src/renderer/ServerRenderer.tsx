@@ -20,7 +20,11 @@ export class ServerRenderer<State, A extends Action> implements IRenderer {
     const context: StaticRouterContext = {}
     const stream = renderToNodeStream(
       <Provider store={store}>
-        <StaticRouter location={url} context={context} >
+        <StaticRouter
+          basename={config.baseUrl}
+          location={url}
+          context={context}
+        >
           <RootComponent config={config} />
         </StaticRouter>
       </Provider>,
