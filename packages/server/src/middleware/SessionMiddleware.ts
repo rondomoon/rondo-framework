@@ -25,7 +25,7 @@ export class SessionMiddleware implements IMiddleware {
       rolling: true,
       name: params.sessionName,
       cookie: {
-        maxAge: 3600,
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
         httpOnly: true,
         sameSite: true,
         secure: params.baseUrl.protocol === 'https',
