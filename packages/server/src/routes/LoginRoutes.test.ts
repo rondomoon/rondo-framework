@@ -33,8 +33,7 @@ describe('login', () => {
       await test.request('/api')
       .get('/auth/logout')
       .set('cookie', cookie)
-      .expect(302)
-      .expect('location', `${test.context}/api/auth/login`)
+      .expect(200)
     })
   })
 

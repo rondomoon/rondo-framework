@@ -39,7 +39,6 @@ export class LoginRoutes extends BaseRoute<IAPIDef> {
 
     t.get('/auth/logout', async (req, res) => {
       req.logout()
-      res.redirect(`${req.baseUrl}/auth/login`)
     })
   }
 }
