@@ -6,7 +6,8 @@ export class ErrorApiHandler implements IMiddleware {
   constructor(readonly logger: ILogger) {}
 
   handle: IErrorHandler = (err, req, res, next) => {
-    this.logger.error('An API error occurred: %s', err.stack)
+    this.logger.error('%s An API error occurred: %s',
+      req.correlationId, err.stack)
     const statusCode = this.getStatus(err)
     res.status(statusCode)
     res.end('An error occurred')

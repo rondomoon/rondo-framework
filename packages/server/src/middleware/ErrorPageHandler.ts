@@ -6,7 +6,9 @@ export class ErrorPageHandler implements IMiddleware {
   constructor(readonly logger: ILogger) {}
 
   handle: IErrorHandler = (err, req, res, next) => {
-    this.logger.error('An error occurred: %s', err.stack)
+    this.logger.error(
+      '%s An error occurred: %s',
+      req.correlationId, err.stack)
     // TODO Show an error page!
     const statusCode = this.getStatus(err)
     res.status(statusCode)

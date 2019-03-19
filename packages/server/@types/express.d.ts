@@ -9,6 +9,7 @@ declare namespace Application {
 
 declare namespace Express {
   export interface Request {
+    correlationId: string
     user?: Application.User
     logInPromise(user: any): Promise<void>
   }

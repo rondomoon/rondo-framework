@@ -14,7 +14,8 @@ export class Transaction implements IMiddleware {
     ns.bindEmitter(res)
 
     ns.run(() => {
-      const correlationId = shortid.generate();
+      // use pregenerated request correlationId
+      const correlationId = req.correlationId || shortid.generate();
       (req as any).correlationId = correlationId
       ns.set(CORRELATION_ID, correlationId)
       next()
