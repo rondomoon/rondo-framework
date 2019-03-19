@@ -42,15 +42,18 @@ export class LoginForm extends React.PureComponent<ILoginFormProps> {
           value={this.props.data.password}
           placeholder='Password'
         />
-        <input
-          className='button is-primary'
-          name='submit'
-          type='submit'
-          value='Log In'
-        />
 
-        <p>
-          Do not have an account? <Link to='/auth/register'>Register</Link>
+        <div className='center'>
+          <input
+            className='button is-primary'
+            name='submit'
+            type='submit'
+            value='Log In'
+          />
+        </div>
+
+        <p className='small center'>
+          Don&apos;t have an account? <Link to='/auth/register'>Register!</Link>
         </p>
       </form>
     )
