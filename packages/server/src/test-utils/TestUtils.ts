@@ -89,12 +89,16 @@ export class TestUtils<T extends IRoutes> {
     return match![1]
   }
 
-  getLoginBody(csrfToken: string) {
-    const {username, password} = this
-    return {username, password, _csrf: csrfToken}
+  getLoginBody(csrfToken: string, username?: string) {
+    const {password} = this
+    return {
+      username: username || this.username,
+      password,
+      _csrf: csrfToken,
+    }
   }
 
-  async registerAccount() {
+  async registerAccount(username?: string) {
     const {context} = this
     const {cookie, token} = await this.getCsrf()
 
@@ -104,7 +108,7 @@ export class TestUtils<T extends IRoutes> {
     .send({
       firstName: 'test',
       lastName: 'test',
-      ...this.getLoginBody(token),
+      ...this.getLoginBody(token, username),
     })
     .expect(200)
 

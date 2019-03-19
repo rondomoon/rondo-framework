@@ -1,6 +1,7 @@
 import {Team} from '../entities/Team'
 import {UserTeam} from '../entities/UserTeam'
 import {IUserTeamParams} from './IUserTeamParams'
+import {IUserInTeam} from '@rondo/common'
 
 export interface ITeamService {
   create(params: {name: string, userId: number}): Promise<Team>
@@ -16,6 +17,8 @@ export interface ITeamService {
   findOne(id: number): Promise<Team | undefined>
 
   find(userId: number): Promise<UserTeam[]>
+
+  findUsers(teamId: number): Promise<IUserInTeam[]>
 
   // TODO add other methods
 }

@@ -49,8 +49,29 @@ export class TeamService extends BaseService implements ITeamService {
   }
 
   async removeUser({teamId, userId, roleId}: IUserTeamParams) {
+    // TODO check if this is the last admin team member
     await this.getRepository(UserTeam)
     .delete({userId, teamId, roleId})
+  }
+
+  async findUsers(teamId: number) {
+    const userTeams = await this.getRepository(UserTeam)
+    .createQueryBuilder('ut')
+    .select('ut')
+    .innerJoinAndSelect('ut.user', 'user')
+    .innerJoinAndSelect('ut.role', 'role')
+    .where('ut.teamId = :teamId', {
+      teamId,
+    })
+    .getMany()
+
+    return userTeams.map(ut => ({
+      teamId,
+      userId: ut.userId,
+      displayName: `${ut.user.firstName} ${ut.user.lastName}`,
+      roleId: ut.role!.id,
+      roleName: ut.role!.name,
+    }))
   }
 
   async findOne(id: number) {

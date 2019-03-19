@@ -3,6 +3,7 @@ import {INewUser} from './INewUser'
 import {ITeam} from './ITeam'
 import {IUserTeam} from './IUserTeam'
 import {IUser} from './IUser'
+import {IUserInTeam} from './IUserInTeam'
 
 export interface IAPIDef {
   '/auth/register': {
@@ -66,6 +67,30 @@ export interface IAPIDef {
     delete: {
       params: {
         id: number
+      }
+    }
+  }
+
+  '/teams/:teamId/users': {
+    get: {
+      params: {
+        teamId: number
+      }
+      response: IUserInTeam[] // TODO
+    }
+  }
+
+  '/teams/:teamId/users/:userId': {
+    post: {
+      params: {
+        teamId: number
+        userId: number
+      }
+    }
+    delete: {
+      params: {
+        teamId: number
+        userId: number
       }
     }
   }

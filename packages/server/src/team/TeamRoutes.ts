@@ -64,6 +64,49 @@ export class TeamRoutes extends BaseRoute<IAPIDef> {
       })
     })
 
+    t.get('/teams/:teamId/users', async req => {
+      const teamId = Number(req.params.teamId)
+
+      await this.permissions.belongsToTeam({
+        teamId,
+        userId: req.user!.id,
+      })
+
+      return this.teamService.findUsers(teamId)
+    })
+
+    t.post('/teams/:teamId/users/:userId', async req => {
+      const teamId = Number(req.params.teamId)
+      const userId = Number(req.params.userId)
+
+      await this.permissions.belongsToTeam({
+        teamId,
+        userId: req.user!.id,
+      })
+
+      await this.teamService.addUser({
+        userId,
+        teamId,
+        roleId: 1,  // TODO customize roles
+      })
+    })
+
+    t.delete('/teams/:teamId/users/:userId', async req => {
+      const teamId = Number(req.params.teamId)
+      const userId = Number(req.params.userId)
+
+      await this.permissions.belongsToTeam({
+        teamId,
+        userId: req.user!.id,
+      })
+
+      await this.teamService.removeUser({
+        teamId,
+        userId,
+        roleId: 1,  // TODO customzie roles
+      })
+    })
+
   }
 
 }

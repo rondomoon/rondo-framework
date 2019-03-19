@@ -1,5 +1,5 @@
 import {test} from '../test'
-import {createTeam} from './TeamTestUtils'
+import {addUser, removeUser, findUsers, createTeam} from './TeamTestUtils'
 
 describe('team', () => {
 
@@ -8,10 +8,12 @@ describe('team', () => {
 
   let cookie!: string
   let token!: string
+  let mainUserId: number
   beforeEach(async () => {
     const session = await test.registerAccount()
     cookie = session.cookie
     token = session.token
+    mainUserId = session.userId
     t.setHeaders({ cookie, 'x-csrf-token': token })
   })
 
@@ -75,6 +77,49 @@ describe('team', () => {
       .toContainEqual({
         teamId: team.id,
       })
+    })
+  })
+
+  describe('POST /teams/:teamId/users/:userId', () => {
+    it('adds a user to the team', async () => {
+      const team = await createTeam(t, 'test')
+      const teamId = team.id
+      const {userId} = await test.registerAccount('test2@user.com')
+      await addUser(t, {userId, teamId})
+    })
+  })
+
+  describe('DELETE /teams/:teamId/users/:userId', () => {
+    it('removes the user from the team', async () => {
+      const team = await createTeam(t, 'test')
+      const teamId = team.id
+      const {userId} = await test.registerAccount('test2@user.com')
+      await addUser(t, {userId, teamId})
+      await removeUser(t, {userId, teamId})
+    })
+  })
+
+  describe('GET /teams/:teamId/users', () => {
+    it('fetches team members user info', async () => {
+      const team = await createTeam(t, 'test')
+      const teamId = team.id
+      const {userId} = await test.registerAccount('test2@user.com')
+      await addUser(t, {userId, teamId})
+      const users = await findUsers(t, {teamId})
+      expect(users.length).toBe(2)
+      expect(users).toEqual([{
+        teamId,
+        userId: mainUserId,
+        displayName: jasmine.any(String),
+        roleId: 1,
+        roleName: 'ADMIN',
+      }, {
+        teamId,
+        userId,
+        displayName: jasmine.any(String),
+        roleId: 1,
+        roleName: 'ADMIN',
+      }])
     })
   })
 
