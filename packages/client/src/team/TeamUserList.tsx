@@ -1,15 +1,17 @@
 import React from 'react'
 import {IUser, IUserInTeam, ReadonlyRecord} from '@rondo/common'
+import {IAction} from '../actions'
 
 const EMPTY_ARRAY: ReadonlyArray<string> = []
 
 export interface ITeamUsersProps {
   // fetchMyTeams: () => void,
-  fetchUsersInTeam: (teamId: number) => void
-  findUserByEmail: (email: string) => Promise<IUser>
+  fetchUsersInTeam: (params: {teamId: number}) => IAction
+  findUserByEmail: (email: string) => IAction
 
-  onAddUser: (params: {userId: number, teamId: number}) => Promise<void>
-  onRemoveUser: (params: {userId: number, teamId: number}) => Promise<void>
+  onAddUser: (params: {userId: number, teamId: number, roleId: number})
+    => IAction<IUserInTeam>
+  onRemoveUser: (params: {userId: number, teamId: number}) => IAction
 
   teamId: number
   userKeysByTeamId: ReadonlyRecord<number, ReadonlyArray<string>>
@@ -22,8 +24,12 @@ export interface ITeamUserProps {
 }
 
 export interface IAddUserProps {
-  onAddUser: (params: {userId: number, teamId: number}) => Promise<void>
-  onSearchUser: (email: string) => Promise<IUser>
+  onAddUser: (params: {
+    userId: number,
+    teamId: number,
+    roleId: number,
+  }) => IAction<IUserInTeam>
+  onSearchUser: (email: string) => IAction<IUser>
   teamId: number
 }
 
@@ -70,7 +76,7 @@ export class AddUser extends React.PureComponent<IAddUserProps, IAddUserState> {
     event.preventDefault()
     const {teamId} = this.props
     const {email} = this.state
-    const user = await this.props.onSearchUser(email)
+    const user = await this.props.onSearchUser(email).payload
     if (!user) {
       // TODO handle this better via 404 status code
       return
@@ -78,6 +84,7 @@ export class AddUser extends React.PureComponent<IAddUserProps, IAddUserState> {
     await this.props.onAddUser({
       teamId,
       userId: user.id,
+      roleId: 1,
     })
 
     this.setState({email: '', user: undefined})
@@ -111,7 +118,7 @@ export class TeamUserList extends React.PureComponent<ITeamUsersProps> {
   }
   async fetchUsersInTeam(teamId: number) {
     if (teamId) {
-      await this.props.fetchUsersInTeam(teamId)
+      await this.props.fetchUsersInTeam({teamId})
     }
   }
   render() {

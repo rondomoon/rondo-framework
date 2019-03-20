@@ -35,9 +35,9 @@ export abstract class Connector<LocalState> {
 
   protected wrap<
     State,
-    StateProps,
-    DispatchProps,
-    Props
+    Props,
+    StateProps extends Partial<Props>,
+    DispatchProps extends Partial<Props>,
   >(
     getLocalState: IStateSelector<State, LocalState>,
     mapStateToProps: (state: LocalState) => StateProps,

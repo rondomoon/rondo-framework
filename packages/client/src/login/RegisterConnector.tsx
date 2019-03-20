@@ -1,5 +1,5 @@
 import {Connector} from '../redux/Connector'
-import {ICredentials} from '@rondo/common'
+import {INewUser} from '@rondo/common'
 import {ILoginState} from './LoginReducer'
 import {IStateSelector} from '../redux'
 import {LoginActions} from './LoginActions'
@@ -7,9 +7,11 @@ import {RegisterForm} from './RegisterForm'
 import {bindActionCreators} from 'redux'
 import {withForm} from './withForm'
 
-const defaultCredentials: ICredentials = {
+const defaultCredentials: INewUser = {
   username: '',
   password: '',
+  firstName: '',
+  lastName: '',
 }
 
 export class RegisterConnector extends Connector<ILoginState> {

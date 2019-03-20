@@ -1,19 +1,19 @@
 import React from 'react'
+import {IAction} from '../actions'
 import {ITeam, IUser, IUserInTeam, ReadonlyRecord} from '@rondo/common'
 import {TeamList} from './TeamList'
 import {TeamUserList} from './TeamUserList'
-// import {Route} from 'react-router-dom'
 
 export interface ITeamManagerProps {
-  createTeam: (params: {name: string}) => Promise<void>
-  updateTeam: (params: {id: number, name: string}) => Promise<void>
-  removeTeam: (params: {id: number}) => Promise<void>
+  createTeam: (params: {name: string}) => IAction
+  updateTeam: (params: {id: number, name: string}) => IAction
+  removeTeam: (params: {id: number}) => IAction
 
-  addUser: (params: {userId: number, teamId: number}) => Promise<void>
-  removeUser: (params: {userId: number, teamId: number}) => Promise<void>
-  fetchMyTeams: () => void
-  fetchUsersInTeam: () => void
-  findUserByEmail: (email: string) => Promise<IUser>
+  addUser: (params: {userId: number, teamId: number, roleId: number}) => IAction
+  removeUser: (params: {userId: number, teamId: number}) => IAction
+  fetchMyTeams: () => IAction
+  fetchUsersInTeam: (params: {teamId: number}) => IAction
+  findUserByEmail: (email: string) => IAction<IUser | undefined>
 
   teamsById: ReadonlyRecord<number, ITeam>
   teamIds: ReadonlyArray<number>

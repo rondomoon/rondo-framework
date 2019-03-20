@@ -1,4 +1,5 @@
 import React from 'react'
+import {IAction} from '../actions'
 
 export interface IComponentProps<Data> {
   onSubmit: () => void
@@ -9,7 +10,7 @@ export interface IComponentProps<Data> {
 }
 
 export interface IFormHOCProps<Data> {
-  onSubmit: (props: Data) => Promise<void>
+  onSubmit: (props: Data) => IAction<any, any>
   // TODO figure out what would happen if the underlying child component
   // would have the same required property as the HOC, like onSuccess?
   onSuccess?: () => void
@@ -33,7 +34,9 @@ export function withForm<Data, Props extends IComponentProps<Data>>(
     handleSubmit = async (e: React.FormEvent) => {
       const {clearOnSuccess, onSuccess} = this.props
       e.preventDefault()
-      await this.props.onSubmit(this.state)
+      const promise = this.props.onSubmit(this.state)
+      console.log('aaaaaaaaa', promise)
+      await promise
       if (clearOnSuccess) {
         this.setState(initialState)
       }

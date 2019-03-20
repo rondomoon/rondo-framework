@@ -7,7 +7,7 @@ import {Redirect} from '../components/Redirect'
 
 export interface ILoginFormProps {
   error?: string
-  onSubmit: () => Promise<IUser>
+  onSubmit: () => void
   onChange: (name: string, value: string) => void
   data: ICredentials
   user?: IUser
