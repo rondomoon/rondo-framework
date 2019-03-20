@@ -18,6 +18,10 @@ interface IRenderParams<State> {
   state?: DeepPartial<State>
   connector: Connector<any>
   select: IStateSelector<State, any>
+  customJSX?: <Props>(
+    Component: React.ComponentType<Props>,
+    additionalProps: Record<string, Props>,
+  ) => JSX.Element
 }
 
 export class TestUtils {
@@ -51,10 +55,13 @@ export class TestUtils {
     })(params.state)
     const Component = params.connector.connect(params.select)
 
-    const render = (additionalProps: {[key: string]: any} = {}) => {
+    const render = (additionalProps: Record<string, any> = {}) => {
+      const jsx = params.customJSX
+        ? params.customJSX(Component, additionalProps)
+        : <Component {...additionalProps} />
       return this.render(
         <Provider store={store}>
-          <Component {...additionalProps} />
+          {jsx}
         </Provider>,
       )
     }
