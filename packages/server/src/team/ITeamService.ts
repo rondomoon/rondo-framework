@@ -1,5 +1,4 @@
 import {Team} from '../entities/Team'
-import {UserTeam} from '../entities/UserTeam'
 import {IUserTeamParams} from './IUserTeamParams'
 import {IUserInTeam} from '@rondo/common'
 
@@ -10,13 +9,13 @@ export interface ITeamService {
 
   update(params: {id: number, name: string, userId: number}): Promise<Team>
 
-  addUser(params: IUserTeamParams): Promise<UserTeam>
+  addUser(params: IUserTeamParams): Promise<IUserInTeam>
 
   removeUser(params: IUserTeamParams): Promise<void>
 
   findOne(id: number): Promise<Team | undefined>
 
-  find(userId: number): Promise<UserTeam[]>
+  find(userId: number): Promise<Team[]>
 
   findUsers(teamId: number): Promise<IUserInTeam[]>
 

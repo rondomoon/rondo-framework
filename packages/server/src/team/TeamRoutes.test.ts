@@ -73,7 +73,7 @@ describe('team', () => {
       const response = await t
       .get('/my/teams')
       .expect(200)
-      expect(response.body.map(ut => ({teamId: ut.teamId})))
+      expect(response.body.map(myTeam => ({teamId: myTeam.id})))
       .toContainEqual({
         teamId: team.id,
       })

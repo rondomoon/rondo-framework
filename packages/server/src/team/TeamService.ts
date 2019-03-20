@@ -1,5 +1,6 @@
 import {BaseService} from '../services/BaseService'
 import {ITeamService} from './ITeamService'
+import {IUserInTeam} from '@rondo/common'
 import {IUserTeamParams} from './IUserTeamParams'
 import {Team} from '../entities/Team'
 import {UserTeam} from '../entities/UserTeam'
@@ -44,8 +45,18 @@ export class TeamService extends BaseService implements ITeamService {
 
   async addUser(params: IUserTeamParams) {
     const {userId, teamId, roleId} = params
-    return this.getRepository(UserTeam)
+    await this.getRepository(UserTeam)
     .save({userId, teamId, roleId})
+
+    const userTeam = await this.createFindUserInTeamQuery()
+    .where({
+      userId,
+      teamId,
+      roleId,
+    })
+    .getOne()
+
+    return this.mapUserInTeam(userTeam!)
   }
 
   async removeUser({teamId, userId, roleId}: IUserTeamParams) {
@@ -55,23 +66,13 @@ export class TeamService extends BaseService implements ITeamService {
   }
 
   async findUsers(teamId: number) {
-    const userTeams = await this.getRepository(UserTeam)
-    .createQueryBuilder('ut')
-    .select('ut')
-    .innerJoinAndSelect('ut.user', 'user')
-    .innerJoinAndSelect('ut.role', 'role')
+    const userTeams = await this.createFindUserInTeamQuery()
     .where('ut.teamId = :teamId', {
       teamId,
     })
     .getMany()
 
-    return userTeams.map(ut => ({
-      teamId,
-      userId: ut.userId,
-      displayName: `${ut.user.firstName} ${ut.user.lastName}`,
-      roleId: ut.role!.id,
-      roleName: ut.role!.name,
-    }))
+    return userTeams.map(this.mapUserInTeam)
   }
 
   async findOne(id: number) {
@@ -79,11 +80,30 @@ export class TeamService extends BaseService implements ITeamService {
   }
 
   async find(userId: number) {
-    // TODO find all teams via UserTeam instead of userId
-    return this.getRepository(UserTeam).find({
-      relations: ['team'],
-      where: {userId},
-    })
+    return this.getRepository(Team)
+    .createQueryBuilder('team')
+    .select('team')
+    .innerJoin('team.userTeams', 'ut')
+    .where('ut.userId = :userId', {userId})
+    .getMany()
+  }
+
+  protected createFindUserInTeamQuery() {
+    return this.getRepository(UserTeam)
+    .createQueryBuilder('ut')
+    .select('ut')
+    .innerJoinAndSelect('ut.user', 'user')
+    .innerJoinAndSelect('ut.role', 'role')
+  }
+
+  protected mapUserInTeam(ut: UserTeam): IUserInTeam {
+    return {
+      teamId: ut.teamId,
+      userId: ut.userId,
+      displayName: `${ut.user.firstName} ${ut.user.lastName}`,
+      roleId: ut.role!.id,
+      roleName: ut.role!.name,
+    }
   }
 
 }

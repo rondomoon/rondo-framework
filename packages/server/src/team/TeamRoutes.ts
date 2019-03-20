@@ -84,7 +84,7 @@ export class TeamRoutes extends BaseRoute<IAPIDef> {
         userId: req.user!.id,
       })
 
-      await this.teamService.addUser({
+      return this.teamService.addUser({
         userId,
         teamId,
         roleId: 1,  // TODO customize roles
@@ -105,6 +105,8 @@ export class TeamRoutes extends BaseRoute<IAPIDef> {
         userId,
         roleId: 1,  // TODO customzie roles
       })
+
+      return {teamId, userId}
     })
 
   }

@@ -1,7 +1,6 @@
 import {ICredentials} from './ICredentials'
 import {INewUser} from './INewUser'
 import {ITeam} from './ITeam'
-import {IUserTeam} from './IUserTeam'
 import {IUser} from './IUser'
 import {IUserInTeam} from './IUserInTeam'
 
@@ -86,18 +85,30 @@ export interface IAPIDef {
         teamId: number
         userId: number
       }
+      // body: {
+      //   roleId: number
+      // }
+      response: IUserInTeam
     }
     delete: {
       params: {
         teamId: number
         userId: number
       }
+      // body: {
+      //   roleId: number
+      // }
+      response: {
+        teamId: number
+        userId: number
+        // roleId: number
+      }
     }
   }
 
   '/my/teams': {
     get: {
-      response: IUserTeam[]
+      response: ITeam[]
     }
   }
 
