@@ -5,7 +5,7 @@ export interface ITeamListProps {
   teamsById: ReadonlyRecord<number, ITeam>,
   teamIds: ReadonlyArray<number>,
   onAddTeam: (params: {name: string}) => Promise<void>
-  onRemoveTeam: (params: {teamId: number}) => Promise<void>
+  onRemoveTeam: (params: {id: number}) => Promise<void>
   onUpdateTeam: (params: {id: number, name: string}) => Promise<void>
   editTeamId: number
 }
@@ -13,7 +13,7 @@ export interface ITeamListProps {
 export interface ITeamProps {
   team: ITeam
   editTeamId: number  // TODO handle edits via react-router params
-  onRemoveTeam: (params: {teamId: number}) => Promise<void>
+  onRemoveTeam: (params: {id: number}) => Promise<void>
   onUpdateTeam: (params: {id: number, name: string}) => Promise<void>
 }
 
@@ -68,8 +68,8 @@ export class TeamAdd extends React.PureComponent<IAddTeamProps, IAddTeamState> {
 
 export class TeamRow extends React.PureComponent<ITeamProps> {
   handleRemove = async () => {
-    const {onRemoveTeam, team: {id: teamId}} = this.props
-    await onRemoveTeam({teamId})
+    const {onRemoveTeam, team: {id}} = this.props
+    await onRemoveTeam({id})
   }
   render() {
     const {team} = this.props
@@ -100,6 +100,7 @@ export class TeamList extends React.PureComponent<ITeamListProps> {
           const team = teamsById[teamId]
           return (
             <TeamRow
+              key={team.id}
               editTeamId={editTeamId}
               onRemoveTeam={this.props.onRemoveTeam}
               onUpdateTeam={this.props.onUpdateTeam}

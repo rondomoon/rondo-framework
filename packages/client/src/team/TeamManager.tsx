@@ -7,7 +7,7 @@ import {TeamUserList} from './TeamUserList'
 export interface ITeamManagerProps {
   createTeam: (params: {name: string}) => Promise<void>
   updateTeam: (params: {id: number, name: string}) => Promise<void>
-  removeTeam: (params: {teamId: number}) => Promise<void>
+  removeTeam: (params: {id: number}) => Promise<void>
 
   addUser: (params: {userId: number, teamId: number}) => Promise<void>
   removeUser: (params: {userId: number, teamId: number}) => Promise<void>
@@ -44,6 +44,7 @@ export class TeamManager extends React.PureComponent<ITeamManagerProps> {
           onRemoveTeam={this.props.removeTeam}
           onUpdateTeam={this.props.updateTeam}
         />
+
         <TeamUserList
           onAddUser={this.props.addUser}
           onRemoveUser={this.props.removeUser}

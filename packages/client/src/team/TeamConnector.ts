@@ -11,7 +11,7 @@ export class TeamConnector extends Connector<ITeamState> {
   }
 
   connect<State>(getLocalState: IStateSelector<State, ITeamState>) {
-    return this.wrap(
+    const Component = this.wrap(
       getLocalState,
       state => ({
         ...state,
@@ -25,8 +25,12 @@ export class TeamConnector extends Connector<ITeamState> {
         fetchMyTeams: bindActionCreators(this.teamActions.fetchMyTeams, d),
         fetchUsersInTeam:
           bindActionCreators(this.teamActions.fetchUsersInTeam, d),
+        findUserByEmail:
+          bindActionCreators(this.teamActions.findUserByEmail, d),
       }),
       TeamManager,
     )
+
+    return Component
   }
 }

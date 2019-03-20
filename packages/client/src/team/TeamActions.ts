@@ -87,7 +87,7 @@ export class TeamActions {
     }
   }
 
-  removeTeam = ({id, name}: {id: number, name: string})
+  removeTeam = ({id}: {id: number})
   : IAction<{}, TeamActionKeys.TEAM_REMOVE> => {
     return {
       payload: this.http.delete('/teams/:id', {}, {id}),

@@ -125,6 +125,7 @@ export class TeamUserList extends React.PureComponent<ITeamUsersProps> {
             const user = this.props.usersByKey[key]
             return (
               <TeamUser
+                key={key}
                 user={user}
                 onRemoveUser={this.props.onRemoveUser}
               />

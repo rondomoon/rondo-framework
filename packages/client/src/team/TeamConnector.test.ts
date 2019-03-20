@@ -2,7 +2,7 @@ import * as Feature from './'
 // export ReactDOM from 'react-dom'
 // import T from 'react-dom/test-utils'
 import {HTTPClientMock, TestUtils/*, getError*/} from '../test-utils'
-import {IAPIDef} from '@rondo/common'
+import {IAPIDef, ITeam} from '@rondo/common'
 
 const test = new TestUtils()
 
@@ -17,8 +17,16 @@ describe('TeamConnector', () => {
     select: state => state.Team,
   })
 
-  it('should render', () => {
-    createTestProvider().render()
+  const teams: ITeam[] = [{id: 100, name: 'my-team', userId: 1}]
+
+  it('it fetches user teams on render', async () => {
+    http.mockAdd({
+      method: 'get',
+      url: '/my/teams',
+    }, teams)
+    const {node} = createTestProvider().render()
+    await http.wait()
+    expect(node.innerHTML).toContain('my-team')
   })
 
 })
