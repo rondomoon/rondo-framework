@@ -70,7 +70,19 @@ export class UserService extends BaseService implements IUserService {
     .findOne({ email }, {
       relations: ['user'],
     })
-    return userEmail && userEmail.user
+
+    if (!userEmail) {
+      return
+    }
+
+    const user = userEmail.user!
+
+    return {
+      id: userEmail.userId!,
+      username: userEmail.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    }
   }
 
   async changePassword(params: {

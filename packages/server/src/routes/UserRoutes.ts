@@ -23,6 +23,10 @@ export class UserRoutes extends BaseRoute<IAPIDef> {
       })
     })
 
+    t.get('/users/emails/:email', async req => {
+      return this.userService.findUserByEmail(req.params.email)
+    })
+
     t.get('/users/profile', async req => {
       return (await this.userService.findOne(req.user!.id))!
     })

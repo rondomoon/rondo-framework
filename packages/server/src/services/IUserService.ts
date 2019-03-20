@@ -9,4 +9,5 @@ export interface IUserService {
   }): Promise<any>
   validateCredentials(credentials: ICredentials): Promise<IUser | undefined>
   findOne(id: number): Promise<IUser | undefined>
+  findUserByEmail(email: string): Promise<IUser | undefined>
 }
