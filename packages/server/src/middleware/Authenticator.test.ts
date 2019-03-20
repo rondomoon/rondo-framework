@@ -36,6 +36,9 @@ describe('passport.promise', () => {
         }
         return undefined
       }
+      async findUserByEmail(email: string) {
+        return undefined
+      }
     })()
     const authenticator = new Authenticator(userService)
 

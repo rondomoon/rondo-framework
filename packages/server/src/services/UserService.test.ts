@@ -50,7 +50,7 @@ describe('UserService', () => {
       await createUser()
       const user = await userService.findUserByEmail(username)
       expect(user).toBeTruthy()
-      expect(user!.password).toBe(undefined)
+      expect(user).not.toHaveProperty('password')
     })
   })
 

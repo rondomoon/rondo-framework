@@ -35,6 +35,15 @@ export interface IAPIDef {
       }
     }
   }
+  '/users/emails/:email': {
+    // TODO exposing search by email might be a security concern
+    'get': {
+      params: {
+        email: string
+      }
+      response: IUser | undefined
+    }
+  }
 
   // TEAM
 
@@ -67,6 +76,7 @@ export interface IAPIDef {
       params: {
         id: number
       }
+      response: {id: number}
     }
   }
 
