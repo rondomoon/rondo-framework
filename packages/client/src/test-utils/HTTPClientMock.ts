@@ -110,9 +110,11 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
    */
   async wait(): Promise<IReqRes> {
     expect(this.waitPromise).toBe(undefined)
-    return new Promise((resolve, reject) => {
+    const result: IReqRes = await new Promise((resolve, reject) => {
       this.waitPromise = {resolve, reject}
     })
+    await new Promise(resolve => setImmediate(resolve))
+    return result
   }
 
 }

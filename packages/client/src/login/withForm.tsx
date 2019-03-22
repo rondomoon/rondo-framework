@@ -1,5 +1,5 @@
 import React from 'react'
-import {IAction} from '../actions'
+import {IPendingAction} from '../actions'
 
 export interface IComponentProps<Data> {
   onSubmit: () => void
@@ -10,11 +10,16 @@ export interface IComponentProps<Data> {
 }
 
 export interface IFormHOCProps<Data> {
-  onSubmit: (props: Data) => IAction<any>
+  onSubmit: (props: Data) => IPendingAction<any, any>
   // TODO figure out what would happen if the underlying child component
   // would have the same required property as the HOC, like onSuccess?
   onSuccess?: () => void
   clearOnSuccess?: boolean
+}
+
+export interface IFormHOCState<Data> {
+  error: string
+  data: Data
 }
 
 export function withForm<Data, Props extends IComponentProps<Data>>(
@@ -26,28 +31,44 @@ export function withForm<Data, Props extends IComponentProps<Data>>(
     Exclude<keyof Props, keyof IComponentProps<Data>>>
   type T = IFormHOCProps<Data> & OtherProps
 
-  return class FormHOC extends React.PureComponent<T, Data> {
+  return class FormHOC extends React.PureComponent<T, IFormHOCState<Data>> {
     constructor(props: T) {
       super(props)
-      this.state = initialState
+      this.state = {
+        error: '',
+        data: initialState,
+      }
     }
     handleSubmit = async (e: React.FormEvent) => {
       const {clearOnSuccess, onSuccess} = this.props
       e.preventDefault()
-      const promise = this.props.onSubmit(this.state)
-      console.log('aaaaaaaaa', promise)
-      await promise
+      const action = this.props.onSubmit(this.state.data)
+      try {
+        await action.payload
+      } catch (err) {
+        this.setState({
+          error: err.message,
+        })
+        return
+      }
       if (clearOnSuccess) {
-        this.setState(initialState)
+        this.setState({
+          ...this.state,
+          data: initialState,
+        })
       }
       if (onSuccess) {
         onSuccess()
       }
     }
     handleChange = (name: string, value: string) => {
-      this.setState(
-        {[name]: value} as unknown as Pick<Data, keyof Data>,
-      )
+      this.setState({
+        ...this.state,
+        data: {
+          ...this.state.data,
+          [name]: value,
+        },
+      })
     }
     render() {
       const {children, onSuccess, onSubmit, ...otherProps} = this.props

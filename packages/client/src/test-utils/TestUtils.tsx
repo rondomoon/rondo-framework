@@ -18,9 +18,9 @@ interface IRenderParams<State> {
   state?: DeepPartial<State>
   connector: Connector<any>
   select: IStateSelector<State, any>
-  customJSX?: <Props>(
-    Component: React.ComponentType<Props>,
-    additionalProps: Record<string, Props>,
+  customJSX?: (
+    Component: React.ComponentType<any>,
+    additionalProps: Record<string, any>,
   ) => JSX.Element
 }
 

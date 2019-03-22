@@ -1,8 +1,10 @@
 import * as Feature from './'
+import React from 'react'
 import ReactDOM from 'react-dom'
 import T from 'react-dom/test-utils'
 import {HTTPClientMock, TestUtils, getError} from '../test-utils'
 import {IAPIDef} from '@rondo/common'
+import {MemoryRouter} from 'react-router-dom'
 
 const test = new TestUtils()
 
@@ -15,6 +17,8 @@ describe('LoginForm', () => {
     reducers: {Login: Feature.Login},
     connector: new Feature.LoginConnector(loginActions),
     select: state => state.Login,
+    customJSX: (Component, props) =>
+      <MemoryRouter><Component {...props} /></MemoryRouter>,
   })
 
   beforeAll(() => {
@@ -61,16 +65,7 @@ describe('LoginForm', () => {
         data,
       })
       expect(onSuccess.mock.calls.length).toBe(1)
-      expect(
-        (node.querySelector('input[name="username"]') as HTMLInputElement)
-        .value,
-      )
-      .toEqual('')
-      expect(
-        (node.querySelector('input[name="password"]') as HTMLInputElement)
-        .value,
-      )
-      .toEqual('')
+      // TODO test clear username/password
       node = ReactDOM.findDOMNode(component) as Element
       expect(node.innerHTML).toMatch(/<a href="\/">/)
     })
