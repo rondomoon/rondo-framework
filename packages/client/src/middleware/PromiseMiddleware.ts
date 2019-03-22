@@ -11,7 +11,7 @@ function isPromise(value: any): value is Promise<any> {
  *
  * If `action.payload` is a `Promise`, it will be handled by this class. It
  * differs from other promise middlewares for redux because by default it does
- * not add an extension to action dispatched after a promise is fulfilled. This
+ * not add an extension to action dispatched after a promise is resolved. This
  * makes it easier to infer types from the API endpoints so they can be used in
  * both Action creators and Reducers.
  *
@@ -20,36 +20,42 @@ function isPromise(value: any): value is Promise<any> {
  *     const middleware = applyMiddleware(new PromiseMiddleware().handle)
  */
 export class PromiseMiddleware {
+  protected regexp: RegExp
+
   constructor(
     readonly pendingExtension = '_PENDING',
-    readonly fulfilledExtension = '',
+    readonly resolvedExtension = '_RESOLVED',
     readonly rejectedExtension = '_REJECTED',
   ) {
     assert(
-      this.pendingExtension !== this.fulfilledExtension &&
-      this.fulfilledExtension !== this.rejectedExtension &&
+      this.pendingExtension !== this.resolvedExtension &&
+      this.resolvedExtension !== this.rejectedExtension &&
       this.pendingExtension !== this.rejectedExtension,
-      'Pending, fulfilled and rejected extensions must be unique')
+      'Pending, resolved and rejected extensions must be unique')
+
+    this.regexp = new RegExp(pendingExtension + '$')
   }
   handle: Middleware = store => next => (action: AnyAction) => {
     const {payload, type} = action
+    // Propagate this action. Only attach listeners to the promise.
+    next(action)
     if (!isPromise(payload)) {
-      next(action)
       return
     }
-    store.dispatch({type: type + this.pendingExtension})
+
+    const strippedType = type.replace(this.regexp, '')
 
     payload
     .then(result => {
       store.dispatch({
         payload: result,
-        type,
+        type: strippedType + this.resolvedExtension,
       })
     })
     .catch(err => {
       store.dispatch({
         error: err,
-        type: type + this.rejectedExtension,
+        type: strippedType + this.rejectedExtension,
       })
     })
 

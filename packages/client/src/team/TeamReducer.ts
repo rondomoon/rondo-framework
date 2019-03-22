@@ -1,5 +1,6 @@
 import {ITeam, IUserInTeam, ReadonlyRecord, indexBy} from '@rondo/common'
-import {TeamActionKeys, TeamActionType} from './TeamActions'
+import {TeamActionType} from './TeamActions'
+import {GetAction} from '../actions'
 
 export interface ITeamState {
   readonly error: string
@@ -23,10 +24,7 @@ const defaultState: ITeamState = {
 
 function removeUser(
   state: ITeamState,
-  action: {
-    payload: {userId: number, teamId: number},
-    type: TeamActionKeys.TEAM_USER_REMOVE,
-  },
+  action: GetAction<TeamActionType, 'TEAM_USER_REMOVE_RESOLVED'>,
 ) {
 
   const {payload} = action
@@ -54,14 +52,14 @@ function getUserKey(userInTeam: {userId: number, teamId: number}) {
 
 export function Team(state = defaultState, action: TeamActionType): ITeamState {
   switch (action.type) {
-    case TeamActionKeys.TEAMS:
+    case 'TEAMS_RESOLVED':
       return {
         ...state,
         teamIds: action.payload.map(team => team.id),
         teamsById: indexBy(action.payload, 'id'),
       }
-    case TeamActionKeys.TEAM_CREATE:
-    case TeamActionKeys.TEAM_UPDATE:
+    case 'TEAM_CREATE_RESOLVED':
+    case 'TEAM_UPDATE_RESOLVED':
       return {
         ...state,
         teamIds: state.teamIds.indexOf(action.payload.id) >= 0
@@ -73,7 +71,7 @@ export function Team(state = defaultState, action: TeamActionType): ITeamState {
         },
       }
       return state
-    case TeamActionKeys.TEAM_USER_ADD:
+    case 'TEAM_USER_ADD_RESOLVED':
       return {
         ...state,
         userKeysByTeamId: {
@@ -88,9 +86,9 @@ export function Team(state = defaultState, action: TeamActionType): ITeamState {
           [getUserKey(action.payload)]: action.payload,
         },
       }
-    case TeamActionKeys.TEAM_USER_REMOVE:
+    case 'TEAM_USER_REMOVE_RESOLVED':
       return removeUser(state, action)
-    case TeamActionKeys.TEAM_USERS:
+    case 'TEAM_USERS_RESOLVED':
       const usersByKey = action.payload.usersInTeam
       .reduce((obj, userInTeam) => {
         obj[getUserKey(userInTeam)] = userInTeam
@@ -109,11 +107,11 @@ export function Team(state = defaultState, action: TeamActionType): ITeamState {
           ...usersByKey,
         },
       }
-    case TeamActionKeys.TEAM_CREATE_REJECTED:
-    case TeamActionKeys.TEAM_UPDATE_REJECTED:
-    case TeamActionKeys.TEAM_USER_ADD_REJECTED:
-    case TeamActionKeys.TEAM_USER_REMOVE_REJECTED:
-    case TeamActionKeys.TEAM_USERS_REJECTED:
+    case 'TEAM_CREATE_REJECTED':
+    case 'TEAM_UPDATE_REJECTED':
+    case 'TEAM_USER_ADD_REJECTED':
+    case 'TEAM_USER_REMOVE_REJECTED':
+    case 'TEAM_USERS_REJECTED':
       return {
         ...state,
         error: action.error.message,

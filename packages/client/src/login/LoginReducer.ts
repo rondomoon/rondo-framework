@@ -1,5 +1,5 @@
 import {IUser} from '@rondo/common'
-import {LoginActionKeys, LoginActionType} from './LoginActions'
+import {LoginActionType} from './LoginActions'
 
 export interface ILoginState {
   readonly error?: string
@@ -18,17 +18,17 @@ export function Login(
   action: LoginActionType,
 ): ILoginState {
   switch (action.type) {
-    case LoginActionKeys.LOGIN:
+    case 'LOGIN_RESOLVED':
       return {...state, user: action.payload, error: ''}
-    case LoginActionKeys.LOGIN_LOG_OUT:
+    case 'LOGIN_LOGOUT_RESOLVED':
       return {...state, user: undefined}
-    case LoginActionKeys.LOGIN_REJECTED:
+    case 'LOGIN_REJECTED':
       return {...state, error: action.error.message}
-    case LoginActionKeys.LOGIN_REGISTER:
+    case 'LOGIN_REGISTER_RESOLVED':
       return {...state, user: action.payload, error: ''}
-    case LoginActionKeys.LOGIN_REGISTER_REJECTED:
+    case 'LOGIN_REGISTER_REJECTED':
       return {...state, error: action.error.message}
-    case LoginActionKeys.LOGIN_REDIRECT_SET:
+    case 'LOGIN_REDIRECT_SET':
       return {...state, redirectTo: action.payload.redirectTo}
     default:
       return state

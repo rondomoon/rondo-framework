@@ -1,17 +1,16 @@
 import React from 'react'
 import {IUser, IUserInTeam, ReadonlyRecord} from '@rondo/common'
-import {IAction} from '../actions'
+import {TeamActions} from './TeamActions'
 
 const EMPTY_ARRAY: ReadonlyArray<string> = []
 
 export interface ITeamUsersProps {
   // fetchMyTeams: () => void,
-  fetchUsersInTeam: (params: {teamId: number}) => IAction
-  findUserByEmail: (email: string) => IAction
+  fetchUsersInTeam: TeamActions['fetchUsersInTeam']
+  findUserByEmail: TeamActions['findUserByEmail']
 
-  onAddUser: (params: {userId: number, teamId: number, roleId: number})
-    => IAction<IUserInTeam>
-  onRemoveUser: (params: {userId: number, teamId: number}) => IAction
+  onAddUser: TeamActions['addUser']
+  onRemoveUser: TeamActions['removeUser']
 
   teamId: number
   userKeysByTeamId: ReadonlyRecord<number, ReadonlyArray<string>>
@@ -24,12 +23,8 @@ export interface ITeamUserProps {
 }
 
 export interface IAddUserProps {
-  onAddUser: (params: {
-    userId: number,
-    teamId: number,
-    roleId: number,
-  }) => IAction<IUserInTeam>
-  onSearchUser: (email: string) => IAction<IUser>
+  onAddUser: TeamActions['addUser']
+  onSearchUser: TeamActions['findUserByEmail']
   teamId: number
 }
 

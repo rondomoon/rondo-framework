@@ -1,4 +1,4 @@
-import {IAction, IErrorAction, ActionTypes} from '../actions'
+import {GetAction, IAsyncAction, IResolvedAction} from '../actions'
 import {IAPIDef, ICredentials, INewUser, IUser} from '@rondo/common'
 import {IHTTPClient} from '../http/IHTTPClient'
 
@@ -18,56 +18,51 @@ export enum LoginActionKeys {
   LOGIN_REDIRECT_SET = 'LOGIN_REDIRECT_SET',
 }
 
+export type LoginActionType =
+  IAsyncAction<IUser,
+    'LOGIN_PENDING',
+    'LOGIN_RESOLVED',
+    'LOGIN_REJECTED'>
+  | IAsyncAction<unknown,
+  'LOGIN_LOGOUT_PENDING',
+  'LOGIN_LOGOUT_RESOLVED',
+  'LOGIN_LOGOUT_REJECTED'>
+  | IAsyncAction<IUser,
+  'LOGIN_REGISTER_PENDING',
+  'LOGIN_REGISTER_RESOLVED',
+  'LOGIN_REGISTER_REJECTED'>
+  | IResolvedAction<{redirectTo: string}, 'LOGIN_REDIRECT_SET'>
+
+type Action<T extends string> = GetAction<LoginActionType, T>
+
 export class LoginActions {
   constructor(protected readonly http: IHTTPClient<IAPIDef>) {}
 
-  logIn = (credentials: ICredentials)
-  : IAction<IUser, LoginActionKeys.LOGIN> => {
+  logIn = (credentials: ICredentials): Action<'LOGIN_PENDING'> => {
     return {
       payload: this.http.post('/auth/login', credentials),
-      type: LoginActionKeys.LOGIN,
+      type: 'LOGIN_PENDING',
     }
   }
 
-  logInError = (error: Error)
-  : IErrorAction<LoginActionKeys.LOGIN_REJECTED> => {
-    return {
-      error,
-      type: LoginActionKeys.LOGIN_REJECTED,
-    }
-  }
-
-  logOut = (): IAction<unknown, LoginActionKeys.LOGIN_LOG_OUT> => {
+  logOut = (): Action<'LOGIN_LOGOUT_PENDING'> => {
     return {
       payload: this.http.get('/auth/logout'),
-      type: LoginActionKeys.LOGIN_LOG_OUT,
+      type: 'LOGIN_LOGOUT_PENDING',
     }
   }
 
-  register = (profile: INewUser):
-  IAction<IUser, LoginActionKeys.LOGIN_REGISTER> => {
+  register = (profile: INewUser): Action<'LOGIN_REGISTER_PENDING'> => {
     return {
       payload: this.http.post('/auth/register', profile),
-      type: LoginActionKeys.LOGIN_REGISTER,
+      type: 'LOGIN_REGISTER_PENDING',
     }
   }
 
-  registerError = (error: Error)
-  : IErrorAction<LoginActionKeys.LOGIN_REGISTER_REJECTED> => {
-    return {
-      error,
-      type: LoginActionKeys.LOGIN_REGISTER_REJECTED,
-    }
-  }
-
-  setRedirectTo = (redirectTo: string)
-  : IAction<{redirectTo: string}, LoginActionKeys.LOGIN_REDIRECT_SET> => {
+  setRedirectTo = (redirectTo: string): Action<'LOGIN_REDIRECT_SET'> => {
     return {
       payload: {redirectTo},
       type: LoginActionKeys.LOGIN_REDIRECT_SET,
     }
   }
 }
-
-// This makes it very easy to write reducer code.
-export type LoginActionType = ActionTypes<LoginActions>

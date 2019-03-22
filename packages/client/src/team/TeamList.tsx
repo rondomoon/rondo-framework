@@ -1,26 +1,26 @@
 import React from 'react'
-import {IAction} from '../actions'
 import {ITeam, ReadonlyRecord} from '@rondo/common'
+import {TeamActions} from './TeamActions'
 
 export interface ITeamListProps {
   teamsById: ReadonlyRecord<number, ITeam>,
   teamIds: ReadonlyArray<number>,
-  onAddTeam: (params: {name: string}) => IAction
-  onRemoveTeam: (params: {id: number}) => IAction
-  onUpdateTeam: (params: {id: number, name: string}) => IAction
+  onAddTeam: TeamActions['createTeam']
+  onRemoveTeam: TeamActions['removeTeam']
+  onUpdateTeam: TeamActions['updateTeam']
   editTeamId: number
 }
 
 export interface ITeamProps {
   team: ITeam
   editTeamId: number  // TODO handle edits via react-router params
-  onRemoveTeam: (params: {id: number}) => IAction
-  onUpdateTeam: (params: {id: number, name: string}) => IAction
+  onRemoveTeam: TeamActions['removeTeam']
+  onUpdateTeam: TeamActions['updateTeam']
 }
 
 export interface IAddTeamProps {
-  onAddTeam: (params: {name: string}) => IAction
-  onUpdateTeam: (params: {id: number, name: string}) => IAction
+  onAddTeam: TeamActions['createTeam']
+  onUpdateTeam: TeamActions['updateTeam']
   team?: ITeam
 }
 

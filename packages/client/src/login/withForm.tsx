@@ -10,7 +10,7 @@ export interface IComponentProps<Data> {
 }
 
 export interface IFormHOCProps<Data> {
-  onSubmit: (props: Data) => IAction<any, any>
+  onSubmit: (props: Data) => IAction<any>
   // TODO figure out what would happen if the underlying child component
   // would have the same required property as the HOC, like onSuccess?
   onSuccess?: () => void

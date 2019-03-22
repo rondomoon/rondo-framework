@@ -26,21 +26,21 @@ describe('PromiseMiddleware', () => {
     expect(store.getState().slice(1)).toEqual([action])
   })
 
-  it('dispatches pending and fulfilled action', async () => {
+  it('dispatches pending and resolved action', async () => {
     const value = 123
     const type = 'TEST'
     const action = {
       payload: Promise.resolve(value),
-      type,
+      type: `${type}_PENDING`,
     }
     const result = store.dispatch(action)
     expect(result).toBe(action)
     await result.payload
     expect(store.getState().slice(1)).toEqual([{
-      type: `${type}_PENDING`,
+      ...action,
     }, {
       payload: value,
-      type,
+      type: type + '_RESOLVED',
     }])
   })
 
@@ -49,14 +49,14 @@ describe('PromiseMiddleware', () => {
     const type = 'TEST'
     const action = {
       payload: Promise.reject(error),
-      type,
+      type: `${type}_PENDING`,
     }
     const result = store.dispatch(action)
     expect(result).toBe(action)
     const err = await getError(result.payload)
     expect(err).toBe(error)
     expect(store.getState().slice(1)).toEqual([{
-      type: `${type}_PENDING`,
+      ...action,
     }, {
       error,
       type: `${type}_REJECTED`,
