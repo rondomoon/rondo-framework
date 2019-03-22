@@ -27,7 +27,12 @@ describe('RegisterForm', () => {
 
   describe('submit', () => {
 
-    const data = {username: 'user', password: 'pass'}
+    const data = {
+      username: 'user',
+      password: 'pass',
+      firstName: '',
+      lastName: '',
+    }
     const onSuccess = jest.fn()
     let node: Element
     let component: React.Component
