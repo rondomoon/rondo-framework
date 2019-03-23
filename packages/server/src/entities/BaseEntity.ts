@@ -5,7 +5,7 @@ import {
 } from 'typeorm'
 
 export abstract class BaseEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({type: 'bigint'})
   id!: number
 
   @CreateDateColumn()

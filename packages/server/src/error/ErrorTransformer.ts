@@ -28,4 +28,5 @@ export class ErrorTransformer {
   }
 }
 
-export const UniqueTransformer = new ErrorTransformer(400, /unique/i)
+export const UniqueTransformer = new ErrorTransformer(
+  400, /(unique|ER_DUP_ENTRY)/i)

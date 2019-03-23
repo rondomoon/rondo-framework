@@ -8,7 +8,7 @@ export class Session implements ISession {
   id!: string
 
   @Index()
-  @Column()
+  @Column({type: 'bigint'})
   expiredAt: number = Date.now()
 
   @ManyToOne(type => User, user => user.sessions)
