@@ -26,7 +26,8 @@ export class Bootstrap implements IBootstrap {
   }
 
   protected createDatabase(): IDatabase {
-    const sqlLogger = new SqlLogger(loggerFactory.getLogger('sql'))
+    const sqlLogger = new SqlLogger(
+      loggerFactory.getLogger('sql'), this.namespace)
     return new Database(this.namespace, sqlLogger, this.config.app.db)
   }
 

@@ -42,8 +42,6 @@ export class TeamManager extends React.PureComponent<ITeamManagerProps> {
     const editTeamId = this.props.match.params.teamId !== undefined ?
       Number(this.props.match.params.teamId) : undefined
 
-    console.log('props', this.props)
-
     return (
       <React.Fragment>
         <TeamList

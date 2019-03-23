@@ -9,7 +9,7 @@ import {SqlLogger, loggerFactory} from '../logger'
 const ns = createNamespace('clsify-test')
 const database = new Database(
   ns,
-  new SqlLogger(loggerFactory.getLogger('sql')),
+  new SqlLogger(loggerFactory.getLogger('sql'), ns),
   config.app.db,
 )
 

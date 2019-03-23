@@ -1,14 +1,20 @@
 import {ILogger} from './ILogger'
 import {Logger, QueryRunner} from 'typeorm'
+import {Namespace} from 'cls-hooked'
+import {CORRELATION_ID} from '../middleware/Transaction'
 
 export class SqlLogger implements Logger {
-  constructor(protected readonly logger: ILogger) {}
+  constructor(
+    protected readonly logger: ILogger,
+    protected readonly ns: Namespace,
+  ) {}
 
   logQuery(query: string, parameters?: any[], queryRunner?: QueryRunner): any {
+    const correlationId = this.getCorrelationId()
     if (parameters) {
-      this.logger.info('%s -- %s', query, parameters)
+      this.logger.info('%s %s -- %s', correlationId, query, parameters)
     } else {
-      this.logger.info(query)
+      this.logger.info('%s %s', correlationId, query)
     }
   }
   /**
@@ -20,10 +26,12 @@ export class SqlLogger implements Logger {
     parameters?: any[],
     queryRunner?: QueryRunner,
   ) {
+    const correlationId = this.getCorrelationId()
     if (parameters) {
-      this.logger.error('%s :: %s -- %s', error, query, parameters)
+      this.logger.error('%s %s :: %s -- %s',
+        correlationId, error, query, parameters)
     } else {
-      this.logger.error('%s :: %s', error, query)
+      this.logger.error('%s %s :: %s', correlationId, error, query)
     }
   }
   /**
@@ -34,10 +42,13 @@ export class SqlLogger implements Logger {
     parameters?: any[],
     queryRunner?: QueryRunner,
   ) {
+    const correlationId = this.getCorrelationId()
     if (parameters) {
-      this.logger.warn('Slow query: %d :: %s -- %s', time, query, parameters)
+      this.logger.warn('%s Slow query: %d :: %s -- %s',
+        correlationId, time, query, parameters)
     } else {
-      this.logger.warn('Slow query: %d :: %s', time, query)
+      this.logger.warn('%s Slow query: %d :: %s',
+        correlationId, time, query)
     }
   }
   /**
@@ -61,9 +72,16 @@ export class SqlLogger implements Logger {
     message: any,
     queryRunner?: QueryRunner,
   ) {
+    const correlationId = this.getCorrelationId()
     if (level === 'log') {
       level = 'info'
     }
-    this.logger[level]('%o', message)
+    this.logger[level]('%s %o', correlationId, message)
   }
+
+  protected getCorrelationId(): string | undefined {
+    const correlationId: string = this.ns.get(CORRELATION_ID)
+    return correlationId || ''
+  }
+
 }
