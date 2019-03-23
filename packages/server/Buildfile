@@ -5,7 +5,7 @@ build:
   tsc --build ./
 
 orm:
-  typeorm $args
+  $typeorm $args
 
 migration: build
   # typeorm migration:create -n $name
