@@ -3,8 +3,16 @@ import {ITeam, IUserInTeam, ReadonlyRecord} from '@rondo/common'
 import {TeamList} from './TeamList'
 import {TeamUserList} from './TeamUserList'
 import {TeamActions} from './TeamActions'
+import {match} from 'react-router'
+import {History, Location} from 'history'
 
 export interface ITeamManagerProps {
+  history: History
+  location: Location
+  match: match<{
+    teamId: string | undefined
+  }>
+
   createTeam: TeamActions['createTeam']
   updateTeam: TeamActions['updateTeam']
   removeTeam: TeamActions['removeTeam']
@@ -18,8 +26,6 @@ export interface ITeamManagerProps {
   teamsById: ReadonlyRecord<number, ITeam>
   teamIds: ReadonlyArray<number>
 
-  editTeamId: number
-
   userKeysByTeamId: ReadonlyRecord<number, ReadonlyArray<string>>
   usersByKey: ReadonlyRecord<string, IUserInTeam>
 }
@@ -32,12 +38,16 @@ export class TeamManager extends React.PureComponent<ITeamManagerProps> {
     // TODO load my teams on first launch
     // TODO use teamId from route url
     // TODO use editTeamId from route url
-    const {editTeamId} = this.props
+    // const {editTeamId} = this.props
+    const editTeamId = this.props.match.params.teamId !== undefined ?
+      Number(this.props.match.params.teamId) : undefined
+
+    console.log('props', this.props)
 
     return (
       <React.Fragment>
         <TeamList
-          editTeamId={this.props.editTeamId}
+          editTeamId={editTeamId}
           teamsById={this.props.teamsById}
           teamIds={this.props.teamIds}
           onAddTeam={this.props.createTeam}
@@ -45,7 +55,7 @@ export class TeamManager extends React.PureComponent<ITeamManagerProps> {
           onUpdateTeam={this.props.updateTeam}
         />
 
-        <TeamUserList
+        {editTeamId && <TeamUserList
           onAddUser={this.props.addUser}
           onRemoveUser={this.props.removeUser}
           findUserByEmail={this.props.findUserByEmail}
@@ -55,7 +65,7 @@ export class TeamManager extends React.PureComponent<ITeamManagerProps> {
 
           userKeysByTeamId={this.props.userKeysByTeamId}
           usersByKey={this.props.usersByKey}
-        />
+        />}
 
       </React.Fragment>
     )

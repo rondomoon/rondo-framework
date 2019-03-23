@@ -105,7 +105,7 @@ export class TeamActions {
   fetchUsersInTeam = ({teamId}: {teamId: number})
   : Action<'TEAM_USERS_PENDING'> => {
     return {
-      payload: this.http.get('/teams/:teamId/users', {
+      payload: this.http.get('/teams/:teamId/users', {}, {
         teamId,
       })
       .then(usersInTeam => ({teamId, usersInTeam})),
@@ -115,7 +115,7 @@ export class TeamActions {
 
   findUserByEmail = (email: string): Action<'TEAM_USER_FIND_PENDING'> => {
     return {
-      payload: this.http.get('/users/emails/:email', {
+      payload: this.http.get('/users/emails/:email', {}, {
         email,
       }),
       type: 'TEAM_USER_FIND_PENDING',

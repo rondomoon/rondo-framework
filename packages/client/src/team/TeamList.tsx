@@ -1,5 +1,6 @@
 import React from 'react'
 import {ITeam, ReadonlyRecord} from '@rondo/common'
+import {Link} from 'react-router-dom'
 import {TeamActions} from './TeamActions'
 
 export interface ITeamListProps {
@@ -8,12 +9,12 @@ export interface ITeamListProps {
   onAddTeam: TeamActions['createTeam']
   onRemoveTeam: TeamActions['removeTeam']
   onUpdateTeam: TeamActions['updateTeam']
-  editTeamId: number
+  editTeamId?: number
 }
 
 export interface ITeamProps {
   team: ITeam
-  editTeamId: number  // TODO handle edits via react-router params
+  editTeamId?: number  // TODO handle edits via react-router params
   onRemoveTeam: TeamActions['removeTeam']
   onUpdateTeam: TeamActions['updateTeam']
 }
@@ -32,7 +33,7 @@ export class TeamAdd extends React.PureComponent<IAddTeamProps, IAddTeamState> {
   constructor(props: IAddTeamProps) {
     super(props)
     this.state = {
-      name: '',
+      name: props.team ? props.team.name : '',
     }
   }
   handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,6 +86,7 @@ export class TeamRow extends React.PureComponent<ITeamProps> {
               team={team}
             />
         }
+        <Link to={`/teams/${team.id}/users`}>Edit</Link>
         <button onClick={this.handleRemove}>Remove</button>
       </div>
     )

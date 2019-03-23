@@ -44,7 +44,7 @@ describe('TeamConnector', () => {
         teamId: 123,
       },
     }, users)
-    const {node} = createTestProvider().render({editTeamId: 123})
+    const {node} = createTestProvider().render({editTeamId123: 123})
     await http.wait()
     expect(node.innerHTML).toContain('my-team')
   })
