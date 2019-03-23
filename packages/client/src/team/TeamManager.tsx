@@ -1,10 +1,11 @@
 import React from 'react'
+import {Title} from 'bloomer'
+import {History, Location} from 'history'
 import {ITeam, IUserInTeam, ReadonlyRecord} from '@rondo/common'
+import {TeamActions} from './TeamActions'
 import {TeamList} from './TeamList'
 import {TeamUserList} from './TeamUserList'
-import {TeamActions} from './TeamActions'
 import {match} from 'react-router'
-import {History, Location} from 'history'
 
 export interface ITeamManagerProps {
   history: History
@@ -35,15 +36,15 @@ export class TeamManager extends React.PureComponent<ITeamManagerProps> {
     await this.props.fetchMyTeams()
   }
   render() {
-    // TODO load my teams on first launch
-    // TODO use teamId from route url
-    // TODO use editTeamId from route url
-    // const {editTeamId} = this.props
-    const editTeamId = this.props.match.params.teamId !== undefined ?
-      Number(this.props.match.params.teamId) : undefined
+    // TypeOrm changes BigInt fields to Strings because they can be tool
+    // large...
+    const editTeamId = this.props.match.params.teamId as any as
+      number | undefined
 
     return (
-      <React.Fragment>
+      <div className='team-manager'>
+        <Title>Teams</Title>
+
         <TeamList
           editTeamId={editTeamId}
           teamsById={this.props.teamsById}
@@ -65,7 +66,7 @@ export class TeamManager extends React.PureComponent<ITeamManagerProps> {
           usersByKey={this.props.usersByKey}
         />}
 
-      </React.Fragment>
+      </div>
     )
   }
 }

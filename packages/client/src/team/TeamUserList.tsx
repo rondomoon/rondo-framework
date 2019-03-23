@@ -1,6 +1,11 @@
 import React from 'react'
 import {IUser, IUserInTeam, ReadonlyRecord} from '@rondo/common'
 import {TeamActions} from './TeamActions'
+import {FaUser, FaSave, FaTimes} from 'react-icons/fa'
+
+import {
+  Button, Control, Heading, Input, Panel, PanelHeading, PanelBlock
+} from 'bloomer'
 
 const EMPTY_ARRAY: ReadonlyArray<string> = []
 
@@ -42,15 +47,21 @@ export class TeamUser extends React.PureComponent<ITeamUserProps> {
     const {user} = this.props
     // TODO style
     return (
-      <div className='team-user'>
-        {user.displayName}
-        <button
-          className='team-user-remove'
-          onClick={this.handleRemoveUser}
-        >
-          Remove
-        </button>
-      </div>
+      <React.Fragment>
+        <div className='user'>
+          {user.displayName}
+        </div>
+        <div className='ml-auto'>
+          <Button
+            aria-label='Remove'
+            isColor='danger'
+            className='team-user-remove'
+            onClick={this.handleRemoveUser}
+          >
+            <FaTimes />
+          </Button>
+        </div>
+      </React.Fragment>
     )
   }
 }
@@ -89,13 +100,27 @@ export class AddUser extends React.PureComponent<IAddUserProps, IAddUserState> {
   render() {
     return (
       <form onSubmit={this.handleAddUser}>
-        <input
-          onChange={this.handleChangeEmail}
-          placeholder='Email'
-          type='email'
-          value={this.state.email}
-        />
-        <input type='submit' value='Add' />
+        <Heading>Add User</Heading>
+        <Control hasIcons='left'>
+          <Input
+            onChange={this.handleChangeEmail}
+            placeholder='Email'
+            type='email'
+            value={this.state.email}
+          />
+          <span className='icon is-left'>
+            <FaUser />
+          </span>
+        </Control>
+        <div className='mt-1 text-right'>
+          <Button
+            isColor='primary'
+            type='submit'
+          >
+            <FaSave className='mr-1' />
+            Add
+          </Button>
+        </div>
       </form>
     )
   }
@@ -104,8 +129,7 @@ export class AddUser extends React.PureComponent<IAddUserProps, IAddUserState> {
 export class TeamUserList extends React.PureComponent<ITeamUsersProps> {
   async componentDidMount() {
     await this.fetchUsersInTeam(this.props.teamId)
-  }
-  async componentWillReceiveProps(nextProps: ITeamUsersProps) {
+  } async componentWillReceiveProps(nextProps: ITeamUsersProps) {
     const {teamId} = nextProps
     if (teamId !== this.props.teamId) {
       this.fetchUsersInTeam(teamId)
@@ -121,26 +145,29 @@ export class TeamUserList extends React.PureComponent<ITeamUsersProps> {
       || EMPTY_ARRAY
 
     return (
-      <React.Fragment>
-        <div className='team-user-list'>
+      <Panel>
+        <PanelHeading>Users in Team</PanelHeading>
           {userKeysByTeamId.map(key => {
             const user = this.props.usersByKey[key]
             return (
-              <TeamUser
-                key={key}
-                user={user}
-                onRemoveUser={this.props.onRemoveUser}
-              />
+              <PanelBlock key={key}>
+                <TeamUser
+                  key={key}
+                  user={user}
+                  onRemoveUser={this.props.onRemoveUser}
+                />
+              </PanelBlock>
             )
           })}
-        </div>
 
-        <AddUser
-          onAddUser={this.props.onAddUser}
-          onSearchUser={this.props.findUserByEmail}
-          teamId={this.props.teamId}
-        />
-      </React.Fragment>
+        <PanelBlock isDisplay='block'>
+          <AddUser
+            onAddUser={this.props.onAddUser}
+            onSearchUser={this.props.findUserByEmail}
+            teamId={this.props.teamId}
+          />
+        </PanelBlock>
+      </Panel>
     )
   }
 }

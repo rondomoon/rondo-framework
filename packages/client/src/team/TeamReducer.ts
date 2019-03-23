@@ -119,5 +119,4 @@ export function Team(state = defaultState, action: TeamActionType): ITeamState {
     default:
       return state
   }
-  return state
 }

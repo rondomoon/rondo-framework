@@ -2,6 +2,11 @@ import React from 'react'
 import {ITeam, ReadonlyRecord} from '@rondo/common'
 import {Link} from 'react-router-dom'
 import {TeamActions} from './TeamActions'
+import {FaPlusSquare, FaSave, FaEdit, FaTimes} from 'react-icons/fa'
+
+import {
+  Button, Control, Heading, Input, Panel, PanelHeading, PanelBlock
+} from 'bloomer'
 
 export interface ITeamListProps {
   teamsById: ReadonlyRecord<number, ITeam>,
@@ -14,7 +19,7 @@ export interface ITeamListProps {
 
 export interface ITeamProps {
   team: ITeam
-  editTeamId?: number  // TODO handle edits via react-router params
+  editTeamId?: number
   onRemoveTeam: TeamActions['removeTeam']
   onUpdateTeam: TeamActions['updateTeam']
 }
@@ -33,7 +38,18 @@ export class TeamAdd extends React.PureComponent<IAddTeamProps, IAddTeamState> {
   constructor(props: IAddTeamProps) {
     super(props)
     this.state = {
-      name: props.team ? props.team.name : '',
+      name: this.getName(props.team),
+    }
+  }
+  getName(team?: ITeam) {
+    return team ? team.name : ''
+  }
+  componentWillReceiveProps(nextProps: IAddTeamProps) {
+    const {team} = nextProps
+    if (team !== this.props.team) {
+      this.setState({
+        name: this.getName(team),
+      })
     }
   }
   handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,16 +69,28 @@ export class TeamAdd extends React.PureComponent<IAddTeamProps, IAddTeamState> {
   render() {
     return (
       <form className='team-add' onSubmit={this.handleSubmit}>
-        {this.props.team ? 'Edit team' : 'Add team'}
-        <input
-          type='text'
-          value={this.state.name}
-          onChange={this.handleChange}
-        />
-        <input
-          type='submit'
-          value='Save'
-        />
+        <Heading>
+          {this.props.team ? 'Edit team' : 'Add team'}
+        </Heading>
+        <Control hasIcons='left'>
+          <Input
+            placeholder='New Team Name'
+            type='text'
+            value={this.state.name}
+            onChange={this.handleChange}
+          />
+          <span className='icon is-left'>
+            <FaPlusSquare />
+          </span>
+        </Control>
+        <div className='text-right mt-1'>
+          <Button
+            className='button is-primary'
+            type='submit'
+          >
+            <FaSave className='mr-1' /> Save
+          </Button>
+        </div>
       </form>
     )
   }
@@ -76,19 +104,26 @@ export class TeamRow extends React.PureComponent<ITeamProps> {
   render() {
     const {team} = this.props
     return (
-      <div className='team'>
-        {team.id}
-        {this.props.editTeamId !== team.id
-          ? team.name
-          : <TeamAdd
-              onAddTeam={undefined as any}
-              onUpdateTeam={this.props.onUpdateTeam}
-              team={team}
-            />
-        }
-        <Link to={`/teams/${team.id}/users`}>Edit</Link>
-        <button onClick={this.handleRemove}>Remove</button>
-      </div>
+      <React.Fragment>
+        <div className='team-name'>
+          {team.name}
+        </div>
+        <div className='ml-auto'>
+          <Link to={`/teams/${team.id}/users`}>
+            <Button aria-label='Edit'>
+              <FaEdit />
+            </Button>
+          </Link>
+          &nbsp;
+          <Button
+            aria-label='Remove'
+            onClick={this.handleRemove}
+            isColor='danger'
+          >
+            <FaTimes />
+          </Button>
+        </div>
+      </React.Fragment>
     )
   }
 }
@@ -98,24 +133,43 @@ export class TeamList extends React.PureComponent<ITeamListProps> {
     const {editTeamId, teamIds, teamsById} = this.props
 
     return (
-      <div className='team-list'>
-        {teamIds.map(teamId => {
-          const team = teamsById[teamId]
-          return (
-            <TeamRow
-              key={team.id}
-              editTeamId={editTeamId}
-              onRemoveTeam={this.props.onRemoveTeam}
+      <Panel>
+        {!editTeamId && (
+          <React.Fragment>
+            <PanelHeading>Teams</PanelHeading>
+            {teamIds.map(teamId => {
+              const team = teamsById[teamId]
+              return (
+                <PanelBlock key={team.id}>
+                  <TeamRow
+                    editTeamId={editTeamId}
+                    onRemoveTeam={this.props.onRemoveTeam}
+                    onUpdateTeam={this.props.onUpdateTeam}
+                    team={team}
+                  />
+                </PanelBlock>
+              )
+            })}
+
+            <PanelBlock isDisplay='block'>
+              <TeamAdd
+                onAddTeam={this.props.onAddTeam}
+                onUpdateTeam={undefined as any}
+              />
+            </PanelBlock>
+          </React.Fragment>
+        )}
+
+        {editTeamId && (
+          <PanelBlock isDisplay='block'>
+            <TeamAdd
+              team={teamsById[editTeamId]}
+              onAddTeam={undefined as any}
               onUpdateTeam={this.props.onUpdateTeam}
-              team={team}
             />
-          )
-        })}
-        <TeamAdd
-          onAddTeam={this.props.onAddTeam}
-          onUpdateTeam={undefined as any}
-        />
-      </div>
+          </PanelBlock>
+        )}
+      </Panel>
     )
   }
 }
