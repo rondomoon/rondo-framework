@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import T from 'react-dom/test-utils'
-import {Connector, IStateSelector} from '../redux'
+import {IStateSelector} from '../redux'
 import {Provider} from 'react-redux'
 import {createStore} from '../store'
 import {
@@ -13,15 +13,16 @@ import {
   combineReducers,
 } from 'redux'
 
-interface IRenderParams<State> {
+interface IRenderParams<State, LocalState> {
   reducers: ReducersMapObject<State, any>
   state?: DeepPartial<State>
-  connector: Connector<any>
-  select: IStateSelector<State, any>
-  customJSX?: (
-    Component: React.ComponentType<any>,
-    additionalProps: Record<string, any>,
-  ) => JSX.Element
+  select: IStateSelector<State, LocalState>
+  // getComponent: (
+  //   select: IStateSelector<State, LocalState>) => React.ComponentType<Props>,
+  // customJSX?: (
+  //   Component: React.ComponentType<Props>,
+  //   props: Props,
+  // ) => JSX.Element
 }
 
 export class TestUtils {
@@ -47,29 +48,54 @@ export class TestUtils {
    * Creates a redux store, connects a component, and provides the `render`
    * method to render the connected component with a `Provider`.
    */
-  withProvider<State, A extends Action<any> = AnyAction>(
-    params: IRenderParams<State>,
+  withProvider<State, LocalState, A extends Action<any> = AnyAction>(
+    params: IRenderParams<State, LocalState>,
   ) {
+    const {reducers, state, select} = params
+
     const store = this.createStore({
-      reducer: this.combineReducers(params.reducers),
-    })(params.state)
-    const Component = params.connector.connect(params.select)
+      reducer: this.combineReducers(reducers),
+    })(state)
 
-    const render = (additionalProps: Record<string, any> = {}) => {
-      const jsx = params.customJSX
-        ? params.customJSX(Component, additionalProps)
-        : <Component {...additionalProps} />
-      return this.render(
-        <Provider store={store}>
-          {jsx}
-        </Provider>,
-      )
+    const withComponent = <Props extends {}>(
+      getComponent: (select: IStateSelector<State, LocalState>) =>
+        React.ComponentType<Props>,
+    ) => {
+      const Component = getComponent(select)
+
+      type CreateJSX = (
+        Component: React.ComponentType<Props>,
+        props: Props,
+      ) => JSX.Element
+
+      let createJSX: CreateJSX | undefined
+
+      const render = (props: Props) => {
+        const jsx = createJSX
+          ? createJSX(Component, props)
+          : <Component {...props} />
+        return this.render(
+          <Provider store={store}>
+            {jsx}
+          </Provider>,
+        )
+      }
+
+      const withJSX = (localCreateJSX: CreateJSX) => {
+        createJSX = localCreateJSX
+        return self
+      }
+
+      const self = {
+        render,
+        store,
+        Component,
+        withJSX,
+      }
+
+      return self
     }
 
-    return {
-      render,
-      store,
-      Component,
-    }
+    return {withComponent}
   }
 }

@@ -13,16 +13,18 @@ describe('RegisterForm', () => {
 
   const createTestProvider = () => test.withProvider({
     reducers: {Login: Feature.Login},
-    connector: new Feature.RegisterConnector(loginActions),
     select: state => state.Login,
   })
+  .withComponent(
+    select => new Feature.RegisterConnector(loginActions).connect(select),
+  )
 
   beforeAll(() => {
     (window as any).__MOCK_SERVER_SIDE__ = true
   })
 
   it('should render', () => {
-    createTestProvider().render()
+    createTestProvider().render({})
   })
 
   describe('submit', () => {

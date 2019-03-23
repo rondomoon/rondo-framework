@@ -15,18 +15,21 @@ describe('LoginForm', () => {
 
   const createTestProvider = () => test.withProvider({
     reducers: {Login: Feature.Login},
-    connector: new Feature.LoginConnector(loginActions),
     select: state => state.Login,
-    customJSX: (Component, props) =>
-      <MemoryRouter><Component {...props} /></MemoryRouter>,
   })
+  .withComponent(
+    select => new Feature.LoginConnector(loginActions).connect(select),
+  )
+  .withJSX((Component, props) =>
+    <MemoryRouter><Component {...props} /></MemoryRouter>,
+  )
 
   beforeAll(() => {
     (window as any).__MOCK_SERVER_SIDE__ = true
   })
 
   it('should render', () => {
-    createTestProvider().render()
+    createTestProvider().render({})
   })
 
   describe('submit', () => {
