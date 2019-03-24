@@ -1,10 +1,10 @@
 import React from 'react'
-import {Title} from 'bloomer'
 import {History, Location} from 'history'
 import {ITeam, IUserInTeam, ReadonlyRecord} from '@rondo/common'
 import {TeamActions} from './TeamActions'
 import {TeamList} from './TeamList'
 import {TeamUserList} from './TeamUserList'
+import {Title} from 'bloomer'
 import {match} from 'react-router'
 
 export interface ITeamManagerProps {
