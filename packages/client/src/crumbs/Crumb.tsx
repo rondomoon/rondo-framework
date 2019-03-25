@@ -2,7 +2,7 @@ import React from 'react'
 import {Breadcrumb, BreadcrumbItem} from 'bloomer'
 import {Link} from 'react-router-dom'
 
-export interface IBreadcrumbsProps {
+export interface ICrumbProps {
   links: Array<{
     name: string
     to: string
@@ -10,17 +10,22 @@ export interface IBreadcrumbsProps {
   current: string
 }
 
-export class Breadcrumbs extends React.PureComponent<IBreadcrumbsProps> {
+export class Crumb extends React.PureComponent<ICrumbProps> {
   render() {
     return (
       <Breadcrumb>
         <ul>
+          <BreadcrumbItem>
+            <Link to='/'>Home</Link>
+          </BreadcrumbItem>
           {this.props.links.map((link, i) => (
             <BreadcrumbItem key={i}>
               <Link to={link.to}>{link.name}</Link>
             </BreadcrumbItem>
           ))}
-          <BreadcrumbItem>{this.props.current}</BreadcrumbItem>
+          <BreadcrumbItem>
+            <a>{this.props.current}</a>
+          </BreadcrumbItem>
         </ul>
       </Breadcrumb>
     )

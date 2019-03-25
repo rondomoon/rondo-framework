@@ -1,17 +1,17 @@
 import React from 'react'
-import {Breadcrumbs} from './Breadcrumbs'
+import {Crumb} from './Crumb'
 import {TestUtils} from '../test-utils'
 import {MemoryRouter} from 'react-router-dom'
 
 const t = new TestUtils()
 
-describe('Breadcrumbs', () => {
+describe('Crumb', () => {
 
   describe('render', () => {
     it('renders', () => {
       const {node} = t.render(
         <MemoryRouter>
-          <Breadcrumbs
+          <Crumb
             links={[{
               name: 'one',
               to: '/one',

@@ -1,11 +1,11 @@
 import React from 'react'
 import {ITeam, IUserInTeam, ReadonlyRecord} from '@rondo/common'
+import {Panel, PanelBlock, PanelHeading} from 'bloomer'
 import {Route, Switch} from 'react-router-dom'
 import {TeamActions} from './TeamActions'
 import {TeamEditor} from './TeamEditor'
 import {TeamList} from './TeamList'
 import {TeamUserList} from './TeamUserList'
-import {Panel, PanelBlock, PanelHeading} from 'bloomer'
 
 export interface ITeamManagerProps {
   createTeam: TeamActions['createTeam']
@@ -36,20 +36,22 @@ export class TeamManager extends React.PureComponent<ITeamManagerProps> {
       <div className='team-manager'>
         <Switch>
           <Route exact path='/teams' render={() =>
-            <TeamList
-              teamsById={teamsById}
-              teamIds={this.props.teamIds}
-              onAddTeam={this.props.createTeam}
-              onRemoveTeam={this.props.removeTeam}
-              onUpdateTeam={this.props.updateTeam}
-            />
+            <>
+              <TeamList
+                teamsById={teamsById}
+                teamIds={this.props.teamIds}
+                onAddTeam={this.props.createTeam}
+                onRemoveTeam={this.props.removeTeam}
+                onUpdateTeam={this.props.updateTeam}
+              />
+            </>
           }/>
           <Route exact path='/teams/:teamId/users' render={({match}) => {
             const {teamId: teamIdParam} = match.params
             const teamId = teamIdParam ? Number(teamIdParam) : undefined
             const team = teamId ? teamsById[teamId] : undefined
             return (
-              <React.Fragment>
+              <>
                 <Panel>
                   <PanelHeading>Edit Team: {team && team.name}</PanelHeading>
                   <PanelBlock isDisplay='block'>
@@ -70,7 +72,7 @@ export class TeamManager extends React.PureComponent<ITeamManagerProps> {
                   userKeysByTeamId={this.props.userKeysByTeamId}
                   usersByKey={this.props.usersByKey}
                 />}
-              </React.Fragment>
+              </>
             )
           }}/>
         </Switch>

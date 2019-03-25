@@ -15,7 +15,6 @@ import {
 
 interface IRenderParams<State, LocalState> {
   reducers: ReducersMapObject<State, any>
-  state?: DeepPartial<State>
   select: IStateSelector<State, LocalState>
   // getComponent: (
   //   select: IStateSelector<State, LocalState>) => React.ComponentType<Props>,
@@ -51,11 +50,19 @@ export class TestUtils {
   withProvider<State, LocalState, A extends Action<any> = AnyAction>(
     params: IRenderParams<State, LocalState>,
   ) {
-    const {reducers, state, select} = params
+    const {reducers, select} = params
 
-    const store = this.createStore({
+    let store = this.createStore({
       reducer: this.combineReducers(reducers),
-    })(state)
+    })()
+
+    const withState = (state: DeepPartial<State>) => {
+      store = this.createStore({
+        reducer: this.combineReducers(reducers),
+      })(state)
+
+      return {withComponent}
+    }
 
     const withComponent = <Props extends {}>(
       getComponent: (select: IStateSelector<State, LocalState>) =>
@@ -96,6 +103,6 @@ export class TestUtils {
       return self
     }
 
-    return {withComponent}
+    return {withState, withComponent}
   }
 }
