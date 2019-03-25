@@ -51,6 +51,7 @@
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.4.0",
     "redux": "^4.0.1",
+    "sourceify": "git+https://github.com/jeremija/sourceify.git#sources-content",
     "std-mocks": "^1.0.1",
     "supertest": "^3.3.0",
     "terser": "^3.14.1",
