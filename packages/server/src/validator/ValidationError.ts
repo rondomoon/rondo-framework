@@ -5,6 +5,7 @@ export class ValidationError extends Error {
   constructor(
     readonly errors: IValidationMessage[],
     message?: string,
+    readonly status: number = 400,
   ) {
     super(
       message

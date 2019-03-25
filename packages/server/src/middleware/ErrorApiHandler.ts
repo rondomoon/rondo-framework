@@ -1,6 +1,7 @@
-import {IMiddleware} from './IMiddleware'
 import {IErrorHandler} from './IErrorHandler'
 import {ILogger} from '../logger/ILogger'
+import {IMiddleware} from './IMiddleware'
+import {ValidationError} from '../validator'
 
 export class ErrorApiHandler implements IMiddleware {
   constructor(readonly logger: ILogger) {}
@@ -10,7 +11,17 @@ export class ErrorApiHandler implements IMiddleware {
       req.correlationId, err.stack)
     const statusCode = this.getStatus(err)
     res.status(statusCode)
-    res.end('An error occurred')
+    if (err instanceof ValidationError) {
+      res.json({
+        error: err.message,
+        errors: err.errors,
+      })
+      return
+    }
+    res.json({
+      error: 'An error occurred',
+      errors: [],
+    })
   }
 
   protected getStatus(err: Error): number {
