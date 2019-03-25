@@ -34,10 +34,10 @@ export class TeamService extends BaseService implements ITeamService {
 
   async remove({id, userId}: {id: number, userId: number}) {
     await this.getRepository(UserTeam)
-    .delete({userId})
+    .delete({teamId: id, userId})
 
     await this.getRepository(Team)
-    .delete({id})
+    .delete(id)
 
     return {id}
   }
