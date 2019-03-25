@@ -15,4 +15,10 @@ export class ValidationError extends Error {
     this.name = 'ValidationError'
     Error.captureStackTrace(this)
   }
+
+  static isInstanceOf(err: any): err is ValidationError {
+    return typeof err.status === 'number'
+      && typeof err.message === 'string'
+      && Array.isArray(err.errors)
+  }
 }

@@ -11,7 +11,7 @@ export class ErrorApiHandler implements IMiddleware {
       req.correlationId, err.stack)
     const statusCode = this.getStatus(err)
     res.status(statusCode)
-    if (err instanceof ValidationError) {
+    if (ValidationError.isInstanceOf(err)) {
       res.json({
         error: err.message,
         errors: err.errors,
