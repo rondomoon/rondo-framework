@@ -16,7 +16,7 @@ export type TeamActionType =
   'TEAM_UPDATE_PENDING',
   'TEAM_UPDATE_RESOLVED',
   'TEAM_UPDATE_REJECTED'>
-  | IAsyncAction<{},
+  | IAsyncAction<{id: number},
   'TEAM_REMOVE_PENDING',
   'TEAM_REMOVE_RESOLVED',
   'TEAM_REMOVE_REJECTED'>

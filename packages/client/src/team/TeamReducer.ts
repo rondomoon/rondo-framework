@@ -1,4 +1,6 @@
-import {ITeam, IUserInTeam, ReadonlyRecord, indexBy} from '@rondo/common'
+import {
+  ITeam, IUserInTeam, ReadonlyRecord, indexBy, without,
+} from '@rondo/common'
 import {TeamActionType} from './TeamActions'
 import {GetAction} from '../actions'
 
@@ -70,7 +72,6 @@ export function Team(state = defaultState, action: TeamActionType): ITeamState {
           [action.payload.id]: action.payload,
         },
       }
-      return state
     case 'TEAM_USER_ADD_RESOLVED':
       return {
         ...state,
@@ -106,6 +107,12 @@ export function Team(state = defaultState, action: TeamActionType): ITeamState {
           ...state.usersByKey,
           ...usersByKey,
         },
+      }
+    case 'TEAM_REMOVE_RESOLVED':
+      return {
+        ...state,
+        teamIds: state.teamIds.filter(id => id !== action.payload.id),
+        teamsById: without(state.teamsById, action.payload.id),
       }
     case 'TEAM_CREATE_REJECTED':
     case 'TEAM_UPDATE_REJECTED':

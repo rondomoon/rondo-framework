@@ -4,11 +4,19 @@ import {IUserInTeam} from '@rondo/common'
 import {IUserTeamParams} from './IUserTeamParams'
 import {Team} from '../entities/Team'
 import {UserTeam} from '../entities/UserTeam'
+import {Validator, trim} from '../validator'
 
 export class TeamService extends BaseService implements ITeamService {
 
   // TODO check team limit per user
   async create({name, userId}: {name: string, userId: number}) {
+    name = trim(name)
+
+    new Validator({name, userId})
+    .ensure('name')
+    .ensure('userId')
+    .throw()
+
     const team = await this.getRepository(Team).save({
       name,
       userId,

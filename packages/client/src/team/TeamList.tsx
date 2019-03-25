@@ -2,7 +2,7 @@ import React from 'react'
 import {ITeam, ReadonlyRecord} from '@rondo/common'
 import {Link} from 'react-router-dom'
 import {TeamActions} from './TeamActions'
-import {FaPlusSquare, FaSave, FaEdit, FaTimes} from 'react-icons/fa'
+import {FaPlusSquare, FaCheck, FaEdit, FaTimes} from 'react-icons/fa'
 
 import {
   Button, Control, Heading, Input, Panel, PanelHeading, PanelBlock
@@ -65,10 +65,14 @@ export class TeamAdd extends React.PureComponent<IAddTeamProps, IAddTeamState> {
     } else {
       await onAddTeam({name})
     }
+    this.setState({name: ''})
   }
   render() {
     return (
-      <form className='team-add' onSubmit={this.handleSubmit}>
+      <form
+        autoComplete='off'
+        className='team-add'
+        onSubmit={this.handleSubmit}>
         <Heading>
           {this.props.team ? 'Edit team' : 'Add team'}
         </Heading>
@@ -80,15 +84,16 @@ export class TeamAdd extends React.PureComponent<IAddTeamProps, IAddTeamState> {
             onChange={this.handleChange}
           />
           <span className='icon is-left'>
-            <FaPlusSquare />
+            {this.props.team ? <FaEdit /> : <FaPlusSquare />}
           </span>
         </Control>
         <div className='text-right mt-1'>
           <Button
-            className='button is-primary'
+            isColor='dark'
+            className='button'
             type='submit'
           >
-            <FaSave className='mr-1' /> Save
+            <FaCheck className='mr-1' /> Save
           </Button>
         </div>
       </form>

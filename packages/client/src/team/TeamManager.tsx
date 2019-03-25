@@ -36,10 +36,8 @@ export class TeamManager extends React.PureComponent<ITeamManagerProps> {
     await this.props.fetchMyTeams()
   }
   render() {
-    // TypeOrm changes BigInt fields to Strings because they can be tool
-    // large...
-    const editTeamId = this.props.match.params.teamId as any as
-      number | undefined
+    const {teamId} = this.props.match.params
+    const editTeamId = teamId ? Number(teamId) : undefined
 
     return (
       <div className='team-manager'>

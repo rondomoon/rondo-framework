@@ -1,10 +1,10 @@
 import React from 'react'
 import {IUser, IUserInTeam, ReadonlyRecord} from '@rondo/common'
 import {TeamActions} from './TeamActions'
-import {FaUser, FaSave, FaTimes} from 'react-icons/fa'
+import {FaUser, FaCheck, FaTimes} from 'react-icons/fa'
 
 import {
-  Button, Control, Heading, Input, Panel, PanelHeading, PanelBlock
+  Button, Control, Heading, Help, Input, Panel, PanelHeading, PanelBlock
 } from 'bloomer'
 
 const EMPTY_ARRAY: ReadonlyArray<string> = []
@@ -34,6 +34,7 @@ export interface IAddUserProps {
 }
 
 export interface IAddUserState {
+  error: string
   email: string
   user?: IUser
 }
@@ -55,6 +56,7 @@ export class TeamUser extends React.PureComponent<ITeamUserProps> {
           <Button
             aria-label='Remove'
             isColor='danger'
+            isInverted
             className='team-user-remove'
             onClick={this.handleRemoveUser}
           >
@@ -70,6 +72,7 @@ export class AddUser extends React.PureComponent<IAddUserProps, IAddUserState> {
   constructor(props: IAddUserProps) {
     super(props)
     this.state = {
+      error: '',
       email: '',
       user: undefined,
     }
@@ -85,6 +88,7 @@ export class AddUser extends React.PureComponent<IAddUserProps, IAddUserState> {
     const user = await this.props.onSearchUser(email).payload
     if (!user) {
       // TODO handle this better via 404 status code
+      this.setState({error: 'No user found'})
       return
     }
     await this.props.onAddUser({
@@ -93,16 +97,17 @@ export class AddUser extends React.PureComponent<IAddUserProps, IAddUserState> {
       roleId: 1,
     })
 
-    this.setState({email: '', user: undefined})
-
-    // TODO handle failures
+    this.setState({error: '', email: '', user: undefined})
   }
   render() {
+    const {error} = this.state
+
     return (
-      <form onSubmit={this.handleAddUser}>
+      <form autoComplete='off' onSubmit={this.handleAddUser}>
         <Heading>Add User</Heading>
         <Control hasIcons='left'>
           <Input
+            isColor={error ? 'danger' : ''}
             onChange={this.handleChangeEmail}
             placeholder='Email'
             type='email'
@@ -111,13 +116,16 @@ export class AddUser extends React.PureComponent<IAddUserProps, IAddUserState> {
           <span className='icon is-left'>
             <FaUser />
           </span>
+          {error && (
+            <Help isColor='danger'>{error}</Help>
+          )}
         </Control>
         <div className='mt-1 text-right'>
           <Button
-            isColor='primary'
+            isColor='dark'
             type='submit'
           >
-            <FaSave className='mr-1' />
+            <FaCheck className='mr-1' />
             Add
           </Button>
         </div>
