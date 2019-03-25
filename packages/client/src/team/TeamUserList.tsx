@@ -1,5 +1,5 @@
 import React from 'react'
-import {IUser, IUserInTeam, ReadonlyRecord} from '@rondo/common'
+import {ITeam, IUser, IUserInTeam, ReadonlyRecord} from '@rondo/common'
 import {TeamActions} from './TeamActions'
 import {FaUser, FaCheck, FaTimes} from 'react-icons/fa'
 
@@ -17,7 +17,7 @@ export interface ITeamUsersProps {
   onAddUser: TeamActions['addUser']
   onRemoveUser: TeamActions['removeUser']
 
-  teamId: number
+  team: ITeam
   userKeysByTeamId: ReadonlyRecord<number, ReadonlyArray<string>>
   usersByKey: ReadonlyRecord<string, IUserInTeam>
 }
@@ -136,11 +136,11 @@ export class AddUser extends React.PureComponent<IAddUserProps, IAddUserState> {
 
 export class TeamUserList extends React.PureComponent<ITeamUsersProps> {
   async componentDidMount() {
-    await this.fetchUsersInTeam(this.props.teamId)
+    await this.fetchUsersInTeam(this.props.team.id)
   } async componentWillReceiveProps(nextProps: ITeamUsersProps) {
-    const {teamId} = nextProps
-    if (teamId !== this.props.teamId) {
-      this.fetchUsersInTeam(teamId)
+    const {team} = nextProps
+    if (team.id !== this.props.team.id) {
+      this.fetchUsersInTeam(team.id)
     }
   }
   async fetchUsersInTeam(teamId: number) {
@@ -149,7 +149,7 @@ export class TeamUserList extends React.PureComponent<ITeamUsersProps> {
     }
   }
   render() {
-    const userKeysByTeamId = this.props.userKeysByTeamId[this.props.teamId]
+    const userKeysByTeamId = this.props.userKeysByTeamId[this.props.team.id]
       || EMPTY_ARRAY
 
     return (
@@ -172,7 +172,7 @@ export class TeamUserList extends React.PureComponent<ITeamUsersProps> {
           <AddUser
             onAddUser={this.props.onAddUser}
             onSearchUser={this.props.findUserByEmail}
-            teamId={this.props.teamId}
+            teamId={this.props.team.id}
           />
         </PanelBlock>
       </Panel>

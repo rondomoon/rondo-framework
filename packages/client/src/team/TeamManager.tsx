@@ -1,19 +1,13 @@
 import React from 'react'
-import {History, Location} from 'history'
 import {ITeam, IUserInTeam, ReadonlyRecord} from '@rondo/common'
+import {Route, Switch} from 'react-router-dom'
 import {TeamActions} from './TeamActions'
+import {TeamEditor} from './TeamEditor'
 import {TeamList} from './TeamList'
 import {TeamUserList} from './TeamUserList'
-import {Title} from 'bloomer'
-import {match} from 'react-router'
+import {Panel, PanelBlock, PanelHeading} from 'bloomer'
 
 export interface ITeamManagerProps {
-  history: History
-  location: Location
-  match: match<{
-    teamId: string | undefined
-  }>
-
   createTeam: TeamActions['createTeam']
   updateTeam: TeamActions['updateTeam']
   removeTeam: TeamActions['removeTeam']
@@ -36,34 +30,50 @@ export class TeamManager extends React.PureComponent<ITeamManagerProps> {
     await this.props.fetchMyTeams()
   }
   render() {
-    const {teamId} = this.props.match.params
-    const editTeamId = teamId ? Number(teamId) : undefined
+    const {teamsById} = this.props
 
     return (
       <div className='team-manager'>
-        <Title>Teams</Title>
-
-        <TeamList
-          editTeamId={editTeamId}
-          teamsById={this.props.teamsById}
-          teamIds={this.props.teamIds}
-          onAddTeam={this.props.createTeam}
-          onRemoveTeam={this.props.removeTeam}
-          onUpdateTeam={this.props.updateTeam}
-        />
-
-        {editTeamId && <TeamUserList
-          onAddUser={this.props.addUser}
-          onRemoveUser={this.props.removeUser}
-          findUserByEmail={this.props.findUserByEmail}
-          fetchUsersInTeam={this.props.fetchUsersInTeam}
-
-          teamId={editTeamId}
-
-          userKeysByTeamId={this.props.userKeysByTeamId}
-          usersByKey={this.props.usersByKey}
-        />}
-
+        <Switch>
+          <Route exact path='/teams' render={() =>
+            <TeamList
+              teamsById={teamsById}
+              teamIds={this.props.teamIds}
+              onAddTeam={this.props.createTeam}
+              onRemoveTeam={this.props.removeTeam}
+              onUpdateTeam={this.props.updateTeam}
+            />
+          }/>
+          <Route exact path='/teams/:teamId/users' render={({match}) => {
+            const {teamId: teamIdParam} = match.params
+            const teamId = teamIdParam ? Number(teamIdParam) : undefined
+            const team = teamId ? teamsById[teamId] : undefined
+            return (
+              <React.Fragment>
+                <Panel>
+                  <PanelHeading>Edit Team: {team && team.name}</PanelHeading>
+                  <PanelBlock isDisplay='block'>
+                    {team && <TeamEditor
+                      type='update'
+                      team={team}
+                      onUpdateTeam={this.props.updateTeam}
+                    />}
+                    {!team && 'No team loaded'}
+                  </PanelBlock>
+                </Panel>
+                {team && <TeamUserList
+                  onAddUser={this.props.addUser}
+                  onRemoveUser={this.props.removeUser}
+                  findUserByEmail={this.props.findUserByEmail}
+                  fetchUsersInTeam={this.props.fetchUsersInTeam}
+                  team={team}
+                  userKeysByTeamId={this.props.userKeysByTeamId}
+                  usersByKey={this.props.usersByKey}
+                />}
+              </React.Fragment>
+            )
+          }}/>
+        </Switch>
       </div>
     )
   }

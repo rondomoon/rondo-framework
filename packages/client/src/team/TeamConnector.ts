@@ -4,7 +4,6 @@ import {ITeamState} from './TeamReducer'
 import {TeamActions} from './TeamActions'
 import {TeamManager} from './TeamManager'
 import {bindActionCreators} from 'redux'
-import {withRouter} from 'react-router-dom'
 
 export class TeamConnector extends Connector<ITeamState> {
   constructor(protected readonly teamActions: TeamActions) {
@@ -32,6 +31,6 @@ export class TeamConnector extends Connector<ITeamState> {
       TeamManager,
     )
 
-    return withRouter(Component)
+    return Component
   }
 }
