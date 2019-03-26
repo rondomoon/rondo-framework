@@ -128,7 +128,9 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
     const result: IReqRes = await new Promise((resolve, reject) => {
       this.waitPromise = {resolve, reject}
     })
-    await new Promise(resolve => setImmediate(resolve))
+    // TODO think of a better way to do this.
+    // We wait for all http request promise handlers to execute...
+    await new Promise(resolve => setTimeout(resolve))
     return result
   }
 
