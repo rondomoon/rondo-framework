@@ -1,6 +1,6 @@
 import React from 'react'
 import {Button, Panel, PanelHeading, PanelBlock} from 'bloomer'
-import {FaEdit, FaTimes} from 'react-icons/fa'
+import {FaPlus, FaEdit, FaTimes} from 'react-icons/fa'
 import {ITeam, ReadonlyRecord} from '@rondo/common'
 import {Link} from 'react-router-dom'
 import {TeamActions} from './TeamActions'
@@ -59,7 +59,17 @@ export class TeamList extends React.PureComponent<ITeamListProps> {
 
     return (
       <Panel>
-        <PanelHeading>Teams</PanelHeading>
+        <PanelHeading>
+          <span className='is-flex is-vcentered'>
+            <span>Teams</span>
+            <Link
+              className='ml-auto button is-link is-small'
+              to='/teams/new'
+            >
+              <FaPlus />&nbsp;New
+            </Link>
+          </span>
+        </PanelHeading>
         {teamIds.map(teamId => {
           const team = teamsById[teamId]
           return (
@@ -72,13 +82,6 @@ export class TeamList extends React.PureComponent<ITeamListProps> {
             </PanelBlock>
           )
         })}
-
-        <PanelBlock isDisplay='block'>
-          <TeamEditor
-            type='add'
-            onAddTeam={this.props.onAddTeam}
-          />
-        </PanelBlock>
       </Panel>
     )
   }

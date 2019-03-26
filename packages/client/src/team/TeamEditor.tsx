@@ -59,7 +59,6 @@ extends React.PureComponent<ITeamEditorProps, ITeamEditorState> {
       this.setState({error: err.message})
       return
     }
-    this.setState({error: '', name: ''})
   }
   render() {
     const {error} = this.state

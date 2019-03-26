@@ -30,7 +30,7 @@ describe('TeamConnector', () => {
     teamActions = new Feature.TeamActions(http)
   })
 
-  const historyEntries = ['/teams']
+  let historyEntries = ['/teams']
 
   const createTestProvider = () => test.withProvider({
     reducers: {Team: Feature.Team},
@@ -63,6 +63,10 @@ describe('TeamConnector', () => {
   })
 
   describe('add team', () => {
+    beforeEach(() => {
+      historyEntries = ['/teams/new']
+    })
+
     it('sends a POST request to POST /teams', async () => {
       const newTeam: Partial<ITeam> = {id: 101, name: 'new-team'}
       http.mockAdd({
@@ -78,7 +82,6 @@ describe('TeamConnector', () => {
       T.Simulate.change(nameInput, {target: {value: newTeam.name}} as any)
       T.Simulate.submit(addTeamForm)
       await http.wait()
-      expect(nameInput.value).toEqual('')
       const {Team} = store.getState()
       expect(Team.teamIds).toEqual([100, 101])
       expect(Team.teamsById[101]).toEqual(newTeam)
