@@ -45,11 +45,20 @@ describe('HTTPClientMock', () => {
       const result2 = await promise
       expect(result1.res.data).toBe(result2)
       expect(result2).toBe(value)
-      expect(result1.req).toBe(http.requests[0])
+      expect(result1.req).toBe(http.requests[0].request)
       expect(result1.req).toEqual({
         method: 'get',
         url: '/test',
       })
+    })
+
+    it('waits for all pending requests to complete', async () => {
+      const promise1 = http.get('/test')
+      const promise2 = http.post('/test', {})
+      const error = await getError(http.wait())
+      await promise1
+      await getError(promise2)
+      expect(error.message).toMatch(/No mock/)
     })
   })
 

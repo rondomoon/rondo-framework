@@ -15,9 +15,14 @@ export class HTTPClientError extends Error {
   }
 }
 
+export interface IRequestStatus {
+  request: IRequest
+  finished: boolean
+}
+
 export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
   mocks: {[key: string]: IResponse} = {}
-  requests: IRequest[] = []
+  requests: IRequestStatus[] = []
 
   protected waitPromise?: {
     resolve: (r: IReqRes) => void
@@ -34,13 +39,18 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
   createRequestor() {
     return {
       request: (req: IRequest): Promise<IResponse> => {
-        this.requests.push(req)
+        const currentRequest: IRequestStatus = {
+          request: req,
+          finished: false,
+        }
+        this.requests.push(currentRequest)
         return new Promise((resolve, reject) => {
           const key = this.serialize(req)
           if (!this.mocks.hasOwnProperty(key)) {
             setImmediate(() => {
               const err = new Error('No mock for request: ' + key)
               reject(err)
+              currentRequest.finished = true
               this.notify(err)
             })
             return
@@ -49,11 +59,13 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
           setImmediate(() => {
             if (res.status >= 200 && res.status < 400) {
               resolve(res)
+              currentRequest.finished = true
               this.notify({req, res})
               return
             }
             const error = new HTTPClientError(req, res)
             reject(error)
+            currentRequest.finished = true
             this.notify(error)
           })
         })
@@ -86,6 +98,9 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
 
   protected notify(r: IReqRes | Error) {
     if (!this.waitPromise) {
+      return
+    }
+    if (!this.requests.every(status => status.finished)) {
       return
     }
     const waitPromise = this.waitPromise
