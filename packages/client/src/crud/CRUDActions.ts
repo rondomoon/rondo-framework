@@ -1,7 +1,7 @@
 import {IRoutes} from '@rondo/common'
 import {IHTTPClient, ITypedRequestParams} from '../http'
 
-interface IActionTypes {
+interface ICRUDActionTypes {
   readonly get: string
   readonly put: string
   readonly post: string
@@ -11,21 +11,21 @@ interface IActionTypes {
 
 export class CRUDActions<
   T extends IRoutes,
+  POST extends keyof T & string,
+  GET_MANY extends keyof T & string,
   GET extends keyof T & string,
   PUT extends keyof T & string,
-  POST extends keyof T & string,
   DELETE extends keyof T & string,
-  GET_MANY extends keyof T & string,
 > {
-  readonly actionTypes: IActionTypes
+  readonly actionTypes: ICRUDActionTypes
 
   constructor(
     readonly http: IHTTPClient<T>,
+    readonly postRoute: POST,
+    readonly getManyRoute: GET_MANY,
     readonly getRoute: GET,
     readonly putRoute: PUT,
-    readonly postRoute: POST,
     readonly deleteRoute: DELETE,
-    readonly getManyRoute: GET_MANY,
     readonly actionName: string,
   ) {
     this.actionTypes = this.getActionTypes()
@@ -34,26 +34,27 @@ export class CRUDActions<
   static fromTwoRoutes<
     R,
     S extends keyof R & string,
-    P extends keyof R & string,
+    L extends keyof R & string,
   >(params: {
-    http: IHTTPClient<R>,
-    singular: S,
-    plural: P,
-    actionName: string
-  }) {
-    const {http, singular, plural, actionName} = params
-    return new CRUDActions<R, S, S, P, S, P>(
+      http: IHTTPClient<R>,
+      specificRoute: S,
+      listRoute: L,
+      actionName: string,
+    },
+  ) {
+    const {http, specificRoute, listRoute, actionName} = params
+    return new CRUDActions<R, L, L, S, S, S>(
       http,
-      singular,
-      singular,
-      plural,
-      singular,
-      plural,
+      listRoute,
+      listRoute,
+      specificRoute,
+      specificRoute,
+      specificRoute,
       actionName,
     )
   }
 
-  getActionTypes(): IActionTypes {
+  getActionTypes(): ICRUDActionTypes {
     const {actionName} = this
     return {
       get: actionName + '_GET_PENDING',
@@ -64,7 +65,7 @@ export class CRUDActions<
     }
   }
 
-  async get(params: {
+  get(params: {
     query: T[GET]['get']['query'],
     params: T[GET]['get']['params'],
   }) {
@@ -74,7 +75,7 @@ export class CRUDActions<
     }
   }
 
-  async post(params: {
+  post(params: {
     body: T[POST]['post']['body'],
     params: T[POST]['post']['params'],
   }) {
@@ -84,7 +85,7 @@ export class CRUDActions<
     }
   }
 
-  async put(params: {
+  put(params: {
     body: T[PUT]['put']['body'],
     params: T[PUT]['put']['params'],
   }) {
@@ -94,7 +95,7 @@ export class CRUDActions<
     }
   }
 
-  async delete(params: {
+  delete(params: {
     body: T[DELETE]['delete']['body'],
     params: T[DELETE]['delete']['params'],
   }) {
@@ -104,7 +105,7 @@ export class CRUDActions<
     }
   }
 
-  async getMany(params: {
+  getMany(params: {
     query: T[GET_MANY]['get']['query'],
     params: T[GET_MANY]['get']['params'],
   }) {

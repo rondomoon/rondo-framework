@@ -1,8 +1,7 @@
 import {IAction} from '../actions'
 import {indexBy, without} from '@rondo/common'
 
-export type ICRUDMethod =
-  'put' | 'post' | 'delete' | 'get' | 'getMany'
+export type ICRUDMethod = 'put' | 'post' | 'delete' | 'get' | 'getMany'
 
 export interface ICRUDIdable {
   readonly id: number
@@ -44,7 +43,7 @@ export class CRUDReducer<T extends ICRUDIdable> {
   readonly actionTypes: ReturnType<CRUDReducer<T>['getActionTypes']>
 
   constructor(
-    readonly actions: ICRUDActions,
+    readonly actionName: string,
     readonly pendingExtension = '_PENDING',
     readonly resolvedExtension = '_RESOLVED',
     readonly rejectedExtension = '_REJECTED',
@@ -77,10 +76,10 @@ export class CRUDReducer<T extends ICRUDIdable> {
       },
     }
 
-    this.actionTypes = this.getActionTypes()
+    this.actionTypes = this.getActionTypes(actionName)
   }
 
-  getPromiseActionNames(type: string) {
+  protected getPromiseActionNames(type: string) {
     return {
       pending: type + this.pendingExtension,
       resolved: type + this.resolvedExtension,
@@ -88,18 +87,17 @@ export class CRUDReducer<T extends ICRUDIdable> {
     }
   }
 
-  getActionTypes() {
-    const {actions} = this
+  protected getActionTypes(actionName: string) {
     return {
-      put: this.getPromiseActionNames(actions.put),
-      post: this.getPromiseActionNames(actions.post),
-      delete: this.getPromiseActionNames(actions.delete),
-      get: this.getPromiseActionNames(actions.get),
-      getMany: this.getPromiseActionNames(actions.getMany),
+      put: this.getPromiseActionNames(actionName + '_PUT'),
+      post: this.getPromiseActionNames(actionName + '_POST'),
+      delete: this.getPromiseActionNames(actionName + '_DELETE'),
+      get: this.getPromiseActionNames(actionName + '_GET'),
+      getMany: this.getPromiseActionNames(actionName + '_GET_MANY'),
     }
   }
 
-  getUpdatedStatus(
+  protected getUpdatedStatus(
     state: ICRUDStatus,
     method: ICRUDMethod,
     status: ICRUDMethodStatus,
@@ -110,7 +108,7 @@ export class CRUDReducer<T extends ICRUDIdable> {
     }
   }
 
-  getMethod(actionType: string): ICRUDMethod {
+  protected getMethod(actionType: string): ICRUDMethod {
     const {get, put, post, delete: _delete, getMany} = this.actionTypes
     switch (actionType) {
       case get.pending:
@@ -133,14 +131,14 @@ export class CRUDReducer<T extends ICRUDIdable> {
     }
   }
 
-  getSuccessStatus(): ICRUDMethodStatus {
+  protected getSuccessStatus(): ICRUDMethodStatus {
     return {
       isLoading: false,
       error: '',
     }
   }
 
-  reduce = (state: ICRUDState<T>, action: ICRUDAction<T | T[]>)
+  reduce = (state: ICRUDState<T> | undefined, action: ICRUDAction<T | T[]>)
   : ICRUDState<T> => {
     const {defaultState} = this
     state = state || defaultState

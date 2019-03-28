@@ -48,7 +48,9 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
           const key = this.serialize(req)
           if (!this.mocks.hasOwnProperty(key)) {
             setImmediate(() => {
-              const err = new Error('No mock for request: ' + key)
+              const err = new Error(
+                'No mock for request: ' + key + '\nAvailable mocks:' +
+                Object.keys(this.mocks))
               reject(err)
               currentRequest.finished = true
               this.notify(err)
@@ -124,6 +126,9 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
    *     expect(req).toEqual({method:'get', url:'/auth/post', data: {...}})
    */
   async wait(): Promise<IReqRes> {
+    if (this.requests.every(r => r.finished)) {
+      throw new Error('No requests to wait for')
+    }
     expect(this.waitPromise).toBe(undefined)
     const result: IReqRes = await new Promise((resolve, reject) => {
       this.waitPromise = {resolve, reject}
