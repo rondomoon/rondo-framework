@@ -1,6 +1,6 @@
 import {IAction} from './IAction'
 
 export interface IPendingAction<T, ActionType extends string> extends
-  IAction<ActionType> {
-  payload: Promise<T>
+  IAction<Promise<T>, ActionType> {
+  status: 'pending'
 }

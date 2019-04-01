@@ -48,35 +48,29 @@ export class CRUDReducer<T extends ICRUDIdable> {
     readonly resolvedExtension = '_RESOLVED',
     readonly rejectedExtension = '_REJECTED',
   ) {
+
+    const defaultMethodStatus = this.getDefaultMethodStatus()
     this.defaultState = {
       ids: [],
       byId: {},
 
       status: {
-        post: {
-          error: '',
-          isLoading: false,
-        },
-        put: {
-          error: '',
-          isLoading: false,
-        },
-        delete: {
-          error: '',
-          isLoading: false,
-        },
-        get: {
-          error: '',
-          isLoading: false,
-        },
-        getMany: {
-          error: '',
-          isLoading: false,
-        },
+        post: defaultMethodStatus,
+        put: defaultMethodStatus,
+        delete: defaultMethodStatus,
+        get: defaultMethodStatus,
+        getMany: defaultMethodStatus,
       },
     }
 
     this.actionTypes = this.getActionTypes()
+  }
+
+  getDefaultMethodStatus(): ICRUDMethodStatus {
+    return {
+      error: '',
+      isLoading: false,
+    }
   }
 
   protected getPromiseActionNames(type: string) {

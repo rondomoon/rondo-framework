@@ -1,4 +1,4 @@
-import {GetAction, IResolvedAction} from '../actions'
+import {GetAction, IAction} from '../actions'
 
 export interface ICrumbLink {
   name: string
@@ -11,7 +11,7 @@ export interface ICrumbs {
 }
 
 export type CrumbsActionType =
-  IResolvedAction<ICrumbs, 'BREADCRUMBS_SET'>
+  IAction<ICrumbs, 'BREADCRUMBS_SET'>
 
 type Action<T extends string> = GetAction<CrumbsActionType, T>
 

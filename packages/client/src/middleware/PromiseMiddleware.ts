@@ -20,45 +20,34 @@ function isPromise(value: any): value is Promise<any> {
  *     const middleware = applyMiddleware(new PromiseMiddleware().handle)
  */
 export class PromiseMiddleware {
-  protected regexp: RegExp
-
-  constructor(
-    readonly pendingExtension = '_PENDING',
-    readonly resolvedExtension = '_RESOLVED',
-    readonly rejectedExtension = '_REJECTED',
-  ) {
-    assert(
-      this.pendingExtension !== this.resolvedExtension &&
-      this.resolvedExtension !== this.rejectedExtension &&
-      this.pendingExtension !== this.rejectedExtension,
-      'Pending, resolved and rejected extensions must be unique')
-
-    this.regexp = new RegExp(pendingExtension + '$')
-  }
   handle: Middleware = store => next => (action: AnyAction) => {
     const {payload, type} = action
-    // Propagate this action. Only attach listeners to the promise.
-    next(action)
     if (!isPromise(payload)) {
-      return
+      return next(action)
     }
-
-    const strippedType = type.replace(this.regexp, '')
+    const pendingAction = {
+      ...action,
+      status: 'pending',
+    }
+    // Propagate this action. Only attach listeners to the promise.
+    next(pendingAction)
 
     payload
     .then(result => {
       store.dispatch({
         payload: result,
-        type: strippedType + this.resolvedExtension,
+        status: 'resolved',
+        type,
       })
     })
     .catch(err => {
       store.dispatch({
         error: err,
-        type: strippedType + this.rejectedExtension,
+        status: 'rejected',
+        type,
       })
     })
 
-    return action
+    return pendingAction
   }
 }

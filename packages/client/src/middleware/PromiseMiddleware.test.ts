@@ -4,13 +4,6 @@ import {getError} from '../test-utils'
 
 describe('PromiseMiddleware', () => {
 
-  describe('constructor', () => {
-    it('throws an error when action types are the same', () => {
-      expect(() => new PromiseMiddleware('a', 'a', 'a')).toThrowError()
-      expect(new PromiseMiddleware('a', 'b', 'c')).toBeTruthy()
-    })
-  })
-
   let store!: Store
   beforeEach(() => {
     const middleware = new PromiseMiddleware()
@@ -22,8 +15,11 @@ describe('PromiseMiddleware', () => {
 
   it('does nothing when payload is not a promise', () => {
     const action = {type: 'test'}
-    store.dispatch(action)
-    expect(store.getState().slice(1)).toEqual([action])
+    const result = store.dispatch(action)
+    expect(result).toBe(action)
+    expect(store.getState().slice(1)).toEqual([{
+      type: action.type,
+    }])
   })
 
   it('dispatches pending and resolved action', async () => {
@@ -31,16 +27,21 @@ describe('PromiseMiddleware', () => {
     const type = 'TEST'
     const action = {
       payload: Promise.resolve(value),
-      type: `${type}_PENDING`,
+      type,
     }
     const result = store.dispatch(action)
-    expect(result).toBe(action)
+    expect(result).toEqual({
+      ...action,
+      status: 'pending',
+    })
     await result.payload
     expect(store.getState().slice(1)).toEqual([{
       ...action,
+      status: 'pending',
     }, {
       payload: value,
-      type: type + '_RESOLVED',
+      status: 'resolved',
+      type,
     }])
   })
 
@@ -49,17 +50,23 @@ describe('PromiseMiddleware', () => {
     const type = 'TEST'
     const action = {
       payload: Promise.reject(error),
-      type: `${type}_PENDING`,
+      type,
     }
     const result = store.dispatch(action)
-    expect(result).toBe(action)
+    expect(result).toEqual({
+      ...action,
+      status: 'pending',
+    })
     const err = await getError(result.payload)
     expect(err).toBe(error)
     expect(store.getState().slice(1)).toEqual([{
-      ...action,
+      payload: action.payload,
+      status: 'pending',
+      type,
     }, {
       error,
-      type: `${type}_REJECTED`,
+      status: 'rejected',
+      type,
     }])
   })
 

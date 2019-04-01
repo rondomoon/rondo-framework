@@ -1,3 +1,4 @@
-export interface IAction<ActionType extends string> {
+export interface IAction<T, ActionType extends string> {
+  payload: T
   type: ActionType
 }

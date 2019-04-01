@@ -1,6 +1,7 @@
 import {IAction} from './IAction'
 
 export interface IResolvedAction<T, ActionType extends string> extends
-  IAction<ActionType> {
+  IAction<T, ActionType> {
   payload: T
+  status: 'resolved'
 }
