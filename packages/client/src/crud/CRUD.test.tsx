@@ -1,7 +1,9 @@
 import React from 'react'
 import {AnyAction} from 'redux'
-import {CRUDActions, CRUDReducer} from './'
+import {CRUDActions, CRUDReducer, ICRUDMethod} from './'
 import {HTTPClientMock, TestUtils, getError} from '../test-utils'
+import {IMethod} from '@rondo/common'
+import {IPendingAction} from '../actions'
 
 describe('CRUD', () => {
 
@@ -27,7 +29,6 @@ describe('CRUD', () => {
     '/one/:oneId/two/:twoId': {
       get: {
         params: ITwoSpecificParams
-        body: ITwoCreateBody
         response: ITwo
       }
       put: {
@@ -37,7 +38,7 @@ describe('CRUD', () => {
       }
       delete: {
         params: ITwoSpecificParams
-        response: {id: number}
+        response: {id: number} // TODO return ITwoSpecificParams
       }
     }
     '/one/:oneId/two': {
@@ -60,7 +61,8 @@ describe('CRUD', () => {
     specificRoute: '/one/:oneId/two/:twoId',
     actionName: 'TEST',
   })
-  const Crud = new CRUDReducer<ITwo>('TEST').reduce
+  const crudReducer = new CRUDReducer<ITwo>('TEST')
+  const Crud = crudReducer.reduce
 
   const test = new TestUtils()
   const reducer = test.combineReducers({
@@ -73,6 +75,8 @@ describe('CRUD', () => {
     return test.createStore({reducer})()
   }
 
+  type Store = ReturnType<typeof getStore>
+
   afterEach(() => {
     http.mockClear()
   })
@@ -83,71 +87,211 @@ describe('CRUD', () => {
     })
   })
 
-  describe('GET_MANY', () => {
+  function expectActions(actionTypes: string[]) {
+    const state = store.getState()
+    // first action is redux initializer
+    expect(state.Logger.slice(1)).toEqual(actionTypes)
+  }
 
-    function getAction(store: ReturnType<typeof getStore>) {
-      const action = store.dispatch(actions.getMany({
-        query: {},
+  let store: Store
+  beforeEach(() => {
+    store = getStore()
+  })
+
+  function dispatch(
+    method: ICRUDMethod,
+    action: IPendingAction<unknown, string>,
+  ) {
+    store.dispatch(action)
+    expect(store.getState().Crud.status[method].isLoading).toBe(true)
+    expectActions([action.type])
+    return action
+  }
+
+  function getUrl(method: ICRUDMethod) {
+    return method === 'post' || method === 'getMany'
+      ? '/one/1/two'
+      : '/one/1/two/2'
+  }
+
+  function getHTTPMethod(method: ICRUDMethod): IMethod {
+    return method === 'getMany' ? 'get' : method
+  }
+
+  describe('Promise rejections', () => {
+    const testCases: Array<{
+      method: ICRUDMethod
+      params: any
+    }> = [{
+      method: 'get',
+      params: {
+        params: {oneId: 1, twoId: 2},
+      },
+    }, {
+      method: 'getMany',
+      params: {
         params: {oneId: 1},
-      }))
-      const state = store.getState()
-      expect(state.Crud.status.getMany.isLoading).toBe(true)
-      expect(state.Logger).toEqual([
-        jasmine.any(String),
-        'TEST_GET_MANY_PENDING',
-      ])
-      return action
-    }
+      },
+    }, {
+      method: 'post',
+      params: {
+        body: {name: 'test'},
+        params: {oneId: 1, twoId: 2},
+      },
+    }, {
+      method: 'put',
+      params: {
+        body: {name: 'test'},
+        params: {oneId: 1, twoId: 2},
+      },
+    }, {
+      method: 'delete',
+      params: {
+        body: {},
+        params: {oneId: 1, twoId: 2},
+      },
+    }]
 
-    describe('TEST_GET_MANY_RESOLVED', () => {
-      beforeEach(() => {
-        http.mockAdd({
-          method: 'get',
-          url: '/one/1/two',
-          params: {},
-        }, [{id: 2, name: 'bla'}])
+    testCases.forEach(testCase => {
+
+      const {method} = testCase
+      describe(method, () => {
+        beforeEach(() => {
+          http.mockAdd({
+            url: getUrl(method),
+            method: getHTTPMethod(method),
+            data: method === 'put' || method === 'post' || method === 'delete'
+              ? testCase.params.body
+            : undefined,
+          }, {error: 'Test Error'}, 400)
+        })
+
+        it(`updates status on error: ${method}`, async () => {
+          const action = actions[method](testCase.params)
+          dispatch(testCase.method, action)
+          await getError(action.payload)
+          const state = store.getState()
+          expect(state.Crud.byId).toEqual({})
+          expect(state.Crud.ids).toEqual([])
+          expect(state.Crud.status[method].isLoading).toBe(false)
+          // TODO use error from response
+          expect(state.Crud.status[method].error).toEqual('HTTP Status: 400')
+          expectActions([
+            action.type,
+            action.type.replace(/_PENDING$/, '_REJECTED'),
+          ])
+        })
       })
 
-      it('updates state', async () => {
-        const store = getStore()
-        const action = getAction(store)
-        await action.payload
-        const state = store.getState()
-        expect(state.Crud.status.getMany.isLoading).toBe(false)
-        expect(state.Crud.ids).toEqual([2])
-        expect(state.Crud.byId[2]).toEqual({id: 2, name: 'bla'})
-        expect(state.Logger).toEqual([
-          jasmine.any(String),
-          'TEST_GET_MANY_PENDING',
-          'TEST_GET_MANY_RESOLVED',
-        ])
+    })
+
+  })
+
+  describe('Resolved promises', () => {
+    const entity = {id: 100, name: 'test'}
+
+    const testCases: Array<{
+      method: ICRUDMethod
+      params: any
+      body?: any
+      response: any
+    }> = [{
+      method: 'getMany',
+      params: {oneId: 1, twoId: 2},
+      response: [entity],
+    }, {
+      method: 'get',
+      params: {oneId: 1, twoId: 2},
+      response: entity,
+    }, {
+      method: 'post',
+      params: {oneId: 1},
+      body: {name: entity.name},
+      response: entity,
+    }, {
+      method: 'put',
+      params: {oneId: 1, twoId: 2},
+      body: {name: entity.name},
+      response: entity,
+    }, {
+      method: 'delete',
+      params: {oneId: 1, twoId: 2},
+      response: {id: entity.id},
+    }]
+
+    testCases.forEach(testCase => {
+      const {method} = testCase
+
+      describe(method, () => {
+        beforeEach(() => {
+          http.mockAdd({
+            url: getUrl(method),
+            method: getHTTPMethod(method),
+            data: testCase.body,
+          }, testCase.response)
+        })
+
+        afterEach(() => {
+          http.mockClear()
+        })
+
+        it('updates state', async () => {
+          const action = dispatch(testCase.method, actions[method]({
+            query: undefined,
+            params: testCase.params,
+            body: testCase.body,
+          }))
+          await action.payload
+          const state = store.getState()
+          expect(state.Crud.status.getMany.isLoading).toBe(false)
+          if (method === 'delete') {
+            expect(state.Crud.ids).toEqual([])
+            expect(state.Crud.byId[entity.id]).toBe(undefined)
+          } else {
+            if (method !== 'put') {
+              expect(state.Crud.ids).toEqual([entity.id])
+            }
+            expect(state.Crud.byId[entity.id]).toEqual(entity)
+          }
+        })
       })
     })
 
-    describe('TEST_GET_MANY_REJECTED', () => {
+    describe('POST then DELETE', () => {
+
+      const postTestCase = testCases.find(t => t.method === 'post')!
+      const deleteTestCase = testCases.find(t => t.method === 'delete')!
+
       beforeEach(() => {
         http.mockAdd({
-          method: 'get',
-          url: '/one/1/two',
-          params: {},
-        }, {error: 'Test Error'}, 400)
+          url: getUrl(postTestCase.method),
+          method: getHTTPMethod(postTestCase.method),
+          data: postTestCase.body,
+        }, postTestCase.response)
+        http.mockAdd({
+          url: getUrl(deleteTestCase.method),
+          method: getHTTPMethod(deleteTestCase.method),
+          data: deleteTestCase.body,
+        }, deleteTestCase.response)
       })
 
-      it('updates state', async () => {
-        const store = getStore()
-        const action = getAction(store)
-        await getError(action.payload)
-        const state = store.getState()
-        expect(state.Crud.status.getMany.isLoading).toBe(false)
-        // TODO use error from response
-        expect(state.Crud.status.getMany.error).toBe('HTTP Status: 400')
-        expect(state.Crud.ids).toEqual([])
-        expect(state.Crud.byId).toEqual({})
-        expect(state.Logger).toEqual([
-          jasmine.any(String),
-          'TEST_GET_MANY_PENDING',
-          'TEST_GET_MANY_REJECTED',
-        ])
+      afterEach(() => {
+        http.mockClear()
+      })
+
+      it('removes id and entity from state', async () => {
+        const action1 = store.dispatch(actions.post({
+          params: postTestCase.params,
+          body: postTestCase.body,
+        }))
+        await action1.payload
+        expect(store.getState().Crud.ids).toEqual([entity.id])
+        const action2 = store.dispatch(actions.delete({
+          params: deleteTestCase.params,
+          body: deleteTestCase.body,
+        }))
+        await action2.payload
+        expect(store.getState().Crud.ids).toEqual([])
       })
     })
 

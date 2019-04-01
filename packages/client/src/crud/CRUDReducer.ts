@@ -19,11 +19,11 @@ export interface ICRUDState<T extends ICRUDIdable> {
 }
 
 export interface ICRUDStatus {
-    readonly post: ICRUDMethodStatus
-    readonly put: ICRUDMethodStatus
-    readonly delete: ICRUDMethodStatus
-    readonly get: ICRUDMethodStatus
-    readonly getMany: ICRUDMethodStatus
+  readonly post: ICRUDMethodStatus
+  readonly put: ICRUDMethodStatus
+  readonly delete: ICRUDMethodStatus
+  readonly get: ICRUDMethodStatus
+  readonly getMany: ICRUDMethodStatus
 }
 
 export interface ICRUDActions {
@@ -76,7 +76,7 @@ export class CRUDReducer<T extends ICRUDIdable> {
       },
     }
 
-    this.actionTypes = this.getActionTypes(actionName)
+    this.actionTypes = this.getActionTypes()
   }
 
   protected getPromiseActionNames(type: string) {
@@ -87,7 +87,8 @@ export class CRUDReducer<T extends ICRUDIdable> {
     }
   }
 
-  protected getActionTypes(actionName: string) {
+  protected getActionTypes() {
+    const {actionName} = this
     return {
       put: this.getPromiseActionNames(actionName + '_PUT'),
       post: this.getPromiseActionNames(actionName + '_POST'),

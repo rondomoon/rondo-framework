@@ -1,6 +1,8 @@
 import {IRoutes} from '@rondo/common'
 import {IHTTPClient, ITypedRequestParams} from '../http'
 
+export type Optional<T> = T extends {} ? T : undefined
+
 interface ICRUDActionTypes {
   readonly get: string
   readonly put: string
@@ -66,7 +68,7 @@ export class CRUDActions<
   }
 
   get(params: {
-    query: T[GET]['get']['query'],
+    query: Optional<T[GET]['get']['query']>,
     params: T[GET]['get']['params'],
   }) {
     return {
@@ -106,7 +108,7 @@ export class CRUDActions<
   }
 
   getMany(params: {
-    query: T[GET_MANY]['get']['query'],
+    query: Optional<T[GET_MANY]['get']['query']>,
     params: T[GET_MANY]['get']['params'],
   }) {
     return {

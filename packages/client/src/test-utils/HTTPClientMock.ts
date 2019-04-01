@@ -49,7 +49,7 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
           if (!this.mocks.hasOwnProperty(key)) {
             setImmediate(() => {
               const err = new Error(
-                'No mock for request: ' + key + '\nAvailable mocks:' +
+                'No mock for request: ' + key + '\nAvailable mocks: ' +
                 Object.keys(this.mocks))
               reject(err)
               currentRequest.finished = true
@@ -76,7 +76,12 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
   }
 
   protected serialize(req: IRequest) {
-    return JSON.stringify(req, null, '  ')
+    return JSON.stringify({
+      method: req.method,
+      url: req.url,
+      params: req.params,
+      data: req.data,
+    }, null, '  ')
   }
 
   /**
