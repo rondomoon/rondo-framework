@@ -67,50 +67,50 @@ export class CRUDActions<
     }
   }
 
-  get(params: {
+  get = (params: {
     query: Optional<T[GET]['get']['query']>,
     params: T[GET]['get']['params'],
-  }) {
+  }) => {
     return {
       payload: this.http.get(this.getRoute, params.query, params.params),
       type: this.actionTypes.get,
     }
   }
 
-  post(params: {
+  post = (params: {
     body: T[POST]['post']['body'],
     params: T[POST]['post']['params'],
-  }) {
+  }) => {
     return {
       payload: this.http.post(this.postRoute, params.body, params.params),
       type: this.actionTypes.post,
     }
   }
 
-  put(params: {
+  put = (params: {
     body: T[PUT]['put']['body'],
     params: T[PUT]['put']['params'],
-  }) {
+  }) => {
     return {
       payload: this.http.put(this.putRoute, params.body, params.params),
       type: this.actionTypes.put,
     }
   }
 
-  delete(params: {
+  delete = (params: {
     body: T[DELETE]['delete']['body'],
     params: T[DELETE]['delete']['params'],
-  }) {
+  }) => {
     return {
       payload: this.http.delete(this.deleteRoute, params.body, params.params),
       type: this.actionTypes.delete,
     }
   }
 
-  getMany(params: {
+  getMany = (params: {
     query: Optional<T[GET_MANY]['get']['query']>,
     params: T[GET_MANY]['get']['params'],
-  }) {
+  }) => {
     return {
       payload: this.http.get(this.getManyRoute, params.query, params.params),
       type: this.actionTypes.getMany,
