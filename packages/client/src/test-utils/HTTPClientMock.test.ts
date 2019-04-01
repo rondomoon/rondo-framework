@@ -30,8 +30,9 @@ describe('HTTPClientMock', () => {
         {method: 'get', url: '/test'},
         {error: 'Internal'}, 500)
 
+      const errorPromise = http.get('/test')
       const waitPromise = http.wait()
-      const error = await getError(http.get('/test'))
+      const error = await getError(errorPromise)
       const error2 = await getError(waitPromise)
       expect(error.message).toEqual('HTTP Status: 500')
       expect(error2).toBe(error)
