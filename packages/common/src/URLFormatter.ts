@@ -22,7 +22,9 @@ export class URLFormatter {
     if (params) {
       formattedUrl = url.replace(this.params.regex, match => {
         const key = match.substring(1)
-        assert(params.hasOwnProperty(key))
+        if (!params.hasOwnProperty(key)) {
+          throw new Error('Undefined URL paramter: ' + key)
+        }
         return String(params![key])
       })
     }
