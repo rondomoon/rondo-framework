@@ -1,5 +1,6 @@
 export * from './actions'
 export * from './components'
+export * from './crud'
 export * from './crumbs'
 export * from './csrf'
 export * from './http'
