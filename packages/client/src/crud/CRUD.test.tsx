@@ -58,8 +58,8 @@ describe('CRUD', () => {
   const http = new HTTPClientMock<ITestAPI>()
   const actions = createCRUDActions(
     http,
-    '/one/:oneId/two',
     '/one/:oneId/two/:twoId',
+    '/one/:oneId/two',
     'TEST',
   )
   const crudReducer = new CRUDReducer<ITwo, 'TEST'>('TEST')
@@ -249,7 +249,6 @@ describe('CRUD', () => {
 
         it('updates state', async () => {
           const action = dispatch(testCase.method, actions[method]({
-            query: undefined,
             params: testCase.params,
             body: testCase.body,
           }))
@@ -300,7 +299,6 @@ describe('CRUD', () => {
         expect(store.getState().Crud.ids).toEqual([entity.id])
         const action2 = store.dispatch(actions.remove({
           params: removeTestCase.params,
-          body: removeTestCase.body,
         }))
         await action2.payload
         expect(store.getState().Crud.ids).toEqual([])

@@ -1,9 +1,7 @@
 import {IAction, IResolvedAction} from '../actions'
 import {ICRUDAction} from './ICRUDAction'
 import {ICRUDMethod} from './ICRUDMethod'
-import {indexBy, without} from '@rondo/common'
-
-type Filter<T, U> = T extends U ? T : never
+import {indexBy, without, Filter} from '@rondo/common'
 
 export interface ICRUDEntity {
   readonly id: number
