@@ -1,12 +1,10 @@
-import {ICRUDAction} from './ICRUDAction'
-import {ICRUDMethod} from './ICRUDMethod'
+import {TCRUDAction} from './TCRUDAction'
+import {TCRUDMethod} from './TCRUDMethod'
 import {IHTTPClient, ITypedRequestParams} from '../http'
-import {IRoutes, Filter, OnlyDefined} from '@rondo/common'
+import {IRoutes, TFilter, TOnlyDefined} from '@rondo/common'
 
-export type Optional<T> = T extends {} ? T : undefined
-
-type Action<T, ActionType extends string, Method extends ICRUDMethod> =
-  Filter<ICRUDAction<T, ActionType>, {method: Method, status: 'pending'}>
+type TAction<T, ActionType extends string, Method extends TCRUDMethod> =
+  TFilter<TCRUDAction<T, ActionType>, {method: Method, status: 'pending'}>
 
 export class SaveActionCreator<
   T extends IRoutes,
@@ -20,10 +18,10 @@ export class SaveActionCreator<
     readonly type: ActionType,
   ) {}
 
-  save = (params: OnlyDefined<{
+  save = (params: TOnlyDefined<{
     body: T[Route]['post']['body'],
     params: T[Route]['post']['params'],
-  }>): Action<T[Route]['post']['response'], ActionType, 'save'> => {
+  }>): TAction<T[Route]['post']['response'], ActionType, 'save'> => {
     const p = params as any
     return {
       payload: this.http.post(this.route, p.body, p.params),
@@ -46,10 +44,10 @@ export class FindOneActionCreator<
     readonly type: ActionType,
   ) {}
 
-  findOne = (params: OnlyDefined<{
-    query: Optional<T[Route]['get']['query']>,
+  findOne = (params: TOnlyDefined<{
+    query: T[Route]['get']['query'],
     params: T[Route]['get']['params'],
-  }>): Action<T[Route]['get']['response'], ActionType, 'findOne'> => {
+  }>): TAction<T[Route]['get']['response'], ActionType, 'findOne'> => {
     const p = params as any
     return {
       payload: this.http.get(this.route, p.query, p.params),
@@ -73,10 +71,10 @@ export class UpdateActionCreator<
     readonly type: ActionType,
   ) {}
 
-  update = (params: OnlyDefined<{
+  update = (params: TOnlyDefined<{
     body: T[Route]['put']['body'],
     params: T[Route]['put']['params'],
-  }>): Action<T[Route]['put']['response'], ActionType, 'update'> => {
+  }>): TAction<T[Route]['put']['response'], ActionType, 'update'> => {
     const p = params as any
     return {
       payload: this.http.put(this.route, p.body, p.params),
@@ -100,10 +98,10 @@ export class RemoveActionCreator<
     readonly type: ActionType,
   ) {}
 
-  remove = (params: OnlyDefined<{
-    body: Optional<T[Route]['delete']['body']>,
+  remove = (params: TOnlyDefined<{
+    body: T[Route]['delete']['body'],
     params: T[Route]['delete']['params'],
-  }>): Action<T[Route]['delete']['response'], ActionType, 'remove'> => {
+  }>): TAction<T[Route]['delete']['response'], ActionType, 'remove'> => {
     const p = params as any
     return {
       payload: this.http.delete(this.route, p.body, p.params),
@@ -126,8 +124,8 @@ export class FindManyActionCreator<
     readonly type: ActionType,
   ) {}
 
-  findMany = (params: OnlyDefined<{
-    query: Optional<T[Route]['get']['query']>,
+  findMany = (params: TOnlyDefined<{
+    query: T[Route]['get']['query'],
     params: T[Route]['get']['params'],
   }>): {
     payload: Promise<T[Route]['get']['response']>

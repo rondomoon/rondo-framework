@@ -1,17 +1,17 @@
 import {
-  ITeam, IUserInTeam, ReadonlyRecord, indexBy, without,
+  ITeam, IUserInTeam, TReadonlyRecord, indexBy, without,
 } from '@rondo/common'
-import {TeamActionType} from './TeamActions'
-import {GetResolvedAction} from '../actions'
+import {TTeamAction} from './TeamActions'
+import {TGetResolvedAction} from '../actions'
 
 export interface ITeamState {
   readonly error: string
 
   readonly teamIds: ReadonlyArray<number>
-  readonly teamsById: ReadonlyRecord<number, ITeam>
+  readonly teamsById: TReadonlyRecord<number, ITeam>
 
-  readonly userKeysByTeamId: ReadonlyRecord<number, ReadonlyArray<string>>
-  readonly usersByKey: ReadonlyRecord<string, IUserInTeam>
+  readonly userKeysByTeamId: TReadonlyRecord<number, ReadonlyArray<string>>
+  readonly usersByKey: TReadonlyRecord<string, IUserInTeam>
 }
 
 const defaultState: ITeamState = {
@@ -26,7 +26,7 @@ const defaultState: ITeamState = {
 
 function removeUser(
   state: ITeamState,
-  action: GetResolvedAction<TeamActionType, 'TEAM_USER_REMOVE'>,
+  action: TGetResolvedAction<TTeamAction, 'TEAM_USER_REMOVE'>,
 ) {
 
   const {payload} = action
@@ -52,7 +52,7 @@ function getUserKey(userInTeam: {userId: number, teamId: number}) {
   return `${userInTeam.teamId}_${userInTeam.userId}`
 }
 
-export function Team(state = defaultState, action: TeamActionType): ITeamState {
+export function Team(state = defaultState, action: TTeamAction): ITeamState {
   switch (action.status) {
     case 'pending':
       return state

@@ -1,9 +1,9 @@
 import {createCRUDActions} from './CRUDActions'
 import React from 'react'
 import {AnyAction} from 'redux'
-import {CRUDReducer, ICRUDMethod} from './'
+import {CRUDReducer, TCRUDMethod} from './'
 import {HTTPClientMock, TestUtils, getError} from '../test-utils'
-import {IMethod} from '@rondo/common'
+import {TMethod} from '@rondo/common'
 import {IPendingAction} from '../actions'
 
 describe('CRUD', () => {
@@ -100,7 +100,7 @@ describe('CRUD', () => {
   })
 
   function dispatch(
-    method: ICRUDMethod,
+    method: TCRUDMethod,
     action: IPendingAction<unknown, string>,
   ) {
     store.dispatch(action)
@@ -109,13 +109,13 @@ describe('CRUD', () => {
     return action
   }
 
-  function getUrl(method: ICRUDMethod) {
+  function getUrl(method: TCRUDMethod) {
     return method === 'save' || method === 'findMany'
       ? '/one/1/two'
       : '/one/1/two/2'
   }
 
-  function getHTTPMethod(method: ICRUDMethod): IMethod {
+  function getHTTPMethod(method: TCRUDMethod): TMethod {
     switch (method) {
       case 'save':
         return 'post'
@@ -131,7 +131,7 @@ describe('CRUD', () => {
 
   describe('Promise rejections', () => {
     const testCases: Array<{
-      method: ICRUDMethod
+      method: TCRUDMethod
       params: any
     }> = [{
       method: 'findOne',
@@ -203,7 +203,7 @@ describe('CRUD', () => {
     const entity = {id: 100, name: 'test'}
 
     const testCases: Array<{
-      method: ICRUDMethod
+      method: TCRUDMethod
       params: any
       body?: any
       response: any

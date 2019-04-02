@@ -1,7 +1,7 @@
 import {Connector} from '../redux/Connector'
 import {INewUser} from '@rondo/common'
 import {ILoginState} from './LoginReducer'
-import {IStateSelector} from '../redux'
+import {TStateSelector} from '../redux'
 import {LoginActions} from './LoginActions'
 import {RegisterForm} from './RegisterForm'
 import {bindActionCreators} from 'redux'
@@ -20,7 +20,7 @@ export class RegisterConnector extends Connector<ILoginState> {
     super()
   }
 
-  connect<State>(getLocalState: IStateSelector<State, ILoginState>) {
+  connect<State>(getLocalState: TStateSelector<State, ILoginState>) {
     return this.wrap(
       getLocalState,
       state => ({

@@ -4,7 +4,7 @@ import {ITeam} from '@rondo/common'
 import {TeamActions} from './TeamActions'
 import {FaPlusSquare, FaCheck, FaEdit} from 'react-icons/fa'
 
-export type ITeamEditorProps = {
+export type TTeamEditorProps = {
   type: 'add'
   onAddTeam: TeamActions['createTeam']
 } | {
@@ -20,8 +20,8 @@ export interface ITeamEditorState {
 }
 
 export class TeamEditor
-extends React.PureComponent<ITeamEditorProps, ITeamEditorState> {
-  constructor(props: ITeamEditorProps) {
+extends React.PureComponent<TTeamEditorProps, ITeamEditorState> {
+  constructor(props: TTeamEditorProps) {
     super(props)
     this.state = {
       error: '',
@@ -31,7 +31,7 @@ extends React.PureComponent<ITeamEditorProps, ITeamEditorState> {
   getName(team?: ITeam) {
     return team ? team.name : ''
   }
-  componentWillReceiveProps(nextProps: ITeamEditorProps) {
+  componentWillReceiveProps(nextProps: TTeamEditorProps) {
     if (nextProps.type === 'update') {
       const {team} = nextProps
       if (team !== (this.props as any).team) {

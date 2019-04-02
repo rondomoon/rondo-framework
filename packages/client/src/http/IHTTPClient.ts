@@ -1,10 +1,10 @@
-import {IMethod, IRoutes} from '@rondo/common'
+import {TMethod, IRoutes} from '@rondo/common'
 import {ITypedRequestParams} from './ITypedRequestParams'
 
 export interface IHTTPClient<T extends IRoutes> {
   request<
     P extends keyof T & string,
-    M extends IMethod,
+    M extends TMethod,
   >(params: ITypedRequestParams<T, P, M>): Promise<T[P][M]['response']>
 
   get<P extends keyof T & string>(

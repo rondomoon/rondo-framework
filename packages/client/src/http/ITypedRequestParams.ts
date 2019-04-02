@@ -1,9 +1,9 @@
-import {IRoutes, IMethod} from '@rondo/common'
+import {IRoutes, TMethod} from '@rondo/common'
 
 export interface ITypedRequestParams<
   T extends IRoutes,
   P extends keyof T & string,
-  M extends IMethod,
+  M extends TMethod,
 > {
   method: M,
   path: P,

@@ -1,14 +1,14 @@
-import {GetAction, IAsyncAction, IAction, PendingAction} from '../actions'
+import {TGetAction, TAsyncAction, IAction, PendingAction} from '../actions'
 import {IAPIDef, ICredentials, INewUser, IUser} from '@rondo/common'
 import {IHTTPClient} from '../http/IHTTPClient'
 
-export type LoginActionType =
-  IAsyncAction<IUser, 'LOGIN'>
-  | IAsyncAction<unknown, 'LOGIN_LOGOUT'>
-  | IAsyncAction<IUser, 'LOGIN_REGISTER'>
+export type TLoginAction =
+  TAsyncAction<IUser, 'LOGIN'>
+  | TAsyncAction<unknown, 'LOGIN_LOGOUT'>
+  | TAsyncAction<IUser, 'LOGIN_REGISTER'>
   | IAction<{redirectTo: string}, 'LOGIN_REDIRECT_SET'>
 
-type Action<T extends string> = GetAction<LoginActionType, T>
+type TAction<T extends string> = TGetAction<TLoginAction, T>
 
 export class LoginActions {
   constructor(protected readonly http: IHTTPClient<IAPIDef>) {}
@@ -34,7 +34,7 @@ export class LoginActions {
     )
   }
 
-  setRedirectTo = (redirectTo: string): Action<'LOGIN_REDIRECT_SET'> => {
+  setRedirectTo = (redirectTo: string): TAction<'LOGIN_REDIRECT_SET'> => {
     return {
       payload: {redirectTo},
       type: 'LOGIN_REDIRECT_SET',

@@ -1,19 +1,19 @@
 import {IAPIDef} from '@rondo/common'
-import {GetPendingAction, IAsyncAction, PendingAction} from '../actions'
+import {TGetPendingAction, TAsyncAction, PendingAction} from '../actions'
 import {IHTTPClient} from '../http/IHTTPClient'
 import {ITeam, IUser, IUserInTeam} from '@rondo/common'
 
-export type TeamActionType =
-  IAsyncAction<ITeam[], 'TEAMS'>
-  | IAsyncAction<ITeam, 'TEAM_CREATE'>
-  | IAsyncAction<ITeam, 'TEAM_UPDATE'>
-  | IAsyncAction<{id: number}, 'TEAM_REMOVE'>
-  | IAsyncAction<IUserInTeam, 'TEAM_USER_ADD'>
-  | IAsyncAction<{userId: number, teamId: number}, 'TEAM_USER_REMOVE'>
-  | IAsyncAction<{teamId: number, usersInTeam: IUserInTeam[]}, 'TEAM_USERS'>
-  | IAsyncAction<IUser | undefined, 'TEAM_USER_FIND'>
+export type TTeamAction =
+  TAsyncAction<ITeam[], 'TEAMS'>
+  | TAsyncAction<ITeam, 'TEAM_CREATE'>
+  | TAsyncAction<ITeam, 'TEAM_UPDATE'>
+  | TAsyncAction<{id: number}, 'TEAM_REMOVE'>
+  | TAsyncAction<IUserInTeam, 'TEAM_USER_ADD'>
+  | TAsyncAction<{userId: number, teamId: number}, 'TEAM_USER_REMOVE'>
+  | TAsyncAction<{teamId: number, usersInTeam: IUserInTeam[]}, 'TEAM_USERS'>
+  | TAsyncAction<IUser | undefined, 'TEAM_USER_FIND'>
 
-type Action<T extends string> = GetPendingAction<TeamActionType, T>
+type Action<T extends string> = TGetPendingAction<TTeamAction, T>
 
 export class TeamActions {
   constructor(protected readonly http: IHTTPClient<IAPIDef>) {}

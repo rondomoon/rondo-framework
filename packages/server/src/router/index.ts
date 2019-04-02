@@ -1,4 +1,4 @@
 export * from './AsyncRouter'
-export * from './ITypedHandler'
+export * from './TTypedHandler'
 export * from './ITypedRequest'
 export * from './TransactionalRouter'

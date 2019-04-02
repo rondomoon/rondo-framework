@@ -1,13 +1,13 @@
 import {Authenticator as A, Passport} from 'passport'
 import {IUserService} from '../services'
 import {Strategy as LocalStrategy} from 'passport-local'
-import {IHandler} from './IHandler'
+import {THandler} from './THandler'
 import {IMiddleware} from './IMiddleware'
 
 export class Authenticator implements IMiddleware {
 
   protected readonly passport: A
-  readonly handle: IHandler[]
+  readonly handle: THandler[]
 
   constructor(protected readonly userService: IUserService) {
     this.passport = new Passport() as any
@@ -22,7 +22,7 @@ export class Authenticator implements IMiddleware {
     ]
   }
 
-  withLogInPromise: IHandler = (req, res, next) => {
+  withLogInPromise: THandler = (req, res, next) => {
     req.logInPromise = (user) => {
       return new Promise((resolve, reject) => {
         req.logIn(user, err => {
@@ -72,7 +72,7 @@ export class Authenticator implements IMiddleware {
     .catch(done)
   }
 
-  authenticate(strategy: string | string[]): IHandler {
+  authenticate(strategy: string | string[]): THandler {
     return (req, res, next) => {
       return new Promise((resolve, reject) => {
         this.passport.authenticate(strategy, (err: Error, user, info) => {

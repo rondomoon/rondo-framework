@@ -1,5 +1,5 @@
 import ExpressSession from 'express-session'
-import {IHandler} from './IHandler'
+import {THandler} from './THandler'
 import {IMiddleware} from './IMiddleware'
 import {ISession} from '../session/ISession'
 import {ITransactionManager} from '../database/ITransactionManager'
@@ -15,7 +15,7 @@ export interface ISessionOptions {
 }
 
 export class SessionMiddleware implements IMiddleware {
-  readonly handle: IHandler
+  readonly handle: THandler
 
   constructor(readonly params: ISessionOptions) {
     this.handle = ExpressSession({

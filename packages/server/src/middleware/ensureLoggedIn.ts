@@ -1,10 +1,10 @@
 import createError from 'http-errors'
 import {Request} from 'express'
-import {IHandler} from './IHandler'
+import {THandler} from './THandler'
 
 const isLoggedIn = (req: Request) => !!(req as any).user
 
-export const ensureLoggedInApi: IHandler = (req, res, next) => {
+export const ensureLoggedInApi: THandler = (req, res, next) => {
   if (!isLoggedIn(req)) {
     next(createError(401))
     return
@@ -12,7 +12,7 @@ export const ensureLoggedInApi: IHandler = (req, res, next) => {
   next()
 }
 
-export const ensureLoggedInSite = (redirectTo: string): IHandler => {
+export const ensureLoggedInSite = (redirectTo: string): THandler => {
   return function _ensureLoggedInSite(req, res, next) {
     if (!isLoggedIn(req)) {
       res.redirect(redirectTo)

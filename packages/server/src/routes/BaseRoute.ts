@@ -1,9 +1,9 @@
-import {IHandler} from '../middleware/IHandler'
+import {THandler} from '../middleware/THandler'
 import {AsyncRouter} from '../router'
 import {IRoutes} from '@rondo/common'
 
 export abstract class BaseRoute<T extends IRoutes> {
-  readonly handle: IHandler
+  readonly handle: THandler
 
   constructor(protected readonly t: AsyncRouter<T>)  {
     this.handle = t.router

@@ -1,11 +1,11 @@
 import express from 'express'
-import {IRoutes, IMethod} from '@rondo/common'
+import {IRoutes, TMethod} from '@rondo/common'
 import {ITypedRequest} from './ITypedRequest'
 
-export type ITypedHandler<
+export type TTypedHandler<
   R extends IRoutes,
   P extends keyof R,
-  M extends IMethod
+  M extends TMethod
 > = (
   req: ITypedRequest<R[P][M]>,
   res: express.Response,

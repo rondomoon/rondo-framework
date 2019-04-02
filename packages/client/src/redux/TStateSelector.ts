@@ -1,5 +1,5 @@
 /*
  * Select and return a part of the state
  */
-export type IStateSelector<GlobalState, StateSlice>
+export type TStateSelector<GlobalState, StateSlice>
   = (state: GlobalState) => StateSlice

@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom'
 import {Action} from 'redux'
 import {IClientConfig} from './IClientConfig'
 import {IRenderer} from './IRenderer'
-import {IStoreFactory} from './IStoreFactory'
+import {TStoreFactory} from './TStoreFactory'
 import {Provider} from 'react-redux'
 import {Router} from 'react-router-dom'
 import {createBrowserHistory} from 'history'
 
 export interface IClientRendererParams<State, A extends Action> {
-  readonly createStore: IStoreFactory<State, A | any>,
+  readonly createStore: TStoreFactory<State, A | any>,
   readonly RootComponent: React.ComponentType<{config: IClientConfig}>,
   readonly target?: HTMLElement
 }

@@ -1,12 +1,12 @@
 import {Crumb} from './Crumb'
-import {Connector, IStateSelector} from '../redux'
+import {Connector, TStateSelector} from '../redux'
 import {ICrumbsState} from './CrumbsReducer'
 import {CrumbsActions} from './CrumbsActions'
 
 export class CrumbsConnector extends Connector<ICrumbsState> {
   protected readonly breadcrumbsActions = new CrumbsActions()
 
-  connect<State>(getLocalState: IStateSelector<State, ICrumbsState>) {
+  connect<State>(getLocalState: TStateSelector<State, ICrumbsState>) {
     return this.wrap(
       getLocalState,
       state => state,

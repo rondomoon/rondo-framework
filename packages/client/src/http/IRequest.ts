@@ -1,7 +1,7 @@
-import {IMethod} from '@rondo/common'
+import {TMethod} from '@rondo/common'
 
 export interface IRequest {
-  method: IMethod,
+  method: TMethod,
   url: string,
   params?: {[key: string]: any},
   data?: any,

@@ -1,6 +1,6 @@
 import supertest from 'supertest'
 import {
-  IMethod,
+  TMethod,
   IRoutes,
   URLFormatter,
 } from '@rondo/common'
@@ -13,7 +13,7 @@ interface ITest extends Omit<Omit<supertest.Test, 'then'>, 'catch'> {}
 interface IResponse<
   R extends IRoutes,
   P extends keyof R,
-  M extends IMethod,
+  M extends TMethod,
 > extends supertest.Response {
   body: R[P][M]['response']
   header: {[key: string]: string}
@@ -22,7 +22,7 @@ interface IResponse<
 interface IRequest<
   R extends IRoutes,
   P extends keyof R,
-  M extends IMethod,
+  M extends TMethod,
 > extends ITest, Promise<IResponse<R, P, M>> {
   send(value: R[P][M]['body'] | string): this
   expect(status: number, body?: any): this
@@ -37,7 +37,7 @@ interface IRequest<
 interface IRequestOptions<
   R extends IRoutes,
   P extends keyof R,
-  M extends IMethod,
+  M extends TMethod,
 > {
   params?: R[P][M]['params'],
   query?: R[P][M]['query'],
@@ -62,7 +62,7 @@ export class RequestTester<R extends IRoutes> {
     return this
   }
 
-  request<M extends IMethod, P extends keyof R & string>(
+  request<M extends TMethod, P extends keyof R & string>(
     method: M, path: P, options: IRequestOptions<R, P, 'post'> = {},
   )
   : IRequest<R, P, M> {

@@ -1,4 +1,4 @@
-export type IMethod = 'get'
+export type TMethod = 'get'
  | 'post'
  | 'put'
  | 'delete'

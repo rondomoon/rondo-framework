@@ -1,4 +1,4 @@
-import {IErrorHandler} from './IErrorHandler'
+import {TErrorHandler} from './TErrorHandler'
 import {ILogger} from '../logger/ILogger'
 import {IMiddleware} from './IMiddleware'
 import {ValidationError} from '../validator'
@@ -6,7 +6,7 @@ import {ValidationError} from '../validator'
 export class ErrorApiHandler implements IMiddleware {
   constructor(readonly logger: ILogger) {}
 
-  handle: IErrorHandler = (err, req, res, next) => {
+  handle: TErrorHandler = (err, req, res, next) => {
     this.logger.error('%s An API error occurred: %s',
       req.correlationId, err.stack)
     const statusCode = this.getStatus(err)

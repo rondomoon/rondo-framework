@@ -1,4 +1,4 @@
-import {IHandler} from './IHandler'
+import {THandler} from './THandler'
 import {ILogger} from '../logger/ILogger'
 import {IMiddleware} from './IMiddleware'
 import shortid from 'shortid'
@@ -6,7 +6,7 @@ import shortid from 'shortid'
 export class RequestLogger implements IMiddleware {
   constructor(protected readonly logger: ILogger) {}
 
-  handle: IHandler = (req, res, next) => {
+  handle: THandler = (req, res, next) => {
     const start = Date.now()
     req.correlationId = shortid.generate()
     res.on('finish', () => {

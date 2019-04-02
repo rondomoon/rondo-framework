@@ -1,6 +1,6 @@
 import React from 'react'
 import {History, Location} from 'history'
-import {ITeam, IUserInTeam, ReadonlyRecord} from '@rondo/common'
+import {ITeam, IUserInTeam, TReadonlyRecord} from '@rondo/common'
 import {Panel, PanelBlock, PanelHeading} from 'bloomer'
 import {Route, Switch} from 'react-router-dom'
 import {TeamActions} from './TeamActions'
@@ -24,11 +24,11 @@ export interface ITeamManagerProps {
   fetchUsersInTeam: TeamActions['fetchUsersInTeam']
   findUserByEmail: TeamActions['findUserByEmail']
 
-  teamsById: ReadonlyRecord<number, ITeam>
+  teamsById: TReadonlyRecord<number, ITeam>
   teamIds: ReadonlyArray<number>
 
-  userKeysByTeamId: ReadonlyRecord<number, ReadonlyArray<string>>
-  usersByKey: ReadonlyRecord<string, IUserInTeam>
+  userKeysByTeamId: TReadonlyRecord<number, ReadonlyArray<string>>
+  usersByKey: TReadonlyRecord<string, IUserInTeam>
 }
 
 export class TeamManager extends React.PureComponent<ITeamManagerProps> {

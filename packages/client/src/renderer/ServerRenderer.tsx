@@ -2,7 +2,7 @@ import React from 'react'
 import {Action} from 'redux'
 import {IClientConfig} from './IClientConfig'
 import {IRenderer} from './IRenderer'
-import {IStoreFactory} from './IStoreFactory'
+import {TStoreFactory} from './TStoreFactory'
 import {Provider} from 'react-redux'
 import {StaticRouterContext} from 'react-router'
 import {StaticRouter} from 'react-router-dom'
@@ -10,7 +10,7 @@ import {renderToNodeStream} from 'react-dom/server'
 
 export class ServerRenderer<State, A extends Action> implements IRenderer {
   constructor(
-    readonly createStore: IStoreFactory<State, A | any>,
+    readonly createStore: TStoreFactory<State, A | any>,
     readonly RootComponent: React.ComponentType<{config: IClientConfig}>,
   ) {}
   render(url: string, config: IClientConfig, state?: any) {

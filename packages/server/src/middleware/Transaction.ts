@@ -1,6 +1,6 @@
 import shortid from 'shortid'
 import {IMiddleware} from './IMiddleware'
-import {IHandler} from './IHandler'
+import {THandler} from './THandler'
 import {Namespace} from 'cls-hooked'
 
 export const CORRELATION_ID = 'CORRELATION_ID'
@@ -8,7 +8,7 @@ export const CORRELATION_ID = 'CORRELATION_ID'
 export class Transaction implements IMiddleware {
   constructor(readonly ns: Namespace) {}
 
-  handle: IHandler = (req, res, next) => {
+  handle: THandler = (req, res, next) => {
     const {ns} = this
     ns.bindEmitter(req)
     ns.bindEmitter(res)

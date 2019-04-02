@@ -1,13 +1,13 @@
 import React from 'react'
 import {Button, Panel, PanelHeading, PanelBlock} from 'bloomer'
 import {FaPlus, FaEdit, FaTimes} from 'react-icons/fa'
-import {ITeam, ReadonlyRecord} from '@rondo/common'
+import {ITeam, TReadonlyRecord} from '@rondo/common'
 import {Link} from 'react-router-dom'
 import {TeamActions} from './TeamActions'
 import {TeamEditor} from './TeamEditor'
 
 export interface ITeamListProps {
-  teamsById: ReadonlyRecord<number, ITeam>,
+  teamsById: TReadonlyRecord<number, ITeam>,
   teamIds: ReadonlyArray<number>,
   onAddTeam: TeamActions['createTeam']
   onRemoveTeam: TeamActions['removeTeam']

@@ -1,4 +1,4 @@
-import {IStateSelector} from './IStateSelector'
+import {TStateSelector} from './TStateSelector'
 import {connect, Omit} from 'react-redux'
 import {Dispatch} from 'redux'
 import {ComponentType} from 'react'
@@ -30,7 +30,7 @@ export abstract class Connector<LocalState> {
    * https://stackoverflow.com/questions/54277411
    */
   abstract connect<State>(
-    selectState: IStateSelector<State, LocalState>,
+    selectState: TStateSelector<State, LocalState>,
   ): ComponentType<any>
 
   protected wrap<
@@ -39,7 +39,7 @@ export abstract class Connector<LocalState> {
     StateProps extends Partial<Props>,
     DispatchProps extends Partial<Props>,
   >(
-    getLocalState: IStateSelector<State, LocalState>,
+    getLocalState: TStateSelector<State, LocalState>,
     mapStateToProps: (state: LocalState) => StateProps,
     mapDispatchToProps: (dispatch: Dispatch) => DispatchProps,
     Component: React.ComponentType<Props>,

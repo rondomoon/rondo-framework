@@ -8,12 +8,12 @@ import {
   Repository,
 } from 'typeorm'
 
-export type IConnectionGetter = () => Connection
+export type TConnectionGetter = () => Connection
 
 export class TransactionManager implements ITransactionManager {
   constructor(
     readonly ns: Namespace,
-    readonly getConnection: IConnectionGetter,
+    readonly getConnection: TConnectionGetter,
   ) {}
 
   getEntityManager = (): EntityManager => {

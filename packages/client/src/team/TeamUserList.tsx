@@ -1,5 +1,5 @@
 import React from 'react'
-import {ITeam, IUser, IUserInTeam, ReadonlyRecord} from '@rondo/common'
+import {ITeam, IUser, IUserInTeam, TReadonlyRecord} from '@rondo/common'
 import {TeamActions} from './TeamActions'
 import {FaUser, FaCheck, FaTimes} from 'react-icons/fa'
 
@@ -18,8 +18,8 @@ export interface ITeamUsersProps {
   onRemoveUser: TeamActions['removeUser']
 
   team: ITeam
-  userKeysByTeamId: ReadonlyRecord<number, ReadonlyArray<string>>
-  usersByKey: ReadonlyRecord<string, IUserInTeam>
+  userKeysByTeamId: TReadonlyRecord<number, ReadonlyArray<string>>
+  usersByKey: TReadonlyRecord<string, IUserInTeam>
 }
 
 export interface ITeamUserProps {

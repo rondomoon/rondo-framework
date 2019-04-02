@@ -1,5 +1,5 @@
 import Csurf from 'csurf'
-import {IHandler} from './IHandler'
+import {THandler} from './THandler'
 import {IMiddleware} from './IMiddleware'
 import {UrlWithStringQuery} from 'url'
 
@@ -9,7 +9,7 @@ export interface ICSRFParams {
 }
 
 export class CSRFMiddleware implements IMiddleware {
-  readonly handle: IHandler
+  readonly handle: THandler
 
   constructor(readonly params: ICSRFParams) {
     this.handle = Csurf({

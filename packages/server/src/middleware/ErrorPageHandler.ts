@@ -1,11 +1,11 @@
-import {IMiddleware} from './IMiddleware'
-import {IErrorHandler} from './IErrorHandler'
 import {ILogger} from '../logger/ILogger'
+import {IMiddleware} from './IMiddleware'
+import {TErrorHandler} from './TErrorHandler'
 
 export class ErrorPageHandler implements IMiddleware {
   constructor(readonly logger: ILogger) {}
 
-  handle: IErrorHandler = (err, req, res, next) => {
+  handle: TErrorHandler = (err, req, res, next) => {
     this.logger.error(
       '%s An error occurred: %s',
       req.correlationId, err.stack)

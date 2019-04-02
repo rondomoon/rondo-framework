@@ -1,6 +1,6 @@
-import {IHandler} from './IHandler'
-import {IErrorHandler} from './IErrorHandler'
+import {THandler} from './THandler'
+import {TErrorHandler} from './TErrorHandler'
 
 export interface IMiddleware {
-  handle: IHandler | IHandler[] | IErrorHandler
+  handle: THandler | THandler[] | TErrorHandler
 }

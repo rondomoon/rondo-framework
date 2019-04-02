@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import T from 'react-dom/test-utils'
-import {IStateSelector} from '../redux'
+import {TStateSelector} from '../redux'
 import {Provider} from 'react-redux'
 import {createStore} from '../store'
 import {
@@ -15,9 +15,9 @@ import {
 
 interface IRenderParams<State, LocalState> {
   reducers: ReducersMapObject<State, any>
-  select: IStateSelector<State, LocalState>
+  select: TStateSelector<State, LocalState>
   // getComponent: (
-  //   select: IStateSelector<State, LocalState>) => React.ComponentType<Props>,
+  //   select: TStateSelector<State, LocalState>) => React.ComponentType<Props>,
   // customJSX?: (
   //   Component: React.ComponentType<Props>,
   //   props: Props,
@@ -65,7 +65,7 @@ export class TestUtils {
     }
 
     const withComponent = <Props extends {}>(
-      getComponent: (select: IStateSelector<State, LocalState>) =>
+      getComponent: (select: TStateSelector<State, LocalState>) =>
         React.ComponentType<Props>,
     ) => {
       const Component = getComponent(select)

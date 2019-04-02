@@ -1,7 +1,7 @@
 import {IAction, IResolvedAction} from '../actions'
-import {ICRUDAction} from './ICRUDAction'
-import {ICRUDMethod} from './ICRUDMethod'
-import {indexBy, without, Filter} from '@rondo/common'
+import {TCRUDAction} from './TCRUDAction'
+import {TCRUDMethod} from './TCRUDMethod'
+import {indexBy, without, TFilter} from '@rondo/common'
 
 export interface ICRUDEntity {
   readonly id: number
@@ -65,7 +65,7 @@ export class CRUDReducer<
 
   handleRejected = (
     state: ICRUDState<T>,
-    method: ICRUDMethod,
+    method: TCRUDMethod,
     error: Error,
   ): ICRUDState<T> => {
     return {
@@ -82,7 +82,7 @@ export class CRUDReducer<
 
   handleLoading = (
     state: ICRUDState<T>,
-    method: ICRUDMethod,
+    method: TCRUDMethod,
   ): ICRUDState<T> => {
     return {
       ...state,
@@ -163,7 +163,7 @@ export class CRUDReducer<
 
   reduce = (
     state: ICRUDState<T> | undefined,
-    action: ICRUDAction<T, ActionType>,
+    action: TCRUDAction<T, ActionType>,
   ): ICRUDState<T> => {
     const {defaultState} = this
     state = state || defaultState

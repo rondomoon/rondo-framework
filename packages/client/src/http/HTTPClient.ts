@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {IHTTPClient} from './IHTTPClient'
 import {IHeader} from './IHeader'
-import {IMethod, IRoutes, URLFormatter} from '@rondo/common'
+import {TMethod, IRoutes, URLFormatter} from '@rondo/common'
 import {IRequest} from './IRequest'
 import {IResponse} from './IResponse'
 import {ITypedRequestParams} from './ITypedRequestParams'
@@ -31,7 +31,7 @@ export class HTTPClient<T extends IRoutes> implements IHTTPClient<T> {
 
   async request<
     P extends keyof T & string,
-    M extends IMethod,
+    M extends TMethod,
   >(params: ITypedRequestParams<T, P, M>): Promise<T[P][M]['response']> {
 
     const url = this.formatter.format(params.path, params.params)

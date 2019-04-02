@@ -9,11 +9,11 @@ type CallbackErr = (err?: any) => void
 export interface ISessionStoreOptions<S extends ISession> {
   readonly ttl: number
   readonly cleanup: number
-  readonly getRepository: IRepositoryFactory<S>
+  readonly getRepository: TRepositoryFactory<S>
   buildSession(sessionData: SessionData, session: ISession): S
 }
 
-export type IRepositoryFactory<T> = () => Repository<T>
+export type TRepositoryFactory<T> = () => Repository<T>
 
 // TODO casting as any because TypeScript complains. Looks like this is a
 // bug in TypeScript 3.2.2
@@ -22,7 +22,7 @@ export type IRepositoryFactory<T> = () => Repository<T>
 // https://github.com/Microsoft/TypeScript/issues/21592
 export class SessionStore<S extends ISession> extends Store {
 
-  protected readonly getRepository: IRepositoryFactory<S>
+  protected readonly getRepository: TRepositoryFactory<S>
 
   constructor(
     protected readonly options: ISessionStoreOptions<S>,

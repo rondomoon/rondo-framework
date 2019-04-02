@@ -17,10 +17,10 @@ export function pad(text: string, n: number, trim: boolean) {
   return text
 }
 
-export type ILogLevel = 'error' | 'warn' | 'info' | 'debug' | 'verbose' | 'off'
+export type TLogLevel = 'error' | 'warn' | 'info' | 'debug' | 'verbose' | 'off'
 
 export interface IEnabledLoggers {
-  readonly [key: string]: ILogLevel
+  readonly [key: string]: TLogLevel
 }
 
 export interface IParams {
@@ -48,9 +48,9 @@ export class LoggerFactory implements ILoggerFactory {
   } = {}) {
     const enabledLoggers = logs.split(',').reduce((logConfig, log) => {
       const [key, value] = log.split(':')
-      logConfig[key] = (value || 'info') as ILogLevel
+      logConfig[key] = (value || 'info') as TLogLevel
       return logConfig
-    }, {} as {[key: string]: ILogLevel})
+    }, {} as {[key: string]: TLogLevel})
 
     const params = opts.split(',').reduce((o, key) => {
       o[key] = true
@@ -70,7 +70,7 @@ export class LoggerFactory implements ILoggerFactory {
     this.getCorrelationId = () => ''
   }
 
-  getLoggerLevel(name: string): ILogLevel {
+  getLoggerLevel(name: string): TLogLevel {
     const {enabledLoggers} = this.options
     const disabled = !!enabledLoggers['-' + name]
     if (disabled) {

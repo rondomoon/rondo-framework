@@ -1,5 +1,5 @@
 import {Connector} from '../redux/Connector'
-import {IStateSelector} from '../redux'
+import {TStateSelector} from '../redux'
 import {ITeamState} from './TeamReducer'
 import {TeamActions} from './TeamActions'
 import {TeamManager} from './TeamManager'
@@ -11,7 +11,7 @@ export class TeamConnector extends Connector<ITeamState> {
     super()
   }
 
-  connect<State>(getLocalState: IStateSelector<State, ITeamState>) {
+  connect<State>(getLocalState: TStateSelector<State, ITeamState>) {
     const Component = this.wrap(
       getLocalState,
       state => ({
