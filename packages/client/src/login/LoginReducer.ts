@@ -26,6 +26,7 @@ export function Login(
     default:
       // async actions
       switch (action.status) {
+        // FIXME this will trigger for all async actions with status pending
         case 'pending':
           return {
             ...state,

@@ -64,7 +64,7 @@ describe('PromiseMiddleware', () => {
       status: 'pending',
       type,
     }, {
-      error,
+      payload: error,
       status: 'rejected',
       type,
     }])

@@ -1,9 +1,11 @@
-import {IAction} from '../actions'
+import {IAction, IResolvedAction} from '../actions'
+import {ICRUDAction} from './ICRUDAction'
+import {ICRUDMethod} from './ICRUDMethod'
 import {indexBy, without} from '@rondo/common'
 
-export type ICRUDMethod = 'put' | 'post' | 'delete' | 'get' | 'getMany'
+type Filter<T, U> = T extends U ? T : never
 
-export interface ICRUDIdable {
+export interface ICRUDEntity {
   readonly id: number
 }
 
@@ -12,42 +14,27 @@ export interface ICRUDMethodStatus {
   readonly error: string
 }
 
-export interface ICRUDState<T extends ICRUDIdable> {
+export interface ICRUDState<T extends ICRUDEntity> {
   readonly ids: ReadonlyArray<number>
   readonly byId: Record<number, T>
   status: ICRUDStatus
 }
 
 export interface ICRUDStatus {
-  readonly post: ICRUDMethodStatus
-  readonly put: ICRUDMethodStatus
-  readonly delete: ICRUDMethodStatus
-  readonly get: ICRUDMethodStatus
-  readonly getMany: ICRUDMethodStatus
+  readonly save: ICRUDMethodStatus
+  readonly update: ICRUDMethodStatus
+  readonly remove: ICRUDMethodStatus
+  readonly findOne: ICRUDMethodStatus
+  readonly findMany: ICRUDMethodStatus
 }
 
-export interface ICRUDActions {
-  readonly post: string
-  readonly put: string
-  readonly delete: string
-  readonly get: string
-  readonly getMany: string
-}
-
-export interface ICRUDAction<P, T extends string = string> extends IAction<T> {
-  payload: P,
-}
-
-export class CRUDReducer<T extends ICRUDIdable> {
+export class CRUDReducer<
+  T extends ICRUDEntity,
+  ActionType extends string,
+> {
   readonly defaultState: ICRUDState<T>
-  readonly actionTypes: ReturnType<CRUDReducer<T>['getActionTypes']>
 
-  constructor(
-    readonly actionName: string,
-    readonly pendingExtension = '_PENDING',
-    readonly resolvedExtension = '_RESOLVED',
-    readonly rejectedExtension = '_REJECTED',
-  ) {
+  constructor(readonly actionName: ActionType) {
 
     const defaultMethodStatus = this.getDefaultMethodStatus()
     this.defaultState = {
@@ -55,74 +42,19 @@ export class CRUDReducer<T extends ICRUDIdable> {
       byId: {},
 
       status: {
-        post: defaultMethodStatus,
-        put: defaultMethodStatus,
-        delete: defaultMethodStatus,
-        get: defaultMethodStatus,
-        getMany: defaultMethodStatus,
+        save: defaultMethodStatus,
+        update: defaultMethodStatus,
+        remove: defaultMethodStatus,
+        findOne: defaultMethodStatus,
+        findMany: defaultMethodStatus,
       },
     }
-
-    this.actionTypes = this.getActionTypes()
   }
 
   getDefaultMethodStatus(): ICRUDMethodStatus {
     return {
       error: '',
       isLoading: false,
-    }
-  }
-
-  protected getPromiseActionNames(type: string) {
-    return {
-      pending: type + this.pendingExtension,
-      resolved: type + this.resolvedExtension,
-      rejected: type + this.rejectedExtension,
-    }
-  }
-
-  protected getActionTypes() {
-    const {actionName} = this
-    return {
-      put: this.getPromiseActionNames(actionName + '_PUT'),
-      post: this.getPromiseActionNames(actionName + '_POST'),
-      delete: this.getPromiseActionNames(actionName + '_DELETE'),
-      get: this.getPromiseActionNames(actionName + '_GET'),
-      getMany: this.getPromiseActionNames(actionName + '_GET_MANY'),
-    }
-  }
-
-  protected getUpdatedStatus(
-    state: ICRUDStatus,
-    method: ICRUDMethod,
-    status: ICRUDMethodStatus,
-  ): ICRUDStatus {
-    return {
-      ...state,
-      [method]: status,
-    }
-  }
-
-  protected getMethod(actionType: string): ICRUDMethod {
-    const {get, put, post, delete: _delete, getMany} = this.actionTypes
-    switch (actionType) {
-      case get.pending:
-      case get.rejected:
-        return 'get'
-      case put.pending:
-      case put.rejected:
-        return 'put'
-      case post.pending:
-      case post.rejected:
-        return 'post'
-      case _delete.pending:
-      case _delete.rejected:
-        return 'delete'
-      case getMany.pending:
-      case getMany.rejected:
-        return 'getMany'
-      default:
-        throw new Error('Unknown action type: ' + actionType)
     }
   }
 
@@ -133,94 +65,156 @@ export class CRUDReducer<T extends ICRUDIdable> {
     }
   }
 
-  reduce = (state: ICRUDState<T> | undefined, action: ICRUDAction<T | T[]>)
-  : ICRUDState<T> => {
+  handleRejected = (
+    state: ICRUDState<T>,
+    action: Filter<ICRUDAction<T, ActionType>, {status: 'rejected'}>,
+  ): ICRUDState<T> => {
+    return {
+      ...state,
+      status: {
+        ...state.status,
+        [action.method]: {
+          isLoading: false,
+          error: action.payload.message,
+        },
+      },
+    }
+  }
+
+  handleLoading = (
+    state: ICRUDState<T>,
+    action: Filter<ICRUDAction<T, ActionType>, {status: 'pending'}>,
+  ): ICRUDState<T> => {
+    return {
+      ...state,
+      status: {
+        ...state.status,
+        [action.method]: {
+          isLoading: true,
+          error: '',
+        },
+      },
+    }
+  }
+
+  handleFindOne = (
+    state: ICRUDState<T>,
+    action: Filter<
+      ICRUDAction<T, ActionType>, {method: 'findOne', status: 'resolved'}>,
+  ): ICRUDState<T> => {
+    const {payload} = action
+    return {
+      ...state,
+      ids: [...state.ids, payload.id],
+      byId: {
+        [payload.id]: payload,
+      },
+      status: {
+        ...state.status,
+        [action.method]: this.getSuccessStatus(),
+      },
+    }
+  }
+
+  handleSave = (
+    state: ICRUDState<T>,
+    action: Filter<
+      ICRUDAction<T, ActionType>, {method: 'save', status: 'resolved'}>,
+  ): ICRUDState<T> => {
+    const {payload} = action
+    return {
+       ...state,
+       ids: [...state.ids, payload.id],
+       byId: {
+         [payload.id]: payload,
+       },
+       status: {
+         ...state.status,
+          [action.method]: this.getSuccessStatus(),
+       },
+     }
+  }
+
+  handleUpdate = (
+    state: ICRUDState<T>,
+    action: Filter<
+      ICRUDAction<T, ActionType>, {method: 'update', status: 'resolved'}>,
+  ): ICRUDState<T> => {
+    const {payload} = action
+    return {
+      ...state,
+      byId: {
+        [payload.id]: payload,
+      },
+      status: {
+        ...state.status,
+         [action.method]: this.getSuccessStatus(),
+      },
+    }
+  }
+
+  handleRemove = (
+    state: ICRUDState<T>,
+    action: Filter<
+      ICRUDAction<T, ActionType>, {method: 'remove', status: 'resolved'}>,
+  ): ICRUDState<T> => {
+    const {payload} = action
+    return {
+      ...state,
+      ids: state.ids.filter(id => id !== payload.id),
+      byId: without(state.byId, payload.id),
+      status: {
+        ...state.status,
+        [action.method]: this.getSuccessStatus(),
+      },
+    }
+  }
+
+  handleFindMany = (
+    state: ICRUDState<T>,
+    action: Filter<
+      ICRUDAction<T, ActionType>, {method: 'findMany', status: 'resolved'}>,
+  ): ICRUDState<T> => {
+    const {payload} = action
+    return {
+      ...state,
+      ids: payload.map(item => item.id),
+      byId: indexBy(payload, 'id' as any),
+      status: {
+        ...state.status,
+        [action.method]: this.getSuccessStatus(),
+      },
+    }
+  }
+
+  reduce = (
+    state: ICRUDState<T> | undefined,
+    action: ICRUDAction<T, ActionType>,
+  ): ICRUDState<T> => {
     const {defaultState} = this
     state = state || defaultState
 
-    const {get, put, post, delete: _delete, getMany} = this.actionTypes
+    if (action.type !== this.actionName) {
+      return state
+    }
 
-    switch (action.type) {
-      case put.pending:
-      case post.pending:
-      case _delete.pending:
-      case getMany.pending:
-      case get.pending:
-        const pendingMethod = this.getMethod(action.type)
-        return {
-          ...state,
-          status: this.getUpdatedStatus(state.status, pendingMethod, {
-            isLoading: true,
-            error: '',
-          }),
-        }
-
-      case put.rejected:
-      case post.rejected:
-      case _delete.rejected:
-      case getMany.rejected:
-      case get.rejected:
-        const rejectedMethod = this.getMethod(action.type)
-        const rejectedAction = action as any
-        return {
-          ...state,
-          status: this.getUpdatedStatus(state.status, rejectedMethod, {
-            isLoading: false,
-            error: rejectedAction.error
-              ? rejectedAction.error.message
-              : 'An error occurred',
-          }),
-        }
-
-      case get.resolved:
-        const getPayload = action.payload as T
-        return {
-          ...state,
-          ids: [...state.ids, getPayload.id],
-          byId: {
-            [getPayload.id]: getPayload,
-          },
-          status: this.getUpdatedStatus(
-            state.status, 'get', this.getSuccessStatus()),
-        }
-      case post.resolved:
-        const postPayload = action.payload as T
-        return {
-          ...state,
-          ids: [...state.ids, postPayload.id],
-          byId: {
-            [postPayload.id]: postPayload,
-          },
-          status: this.getUpdatedStatus(
-            state.status, 'post', this.getSuccessStatus()),
-        }
-      case put.resolved:
-        const putPayload = action.payload as T
-        return {
-          ...state,
-          byId: {
-            [putPayload.id]: putPayload,
-          },
-          status: this.getUpdatedStatus(
-            state.status, 'put', this.getSuccessStatus()),
-        }
-      case _delete.resolved:
-        const deletePayload = action.payload as T
-        return {
-          ...state,
-          ids: state.ids.filter(id => id !== deletePayload.id),
-          byId: without(state.byId, deletePayload.id),
-          status: this.getUpdatedStatus(
-            state.status, 'delete', this.getSuccessStatus()),
-        }
-      case getMany.resolved:
-        const getManyPayload = action.payload as T[]
-        return {
-          ...state,
-          ids: getManyPayload.map(item => item.id),
-          byId: indexBy(getManyPayload, 'id' as any),
-          status: this.getUpdatedStatus(
-            state.status, 'getMany', this.getSuccessStatus()),
+    switch (action.status) {
+      case 'pending':
+           return this.handleLoading(state, action)
+      case 'rejected':
+           return this.handleRejected(state, action)
+      case 'resolved':
+        switch (action.method) {
+          case 'save':
+            return this.handleSave(state, action)
+          case 'update':
+            return this.handleUpdate(state, action)
+          case 'remove':
+            return this.handleRemove(state, action)
+          case 'findOne':
+            return this.handleFindOne(state, action)
+          case 'findMany':
+            return this.handleFindMany(state, action)
         }
       default:
         return state

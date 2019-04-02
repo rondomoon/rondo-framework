@@ -1,6 +1,7 @@
+import {createCRUDActions} from './CRUDActions'
 import React from 'react'
 import {AnyAction} from 'redux'
-import {CRUDActions, CRUDReducer, ICRUDMethod} from './'
+import {CRUDReducer, ICRUDMethod} from './'
 import {HTTPClientMock, TestUtils, getError} from '../test-utils'
 import {IMethod} from '@rondo/common'
 import {IPendingAction} from '../actions'
@@ -55,13 +56,13 @@ describe('CRUD', () => {
   }
 
   const http = new HTTPClientMock<ITestAPI>()
-  const actions = CRUDActions.fromTwoRoutes({
+  const actions = createCRUDActions(
     http,
-    listRoute: '/one/:oneId/two',
-    specificRoute: '/one/:oneId/two/:twoId',
-    actionName: 'TEST',
-  })
-  const crudReducer = new CRUDReducer<ITwo>('TEST')
+    '/one/:oneId/two',
+    '/one/:oneId/two/:twoId',
+    'TEST',
+  )
+  const crudReducer = new CRUDReducer<ITwo, 'TEST'>('TEST')
   const Crud = crudReducer.reduce
 
   const test = new TestUtils()
@@ -109,13 +110,23 @@ describe('CRUD', () => {
   }
 
   function getUrl(method: ICRUDMethod) {
-    return method === 'post' || method === 'getMany'
+    return method === 'save' || method === 'findMany'
       ? '/one/1/two'
       : '/one/1/two/2'
   }
 
   function getHTTPMethod(method: ICRUDMethod): IMethod {
-    return method === 'getMany' ? 'get' : method
+    switch (method) {
+      case 'save':
+        return 'post'
+      case 'update':
+        return 'put'
+      case 'remove':
+        return 'delete'
+      case 'findOne':
+      case 'findMany':
+        return 'get'
+    }
   }
 
   describe('Promise rejections', () => {
@@ -123,29 +134,29 @@ describe('CRUD', () => {
       method: ICRUDMethod
       params: any
     }> = [{
-      method: 'get',
+      method: 'findOne',
       params: {
         params: {oneId: 1, twoId: 2},
       },
     }, {
-      method: 'getMany',
+      method: 'findMany',
       params: {
         params: {oneId: 1},
       },
     }, {
-      method: 'post',
+      method: 'save',
       params: {
         body: {name: 'test'},
         params: {oneId: 1, twoId: 2},
       },
     }, {
-      method: 'put',
+      method: 'update',
       params: {
         body: {name: 'test'},
         params: {oneId: 1, twoId: 2},
       },
     }, {
-      method: 'delete',
+      method: 'remove',
       params: {
         body: {},
         params: {oneId: 1, twoId: 2},
@@ -160,9 +171,10 @@ describe('CRUD', () => {
           http.mockAdd({
             url: getUrl(method),
             method: getHTTPMethod(method),
-            data: method === 'put' || method === 'post' || method === 'delete'
+            data: method === 'save'
+              || method === 'update' || method === 'remove'
               ? testCase.params.body
-            : undefined,
+              : undefined,
           }, {error: 'Test Error'}, 400)
         })
 
@@ -196,25 +208,25 @@ describe('CRUD', () => {
       body?: any
       response: any
     }> = [{
-      method: 'getMany',
+      method: 'findMany',
       params: {oneId: 1, twoId: 2},
       response: [entity],
     }, {
-      method: 'get',
+      method: 'findOne',
       params: {oneId: 1, twoId: 2},
       response: entity,
     }, {
-      method: 'post',
+      method: 'save',
       params: {oneId: 1},
       body: {name: entity.name},
       response: entity,
     }, {
-      method: 'put',
+      method: 'update',
       params: {oneId: 1, twoId: 2},
       body: {name: entity.name},
       response: entity,
     }, {
-      method: 'delete',
+      method: 'remove',
       params: {oneId: 1, twoId: 2},
       response: {id: entity.id},
     }]
@@ -243,12 +255,12 @@ describe('CRUD', () => {
           }))
           await action.payload
           const state = store.getState()
-          expect(state.Crud.status.getMany.isLoading).toBe(false)
-          if (method === 'delete') {
+          expect(state.Crud.status.findMany.isLoading).toBe(false)
+          if (method === 'remove') {
             expect(state.Crud.ids).toEqual([])
             expect(state.Crud.byId[entity.id]).toBe(undefined)
           } else {
-            if (method !== 'put') {
+            if (method !== 'update') {
               expect(state.Crud.ids).toEqual([entity.id])
             }
             expect(state.Crud.byId[entity.id]).toEqual(entity)
@@ -259,20 +271,20 @@ describe('CRUD', () => {
 
     describe('POST then DELETE', () => {
 
-      const postTestCase = testCases.find(t => t.method === 'post')!
-      const deleteTestCase = testCases.find(t => t.method === 'delete')!
+      const saveTestCase = testCases.find(t => t.method === 'save')!
+      const removeTestCase = testCases.find(t => t.method === 'remove')!
 
       beforeEach(() => {
         http.mockAdd({
-          url: getUrl(postTestCase.method),
-          method: getHTTPMethod(postTestCase.method),
-          data: postTestCase.body,
-        }, postTestCase.response)
+          url: getUrl(saveTestCase.method),
+          method: getHTTPMethod(saveTestCase.method),
+          data: saveTestCase.body,
+        }, saveTestCase.response)
         http.mockAdd({
-          url: getUrl(deleteTestCase.method),
-          method: getHTTPMethod(deleteTestCase.method),
-          data: deleteTestCase.body,
-        }, deleteTestCase.response)
+          url: getUrl(removeTestCase.method),
+          method: getHTTPMethod(removeTestCase.method),
+          data: removeTestCase.body,
+        }, removeTestCase.response)
       })
 
       afterEach(() => {
@@ -280,15 +292,15 @@ describe('CRUD', () => {
       })
 
       it('removes id and entity from state', async () => {
-        const action1 = store.dispatch(actions.post({
-          params: postTestCase.params,
-          body: postTestCase.body,
+        const action1 = store.dispatch(actions.save({
+          params: saveTestCase.params,
+          body: saveTestCase.body,
         }))
         await action1.payload
         expect(store.getState().Crud.ids).toEqual([entity.id])
-        const action2 = store.dispatch(actions.delete({
-          params: deleteTestCase.params,
-          body: deleteTestCase.body,
+        const action2 = store.dispatch(actions.remove({
+          params: removeTestCase.params,
+          body: removeTestCase.body,
         }))
         await action2.payload
         expect(store.getState().Crud.ids).toEqual([])

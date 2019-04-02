@@ -35,16 +35,16 @@ export class PromiseMiddleware {
     payload
     .then(result => {
       store.dispatch({
+        ...action,
         payload: result,
         status: 'resolved',
-        type,
       })
     })
     .catch(err => {
       store.dispatch({
-        error: err,
+        ...action,
+        payload: err,
         status: 'rejected',
-        type,
       })
     })
 
