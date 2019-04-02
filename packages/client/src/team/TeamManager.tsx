@@ -60,7 +60,6 @@ export class TeamManager extends React.PureComponent<ITeamManagerProps> {
                 teamIds={this.props.teamIds}
                 onAddTeam={this.props.createTeam}
                 onRemoveTeam={this.props.removeTeam}
-                onUpdateTeam={this.props.updateTeam}
               />
             </>
           }/>

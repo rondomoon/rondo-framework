@@ -7,17 +7,15 @@ import {TeamActions} from './TeamActions'
 import {TeamEditor} from './TeamEditor'
 
 export interface ITeamListProps {
-  teamsById: TReadonlyRecord<number, ITeam>,
-  teamIds: ReadonlyArray<number>,
+  teamsById: TReadonlyRecord<number, ITeam>
+  teamIds: ReadonlyArray<number>
   onAddTeam: TeamActions['createTeam']
   onRemoveTeam: TeamActions['removeTeam']
-  onUpdateTeam: TeamActions['updateTeam']
 }
 
 export interface ITeamProps {
   team: ITeam
   onRemoveTeam: TeamActions['removeTeam']
-  onUpdateTeam: TeamActions['updateTeam']
 }
 
 export class TeamRow extends React.PureComponent<ITeamProps> {
@@ -76,7 +74,6 @@ export class TeamList extends React.PureComponent<ITeamListProps> {
             <PanelBlock key={team.id}>
               <TeamRow
                 onRemoveTeam={this.props.onRemoveTeam}
-                onUpdateTeam={this.props.onUpdateTeam}
                 team={team}
               />
             </PanelBlock>
