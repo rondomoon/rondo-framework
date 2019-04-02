@@ -1,5 +1,7 @@
-export * from './Button'
 // export * from './Component'
+export * from './Button'
+export * from './IWithRouterProps'
 export * from './Input'
+export * from './Link'
 export * from './Modal'
 export * from './Redirect'
