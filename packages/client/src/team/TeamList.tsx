@@ -23,7 +23,7 @@ export interface ITeamProps {
 export class TeamRow extends React.PureComponent<ITeamProps> {
   handleRemove = async () => {
     const {onRemoveTeam, team: {id}} = this.props
-    await onRemoveTeam({id})
+    await onRemoveTeam({id}).payload
   }
   render() {
     const {team} = this.props
