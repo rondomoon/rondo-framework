@@ -67,15 +67,16 @@ export class CRUDReducer<
 
   handleRejected = (
     state: ICRUDState<T>,
-    action: Filter<ICRUDAction<T, ActionType>, {status: 'rejected'}>,
+    method: ICRUDMethod,
+    error: Error,
   ): ICRUDState<T> => {
     return {
       ...state,
       status: {
         ...state.status,
-        [action.method]: {
+        [method]: {
           isLoading: false,
-          error: action.payload.message,
+          error: error.message,
         },
       },
     }
@@ -83,13 +84,13 @@ export class CRUDReducer<
 
   handleLoading = (
     state: ICRUDState<T>,
-    action: Filter<ICRUDAction<T, ActionType>, {status: 'pending'}>,
+    method: ICRUDMethod,
   ): ICRUDState<T> => {
     return {
       ...state,
       status: {
         ...state.status,
-        [action.method]: {
+        [method]: {
           isLoading: true,
           error: '',
         },
@@ -97,12 +98,7 @@ export class CRUDReducer<
     }
   }
 
-  handleFindOne = (
-    state: ICRUDState<T>,
-    action: Filter<
-      ICRUDAction<T, ActionType>, {method: 'findOne', status: 'resolved'}>,
-  ): ICRUDState<T> => {
-    const {payload} = action
+  handleFindOne = (state: ICRUDState<T>, payload: T): ICRUDState<T> => {
     return {
       ...state,
       ids: [...state.ids, payload.id],
@@ -111,17 +107,12 @@ export class CRUDReducer<
       },
       status: {
         ...state.status,
-        [action.method]: this.getSuccessStatus(),
+        findOne: this.getSuccessStatus(),
       },
     }
   }
 
-  handleSave = (
-    state: ICRUDState<T>,
-    action: Filter<
-      ICRUDAction<T, ActionType>, {method: 'save', status: 'resolved'}>,
-  ): ICRUDState<T> => {
-    const {payload} = action
+  handleSave = (state: ICRUDState<T>, payload: T): ICRUDState<T> => {
     return {
        ...state,
        ids: [...state.ids, payload.id],
@@ -130,17 +121,12 @@ export class CRUDReducer<
        },
        status: {
          ...state.status,
-          [action.method]: this.getSuccessStatus(),
+         save: this.getSuccessStatus(),
        },
      }
   }
 
-  handleUpdate = (
-    state: ICRUDState<T>,
-    action: Filter<
-      ICRUDAction<T, ActionType>, {method: 'update', status: 'resolved'}>,
-  ): ICRUDState<T> => {
-    const {payload} = action
+  handleUpdate = (state: ICRUDState<T>, payload: T): ICRUDState<T> => {
     return {
       ...state,
       byId: {
@@ -148,41 +134,31 @@ export class CRUDReducer<
       },
       status: {
         ...state.status,
-         [action.method]: this.getSuccessStatus(),
+        update: this.getSuccessStatus(),
       },
     }
   }
 
-  handleRemove = (
-    state: ICRUDState<T>,
-    action: Filter<
-      ICRUDAction<T, ActionType>, {method: 'remove', status: 'resolved'}>,
-  ): ICRUDState<T> => {
-    const {payload} = action
+  handleRemove = (state: ICRUDState<T>, payload: T): ICRUDState<T> => {
     return {
       ...state,
       ids: state.ids.filter(id => id !== payload.id),
       byId: without(state.byId, payload.id),
       status: {
         ...state.status,
-        [action.method]: this.getSuccessStatus(),
+        remove: this.getSuccessStatus(),
       },
     }
   }
 
-  handleFindMany = (
-    state: ICRUDState<T>,
-    action: Filter<
-      ICRUDAction<T, ActionType>, {method: 'findMany', status: 'resolved'}>,
-  ): ICRUDState<T> => {
-    const {payload} = action
+  handleFindMany = (state: ICRUDState<T>, payload: T[]): ICRUDState<T> => {
     return {
       ...state,
       ids: payload.map(item => item.id),
       byId: indexBy(payload, 'id' as any),
       status: {
         ...state.status,
-        [action.method]: this.getSuccessStatus(),
+        findMany: this.getSuccessStatus(),
       },
     }
   }
@@ -200,21 +176,21 @@ export class CRUDReducer<
 
     switch (action.status) {
       case 'pending':
-           return this.handleLoading(state, action)
+           return this.handleLoading(state, action.method)
       case 'rejected':
-           return this.handleRejected(state, action)
+           return this.handleRejected(state, action.method, action.payload)
       case 'resolved':
         switch (action.method) {
           case 'save':
-            return this.handleSave(state, action)
+            return this.handleSave(state, action.payload)
           case 'update':
-            return this.handleUpdate(state, action)
+            return this.handleUpdate(state, action.payload)
           case 'remove':
-            return this.handleRemove(state, action)
+            return this.handleRemove(state, action.payload)
           case 'findOne':
-            return this.handleFindOne(state, action)
+            return this.handleFindOne(state, action.payload)
           case 'findMany':
-            return this.handleFindMany(state, action)
+            return this.handleFindMany(state, action.payload)
         }
       default:
         return state
