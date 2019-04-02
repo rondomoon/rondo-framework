@@ -32,7 +32,8 @@
             },
             "singleline": "never",
             "esSpecCompliant": true
-        }]
+        }],
+        "space-within-parens": 0
     },
     "rulesDirectory": []
 }

@@ -67,7 +67,7 @@ describe('user', () => {
       .get('/users/emails/:email', {
         params: {
           email: 'non-existing@address.com',
-        }
+        },
       })
       .expect(200)
       .expect(/^$/g)
