@@ -1,4 +1,5 @@
 export * from './CRUDActions'
+export * from './CRUDList'
 export * from './CRUDReducer'
 export * from './TCRUDAction'
 export * from './TCRUDMethod'
