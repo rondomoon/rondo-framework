@@ -156,9 +156,9 @@ export class FindManyActionCreator<
 export class FormActionCreator<T, ActionType extends string> {
   constructor(readonly actionType: ActionType) {}
 
-  create = (): TCRUDCreateAction<ActionType> => {
+  create = (item: Partial<T>): TCRUDCreateAction<T, ActionType> => {
     return {
-      payload: undefined,
+      payload: item,
       type: this.actionType,
       method: 'create',
     }

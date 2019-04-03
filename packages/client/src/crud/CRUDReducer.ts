@@ -183,13 +183,16 @@ export class CRUDReducer<
     }
   }
 
-  handleCreate = (state: ICRUDState<T>): ICRUDState<T> => {
+  handleCreate = (state: ICRUDState<T>, payload: Partial<T>): ICRUDState<T> => {
     return {
       ...state,
       form: {
         ...state.form,
         create: {
-          item: this.newItem,
+          item: {
+            ...this.newItem,
+            ...payload,
+          },
           errors: {},
         },
       },
@@ -271,7 +274,7 @@ export class CRUDReducer<
         case 'edit':
           return this.handleEdit(state, action.payload.id)
         case 'create':
-          return this.handleCreate(state)
+          return this.handleCreate(state, action.payload)
         default:
           return state
       }

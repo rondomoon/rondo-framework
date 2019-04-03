@@ -311,10 +311,10 @@ describe('CRUD', () => {
 
     describe('create', () => {
       it('resets form.create state', () => {
-        store.dispatch(actions.create())
+        store.dispatch(actions.create({name: 'a'}))
         expect(store.getState().Crud.form.create).toEqual({
           item: {
-            name: '',
+            name: 'a',
           },
           errors: {},
         })

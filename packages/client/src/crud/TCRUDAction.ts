@@ -20,8 +20,8 @@ export type TCRUDFindManyAction<T, ActionType extends string> =
 
 // Synchronous actions
 
-export type TCRUDCreateAction<ActionType extends string> =
-  IAction<undefined, ActionType> & {method: Extract<TCRUDMethod, 'create'>}
+export type TCRUDCreateAction<T, ActionType extends string> =
+  IAction<Partial<T>, ActionType> & {method: Extract<TCRUDMethod, 'create'>}
 
 export type TCRUDEditAction<ActionType extends string> =
   IAction<{id: number}, ActionType> & {method: Extract<TCRUDMethod, 'edit'>}
@@ -36,6 +36,6 @@ export type TCRUDAction<T, ActionType extends string> =
   | TCRUDRemoveAction<T, ActionType>
   | TCRUDFindOneAction<T, ActionType>
   | TCRUDFindManyAction<T, ActionType>
-  | TCRUDCreateAction<ActionType>
+  | TCRUDCreateAction<T, ActionType>
   | TCRUDEditAction<ActionType>
   | TCRUDChangeAction<T, ActionType>
