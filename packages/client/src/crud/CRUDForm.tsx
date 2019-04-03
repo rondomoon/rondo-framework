@@ -87,9 +87,9 @@ export class CRUDForm<T> extends React.PureComponent<ICRUDFormProps<T>> {
     return (
       <form onSubmit={this.handleSubmit}>
         <p className='error'>{this.props.error}</p>
-        {!!item && fields.map(field => {
+        {fields.map(field => {
           const error = this.props.errors[field.name]
-          const value = item[field.name]
+          const value = item ? [field.name] : ''
           return (
             <CRUDField<T>
               id={this.props.id}
