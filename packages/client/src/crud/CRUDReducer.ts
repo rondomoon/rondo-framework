@@ -115,10 +115,14 @@ export class CRUDReducer<
   }
 
   handleFindOne = (state: ICRUDState<T>, payload: T): ICRUDState<T> => {
+    const ids = !state.byId[payload.id]
+      ? [...state.ids, payload.id]
+      : state.ids
     return {
       ...state,
-      ids: [...state.ids, payload.id],
+      ids,
       byId: {
+        ...state.byId,
         [payload.id]: payload,
       },
       status: {
