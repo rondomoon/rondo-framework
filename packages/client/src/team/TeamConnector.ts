@@ -32,6 +32,6 @@ export class TeamConnector extends Connector<ITeamState> {
       TeamManager,
     )
 
-    return withRouter(Component)
+    return Component
   }
 }

@@ -14,6 +14,8 @@ export interface ITeamManagerProps {
   location: Location
   match: Match<any>
 
+  ListButtons?: React.ComponentType<{team: ITeam}>
+
   createTeam: TeamActions['createTeam']
   updateTeam: TeamActions['updateTeam']
   removeTeam: TeamActions['removeTeam']
@@ -56,6 +58,7 @@ export class TeamManager extends React.PureComponent<ITeamManagerProps> {
           <Route exact path='/teams' render={() =>
             <>
               <TeamList
+                ListButtons={this.props.ListButtons}
                 teamsById={teamsById}
                 teamIds={this.props.teamIds}
                 onAddTeam={this.props.createTeam}

@@ -57,7 +57,11 @@ describe('TeamConnector', () => {
   }]
 
   it('it fetches user teams on render', async () => {
-    const {node} = createTestProvider().render({})
+    const {node} = createTestProvider().render({
+      history: {} as any,
+      location: {} as any,
+      match: {} as any,
+    })
     await http.wait()
     expect(node.innerHTML).toContain('my-team')
   })
@@ -75,7 +79,11 @@ describe('TeamConnector', () => {
         data: {name: 'new-team'},
       }, newTeam)
       const {render, store} = createTestProvider()
-      const {node} = render({})
+      const {node} = render({
+        history: {} as any,
+        location: {} as any,
+        match: {} as any,
+      })
       const addTeamForm = node.querySelector('.team-add') as HTMLFormElement
       const nameInput = addTeamForm
       .querySelector('input') as HTMLInputElement
@@ -95,7 +103,11 @@ describe('TeamConnector', () => {
         data: {name: 'test'},
       }, error, 400)
       const {render} = createTestProvider()
-      const {node} = render({})
+      const {node} = render({
+        history: {} as any,
+        location: {} as any,
+        match: {} as any,
+      })
       const addTeamForm = node.querySelector('.team-add') as HTMLFormElement
       const nameInput = addTeamForm
       .querySelector('input') as HTMLInputElement
