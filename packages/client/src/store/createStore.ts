@@ -22,7 +22,9 @@ export function createStore<State, A extends Action>(
 ) {
   const middleware = params.middleware || [
     new ReduxLogger(
-      window && window.localStorage && window.localStorage.log,
+      typeof window !== 'undefined'
+      && typeof window.localStorage !== 'undefined'
+      && typeof window.localStorage.log !== 'undefined',
     ).handle,
     new PromiseMiddleware().handle,
   ]
