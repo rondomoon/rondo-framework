@@ -1,10 +1,12 @@
 import React from 'react'
 import {Control, Field, Label, Icon, Input} from 'bloomer'
+import {ICRUDChangeParams} from './CRUDActions'
 
 export type TCRUDFieldType = 'text' | 'password' | 'number' | 'email' | 'tel'
 
 export interface ICRUDFieldProps<T> {
-  onChange<K extends keyof T>(key: K, value: string): void
+  id?: number
+  onChange<K extends keyof T>(params: ICRUDChangeParams<T>): void
   Icon?: React.ComponentType
   error?: string
   label: string
@@ -14,8 +16,11 @@ export interface ICRUDFieldProps<T> {
   value: string
 }
 
+export type TCRUDErrors<T> = Partial<Record<keyof T & string, string>>
+
 export interface ICRUDFormProps<T> {
-  errors: Partial<Record<keyof T & string, string>>
+  errors: TCRUDErrors<T>
+  id?: number
   item: T
   error: string
   submitText: string
@@ -28,14 +33,18 @@ export interface ICRUDFormProps<T> {
   }>
 
   onSubmit: (t: T) => void
-  onChange<K extends keyof T>(key: K, value: string): void
+  onChange(params: ICRUDChangeParams<T>): void
 }
 
 export class CRUDField<T> extends React.PureComponent<ICRUDFieldProps<T>> {
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {onChange} = this.props
     const {value} = e.target
-    onChange(this.props.name, value)
+    onChange({
+      id: this.props.id,
+      key: this.props.name,
+      value,
+    })
   }
   render() {
     const {label, name, value, placeholder} = this.props
@@ -76,6 +85,7 @@ export class CRUDForm<T> extends React.PureComponent<ICRUDFormProps<T>> {
           const value = item[field.name]
           return (
             <CRUDField<T>
+              id={this.props.id}
               key={field.name}
               name={field.name}
               label={field.label}

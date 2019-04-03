@@ -19,7 +19,7 @@ export interface ICRUDState<T extends ICRUDEntity> {
   readonly form: ICRUDForm<T>
 }
 
-interface ICRUDForm<T extends ICRUDEntity> {
+export interface ICRUDForm<T extends ICRUDEntity> {
   readonly create: {
     readonly item: Pick<T, Exclude<keyof T, 'id'>>,
     readonly errors: Partial<Record<keyof T, string>>

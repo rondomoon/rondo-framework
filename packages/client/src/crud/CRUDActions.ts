@@ -6,8 +6,14 @@ import {TCRUDCreateAction} from './TCRUDAction'
 import {TCRUDEditAction} from './TCRUDAction'
 import {TCRUDMethod} from './TCRUDMethod'
 
-type TAction<T, ActionType extends string, Method extends TCRUDMethod> =
-  TFilter<TCRUDAction<T, ActionType>, {method: Method, status: 'pending'}>
+type TAction <T, ActionType extends string, Method extends TCRUDMethod> =
+  TFilter<TCRUDAction<T, ActionType> , {method: Method, status: 'pending'}>
+
+export interface ICRUDChangeParams<T> {
+  id?: number
+  key: keyof T & string
+  value: string
+}
 
 export class SaveActionCreator<
   T extends IRoutes,
@@ -166,11 +172,8 @@ export class FormActionCreator<T, ActionType extends string> {
     }
   }
 
-  change = (params: {
-    id?: number,
-    key: keyof T,
-    value: string
-  }): TCRUDChangeAction<T, ActionType> => {
+  change = (params: ICRUDChangeParams<T>)
+  : TCRUDChangeAction<T, ActionType> => {
     return {
       payload: params,
       type: this.actionType,
