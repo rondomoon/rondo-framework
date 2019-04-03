@@ -72,6 +72,9 @@ export class CRUDField<T> extends React.PureComponent<ICRUDFieldProps<T>> {
 }
 
 export class CRUDForm<T> extends React.PureComponent<ICRUDFormProps<T>> {
+  static defaultProps = {
+    errors: {},
+  }
   handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const {onSubmit, item} = this.props

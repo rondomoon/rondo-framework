@@ -312,24 +312,20 @@ describe('CRUD', () => {
     describe('create', () => {
       it('resets form.create state', () => {
         store.dispatch(actions.create({name: 'a'}))
-        expect(store.getState().Crud.form.create).toEqual({
-          item: {
-            name: 'a',
-          },
-          errors: {},
+        expect(store.getState().Crud.form.createItem).toEqual({
+          name: 'a',
         })
+        expect(store.getState().Crud.form.createErrors).toEqual({})
       })
     })
 
     describe('change', () => {
       it('sets value', () => {
         store.dispatch(actions.change({key: 'name', value: 'test'}))
-        expect(store.getState().Crud.form.create).toEqual({
-          item: {
-            name: 'test',
-          },
-          errors: {},
+        expect(store.getState().Crud.form.createItem).toEqual({
+          name: 'test',
         })
+        expect(store.getState().Crud.form.createErrors).toEqual({})
       })
     })
 
@@ -352,20 +348,14 @@ describe('CRUD', () => {
           body: {name: 'test'},
         })).payload
         store.dispatch(actions.edit({id: 100}))
-        expect(store.getState().Crud.form.byId[100]).toEqual({
-          item: {
-            id: 100,
-            name: 'test',
-          },
-          errors: {},
+        expect(store.getState().Crud.form.itemsById[100]).toEqual({
+          id: 100,
+          name: 'test',
         })
         store.dispatch(actions.change({id: 100, key: 'name', value: 'grrr'}))
-        expect(store.getState().Crud.form.byId[100]).toEqual({
-          item: {
-            id: 100,
-            name: 'grrr',
-          },
-          errors: {},
+        expect(store.getState().Crud.form.itemsById[100]).toEqual({
+          id: 100,
+          name: 'grrr',
         })
       })
     })

@@ -20,14 +20,11 @@ export interface ICRUDState<T extends ICRUDEntity> {
 }
 
 export interface ICRUDForm<T extends ICRUDEntity> {
-  readonly create: {
-    readonly item: Pick<T, Exclude<keyof T, 'id'>>,
-    readonly errors: Partial<Record<keyof T, string>>
-  }
-  readonly byId: Record<number, {
-    readonly item: T,
-    readonly errors: Partial<Record<keyof T, string>>
-  }>
+  readonly createItem: Pick<T, Exclude<keyof T, 'id'>>,
+  readonly createErrors: Partial<Record<keyof T, string>>
+
+  readonly itemsById: Record<number, T>
+  readonly errorsById: Record<number, Partial<Record<keyof T, string>>>
 }
 
 export interface ICRUDStatus {
@@ -54,11 +51,10 @@ export class CRUDReducer<
       ids: [],
       byId: {},
       form: {
-        byId: {},
-        create: {
-          item: newItem,
-          errors: {},
-        },
+        itemsById: {},
+        errorsById: {},
+        createItem: newItem,
+        createErrors: {},
       },
 
       status: {
@@ -188,13 +184,11 @@ export class CRUDReducer<
       ...state,
       form: {
         ...state.form,
-        create: {
-          item: {
-            ...this.newItem,
-            ...payload,
-          },
-          errors: {},
+        createItem: {
+          ...this.newItem,
+          ...payload,
         },
+        createErrors: {},
       },
     }
   }
@@ -204,12 +198,13 @@ export class CRUDReducer<
       ...state,
       form: {
         ...state.form,
-        byId: {
-          ...state.form.byId,
-          [id]: {
-            item: state.byId[id],
-            errors: {},
-          },
+        itemsById: {
+          ...state.form.itemsById,
+          [id]: state.byId[id],
+        },
+        errorsById: {
+          ...state.form.errorsById,
+          [id]: {},
         },
       },
     }
@@ -227,12 +222,9 @@ export class CRUDReducer<
         ...state,
         form: {
           ...state.form,
-          create: {
-            ...state.form.create,
-            item: {
-              ...state.form.create.item,
-              [key]: value,
-            },
+          createItem: {
+            ...state.form.createItem,
+            [key]: value,
           },
         },
       }
@@ -242,14 +234,11 @@ export class CRUDReducer<
       ...state,
       form: {
         ...state.form,
-        byId: {
-          ...state.form.byId,
+        itemsById: {
+          ...state.form.itemsById,
           [id]: {
-            ...state.form.byId[id],
-            item: {
-              ...state.form.byId[id].item,
-              [key]: value,
-            },
+            ...state.form.itemsById[id],
+            [key]: value,
           },
         },
       },
