@@ -6,7 +6,7 @@ import {Link} from '../components'
 export interface ICRUDListProps<T> {
   nameKey: keyof T
   editLink: (item: T) => string
-  itemIds: number[]
+  itemIds: ReadonlyArray<number>
   itemsById: Record<number, T>
   newLink: string
   onRemove: (t: T) => void
