@@ -1,7 +1,7 @@
 import React from 'react'
 import {Button, Panel, PanelHeading, PanelBlock} from 'bloomer'
 import {FaPlus, FaEdit, FaTimes} from 'react-icons/fa'
-import {Link} from 'react-router-dom'
+import {Link} from '../components'
 
 export interface ICRUDListProps<T> {
   nameKey: keyof T

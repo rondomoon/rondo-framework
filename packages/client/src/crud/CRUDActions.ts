@@ -1,7 +1,10 @@
-import {TCRUDAction} from './TCRUDAction'
-import {TCRUDMethod} from './TCRUDMethod'
 import {IHTTPClient, ITypedRequestParams} from '../http'
 import {IRoutes, TFilter, TOnlyDefined} from '@rondo/common'
+import {TCRUDAction} from './TCRUDAction'
+import {TCRUDChangeAction} from './TCRUDAction'
+import {TCRUDCreateAction} from './TCRUDAction'
+import {TCRUDEditAction} from './TCRUDAction'
+import {TCRUDMethod} from './TCRUDMethod'
 
 type TAction<T, ActionType extends string, Method extends TCRUDMethod> =
   TFilter<TCRUDAction<T, ActionType>, {method: Method, status: 'pending'}>
@@ -144,6 +147,38 @@ export class FindManyActionCreator<
 
 }
 
+export class FormActionCreator<T, ActionType extends string> {
+  constructor(readonly actionType: ActionType) {}
+
+  create = (): TCRUDCreateAction<ActionType> => {
+    return {
+      payload: undefined,
+      type: this.actionType,
+      method: 'create',
+    }
+  }
+
+  edit = (params: {id: number}): TCRUDEditAction<ActionType> => {
+    return {
+      payload: {id: params.id},
+      type: this.actionType,
+      method: 'edit',
+    }
+  }
+
+  change = (params: {
+    id?: number,
+    key: keyof T,
+    value: string
+  }): TCRUDChangeAction<T, ActionType> => {
+    return {
+      payload: params,
+      type: this.actionType,
+      method: 'change',
+    }
+  }
+}
+
 export function createCRUDActions<
   T extends IRoutes,
   EntityRoute extends keyof T & string,
@@ -161,5 +196,17 @@ export function createCRUDActions<
   const {findOne} = new FindOneActionCreator(http, entityRoute, actionType)
   const {findMany} = new FindManyActionCreator(http, listRoute, actionType)
 
-  return {save, update, remove, findOne, findMany}
+  const {create, edit, change} = new FormActionCreator
+    <T[ListRoute]['post']['body'], ActionType>(actionType)
+
+  return {
+    save,
+    update,
+    remove,
+    findOne,
+    findMany,
+    create,
+    edit,
+    change,
+  }
 }

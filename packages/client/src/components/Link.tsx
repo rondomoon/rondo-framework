@@ -7,6 +7,7 @@ import {withRouter} from 'react-router'
 
 interface ILinkProps
 extends IWithRouterProps<Record<string, string>> {
+  readonly className?: string
   readonly to: string
 }
 
@@ -15,6 +16,7 @@ class ContextLink extends React.PureComponent<ILinkProps> {
 
   render() {
     const {
+      className,
       history,
       location,
       match,
@@ -25,7 +27,7 @@ class ContextLink extends React.PureComponent<ILinkProps> {
     const href = this.urlFormatter.format(to, match.params)
 
     return (
-      <RouterLink to={href}>
+      <RouterLink className={className} to={href}>
         {children}
       </RouterLink>
     )

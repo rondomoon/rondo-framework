@@ -15,7 +15,19 @@ export interface ICRUDMethodStatus {
 export interface ICRUDState<T extends ICRUDEntity> {
   readonly ids: ReadonlyArray<number>
   readonly byId: Record<number, T>
-  status: ICRUDStatus
+  readonly status: ICRUDStatus
+  readonly form: ICRUDForm<T>
+}
+
+interface ICRUDForm<T extends ICRUDEntity> {
+  readonly create: {
+    readonly item: Pick<T, Exclude<keyof T, 'id'>>,
+    readonly errors: Partial<Record<keyof T, string>>
+  }
+  readonly byId: Record<number, {
+    readonly item: T,
+    readonly errors: Partial<Record<keyof T, string>>
+  }>
 }
 
 export interface ICRUDStatus {
@@ -32,12 +44,22 @@ export class CRUDReducer<
 > {
   readonly defaultState: ICRUDState<T>
 
-  constructor(readonly actionName: ActionType) {
+  constructor(
+    readonly actionName: ActionType,
+    readonly newItem: Pick<T, Exclude<keyof T, 'id'>>,
+  ) {
 
     const defaultMethodStatus = this.getDefaultMethodStatus()
     this.defaultState = {
       ids: [],
       byId: {},
+      form: {
+        byId: {},
+        create: {
+          item: newItem,
+          errors: {},
+        },
+      },
 
       status: {
         save: defaultMethodStatus,
@@ -161,7 +183,77 @@ export class CRUDReducer<
     }
   }
 
-  reduce = (
+  handleCreate = (state: ICRUDState<T>): ICRUDState<T> => {
+    return {
+      ...state,
+      form: {
+        ...state.form,
+        create: {
+          item: this.newItem,
+          errors: {},
+        },
+      },
+    }
+  }
+
+  handleEdit = (state: ICRUDState<T>, id: number): ICRUDState<T> => {
+    return {
+      ...state,
+      form: {
+        ...state.form,
+        byId: {
+          ...state.form.byId,
+          [id]: {
+            item: state.byId[id],
+            errors: {},
+          },
+        },
+      },
+    }
+  }
+
+  handleChange = (state: ICRUDState<T>, payload: {
+    id?: number,
+    key: keyof T,
+    value: string,
+  }): ICRUDState<T> => {
+    const {id, key, value} = payload
+
+    if (!id) {
+      return {
+        ...state,
+        form: {
+          ...state.form,
+          create: {
+            ...state.form.create,
+            item: {
+              ...state.form.create.item,
+              [key]: value,
+            },
+          },
+        },
+      }
+    }
+
+    return {
+      ...state,
+      form: {
+        ...state.form,
+        byId: {
+          ...state.form.byId,
+          [id]: {
+            ...state.form.byId[id],
+            item: {
+              ...state.form.byId[id].item,
+              [key]: value,
+            },
+          },
+        },
+      },
+    }
+  }
+
+    reduce = (
     state: ICRUDState<T> | undefined,
     action: TCRUDAction<T, ActionType>,
   ): ICRUDState<T> => {
@@ -170,6 +262,19 @@ export class CRUDReducer<
 
     if (action.type !== this.actionName) {
       return state
+    }
+
+    if (!('status' in action)) {
+      switch (action.method) {
+        case 'change':
+          return this.handleChange(state, action.payload)
+        case 'edit':
+          return this.handleEdit(state, action.payload.id)
+        case 'create':
+          return this.handleCreate(state)
+        default:
+          return state
+      }
     }
 
     switch (action.status) {

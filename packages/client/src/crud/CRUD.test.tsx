@@ -1,7 +1,7 @@
 import {createCRUDActions} from './CRUDActions'
 import React from 'react'
 import {AnyAction} from 'redux'
-import {CRUDReducer, TCRUDMethod} from './'
+import {CRUDReducer, TCRUDMethod, TCRUDAsyncMethod} from './'
 import {HTTPClientMock, TestUtils, getError} from '../test-utils'
 import {TMethod} from '@rondo/common'
 import {IPendingAction} from '../actions'
@@ -62,7 +62,7 @@ describe('CRUD', () => {
     '/one/:oneId/two',
     'TEST',
   )
-  const crudReducer = new CRUDReducer<ITwo, 'TEST'>('TEST')
+  const crudReducer = new CRUDReducer<ITwo, 'TEST'>('TEST', {name: ''})
   const Crud = crudReducer.reduce
 
   const test = new TestUtils()
@@ -100,7 +100,7 @@ describe('CRUD', () => {
   })
 
   function dispatch(
-    method: TCRUDMethod,
+    method: TCRUDAsyncMethod,
     action: IPendingAction<unknown, string>,
   ) {
     store.dispatch(action)
@@ -109,13 +109,13 @@ describe('CRUD', () => {
     return action
   }
 
-  function getUrl(method: TCRUDMethod) {
+  function getUrl(method: TCRUDAsyncMethod) {
     return method === 'save' || method === 'findMany'
       ? '/one/1/two'
       : '/one/1/two/2'
   }
 
-  function getHTTPMethod(method: TCRUDMethod): TMethod {
+  function getHTTPMethod(method: TCRUDAsyncMethod): TMethod {
     switch (method) {
       case 'save':
         return 'post'
@@ -131,7 +131,7 @@ describe('CRUD', () => {
 
   describe('Promise rejections', () => {
     const testCases: Array<{
-      method: TCRUDMethod
+      method: TCRUDAsyncMethod
       params: any
     }> = [{
       method: 'findOne',
@@ -203,7 +203,7 @@ describe('CRUD', () => {
     const entity = {id: 100, name: 'test'}
 
     const testCases: Array<{
-      method: TCRUDMethod
+      method: TCRUDAsyncMethod,
       params: any
       body?: any
       response: any
@@ -305,6 +305,70 @@ describe('CRUD', () => {
       })
     })
 
+  })
+
+  describe('synchronous methods', () => {
+
+    describe('create', () => {
+      it('resets form.create state', () => {
+        store.dispatch(actions.create())
+        expect(store.getState().Crud.form.create).toEqual({
+          item: {
+            name: '',
+          },
+          errors: {},
+        })
+      })
+    })
+
+    describe('change', () => {
+      it('sets value', () => {
+        store.dispatch(actions.change({key: 'name', value: 'test'}))
+        expect(store.getState().Crud.form.create).toEqual({
+          item: {
+            name: 'test',
+          },
+          errors: {},
+        })
+      })
+    })
+
+    describe('edit', () => {
+      beforeEach(() => {
+        http.mockAdd({
+          method: 'post',
+          data: {name: 'test'},
+          url: '/one/1/two',
+        }, {id: 100, name: 'test'})
+      })
+
+      afterEach(() => {
+        http.mockClear()
+      })
+
+      it('sets item as edited', async () => {
+        await store.dispatch(actions.save({
+          params: {oneId: 1},
+          body: {name: 'test'},
+        })).payload
+        store.dispatch(actions.edit({id: 100}))
+        expect(store.getState().Crud.form.byId[100]).toEqual({
+          item: {
+            id: 100,
+            name: 'test',
+          },
+          errors: {},
+        })
+        store.dispatch(actions.change({id: 100, key: 'name', value: 'grrr'}))
+        expect(store.getState().Crud.form.byId[100]).toEqual({
+          item: {
+            id: 100,
+            name: 'grrr',
+          },
+          errors: {},
+        })
+      })
+    })
   })
 
 })
