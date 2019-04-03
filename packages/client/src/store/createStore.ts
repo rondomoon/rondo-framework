@@ -21,7 +21,9 @@ export function createStore<State, A extends Action>(
   params: ICreateStoreParams<State, A>,
 ) {
   const middleware = params.middleware || [
-    new ReduxLogger().handle,
+    new ReduxLogger(
+      window && window.localStorage && window.localStorage.log,
+    ).handle,
     new PromiseMiddleware().handle,
   ]
   return (state?: DeepPartial<State>) => create(
