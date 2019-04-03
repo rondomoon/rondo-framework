@@ -10,6 +10,10 @@ const test = new TestUtils()
 
 describe('TeamConnector', () => {
 
+  let history: any = {
+    push: jest.fn(),
+  }
+
   let teamActions!: Feature.TeamActions
   let http: HTTPClientMock<IAPIDef>
   beforeEach(() => {
@@ -58,7 +62,7 @@ describe('TeamConnector', () => {
 
   it('it fetches user teams on render', async () => {
     const {node} = createTestProvider().render({
-      history: {} as any,
+      history,
       location: {} as any,
       match: {} as any,
     })
@@ -80,7 +84,7 @@ describe('TeamConnector', () => {
       }, newTeam)
       const {render, store} = createTestProvider()
       const {node} = render({
-        history: {} as any,
+        history,
         location: {} as any,
         match: {} as any,
       })
@@ -104,7 +108,7 @@ describe('TeamConnector', () => {
       }, error, 400)
       const {render} = createTestProvider()
       const {node} = render({
-        history: {} as any,
+        history,
         location: {} as any,
         match: {} as any,
       })
