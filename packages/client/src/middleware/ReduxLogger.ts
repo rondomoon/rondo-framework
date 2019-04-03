@@ -21,7 +21,7 @@ export class ReduxLogger {
 
     const stateDiff = diff(prevState, nextState)
     // tslint:disable-next-line
-    console.group(type)
+    console.groupCollapsed(type)
     // tslint:disable-next-line
     console.log(
       'action:    %O\nstateDiff: %O\nprevState: %O\nnextState: %O',
