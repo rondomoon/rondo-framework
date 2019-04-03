@@ -18,19 +18,21 @@ export interface ICRUDFieldProps<T> {
 
 export type TCRUDErrors<T> = Partial<Record<keyof T & string, string>>
 
+export interface ICRUDField<T> {
+  Icon?: React.ComponentType
+  label: string
+  placeholder?: string
+  name: keyof T & string
+  type: TCRUDFieldType
+}
+
 export interface ICRUDFormProps<T> {
   errors: TCRUDErrors<T>
   id?: number
-  item: T
+  item?: T
   error: string
   submitText: string
-  fields: Array<{
-    Icon?: React.ComponentType
-    label: string
-    placeholder?: string
-    name: keyof T & string
-    type: TCRUDFieldType
-  }>
+  fields: Array<ICRUDField<T>>
 
   onSubmit: (t: T) => void
   onChange(params: ICRUDChangeParams<T>): void
@@ -73,14 +75,16 @@ export class CRUDForm<T> extends React.PureComponent<ICRUDFormProps<T>> {
   handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const {onSubmit, item} = this.props
-    onSubmit(item)
+    if (item) {
+      onSubmit(item)
+    }
   }
   render() {
     const {fields, item} = this.props
     return (
       <form onSubmit={this.handleSubmit}>
         <p className='error'>{this.props.error}</p>
-        {fields.map(field => {
+        {!!item && fields.map(field => {
           const error = this.props.errors[field.name]
           const value = item[field.name]
           return (
@@ -90,6 +94,7 @@ export class CRUDForm<T> extends React.PureComponent<ICRUDFormProps<T>> {
               name={field.name}
               label={field.label}
               onChange={this.props.onChange}
+              placeholder={field.placeholder}
               error={error}
               Icon={field.Icon}
               value={String(value)}
