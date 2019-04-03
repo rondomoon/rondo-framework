@@ -68,7 +68,7 @@ export class TeamList extends React.PureComponent<ITeamListProps> {
               className='ml-auto button is-link is-small'
               to='/teams/new'
             >
-              <FaPlus />&nbsp;New
+              <FaPlus />&nbsp; New
             </Link>
           </span>
         </PanelHeading>
