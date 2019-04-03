@@ -37,6 +37,7 @@
     "buildfile": "^1.2.22",
     "bulma": "^0.7.4",
     "cookie-parser": "^1.4.4",
+    "deep-object-diff": "^1.1.0",
     "history": "^4.9.0",
     "jest": "^24.5.0",
     "lerna": "^3.13.1",

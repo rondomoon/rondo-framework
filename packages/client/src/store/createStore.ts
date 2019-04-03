@@ -1,4 +1,4 @@
-import {PromiseMiddleware} from '../middleware'
+import {ReduxLogger, PromiseMiddleware} from '../middleware'
 import {
   applyMiddleware,
   createStore as create,
@@ -20,7 +20,10 @@ export interface ICreateStoreParams<State, A extends Action> {
 export function createStore<State, A extends Action>(
   params: ICreateStoreParams<State, A>,
 ) {
-  const middleware = params.middleware || [new PromiseMiddleware().handle]
+  const middleware = params.middleware || [
+    new ReduxLogger().handle,
+    new PromiseMiddleware().handle,
+  ]
   return (state?: DeepPartial<State>) => create(
     params.reducer,
     state,
