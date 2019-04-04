@@ -1,5 +1,5 @@
 import React from 'react'
-import {Control, Field, Label, Icon, Input} from 'bloomer'
+import {Control, Field, Heading, Icon, Input} from 'bloomer'
 import {ICRUDChangeParams} from './CRUDActions'
 
 export type TCRUDFieldType = 'text' | 'password' | 'number' | 'email' | 'tel'
@@ -52,7 +52,7 @@ export class CRUDField<T> extends React.PureComponent<ICRUDFieldProps<T>> {
     const {label, name, value, placeholder} = this.props
     return (
       <Field>
-        <Label>{label}</Label>
+        <Heading>{label}</Heading>
         <Control hasIcons={!!this.props.Icon}>
           <Input
             name={name}
