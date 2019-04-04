@@ -1,12 +1,10 @@
 import React from 'react'
 import {Breadcrumb, BreadcrumbItem} from 'bloomer'
 import {Link} from 'react-router-dom'
+import {ICrumbLink} from './ICrumbLink'
 
 export interface ICrumbProps {
-  links: Array<{
-    name: string
-    to: string
-  }>
+  links: ICrumbLink[]
   current: string
 }
 
@@ -24,7 +22,7 @@ export class Crumb extends React.PureComponent<ICrumbProps> {
             </BreadcrumbItem>
           ))}
           <BreadcrumbItem>
-            <a>{this.props.current}</a>
+            <span>{this.props.current}</span>
           </BreadcrumbItem>
         </ul>
       </Breadcrumb>

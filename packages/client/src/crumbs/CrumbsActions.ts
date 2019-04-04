@@ -1,9 +1,5 @@
 import {TGetAction, IAction} from '../actions'
-
-export interface ICrumbLink {
-  name: string
-  to: string
-}
+import {ICrumbLink} from './ICrumbLink'
 
 export interface ICrumbs {
   links: ICrumbLink[]
