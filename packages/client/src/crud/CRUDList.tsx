@@ -12,10 +12,16 @@ export interface ICRUDListProps<T> {
   onRemove?: (t: T) => void
   title: string
   Info?: React.ComponentType<ICRUDItemInfoProps<T>>
+  RowButtons?: React.ComponentType<ICRUDRowButtons<T>>
+}
+
+export interface ICRUDRowButtons<T> {
+  item: T
 }
 
 export interface ICRUDItemRowProps<T> {
   Info?: React.ComponentType<ICRUDItemInfoProps<T>>
+  RowButtons?: React.ComponentType<ICRUDRowButtons<T>>
   nameKey: keyof T
   editLink?: string
   item: T
@@ -54,6 +60,10 @@ export class CRUDItemRow<T> extends React.PureComponent<ICRUDItemRowProps<T>> {
           }
         </div>
         <div className='ml-auto'>
+          {!!this.props.RowButtons && (
+            <this.props.RowButtons item={item} />
+          )}
+          &nbsp;
           {!!editLink && (
             <Link to={editLink}>
               <Button isInverted isColor='link' aria-label='Edit'>
@@ -103,6 +113,7 @@ export class CRUDList<T> extends React.PureComponent<ICRUDListProps<T>> {
             <PanelBlock key={itemId}>
               <CRUDItemRow<T>
                 Info={this.props.Info}
+                RowButtons={this.props.RowButtons}
                 nameKey={nameKey}
                 editLink={editLink && editLink(item)}
                 item={item}
