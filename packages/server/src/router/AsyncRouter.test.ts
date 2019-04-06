@@ -27,6 +27,11 @@ describe('AsyncRouter', () => {
       patch: IHandler
       head: {},
     }
+    '/middleware': {
+      get: {
+        response: IResponse
+      }
+    }
   }
 
   const app = express()
@@ -55,6 +60,16 @@ describe('AsyncRouter', () => {
   asyncRouter.head('/test/:param', async req => {
     return ''
   })
+  asyncRouter.get('/middleware', [(req, res, next) => {
+    (req as any).testParam = 'middle'
+    next()
+  }, (req, res, next) => {
+     (req as any).testParam += 'ware'
+     next()
+  }], async req => {
+    const value = (req as any).testParam as string
+    return {value}
+  })
 
   it('creates its own router when not provided', () => {
     const r = new AsyncRouter<IMyApi>()
@@ -69,5 +84,7 @@ describe('AsyncRouter', () => {
     await request(app).options('/test/a').expect(200).expect('{"value":"a"}')
     await request(app).patch('/test/a').expect(500)
     await request(app).head('/test/a').expect(200)
+    await request(app).get('/middleware').expect(200)
+    .expect('{"value":"middleware"}')
   })
 })
