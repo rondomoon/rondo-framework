@@ -16,18 +16,18 @@ export class TeamRoutes extends BaseRoute<IAPIDef> {
 
   setup(t: AsyncRouter<IAPIDef>) {
 
-    t.get('/teams/:id', async req => {
+    const ensureLoggedIn = [ensureLoggedInApi]
+
+    t.get('/teams/:id', ensureLoggedIn, async req => {
       const {id} = req.params
       return this.teamService.findOne(id)
     })
 
-    t.use(ensureLoggedInApi)
-
-    t.get('/my/teams', async req => {
+    t.get('/my/teams', ensureLoggedIn, async req => {
       return this.teamService.find(req.user!.id)
     })
 
-    t.post('/teams', async req => {
+    t.post('/teams', ensureLoggedIn, async req => {
       const {name} = req.body
       return this.teamService.create({
         name,
@@ -35,7 +35,7 @@ export class TeamRoutes extends BaseRoute<IAPIDef> {
       })
     })
 
-    t.put('/teams/:id', async req => {
+    t.put('/teams/:id', ensureLoggedIn, async req => {
       const id = Number(req.params.id)
 
       await this.permissions.belongsToTeam({
@@ -50,7 +50,7 @@ export class TeamRoutes extends BaseRoute<IAPIDef> {
       })
     })
 
-    t.delete('/teams/:id', async req => {
+    t.delete('/teams/:id', ensureLoggedIn, async req => {
       const id = Number(req.params.id)
 
       await this.permissions.belongsToTeam({
@@ -64,7 +64,7 @@ export class TeamRoutes extends BaseRoute<IAPIDef> {
       })
     })
 
-    t.get('/teams/:teamId/users', async req => {
+    t.get('/teams/:teamId/users', ensureLoggedIn, async req => {
       const teamId = Number(req.params.teamId)
 
       await this.permissions.belongsToTeam({
@@ -75,7 +75,7 @@ export class TeamRoutes extends BaseRoute<IAPIDef> {
       return this.teamService.findUsers(teamId)
     })
 
-    t.post('/teams/:teamId/users/:userId', async req => {
+    t.post('/teams/:teamId/users/:userId', ensureLoggedIn, async req => {
       const teamId = Number(req.params.teamId)
       const userId = Number(req.params.userId)
 
@@ -91,7 +91,7 @@ export class TeamRoutes extends BaseRoute<IAPIDef> {
       })
     })
 
-    t.delete('/teams/:teamId/users/:userId', async req => {
+    t.delete('/teams/:teamId/users/:userId', ensureLoggedIn, async req => {
       const teamId = Number(req.params.teamId)
       const userId = Number(req.params.userId)
 

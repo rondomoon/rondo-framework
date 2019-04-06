@@ -13,7 +13,7 @@ export class UserRoutes extends BaseRoute<IAPIDef> {
   }
 
   setup(t: AsyncRouter<IAPIDef>) {
-    t.use(ensureLoggedInApi)
+    t.use('/users', ensureLoggedInApi)
 
     t.post('/users/password', async req => {
       await this.userService.changePassword({
