@@ -23,10 +23,11 @@ export function Login(
     // sync actions
     case 'LOGIN_REDIRECT_SET':
       return {...state, redirectTo: action.payload.redirectTo}
-    default:
+    case 'LOGIN':
+    case 'LOGIN_LOGOUT':
+    case 'LOGIN_REGISTER':
       // async actions
       switch (action.status) {
-        // FIXME this will trigger for all async actions with status pending
         case 'pending':
           return {
             ...state,
@@ -48,6 +49,6 @@ export function Login(
               return {...state, user: action.payload, error: ''}
           }
       }
-      return state
   }
+  return state
 }
