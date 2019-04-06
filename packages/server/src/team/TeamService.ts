@@ -1,10 +1,10 @@
 import {BaseService} from '../services/BaseService'
 import {ITeamService} from './ITeamService'
-import {IUserInTeam} from '@rondo/common'
+import {IUserInTeam, trim} from '@rondo/common'
 import {IUserTeamParams} from './IUserTeamParams'
 import {Team} from '../entities/Team'
 import {UserTeam} from '../entities/UserTeam'
-import {Validator, trim} from '../validator'
+import {Validator} from '../validator'
 
 export class TeamService extends BaseService implements ITeamService {
 

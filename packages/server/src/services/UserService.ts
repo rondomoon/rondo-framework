@@ -1,12 +1,12 @@
 import createError from 'http-errors'
 import {BaseService} from './BaseService'
-import {ICredentials, INewUser, IUser} from '@rondo/common'
+import {ICredentials, INewUser, IUser, trim} from '@rondo/common'
 import {IUserService} from './IUserService'
 import {UserEmail} from '../entities/UserEmail'
 import {User} from '../entities/User'
 import {compare, hash} from 'bcrypt'
 import {validate as validateEmail} from 'email-validator'
-import {Validator, trim} from '../validator'
+import {Validator} from '../validator'
 
 const SALT_ROUNDS = 10
 const MIN_PASSWORD_LENGTH = 10
