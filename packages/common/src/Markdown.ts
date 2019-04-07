@@ -13,6 +13,7 @@ export class Markdown {
 
   parse(markdown: string): string {
     const dangerousHTML = marked(markdown, this.markdownOptions)
-    return sanitize(dangerousHTML, this.sanitizeOptions)
+    const sanitizedHTML = sanitize(dangerousHTML, this.sanitizeOptions)
+    return sanitizedHTML.trim()
   }
 }
