@@ -4,13 +4,18 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
+const transformer = {
+  from: (value: Date) => value.toISOString(),
+  to: (value: undefined | null | string) => value ? new Date(value) : value,
+}
+
 export abstract class BaseEntity {
   @PrimaryGeneratedColumn({type: 'bigint'})
   id!: number
 
-  @CreateDateColumn()
-  createDate!: Date
+  @CreateDateColumn({transformer, type: 'datetime'})
+  createDate!: string
 
-  @UpdateDateColumn()
-  updateDate!: Date
+  @UpdateDateColumn({transformer, type: 'datetime'})
+  updateDate!: string
 }

@@ -12,6 +12,7 @@ app:
   db:
     type: sqlite
     database: data/data.db
+    timezone: 'Z'
     synchronize: false
     dropSchema: false
     migrationsRun: false
