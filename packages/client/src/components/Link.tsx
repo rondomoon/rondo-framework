@@ -5,7 +5,7 @@ import {Link as RouterLink, LinkProps} from 'react-router-dom'
 import {URLFormatter} from '@rondo/common'
 import {withRouter} from 'react-router'
 
-interface ILinkProps
+export interface ILinkProps
 extends IWithRouterProps<Record<string, string>> {
   readonly className?: string
   readonly to: string
