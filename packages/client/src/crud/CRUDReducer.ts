@@ -137,6 +137,7 @@ export class CRUDReducer<
        ...state,
        ids: [...state.ids, payload.id],
        byId: {
+         ...state.byId,
          [payload.id]: payload,
        },
        status: {
@@ -160,6 +161,7 @@ export class CRUDReducer<
   }
 
   handleRemove = (state: ICRUDState<T>, payload: T): ICRUDState<T> => {
+    // FIXME site does not get removed because payload looks different!
     return {
       ...state,
       ids: state.ids.filter(id => id !== payload.id),
