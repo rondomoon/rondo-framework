@@ -8,5 +8,8 @@ add:
   mkdir packages/$(name)
   cp -r template/* packages/$(name)/
 
+clean:
+  rm -rf packages/*/lib
+
 test:
   jest
