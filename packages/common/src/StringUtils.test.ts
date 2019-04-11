@@ -13,7 +13,7 @@ describe('StringUtils', () => {
       for (let i = 0; i < 300; i++) {
         c += 'a'
       }
-      expect(StringUtils.ellipsis(c)).toBe(c.substring(0, 252))
+      expect(StringUtils.ellipsis(c)).toBe(c.substring(0, 252) + '...')
     })
 
     it('does nothing when text is not too long', () => {
