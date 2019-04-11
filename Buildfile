@@ -9,7 +9,7 @@ add:
   cp -r template/* packages/$(name)/
 
 clean:
-  rm -rf packages/*/lib
+  rm -rf packages/*/{lib,esm}
 
 sync-esm-config:
   node scripts/sync-esm-config.js
