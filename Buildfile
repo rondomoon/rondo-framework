@@ -11,5 +11,8 @@ add:
 clean:
   rm -rf packages/*/lib
 
+sync-esm-config:
+  node scripts/sync-esm-config.js
+
 test:
   jest

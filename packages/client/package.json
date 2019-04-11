@@ -9,5 +9,6 @@
     "redux": "^4.0.1"
   },
   "main": "lib/index.js",
-  "types": "lib/index.d.ts"
+  "types": "lib/index.d.ts",
+  "module": "esm/index.js"
 }
