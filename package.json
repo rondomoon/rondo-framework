@@ -46,7 +46,7 @@
     "esmify": "git+https://github.com/jeremija/esmify.git",
     "history": "^4.9.0",
     "jest": "^24.5.0",
-    "lerna": "^3.13.1",
+    "lerna": "^3.13.2",
     "loose-envify": "^1.4.0",
     "marked": "^0.6.2",
     "mysql": "^2.16.0",
