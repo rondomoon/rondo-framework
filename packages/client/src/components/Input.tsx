@@ -1,5 +1,5 @@
 import React from 'react'
-import {Control, Field, Input as I, Label} from 'bloomer'
+import {Control, Field, Input as I, Heading} from 'bloomer'
 import {IconType} from 'react-icons'
 
 export interface IInputProps {
@@ -24,7 +24,7 @@ export class Input extends React.PureComponent<IInputProps> {
     const {Icon} = this.props
     return (
       <Field>
-        <Label>{this.props.label}</Label>
+        <Heading>{this.props.label}</Heading>
         <Control hasIcons>
           <I
             className='input'

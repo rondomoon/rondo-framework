@@ -1,4 +1,5 @@
 import React from 'react'
+import {FaUser, FaLock} from 'react-icons/fa'
 import {INewUser, IUser} from '@rondo/common'
 import {Input} from '../components/Input'
 import {Redirect} from '../components/Redirect'
@@ -21,6 +22,7 @@ export class RegisterForm extends React.PureComponent<IRegisterFormProps> {
       <form onSubmit={this.props.onSubmit}>
         <p className='error'>{this.props.error}</p>
         <Input
+          Icon={FaUser}
           label='Email'
           name='username'
           type='email'
@@ -30,6 +32,7 @@ export class RegisterForm extends React.PureComponent<IRegisterFormProps> {
           required
         />
         <Input
+          Icon={FaLock}
           label='Password'
           name='password'
           type='password'
@@ -56,12 +59,14 @@ export class RegisterForm extends React.PureComponent<IRegisterFormProps> {
           placeholder='First name'
           required
         />
-        <input
-          className='button is-primary'
-          name='submit'
-          type='submit'
-          value='Log In'
-        />
+        <div className='text-center'>
+          <input
+            className='button is-primary'
+            name='submit'
+            type='submit'
+            value='Register'
+          />
+        </div>
       </form>
     )
   }
