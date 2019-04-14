@@ -31,7 +31,8 @@ export class TestUtils {
   readonly createStore = createStore
 
   render(jsx: JSX.Element) {
-    const component = T.renderIntoDocument(jsx) as React.Component<any>
+    const component = T
+    .renderIntoDocument(jsx) as unknown as React.Component<any>
     const node = ReactDOM.findDOMNode(component) as Element
     return {component, node}
   }

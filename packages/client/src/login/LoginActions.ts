@@ -10,6 +10,14 @@ export type TLoginAction =
 
 type TAction<T extends string> = TGetAction<TLoginAction, T>
 
+export const setRedirectTo = (redirectTo: string)
+: TAction<'LOGIN_REDIRECT_SET'> => {
+  return {
+    payload: {redirectTo},
+    type: 'LOGIN_REDIRECT_SET',
+  }
+}
+
 export class LoginActions {
   constructor(protected readonly http: IHTTPClient<IAPIDef>) {}
 
@@ -34,10 +42,5 @@ export class LoginActions {
     )
   }
 
-  setRedirectTo = (redirectTo: string): TAction<'LOGIN_REDIRECT_SET'> => {
-    return {
-      payload: {redirectTo},
-      type: 'LOGIN_REDIRECT_SET',
-    }
-  }
+  setRedirectTo = setRedirectTo
 }

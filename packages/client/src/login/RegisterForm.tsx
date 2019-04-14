@@ -1,7 +1,8 @@
 import React from 'react'
-import {FaUser, FaLock} from 'react-icons/fa'
+import {FaEnvelope, FaUser, FaLock} from 'react-icons/fa'
 import {INewUser, IUser} from '@rondo/common'
 import {Input} from '../components/Input'
+import {Link} from 'react-router-dom'
 import {Redirect} from '../components/Redirect'
 
 export interface IRegisterFormProps {
@@ -19,10 +20,14 @@ export class RegisterForm extends React.PureComponent<IRegisterFormProps> {
       return <Redirect to={this.props.redirectTo} />
     }
     return (
-      <form onSubmit={this.props.onSubmit}>
-        <p className='error'>{this.props.error}</p>
+      <form
+        autoComplete='off'
+        className='register-form'
+        onSubmit={this.props.onSubmit}
+      >
+        <p className='has-text-danger'>{this.props.error}</p>
         <Input
-          Icon={FaUser}
+          Icon={FaEnvelope}
           label='Email'
           name='username'
           type='email'
@@ -42,6 +47,7 @@ export class RegisterForm extends React.PureComponent<IRegisterFormProps> {
           required
         />
         <Input
+          Icon={FaUser}
           label='First Name'
           name='firstName'
           type='text'
@@ -51,12 +57,13 @@ export class RegisterForm extends React.PureComponent<IRegisterFormProps> {
           required
         />
         <Input
+          Icon={FaUser}
           label='Last Name'
           name='lastName'
           type='text'
           onChange={this.props.onChange}
           value={this.props.data.lastName}
-          placeholder='First name'
+          placeholder='Last name'
           required
         />
         <div className='text-center'>
@@ -67,6 +74,9 @@ export class RegisterForm extends React.PureComponent<IRegisterFormProps> {
             value='Register'
           />
         </div>
+        <p className='small center mt-1'>
+          Already have an account? <Link to='/auth/login'>Log in!</Link>
+        </p>
       </form>
     )
   }

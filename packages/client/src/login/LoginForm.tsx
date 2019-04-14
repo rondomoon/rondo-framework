@@ -22,8 +22,8 @@ export class LoginForm extends React.PureComponent<ILoginFormProps> {
       return <Redirect to={this.props.redirectTo} />
     }
     return (
-      <form onSubmit={this.props.onSubmit}>
-        <p className='error'>{this.props.error}</p>
+      <form className='login-form' onSubmit={this.props.onSubmit}>
+        <p className='has-text-danger'>{this.props.error}</p>
         <Input
           Icon={FaUser}
           label='Username'
@@ -52,8 +52,8 @@ export class LoginForm extends React.PureComponent<ILoginFormProps> {
           />
         </div>
 
-        <p className='small center'>
-          Don&apos;t have an account? <Link to='/auth/register'>Register!</Link>
+        <p className='small center mt-1'>
+          Don&apos;t have an account? <Link to='/auth/register'>Sign up!</Link>
         </p>
       </form>
     )
