@@ -39,9 +39,11 @@ export class Bootstrap implements IBootstrap {
     port: number | string | undefined = process.env.PORT,
     hostname?: string,
   ) {
+    const apiLogger = loggerFactory.getLogger('api')
     try {
       await this.start(port, hostname)
     } catch (err) {
+      apiLogger.error('Error starting server: %s', err.stack)
       this.exit(1)
       throw err
     }
