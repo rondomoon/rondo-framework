@@ -9,6 +9,7 @@ const baseUrl =  URL.parse(cfg.get('app.baseUrl'))
 export const config: IConfig = {
   app: {
     name: cfg.get('app.name'),
+    assets: cfg.get('app.assets'),
     baseUrl,
     context: baseUrl.path!,
     session: {

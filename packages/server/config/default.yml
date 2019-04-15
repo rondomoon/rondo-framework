@@ -2,6 +2,7 @@
 app:
   name: Notify
   baseUrl: http://localhost:3000/notify
+  assets: []
   session:
     httpsOnly: false
     secret:

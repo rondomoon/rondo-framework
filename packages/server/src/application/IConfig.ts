@@ -6,6 +6,7 @@ export interface IConfig {
     readonly name: string
     readonly baseUrl: UrlWithStringQuery
     readonly context: string
+    readonly assets: string[]
     readonly session: {
       readonly name: string
       readonly secret: string | string[]

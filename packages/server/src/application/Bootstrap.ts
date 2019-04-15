@@ -39,9 +39,25 @@ export class Bootstrap implements IBootstrap {
     return new Application(this.getConfig(), database)
   }
 
+  async exec(command: string = 'listen') {
+    switch (command) {
+      case 'listen':
+        await this.listen()
+        return
+      case 'migrate':
+        await this.migrate()
+        return
+      case 'migrate-undo':
+        await this.migrateUndo()
+        return
+      default:
+        throw new Error('Unknown command: ' + command)
+    }
+  }
+
   async listen(
-    port: number | string | undefined = process.env.PORT,
-    hostname?: string,
+    port: number | string | undefined = process.env.PORT || 3000,
+    hostname: string | undefined= process.env.BIND_HOST,
   ) {
     const apiLogger = loggerFactory.getLogger('api')
     try {
@@ -51,6 +67,18 @@ export class Bootstrap implements IBootstrap {
       this.exit(1)
       throw err
     }
+  }
+
+  async migrate() {
+    const connection = await this.database.connect()
+    await connection.runMigrations()
+    await connection.close()
+  }
+
+  async migrateUndo() {
+    const connection = await this.database.connect()
+    await connection.undoLastMigration()
+    await connection.close()
   }
 
   protected async start(
