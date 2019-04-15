@@ -6,7 +6,7 @@ import {IConfig} from './IConfig'
 export interface IBootstrap {
   readonly application: IApplication
   readonly database: IDatabase
-  readonly config: IConfig
+  getConfig(): IConfig
   listen(port?: number | string, hostname?: string): Promise<void>
   getAddress(): AddressInfo | string
   close(): Promise<void>

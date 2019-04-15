@@ -17,7 +17,7 @@ export class Bootstrap implements IBootstrap {
   readonly database: IDatabase
 
   constructor(
-    readonly config: IConfig,
+    private readonly config: IConfig,
     protected readonly namespace: Namespace = createNamespace('application'),
     protected readonly exit: (code: number) => void = process.exit,
   ) {
@@ -25,14 +25,18 @@ export class Bootstrap implements IBootstrap {
     this.application = this.createApplication(this.database)
   }
 
+  getConfig(): IConfig {
+    return this.config
+  }
+
   protected createDatabase(): IDatabase {
     const sqlLogger = new SqlLogger(
       loggerFactory.getLogger('sql'), this.namespace)
-    return new Database(this.namespace, sqlLogger, this.config.app.db)
+    return new Database(this.namespace, sqlLogger, this.getConfig().app.db)
   }
 
   protected createApplication(database: IDatabase): IApplication {
-    return new Application(this.config, database)
+    return new Application(this.getConfig(), database)
   }
 
   async listen(

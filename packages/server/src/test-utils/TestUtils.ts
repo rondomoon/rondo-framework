@@ -19,7 +19,7 @@ export class TestUtils<T extends IRoutes> {
 
   constructor(readonly bootstrap: IBootstrap) {
     this.app = bootstrap.application.server
-    this.context = this.bootstrap.config.app.context
+    this.context = this.bootstrap.getConfig().app.context
     this.transactionManager = this.bootstrap.database.transactionManager
   }
 
@@ -142,7 +142,7 @@ export class TestUtils<T extends IRoutes> {
   request = (baseUrl = '') => {
     return new RequestTester<T>(
       this.app,
-      `${this.bootstrap.config.app.baseUrl.path!}${baseUrl}`)
+      `${this.bootstrap.getConfig().app.baseUrl.path!}${baseUrl}`)
   }
 
   private getCookies(setCookiesString: string[]): string {
