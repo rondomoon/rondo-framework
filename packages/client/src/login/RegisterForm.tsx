@@ -25,7 +25,7 @@ export class RegisterForm extends React.PureComponent<IRegisterFormProps> {
         className='register-form'
         onSubmit={this.props.onSubmit}
       >
-        <p className='has-text-danger'>{this.props.error}</p>
+        <p className='error has-text-danger'>{this.props.error}</p>
         <Input
           Icon={FaEnvelope}
           label='Email'

@@ -1,8 +1,10 @@
 import * as Feature from './'
+import React from 'react'
 import ReactDOM from 'react-dom'
 import T from 'react-dom/test-utils'
 import {HTTPClientMock, TestUtils, getError} from '../test-utils'
 import {IAPIDef} from '@rondo/common'
+import {MemoryRouter} from 'react-router-dom'
 
 const test = new TestUtils()
 
@@ -17,6 +19,9 @@ describe('RegisterForm', () => {
   })
   .withComponent(
     select => new Feature.RegisterConnector(loginActions).connect(select),
+  )
+  .withJSX((Component, props) =>
+    <MemoryRouter><Component {...props} /></MemoryRouter>,
   )
 
   beforeAll(() => {
