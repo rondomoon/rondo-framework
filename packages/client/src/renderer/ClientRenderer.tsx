@@ -35,7 +35,7 @@ export class ClientRenderer<State, A extends Action, D extends IAPIDef>
       target = document.getElementById('container'),
     } = this.params
 
-    const http = new HTTPClient<D>(config.baseUrl)
+    const http = new HTTPClient<D>(config.baseUrl + '/api')
 
     const history = createBrowserHistory({
       basename: config.baseUrl,

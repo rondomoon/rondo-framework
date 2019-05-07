@@ -23,10 +23,11 @@ export class ServerRenderer<State, A extends Action, D extends IAPIDef>
     url: string,
     config: IClientConfig,
     state?: any,
+    host: string = '',
   ) {
     const {RootComponent} = this
     const store = this.createStore(state)
-    const http = new HTTPClient<D>(config.baseUrl)
+    const http = new HTTPClient<D>(host + config.baseUrl + '/api')
 
     const context: StaticRouterContext = {}
     const stream = renderToNodeStream(

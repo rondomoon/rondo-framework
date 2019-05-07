@@ -1,4 +1,4 @@
-import {ReduxLogger, PromiseMiddleware} from '../middleware'
+import {ReduxLogger, PromiseMiddleware, WaitMiddleware} from '../middleware'
 import {
   applyMiddleware,
   createStore as create,
@@ -27,6 +27,7 @@ export function createStore<State, A extends Action>(
       && typeof window.localStorage.log !== 'undefined',
     ).handle,
     new PromiseMiddleware().handle,
+    new WaitMiddleware().handle,
   ]
   return (state?: DeepPartial<State>) => create(
     params.reducer,
