@@ -10,8 +10,9 @@ import {
 
 export interface ICreateStoreParams<State, A extends Action> {
   reducer: Reducer<State, A>
-  state?: DeepPartial<State>
+  state?: Partial<State>
   middleware?: Middleware[]
+  extraMiddleware?: Middleware[]
 }
 
 /**
@@ -27,8 +28,10 @@ export function createStore<State, A extends Action>(
       && typeof window.localStorage.log !== 'undefined',
     ).handle,
     new PromiseMiddleware().handle,
-    new WaitMiddleware().handle,
   ]
+  if (params.extraMiddleware) {
+    middleware.push(...params.extraMiddleware)
+  }
   return (state?: DeepPartial<State>) => create(
     params.reducer,
     state,

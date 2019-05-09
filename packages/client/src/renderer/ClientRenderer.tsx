@@ -7,31 +7,29 @@ import {IHTTPClient, HTTPClient} from '../http'
 import {IRenderer} from './IRenderer'
 import {Provider} from 'react-redux'
 import {Router} from 'react-router-dom'
-import {TStoreFactory} from './TStoreFactory'
+import {Store} from 'redux'
 import {createBrowserHistory} from 'history'
 
-export interface IClientRendererParams<
-  State, A extends Action, D extends IAPIDef> {
-  readonly createStore: TStoreFactory<State, A | any>,
+export interface IClientRendererParams<A extends Action, D extends IAPIDef> {
   readonly RootComponent: React.ComponentType<{
     config: IClientConfig,
     http: IHTTPClient<D>
   }>,
   readonly target?: HTMLElement
+  readonly hydrate: boolean // TODO make this better
 }
 
-export class ClientRenderer<State, A extends Action, D extends IAPIDef>
+export class ClientRenderer<A extends Action, D extends IAPIDef>
   implements IRenderer {
-  constructor(readonly params: IClientRendererParams<State, A, D>) {}
+  constructor(readonly params: IClientRendererParams<A, D>) {}
 
-  render(
+  render<State>(
     url: string,
+    store: Store<State>,
     config = (window as any).__APP_CONFIG__ as IClientConfig,
-    state = (window as any).__PRELOADED_STATE__,
   ) {
     const {
       RootComponent,
-      createStore,
       target = document.getElementById('container'),
     } = this.params
 
@@ -41,8 +39,7 @@ export class ClientRenderer<State, A extends Action, D extends IAPIDef>
       basename: config.baseUrl,
     })
 
-    if (state) {
-      const store = createStore(state)
+    if (this.params.hydrate) {
       ReactDOM.hydrate(
         <Provider store={store}>
           <Router history={history}>
@@ -52,7 +49,6 @@ export class ClientRenderer<State, A extends Action, D extends IAPIDef>
         target,
       )
     } else {
-      const store = createStore()
       ReactDOM.render(
         <Provider store={store}>
           <Router history={history}>
