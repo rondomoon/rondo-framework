@@ -1,4 +1,5 @@
 import React from 'react'
+import ssrPrepass from 'react-ssr-prepass'
 import {Action} from 'redux'
 import {IAPIDef} from '@rondo/common'
 import {IClientConfig} from './IClientConfig'
@@ -18,17 +19,23 @@ export class ServerRenderer<A extends Action, D extends IAPIDef>
       http: IHTTPClient<D>
     }>,
   ) {}
-  render<State>(
+  async render<State>(
     url: string,
     store: Store<State>,
     config: IClientConfig,
     host: string = '',
+    headers: Record<string, string> = {},
   ) {
     const {RootComponent} = this
-    const http = new HTTPClient<D>(host + config.baseUrl + '/api')
+    // TODO set cookie in headers here...
+    const http = new HTTPClient<D>(
+      'http://' + host + config.baseUrl + '/api',
+      headers,
+    )
 
     const context: StaticRouterContext = {}
-    const stream = renderToNodeStream(
+
+    const element = (
       <Provider store={store}>
         <StaticRouter
           basename={config.baseUrl}
@@ -37,8 +44,17 @@ export class ServerRenderer<A extends Action, D extends IAPIDef>
         >
           <RootComponent config={config} http={http} />
         </StaticRouter>
-      </Provider>,
+      </Provider>
     )
+
+    console.log('prepass')
+    await ssrPrepass(element, async (el, component) => {
+      if (component && 'fetchData' in component) {
+        await (component as any).fetchData()
+      }
+    })
+    console.log('prepass done')
+    const stream = renderToNodeStream(element)
     return stream
   }
 }
