@@ -33,7 +33,9 @@ export class ClientRenderer<A extends Action, D extends IAPIDef>
       target = document.getElementById('container'),
     } = this.params
 
-    const http = new HTTPClient<D>(config.baseUrl + '/api')
+    const http = new HTTPClient<D>(config.baseUrl + '/api', {
+      'x-csrf-token': config.csrfToken,
+    })
 
     const history = createBrowserHistory({
       basename: config.baseUrl,
