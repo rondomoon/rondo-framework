@@ -47,13 +47,11 @@ export class ServerRenderer<A extends Action, D extends IAPIDef>
       </Provider>
     )
 
-    console.log('prepass')
     await ssrPrepass(element, async (el, component) => {
       if (component && 'fetchData' in component) {
         await (component as any).fetchData()
       }
     })
-    console.log('prepass done')
     const stream = renderToNodeStream(element)
     return stream
   }
