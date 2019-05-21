@@ -10,7 +10,7 @@ const test = new TestUtils()
 
 describe('TeamConnector', () => {
 
-  let history: any = {
+  const history: any = {
     push: jest.fn(),
   }
 
