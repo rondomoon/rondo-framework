@@ -1,7 +1,8 @@
 import {HTTPClient} from '../http/HTTPClient'
-import {IRoutes} from '@rondo/common'
 import {IRequest} from '../http/IRequest'
 import {IResponse} from '../http/IResponse'
+import {IRoutes, TMethod} from '@rondo/common'
+import {ITypedRequestParams} from '../http/ITypedRequestParams'
 
 interface IReqRes {
   req: IRequest
@@ -92,6 +93,22 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
   mockAdd(req: IRequest, data: any, status = 200): this {
     this.mocks[this.serialize(req)] = {data, status}
     return this
+  }
+
+  /**
+   * Adds a new mock with predefined type
+   */
+  mockAddTyped<P extends keyof T & string, M extends TMethod>(
+    params: ITypedRequestParams<T, P, M>,
+    response: T[P][M]['response'],
+  ): this {
+    const url = this.formatter.format(params.path, params.params)
+    return this.mockAdd({
+      method: params.method,
+      url,
+      params: params.query,
+      data: params.body,
+    }, response)
   }
 
   /**
