@@ -94,7 +94,9 @@ export class TestUtils {
         return self
       }
 
-      const self = {
+      const self: ISelf<
+        Props, typeof store, typeof Component, CreateJSX
+        > = {
         render,
         store,
         Component,
@@ -106,4 +108,12 @@ export class TestUtils {
 
     return {withState, withComponent}
   }
+}
+
+interface ISelf<Props, Store, Component, CreateJSX> {
+  render: (props: Props) => ReturnType<TestUtils['render']>
+  store: Store
+  Component: Component
+  withJSX: (localCreateJSX: CreateJSX)
+  => ISelf<Props, Store, Component, CreateJSX>
 }
