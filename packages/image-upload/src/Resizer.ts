@@ -1,35 +1,26 @@
-interface IPartition {
-  source: ImageData
-  target: ImageData
-  startY: number
-  height: number
-}
-
 interface IWorkerParam {
   sourceWidth: number
   sourceHeight: number
   width: number
   height: number
-  core: number
   source: ArrayBuffer
 }
 
-interface IWorkerParamMessage extends MessageEvent {
+interface IWorkerParamMessage {
   data: IWorkerParam
 }
 
 interface IWorkerResult {
-  core: number
   target: Uint8ClampedArray
 }
 
-interface IWorkerResultMessage extends MessageEvent {
+interface IWorkerResultMessage {
   data: IWorkerResult
 }
 
-function ResizeWorker() {
-  function onmessage(event: IWorkerParamMessage) {
-    const core = event.data.core
+function createResizeWorker(root: any = {})
+  : {onmessage: (event: IWorkerParamMessage) => void} {
+  root.onmessage = (event: IWorkerParamMessage) => {
     const sourceWidth = event.data.sourceWidth
     const sourceHeight = event.data.sourceHeight
     const width = event.data.width
@@ -102,22 +93,26 @@ function ResizeWorker() {
     }
 
     const objData: IWorkerResult = {
-      core,
       target,
     }
     postMessage(objData, [target.buffer] as any)
   }
+  return root
 }
 
 export class Resizer {
   readonly cores = navigator.hardwareConcurrency || 4
   readonly workerBlobURL = window.URL.createObjectURL(
     new Blob(
-      ['(', ResizeWorker.toString(), ')()'],
+      ['(', createResizeWorker.toString(), ')(self)'],
       {type: 'application/javascript'},
     ))
 
-  async resample(canvas: HTMLCanvasElement, width: number, height: number) {
+  async resample(
+    canvas: HTMLCanvasElement,
+    width: number,
+    height: number,
+  ): Promise<HTMLCanvasElement> {
     const {cores} = this
     const sourceWidth = canvas.width
     const sourceHeight = canvas.height
@@ -125,83 +120,73 @@ export class Resizer {
     height = Math.round(height)
     const ratioH = sourceHeight / height
 
-    const workers = new Array(cores)
     // TODO handle null
     const ctx = canvas.getContext('2d')!
 
-    // prepare source and target data for workers
-    const partitions: IPartition[] = new Array(cores)
+    let resolve: (canvas: HTMLCanvasElement) => void
+    let reject: (err: Error) => void
+    const promise = new Promise<HTMLCanvasElement>((res, rej) => {
+      resolve = res
+      reject = rej
+    })
+
     const blockHeight = Math.ceil(sourceHeight / cores / 2) * 2
     let endY = -1
+    let activeWorkers = 0
+    const workers: Worker[] = []
     for (let c = 0; c < cores; c++) {
-      // source
       const offsetY = endY + 1
       if (offsetY >= sourceHeight) {
         // size too small, nothing left for this core
         continue
       }
 
-      endY = offsetY + blockHeight - 1
-      endY = Math.min(endY, sourceHeight - 1)
+      endY = Math.min(offsetY + blockHeight - 1, sourceHeight - 1)
 
-      let currentBlockHeight = blockHeight
-      currentBlockHeight = Math.min(blockHeight, sourceHeight - offsetY)
+      const currentBlockHeight = Math.min(blockHeight, sourceHeight - offsetY)
 
-      // console.log(
-      // 'source split: ', '#'+c, offsetY, endY, 'height: '+currentBlockHeight);
-
-      partitions[c] = {
+      const partition = {
         source: ctx.getImageData(0, offsetY, sourceWidth, blockHeight),
         target: ctx.createImageData(
           width, Math.ceil(currentBlockHeight / ratioH)),
         startY: Math.ceil(offsetY / ratioH),
         height: currentBlockHeight,
       }
-    }
 
-    ctx.clearRect(0, 0, sourceWidth, sourceHeight)
-
-    let resolve: () => void
-    const promise = new Promise(r => resolve = r)
-
-    // start
-    let activeWorkers = 0
-    for (let c = 0; c < cores; c++) {
-      if (partitions[c] === undefined) {
-        // no job for this worker
-        continue
-      }
-
-      activeWorkers++
       const worker = new Worker(this.workerBlobURL)
+      activeWorkers += 1
       workers[c] = worker
-
       worker.onmessage = (event: IWorkerResultMessage) => {
-        activeWorkers--
-        const core = event.data.core
-        workers[core].terminate()
-        delete workers[core]
+        worker.terminate()
+        delete workers[c]
+        activeWorkers -= 1
+        partition.target.data.set(event.data.target)
+        ctx.putImageData(partition.target, 0, partition.startY)
 
-        // draw
-        // const height_part = Math.ceil(partitions[core].height / ratioH)
-        // partitions[core].target = ctx.createImageData(width, height_part)
-        partitions[core].target.data.set(event.data.target)
-        ctx.putImageData(partitions[core].target, 0, partitions[core].startY)
-
-        if (activeWorkers <= 0) {
-          resolve()
+        if (!activeWorkers) {
+          resolve(canvas)
         }
       }
+
+      worker.onerror = (err: ErrorEvent) => {
+        workers.forEach(w => w.terminate())
+        workers.length = 0
+        reject(new Error('Error resizing: ' + err.message))
+      }
+
       const message: IWorkerParam = {
         sourceWidth,
-        sourceHeight: partitions[c].height,
+        sourceHeight: partition.height,
         width,
-        height: Math.ceil(partitions[c].height / ratioH),
-        core: c,
-        source: partitions[c].source.data.buffer,
+        height: Math.ceil(partition.height / ratioH),
+        source: partition.source.data.buffer,
       }
       worker.postMessage(message, [message.source])
     }
+
+    canvas.width = width
+    canvas.height = height
+    // ctx.clearRect(0, 0, sourceWidth, sourceHeight)
 
     return promise
   }
