@@ -1,0 +1,8 @@
+build:
+  tsc
+
+esm:
+  tsc -p tsconfig.esm.json
+
+clean:
+  rm -rf lib/

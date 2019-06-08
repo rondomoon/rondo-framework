@@ -5,7 +5,8 @@
     "@rondo/server": "file:packages/server",
     "@rondo/comments-server": "file:packages/comments-server",
     "@rondo/comments-common": "file:packages/comments-common",
-    "@rondo/comments-client": "file:packages/comments-client"
+    "@rondo/comments-client": "file:packages/comments-client",
+    "@rondo/image-upload": "file:packages/image-upload"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
