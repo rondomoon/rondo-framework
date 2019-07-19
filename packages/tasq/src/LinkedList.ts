@@ -1,6 +1,6 @@
 export interface IQueue<T> {
   push(...t: T[]): void
-  pop(): T | undefined
+  shift(): T | undefined
   peek(): T | undefined
   toArray(): T[]
 }
@@ -8,6 +8,28 @@ export interface IQueue<T> {
 interface INode<T> {
   value: T
   next?: INode<T>
+}
+
+export interface IIterator<T> {
+  hasNext(): boolean
+  next(): T | undefined
+}
+
+export class LinkedListIterator<T> implements IIterator<T> {
+  constructor(protected node: INode<T> | undefined) {
+  }
+  hasNext() {
+    return this.node !== undefined
+  }
+  next(): T | undefined {
+    if (this.node === undefined) {
+      return undefined
+    }
+    const node = this.node
+    const {value} = node
+    this.node = node.next
+    return value
+  }
 }
 
 export class LinkedList<T> implements IQueue<T> {
@@ -34,20 +56,19 @@ export class LinkedList<T> implements IQueue<T> {
     return this.head && this.head.value
   }
 
-  pop(): T | undefined {
+  shift(): T | undefined {
     if (!this.length) {
       return undefined
-    }
-    if (this.length === 1) {
-      const value = this.head!.value
-      this.head = this.tail = undefined
-      this.length = 0
-      return value
     }
     const head = this.head!
     this.head = head.next
     this.length--
     return head.value
+  }
+
+  clear() {
+    this.head = this.tail = undefined
+    this.length = 0
   }
 
   toArray(): T[] {
@@ -56,6 +77,10 @@ export class LinkedList<T> implements IQueue<T> {
       array.push(h.value)
     }
     return array
+  }
+
+  iterator(): LinkedListIterator<T> {
+    return new LinkedListIterator(this.head)
   }
 
   static fromArray<T>(t: T[]): LinkedList<T> {
