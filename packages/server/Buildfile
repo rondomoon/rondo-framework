@@ -2,7 +2,7 @@ server := src/bootstrap.ts
 typeorm := ts-node ../../node_modules/.bin/typeorm
 
 build:
-  tsc --build ./
+  ttsc --build ./
 
 orm:
   $typeorm $args

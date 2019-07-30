@@ -9,10 +9,10 @@ comments:
   cp packages/comments-server/build/server.min.js build/comments/
 
 build_ts:
-  tsc -b packages/
+  ttsc -b packages/
 
 watch_ts:
-  tsc --build packages/ --watch --preserveWatchOutput
+  ttsc --build packages/ --watch --preserveWatchOutput
 
 add:
   mkdir packages/$(name)
