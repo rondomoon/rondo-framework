@@ -165,7 +165,7 @@ describe('jsonrpc', () => {
         method: 'add',
         params: [1, 2],
       })
-      .expect(200)
+      .expect(204)
       .expect('')
 
       await request(createApp())
@@ -176,7 +176,7 @@ describe('jsonrpc', () => {
         method: 'add',
         params: [1, 2],
       })
-      .expect(200)
+      .expect(204)
       .expect('')
     })
   })

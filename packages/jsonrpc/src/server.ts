@@ -141,7 +141,7 @@ export function jsonrpc<T, F extends FunctionPropertyNames<T>>(
 
     if (!isPromise(retValue)) {
       if (isNotification) {
-        return res.send()
+        return res.status(204).send()
       }
       return res.json(createSuccessResponse(id, retValue))
     }
