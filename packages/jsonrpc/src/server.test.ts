@@ -5,12 +5,18 @@ import bodyParser from 'body-parser'
 
 describe('jsonrpc', () => {
 
+  interface IContext {
+    userId: number
+  }
+
   interface IService {
     add(a: number, b: number): number
     delay(): Promise<void>
     syncError(message: string): void
     asyncError(message: string): Promise<void>
     httpError(statusCode: number, message: string): Promise<void>
+
+    addWithContext(a: number, b: number): (ctx: IContext) => number
   }
 
   class Service implements IService {
@@ -40,6 +46,9 @@ describe('jsonrpc', () => {
       }]
       throw err
     }
+    addWithContext = (a: number, b: number) => (ctx: IContext): number => {
+      return a + b + ctx.userId
+    }
   }
 
   function createApp() {
@@ -51,14 +60,17 @@ describe('jsonrpc', () => {
       'syncError',
       'asyncError',
       'httpError',
-    ]))
+      'addWithContext',
+    ], req => ({userId: 1000})))
     return app
   }
 
-  type ArgumentTypes<T> = T extends (...args: infer U) => infer R ? U: never
+  type ArgumentTypes<T> = T extends (...args: infer U) => infer R ? U : never
   type RetType<T> = T extends (...args: any[]) => infer R ? R : never
+  type UnwrapHOC<T> = T extends (...args: any[]) => infer R ? R : T
   type RetProm<T> = T extends Promise<any> ? T : Promise<T>
-  type PromisifyReturnType<T> = (...a: ArgumentTypes<T>) => RetProm<RetType<T>>
+  type PromisifyReturnType<T> = (...a: ArgumentTypes<T>) =>
+    RetProm<UnwrapHOC<RetType<T>>>
   type Asyncified<T> = {
     [K in keyof T]: PromisifyReturnType<T[K]>
   }
@@ -156,6 +168,10 @@ describe('jsonrpc', () => {
     it('handles promises', async () => {
       const response = await client.delay()
       expect(response).toEqual(undefined)
+    })
+    it('can use context', async () => {
+      const response = await client.addWithContext(5, 7)
+      expect(response).toEqual(1000 + 5 + 7)
     })
     it('handles synchronous notifications', async () => {
       await request(createApp())

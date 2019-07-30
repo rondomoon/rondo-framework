@@ -95,9 +95,10 @@ function isPromise(value: any): value is Promise<unknown> {
  * Adds middleware for handling JSON RPC requests. Expects JSON middleware to
  * already be configured.
  */
-export function jsonrpc<T, F extends FunctionPropertyNames<T>>(
+export function jsonrpc<T, F extends FunctionPropertyNames<T>, Ctx>(
   service: T,
   functions: F[],
+  getContext: (req: Request) => Ctx,
 ) {
   const rpcService = pick(service, functions)
 
@@ -135,6 +136,9 @@ export function jsonrpc<T, F extends FunctionPropertyNames<T>>(
     let retValue
     try {
       retValue = (rpcService as any)[method](...params)
+      if (typeof retValue === 'function') {
+        retValue = retValue(getContext(req))
+      }
     } catch (err) {
       return handleError(err, req, res, next)
     }
