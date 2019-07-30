@@ -19,7 +19,7 @@ describe('TaskExecutor', () => {
       await te.wait()
       expect(results).toEqual([10, 5, 7])
     })
-    it.only('executes tasks in different order', async () => {
+    it('executes tasks in different order', async () => {
       const results: number[] = []
       const te = new TaskExecutor<number>(2, async task => {
         await delay(task)
@@ -36,7 +36,13 @@ describe('TaskExecutor', () => {
   })
 
   describe('error handling', () => {
+    it('does not fail on error', async () => {
 
+    })
+
+    it('triggers failure event on error', async () => {
+
+    })
   })
 
 })

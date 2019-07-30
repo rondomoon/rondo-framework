@@ -5,9 +5,9 @@ export interface ITask<T> {
   execute(): Promise<void>
 }
 
-interface ITaskEvents {
-  success: void
-  failure: Error
+interface ITaskEventHandler {
+  success: () => void
+  failure: (err: Error) => void
 }
 
 export interface ITaskExecutor<T> {
@@ -15,10 +15,10 @@ export interface ITaskExecutor<T> {
 
   wait(): Promise<void>
 
-  addListener<E extends keyof ITaskEvents>(
-    event: E, listener: (value: ITaskEvents[E]) => void): void
-  removeListener<E extends keyof ITaskEvents>(
-    event: E, listener: (value: ITaskEvents[E]) => void): void
+  addListener<E extends keyof ITaskEventHandler>(
+    event: E, listener: ITaskEventHandler[E]): void
+  removeListener<E extends keyof ITaskEventHandler>(
+    event: E, listener: ITaskEventHandler[E]): void
 }
 
 let counter = 0
@@ -34,12 +34,12 @@ export class TaskExecutor<T> implements ITaskExecutor<T> {
   ) {
   }
 
-  addListener<E extends keyof ITaskEvents>(
-    event: E, listener: (value: ITaskEvents[E]) => void): void {
+  addListener<E extends keyof ITaskEventHandler>(
+    event: E, listener: ITaskEventHandler[E]): void {
     this.events.addListener(event, listener)
   }
-  removeListener<E extends keyof ITaskEvents>(
-    event: E, listener: (value: ITaskEvents[E]) => void): void {
+  removeListener<E extends keyof ITaskEventHandler>(
+    event: E, listener: ITaskEventHandler[E]): void {
     this.events.removeListener(event, listener)
   }
 
