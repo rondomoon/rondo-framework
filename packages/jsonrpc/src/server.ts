@@ -116,7 +116,7 @@ export function jsonrpc<T, F extends FunctionPropertyNames<T>>(
       !Array.isArray(params)
     ) {
       res.status(400)
-      return res.json(createErrorResponse(null, ERROR_INVALID_REQUEST))
+      return res.json(createErrorResponse(id, ERROR_INVALID_REQUEST))
     }
 
     if (
@@ -124,14 +124,20 @@ export function jsonrpc<T, F extends FunctionPropertyNames<T>>(
       typeof (rpcService as any)[method] !== 'function'
     ) {
       res.status(404)
-      return res.json(createErrorResponse(null, ERROR_METHOD_NOT_FOUND))
+      return res.json(createErrorResponse(id, ERROR_METHOD_NOT_FOUND))
     }
 
     // if (rpcService[method].arguments.length !== params.length) {
     //   return res.json(createErrorResponse(null, ERROR_INVALID_PARAMS))
     // }
 
-    const retValue = (rpcService as any)[method](...params)
+    // TODO handle synchronous errors
+    let retValue
+    try {
+      retValue = (rpcService as any)[method](...params)
+    } catch (err) {
+      return handleError(err, req, res, next)
+    }
 
     if (!isPromise(retValue)) {
       if (isNotification) {
