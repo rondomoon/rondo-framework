@@ -7,7 +7,9 @@
     "@rondo/comments-common": "file:packages/comments-common",
     "@rondo/comments-client": "file:packages/comments-client",
     "@rondo/image-upload": "file:packages/image-upload",
-    "@rondo/tasq": "file:packages/tasq"
+    "@rondo/tasq": "file:packages/tasq",
+    "@rondo/jsonrpc": "file:packages/jsonrpc",
+    "@rondo/scripts": "file:packages/scripts"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
