@@ -1,4 +1,9 @@
 module.exports = {
+  globals: {
+    'ts-jest': {
+      compiler: 'ttypescript'
+    }
+  },
   roots: [
     '<rootDir>/src'
   ],
@@ -13,6 +18,5 @@ module.exports = {
     'jsx'
   ],
   setupFiles: ['<rootDir>/jest.setup.js'],
-  maxConcurrency: 1,
   verbose: false
 }

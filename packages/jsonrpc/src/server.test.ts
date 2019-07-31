@@ -1,7 +1,8 @@
-import {jsonrpc} from './server'
-import request from 'supertest'
-import express from 'express'
 import bodyParser from 'body-parser'
+import express from 'express'
+import request from 'supertest'
+import {createClient} from './supertest'
+import {jsonrpc} from './server'
 
 describe('jsonrpc', () => {
 
@@ -65,42 +66,7 @@ describe('jsonrpc', () => {
     return app
   }
 
-  type ArgumentTypes<T> = T extends (...args: infer U) => infer R ? U : never
-  type RetType<T> = T extends (...args: any[]) => infer R ? R : never
-  type UnwrapHOC<T> = T extends (...args: any[]) => infer R ? R : T
-  type RetProm<T> = T extends Promise<any> ? T : Promise<T>
-  type PromisifyReturnType<T> = (...a: ArgumentTypes<T>) =>
-    RetProm<UnwrapHOC<RetType<T>>>
-  type Asyncified<T> = {
-    [K in keyof T]: PromisifyReturnType<T[K]>
-  }
-
-  function createClient<T>(app: express.Application) {
-    let id = 0
-    const proxy = new Proxy({}, {
-      get(obj, prop) {
-        id++
-        return async function makeRequest(...args: any[]) {
-          const result = await request(app)
-          .post('/myService')
-          .send({
-            jsonrpc: '2.0',
-            id,
-            method: prop,
-            params: args,
-          })
-          const {body} = result
-          if (body.error) {
-            throw body.error
-          }
-          return body.result
-        }
-      },
-    })
-    return proxy as Asyncified<T>
-  }
-
-  const client = createClient<IService>(createApp())
+  const client = createClient<IService>(createApp(), '/myService')
 
   async function getError(promise: Promise<void>) {
     let error
