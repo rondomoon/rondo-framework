@@ -7,6 +7,9 @@
     "compile": "tsc",
     "clean": "rm -rf lib/"
   },
+  "bin": {
+    "rondo": "./lib/index.js"
+  },
   "dependencies": {},
   "types": "lib/index.d.ts",
   "devDependencies": {},
