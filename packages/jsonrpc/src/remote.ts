@@ -1,5 +1,5 @@
 import Axios from 'axios'
-import {Asyncified} from '@rondo/jsonrpc-common'
+import {TAsyncified} from './types'
 
 export function createRemoteClient<T>(
   baseUrl: string,
@@ -36,5 +36,5 @@ export function createRemoteClient<T>(
     return obj
   }, {} as any)
 
-  return service as Asyncified<T>
+  return service as TAsyncified<T>
 }

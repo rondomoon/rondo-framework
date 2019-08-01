@@ -1,12 +1,13 @@
 /**
  * @jest-environment node
  */
+
 import bodyParser from 'body-parser'
 import express from 'express'
 import {AddressInfo} from 'net'
 import {Server} from 'http'
 import {createRemoteClient} from './remote'
-import {jsonrpc} from '@rondo/jsonrpc-server'
+import {jsonrpc} from './server'
 import {keys} from 'ts-transformer-keys'
 
 describe('remote', () => {

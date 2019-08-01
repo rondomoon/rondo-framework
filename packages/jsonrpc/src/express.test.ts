@@ -2,7 +2,7 @@ import bodyParser from 'body-parser'
 import express from 'express'
 import request from 'supertest'
 import {createClient} from './supertest'
-import {jsonrpc} from './server'
+import {jsonrpc} from './express'
 
 describe('jsonrpc', () => {
 

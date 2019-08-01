@@ -1,13 +1,14 @@
 /**
  * @jest-environment node
  */
+
 import bodyParser from 'body-parser'
 import express from 'express'
 import {AddressInfo} from 'net'
 import {Server} from 'http'
 import {createReduxClient} from './redux'
 import {createRemoteClient} from './remote'
-import {jsonrpc} from '@rondo/jsonrpc-server'
+import {jsonrpc} from './express'
 import {keys} from 'ts-transformer-keys'
 
 describe('createReduxClient', () => {

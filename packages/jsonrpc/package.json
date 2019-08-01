@@ -1,5 +1,5 @@
 {
-  "name": "@rondo/jsonrpc-client",
+  "name": "@rondo/jsonrpc",
   "private": true,
   "scripts": {
     "test": "jest",

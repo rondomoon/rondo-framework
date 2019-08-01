@@ -1,8 +1,8 @@
-import {Asyncified, Reduxed} from '@rondo/jsonrpc-common'
+import {TAsyncified, TReduxed} from './types'
 import {createRemoteClient} from './remote'
 
 export function createReduxClient<T, ActionType extends string>(
-  client: Asyncified<T>,
+  client: TAsyncified<T>,
   type: ActionType,
 ) {
   const service = Object.keys(client).reduce((obj, method: any) => {
@@ -18,5 +18,5 @@ export function createReduxClient<T, ActionType extends string>(
     return obj
   }, {} as any)
 
-  return service as Reduxed<T, ActionType>
+  return service as TReduxed<T, ActionType>
 }

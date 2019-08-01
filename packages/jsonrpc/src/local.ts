@@ -1,4 +1,4 @@
-import {Asyncified} from '@rondo/jsonrpc-common'
+import {TAsyncified} from './types'
 
 /**
  * Creates a local client for a specific service instance. The actual service
@@ -17,5 +17,5 @@ export function createLocalClient<T>(service: T, context: any) {
       }
     },
   })
-  return proxy as Asyncified<T>
+  return proxy as TAsyncified<T>
 }

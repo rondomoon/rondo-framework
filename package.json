@@ -8,9 +8,7 @@
     "@rondo/comments-client": "file:packages/comments-client",
     "@rondo/image-upload": "file:packages/image-upload",
     "@rondo/tasq": "file:packages/tasq",
-    "@rondo/jsonrpc-client": "file:packages/jsonrpc-client",
-    "@rondo/jsonrpc-server": "file:packages/jsonrpc-server",
-    "@rondo/jsonrpc-common": "file:packages/jsonrpc-common",
+    "@rondo/jsonrpc": "file:packages/jsonrpc",
     "@rondo/scripts": "file:packages/scripts"
   },
   "devDependencies": {

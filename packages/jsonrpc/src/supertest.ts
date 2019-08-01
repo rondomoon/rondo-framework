@@ -1,9 +1,8 @@
 import request from 'supertest'
 import {Application} from 'express'
-import {Asyncified} from '@rondo/jsonrpc-common'
+import {TAsyncified} from './types'
 
-export function createClient<T>(
-  app: Application, path: string,
+export function createClient<T>( app: Application, path: string,
 ) {
   let id = 0
   const proxy = new Proxy({}, {
@@ -26,5 +25,5 @@ export function createClient<T>(
       }
     },
   })
-  return proxy as Asyncified<T>
+  return proxy as TAsyncified<T>
 }
