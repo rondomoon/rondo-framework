@@ -7,7 +7,8 @@ import express from 'express'
 import {AddressInfo} from 'net'
 import {Server} from 'http'
 import {TPendingActions, TAllActions} from './types'
-import {createReduxClient, createReducer, createReducer2} from './redux'
+import {combineReducers} from 'redux'
+import {createReduxClient, createReducer} from './redux'
 import {createRemoteClient} from './remote'
 import {createStore} from '@rondo/client'
 import {jsonrpc} from './express'
@@ -22,6 +23,7 @@ describe('createReduxClient', () => {
     addWithContext(a: number, b: number): (ctx: IContext) => number
     addAsyncWithContext(a: number, b: number): (ctx: IContext) =>
       Promise<number>
+    throwError(bool: boolean): boolean
   }
 
   interface IContext {
@@ -42,6 +44,12 @@ describe('createReduxClient', () => {
       a + b + ctx.userId
     addAsyncWithContext = (a: number, b: number) => (ctx: IContext) =>
       new Promise<number>(resolve => resolve(a + b + ctx.userId))
+    throwError(bool: boolean) {
+      if (bool) {
+        throw new Error('test')
+      }
+      return false
+    }
   }
 
   const app = express()
@@ -71,12 +79,6 @@ describe('createReduxClient', () => {
       baseUrl, '/service', keys<IService>())
     const client = createReduxClient(remoteClient, 'myService')
 
-    // type R<T> = T extends (...args: any[]) => infer RV ? RV : never
-
-    type Client = typeof client
-    type ActionCreators = TPendingActions<typeof client>
-    type AllActions = TAllActions<typeof client>
-
     const defaultState = {
       loading: 0,
       error: '',
@@ -84,8 +86,8 @@ describe('createReduxClient', () => {
       addStringsAsync: '',
     }
 
-    const reducer = createReducer('myService', defaultState)
-    <typeof client>((state, action) => {
+    const handler = createReducer('myService', defaultState)
+    .withHandler<typeof client>((state, action) => {
       switch (action.method) {
         case 'add':
         case 'addAsync':
@@ -107,53 +109,40 @@ describe('createReduxClient', () => {
       }
     })
 
-    const reducer2 = createReducer2('myService', defaultState)
-    <typeof client>({
+    const mapping = createReducer('myService', defaultState)
+    .withMapping<typeof client>({
       add(state, action) {
-        const s: Partial<typeof defaultState> = {
-          // a: 1,
+        return {
           add: action.payload,
         }
-        return s
       },
       addAsync(state, action) {
-        return state
+        return {
+          add: action.payload,
+        }
       },
       addAsyncWithContext(state, action) {
-        return state
+        return {
+          add: action.payload,
+        }
       },
       addStringsAsync(state, action) {
-        return state
+        return {
+          addStringsAsync: action.payload,
+        }
       },
       addWithContext(state, action) {
+        return {
+          add: action.payload,
+        }
+      },
+      throwError(state, action) {
         return state
       },
     })
 
+    const reducer = combineReducers({handler, mapping})
     const store = createStore({reducer})()
-
-    function handleAction(state: any, action: AllActions) {
-      if (action.type !== 'myService') {
-        return
-      }
-      switch (action.method) {
-        case 'add':
-          switch (action.status) {
-            case 'pending':
-              const p1: Promise<number> = action.payload
-              return
-            case 'rejected':
-              const p2: Error = action.payload
-              return
-            case 'resolved':
-              const p3: number = action.payload
-              return
-          }
-        case 'addAsync':
-        // case 'addAsync1234':
-        // case
-      }
-    }
 
     return {client, store}
   }
@@ -168,7 +157,8 @@ describe('createReduxClient', () => {
         expect(action.status).toEqual('pending')
         const result: number = await store.dispatch(action).payload
         expect(result).toEqual(3 + 7)
-        expect(store.getState().add).toEqual(10)
+        expect(store.getState().handler.add).toEqual(10)
+        expect(store.getState().mapping.add).toEqual(10)
       })
     })
     describe('addAsync', () => {
@@ -180,7 +170,21 @@ describe('createReduxClient', () => {
         expect(action.status).toEqual('pending')
         const result: number = await store.dispatch(action).payload
         expect(result).toEqual(3 + 7)
-        expect(store.getState().add).toEqual(10)
+        expect(store.getState().handler.add).toEqual(10)
+        expect(store.getState().mapping.add).toEqual(10)
+      })
+    })
+    describe('addStringsAsync', () => {
+      it('creates a redux action with type, method and status', async () => {
+        const {client, store} = getClient()
+        const action = client.addStringsAsync('a', 'b')
+        expect(action.method).toEqual('addStringsAsync')
+        expect(action.type).toEqual('myService')
+        expect(action.status).toEqual('pending')
+        const result: string = await store.dispatch(action).payload
+        expect(result).toEqual('ab')
+        expect(store.getState().handler.addStringsAsync).toEqual('ab')
+        expect(store.getState().mapping.addStringsAsync).toEqual('ab')
       })
     })
     describe('addWithContext', () => {
@@ -192,7 +196,8 @@ describe('createReduxClient', () => {
         expect(action.status).toEqual('pending')
         const result: number = await store.dispatch(action).payload
         expect(result).toEqual(3 + 7 + 1000)
-        expect(store.getState().add).toEqual(1010)
+        expect(store.getState().handler.add).toEqual(1010)
+        expect(store.getState().mapping.add).toEqual(1010)
       })
     })
     describe('addAsyncWithContext', () => {
@@ -204,7 +209,22 @@ describe('createReduxClient', () => {
         expect(action.status).toEqual('pending')
         const result: number = await store.dispatch(action).payload
         expect(result).toEqual(3 + 7 + 1000)
-        expect(store.getState().add).toEqual(1010)
+        expect(store.getState().handler.add).toEqual(1010)
+        expect(store.getState().mapping.add).toEqual(1010)
+      })
+    })
+    describe('throwError', () => {
+      it('handles errors', async () => {
+        const {client, store} = getClient()
+        const {payload} = store.dispatch(client.throwError(true))
+        let error: Error
+        try {
+          await payload
+        } catch (err) {
+          error = err
+        }
+        expect(error!).toBeTruthy()
+        expect(store.getState().handler.error).toMatch(/status code 500/)
       })
     })
   })

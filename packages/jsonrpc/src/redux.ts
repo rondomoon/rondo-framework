@@ -33,51 +33,52 @@ export interface IState {
   error: string
 }
 
-export const createReducer = <ActionType extends string, State extends IState>(
+export function createReducer<ActionType extends string, State extends IState>(
   actionType: ActionType,
   defaultState: State,
-) => <R extends IReduxed<ActionType>>(
-  handleAction: (state: State, action: TResolvedActions<R>) => State,
-) => (state: State = defaultState, action: TAllActions<R>): State => {
-  if (action.type !== actionType) {
-    return state
-  }
-  if (action.status === 'pending') {
-    return {
-      ...state,
-      loading: state.loading + 1,
-      error: '',
-    }
-    return state
-  }
-  if (action.status === 'rejected') {
-    return {
-      ...state,
-      loading: state.loading - 1,
-      error: action.payload.message,
-    }
-  }
-  return handleAction({
-    ...state,
-    loading: state.loading - 1,
-    error: '',
-  }, action)
-}
+) {
 
-export const createReducer2 = <ActionType extends string, State extends IState>(
-  actionType: ActionType,
-  defaultState: State,
-) => <R extends IReduxed<ActionType>>(
-  handlers: TReduxHandlers<R, State>,
-) => {
-  return createReducer(actionType, defaultState)<R>((state, action) => {
-    if (action.method in handlers) {
-      const newState = handlers[action.method](state, action)
-      return {
-        ...state,
-        newState,
+  const self = {
+    withHandler<R extends IReduxed<ActionType>>(
+      handleAction: (state: State, action: TResolvedActions<R>) => State,
+    ): (state: State | undefined, action: TAllActions<R>) => State {
+      return (state: State = defaultState, action: TAllActions<R>): State => {
+        if (action.type !== actionType) {
+          return state
+        }
+        if (action.status === 'pending') {
+          return {
+            ...state,
+            loading: state.loading + 1,
+            error: '',
+          }
+        }
+        if (action.status === 'rejected') {
+          return {
+            ...state,
+            loading: state.loading - 1,
+            error: action.payload.message,
+          }
+        }
+        return handleAction({
+          ...state,
+          loading: state.loading - 1,
+          error: '',
+        }, action)
       }
-    }
-    return state
-  })
+    },
+    withMapping<R extends IReduxed<ActionType>>(
+      handlers: TReduxHandlers<R, State>,
+    ) {
+      return self.withHandler<R>((state, action) => {
+        const newState = handlers[action.method](state, action)
+        return {
+          ...state,
+          ...newState,
+        }
+      })
+    },
+  }
+
+  return self
 }
