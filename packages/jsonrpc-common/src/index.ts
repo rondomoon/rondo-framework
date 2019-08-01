@@ -8,3 +8,12 @@ export type PromisifyReturnType<T> = (...a: ArgumentTypes<T>) =>
 export type Asyncified<T> = {
   [K in keyof T]: PromisifyReturnType<T[K]>
 }
+
+export type Reduxed<T, ActionType extends string> = {
+  [K in keyof T]: (...a: ArgumentTypes<T[K]>) => {
+    type: ActionType
+    payload: RetProm<UnwrapHOC<RetType<T[K]>>>
+    method: K
+    status: 'pending'
+  }
+}
