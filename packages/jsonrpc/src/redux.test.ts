@@ -227,6 +227,17 @@ describe('createReduxClient', () => {
         expect(store.getState().handler.error).toMatch(/status code 500/)
       })
     })
+    describe('action with missing method', () => {
+      it('does not fail when action not defined', () => {
+        const {store} = getClient()
+        store.dispatch({
+          type: 'myService',
+          method: 'missingMethod',
+          status: 'resolved',
+          payload: null,
+        })
+      })
+    })
   })
 
 })

@@ -71,11 +71,14 @@ export function createReducer<ActionType extends string, State extends IState>(
       handlers: TReduxHandlers<R, State>,
     ) {
       return self.withHandler<R>((state, action) => {
-        const newState = handlers[action.method](state, action)
-        return {
-          ...state,
-          ...newState,
+        if (action.method in handlers) {
+          const newState = handlers[action.method](state, action)
+          return {
+            ...state,
+            ...newState,
+          }
         }
+        return state
       })
     },
   }
