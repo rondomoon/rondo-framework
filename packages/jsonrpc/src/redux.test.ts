@@ -6,11 +6,11 @@ import bodyParser from 'body-parser'
 import express from 'express'
 import {AddressInfo} from 'net'
 import {Server} from 'http'
-import {createReduxClient} from './redux'
+import {createReduxClient, createReducer} from './redux'
 import {createRemoteClient} from './remote'
 import {jsonrpc} from './express'
 import {keys} from 'ts-transformer-keys'
-import {TActionCreators, TAllActions} from './types'
+import {TPendingActions, TAllActions} from './types'
 
 describe('createReduxClient', () => {
 
@@ -73,8 +73,32 @@ describe('createReduxClient', () => {
     // type R<T> = T extends (...args: any[]) => infer RV ? RV : never
 
     type Client = typeof client
-    type ActionCreators = TActionCreators<typeof client>
+    type ActionCreators = TPendingActions<typeof client>
     type AllActions = TAllActions<typeof client>
+
+    const defaultState = {
+      sum: 1,
+    }
+
+    const create = createReducer('myService', defaultState)
+    <typeof client>((state, action) => {
+      switch (action.method) {
+        case 'add':
+          const r1: number = action.payload
+          return state
+        case 'addAsync':
+          const r2: number = action.payload
+          return state
+        case 'addStringsAsync':
+          const r3: string = action.payload
+          return state
+        case 'addWithContext':
+          const r4: number = action.payload
+          return state
+        default:
+          return state
+      }
+    })
 
     function handleAction(state: any, action: AllActions) {
       if (action.type !== 'myService') {
@@ -98,9 +122,6 @@ describe('createReduxClient', () => {
         // case
       }
     }
-
-    // type Values<T> = T[keyof T]
-    // type C = ReturnType<Values<typeof client>>
 
     return client
   }

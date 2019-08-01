@@ -1,4 +1,10 @@
-import {TAsyncified, TReduxed} from './types'
+import {
+  IReduxed,
+  TAsyncified,
+  TReduxed,
+  TResolvedActions,
+  TAllActions,
+} from './types'
 import {createRemoteClient} from './remote'
 
 export function createReduxClient<T, ActionType extends string>(
@@ -19,4 +25,27 @@ export function createReduxClient<T, ActionType extends string>(
   }, {} as any)
 
   return service as TReduxed<T, ActionType>
+}
+
+export const createReducer = <ActionType extends string, State>(
+  actionType: ActionType,
+  defaultState: State,
+) => <R extends IReduxed<ActionType>>(
+  handleAction: (state: State, action: TResolvedActions<R>) => State,
+) => (state: State = defaultState, action?: TAllActions<R>): State => {
+  if (!action) {
+    return state
+  }
+  if (action.type !== actionType) {
+    return state
+  }
+  if (action.status === 'pending') {
+    // TODO handle loading
+    return state
+  }
+  if (action.status === 'rejected') {
+    // TODO handle rejected
+    return state
+  }
+  return handleAction(state, action)
 }
