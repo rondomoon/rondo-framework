@@ -7,7 +7,7 @@ import express from 'express'
 import {AddressInfo} from 'net'
 import {Server} from 'http'
 import {TPendingActions, TAllActions} from './types'
-import {createReduxClient, createReducer} from './redux'
+import {createReduxClient, createReducer, createReducer2} from './redux'
 import {createRemoteClient} from './remote'
 import {createStore} from '@rondo/client'
 import {jsonrpc} from './express'
@@ -105,6 +105,29 @@ describe('createReduxClient', () => {
         default:
           return state
       }
+    })
+
+    const reducer2 = createReducer2('myService', defaultState)
+    <typeof client>({
+      add(state, action) {
+        const s: Partial<typeof defaultState> = {
+          // a: 1,
+          add: action.payload,
+        }
+        return s
+      },
+      addAsync(state, action) {
+        return state
+      },
+      addAsyncWithContext(state, action) {
+        return state
+      },
+      addStringsAsync(state, action) {
+        return state
+      },
+      addWithContext(state, action) {
+        return state
+      },
     })
 
     const store = createStore({reducer})()

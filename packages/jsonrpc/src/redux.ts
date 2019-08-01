@@ -4,6 +4,7 @@ import {
   TReduxed,
   TResolvedActions,
   TAllActions,
+  TReduxHandlers,
 } from './types'
 import {createRemoteClient} from './remote'
 
@@ -61,4 +62,22 @@ export const createReducer = <ActionType extends string, State extends IState>(
     loading: state.loading - 1,
     error: '',
   }, action)
+}
+
+export const createReducer2 = <ActionType extends string, State extends IState>(
+  actionType: ActionType,
+  defaultState: State,
+) => <R extends IReduxed<ActionType>>(
+  handlers: TReduxHandlers<R, State>,
+) => {
+  return createReducer(actionType, defaultState)<R>((state, action) => {
+    if (action.method in handlers) {
+      const newState = handlers[action.method](state, action)
+      return {
+        ...state,
+        newState,
+      }
+    }
+    return state
+  })
 }

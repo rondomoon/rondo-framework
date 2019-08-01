@@ -22,6 +22,13 @@ export type TReduxed<T, ActionType extends string> = {
     IRPCPendingAction<UnwrapPromise<UnwrapHOC<RetType<T[K]>>>, ActionType, K>
 }
 
+export type TReduxHandlers<T, State> = {
+  [K in keyof T]: (
+    state: State,
+    action: TResolved<TPending<RetType<T[K]>>>,
+  ) => Partial<State>
+}
+
 export interface IRPCPendingAction<
   T, ActionType extends string, Method extends string | number | symbol
 > extends IPendingAction<T, ActionType> {
