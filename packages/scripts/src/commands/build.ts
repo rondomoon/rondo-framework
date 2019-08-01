@@ -1,8 +1,5 @@
-import * as childProcess from 'child_process'
+import {run} from '../run'
 
 export async function build(path: string) {
-  // TODO fix this
-  await childProcess.spawn('npx', ['ttsc', '--build', path], {
-    stdio: 'inherit',
-  })
+  await run('ttsc', ['--build', path])
 }

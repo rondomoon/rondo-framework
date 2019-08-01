@@ -5,7 +5,10 @@ import {TCommand} from './TCommand'
 async function run(...argv: string[]) {
   const commandName = argv[0] || 'help'
   if (!(commandName in commands)) {
-    throw new Error('Command not found:' + commandName)
+    const c = Object.keys(commands).filter(cmd => !cmd.startsWith('_'))
+    console.log(
+      `Available commands:\n\n${c.join('\n')}`)
+    return
   }
   const command = (commands as any)[commandName] as TCommand
   await command(...argv.slice(1))
@@ -13,4 +16,8 @@ async function run(...argv: string[]) {
 
 if (typeof require !== 'undefined' && require.main === module) {
   run(...process.argv.slice(2))
+  .catch(err => {
+    console.log('> ' + err.message)
+    process.exit(1)
+  })
 }
