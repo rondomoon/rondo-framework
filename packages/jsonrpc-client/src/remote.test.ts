@@ -6,7 +6,7 @@ import express from 'express'
 import {AddressInfo} from 'net'
 import {Server} from 'http'
 import {createRemoteClient} from './remote'
-import {jsonrpc} from './server'
+import {jsonrpc} from '@rondo/jsonrpc-server'
 import {keys} from 'ts-transformer-keys'
 
 describe('remote', () => {

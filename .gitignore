@@ -62,3 +62,4 @@ build/
 data/
 packages/*/lib
 packages/*/esm
+*.tsbuildinfo

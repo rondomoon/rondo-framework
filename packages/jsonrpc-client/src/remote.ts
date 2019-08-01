@@ -1,5 +1,5 @@
 import Axios from 'axios'
-import {Asyncified} from './types'
+import {Asyncified} from '@rondo/jsonrpc-common'
 
 export function createRemoteClient<T>(
   baseUrl: string,

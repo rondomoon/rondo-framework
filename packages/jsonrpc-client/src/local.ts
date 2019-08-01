@@ -1,4 +1,4 @@
-import {Asyncified} from './types'
+import {Asyncified} from '@rondo/jsonrpc-common'
 
 /**
  * Creates a local client for a specific service instance. The actual service

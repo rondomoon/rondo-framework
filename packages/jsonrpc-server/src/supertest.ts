@@ -1,6 +1,6 @@
 import request from 'supertest'
 import {Application} from 'express'
-import {Asyncified} from './types'
+import {Asyncified} from '@rondo/jsonrpc-common'
 
 export function createClient<T>(
   app: Application, path: string,

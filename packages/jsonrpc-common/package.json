@@ -1,0 +1,15 @@
+{
+  "name": "@rondo/jsonrpc-common",
+  "private": true,
+  "scripts": {
+    "test": "jest",
+    "lint": "tslint --project .",
+    "compile": "tsc",
+    "clean": "rm -rf lib/"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "module": "esm/index.js"
+}
