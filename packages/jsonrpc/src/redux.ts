@@ -8,7 +8,7 @@ import {
 } from './types'
 import {createRemoteClient} from './remote'
 
-export function createReduxClient<T, ActionType extends string>(
+export function createActions<T, ActionType extends string>(
   client: TAsyncified<T>,
   type: ActionType,
 ) {

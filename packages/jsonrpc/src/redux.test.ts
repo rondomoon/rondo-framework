@@ -8,13 +8,13 @@ import {AddressInfo} from 'net'
 import {Server} from 'http'
 import {TPendingActions, TAllActions} from './types'
 import {combineReducers} from 'redux'
-import {createReduxClient, createReducer} from './redux'
+import {createActions, createReducer} from './redux'
 import {createRemoteClient} from './remote'
 import {createStore} from '@rondo/client'
 import {jsonrpc} from './express'
 import {keys} from 'ts-transformer-keys'
 
-describe('createReduxClient', () => {
+describe('createActions', () => {
 
   interface IService {
     add(a: number, b: number): number
@@ -77,7 +77,7 @@ describe('createReduxClient', () => {
   function getClient() {
     const remoteClient = createRemoteClient<IService>(
       baseUrl, '/service', keys<IService>())
-    const client = createReduxClient(remoteClient, 'myService')
+    const client = createActions(remoteClient, 'myService')
 
     const defaultState = {
       loading: 0,
