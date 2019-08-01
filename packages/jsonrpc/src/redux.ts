@@ -27,25 +27,38 @@ export function createReduxClient<T, ActionType extends string>(
   return service as TReduxed<T, ActionType>
 }
 
-export const createReducer = <ActionType extends string, State>(
+export interface IState {
+  loading: number
+  error: string
+}
+
+export const createReducer = <ActionType extends string, State extends IState>(
   actionType: ActionType,
   defaultState: State,
 ) => <R extends IReduxed<ActionType>>(
   handleAction: (state: State, action: TResolvedActions<R>) => State,
-) => (state: State = defaultState, action?: TAllActions<R>): State => {
-  if (!action) {
-    return state
-  }
+) => (state: State = defaultState, action: TAllActions<R>): State => {
   if (action.type !== actionType) {
     return state
   }
   if (action.status === 'pending') {
-    // TODO handle loading
+    return {
+      ...state,
+      loading: state.loading + 1,
+      error: '',
+    }
     return state
   }
   if (action.status === 'rejected') {
-    // TODO handle rejected
-    return state
+    return {
+      ...state,
+      loading: state.loading - 1,
+      error: action.payload.message,
+    }
   }
-  return handleAction(state, action)
+  return handleAction({
+    ...state,
+    loading: state.loading - 1,
+    error: '',
+  }, action)
 }

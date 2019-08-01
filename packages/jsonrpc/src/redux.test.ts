@@ -6,11 +6,12 @@ import bodyParser from 'body-parser'
 import express from 'express'
 import {AddressInfo} from 'net'
 import {Server} from 'http'
+import {TPendingActions, TAllActions} from './types'
 import {createReduxClient, createReducer} from './redux'
 import {createRemoteClient} from './remote'
+import {createStore} from '@rondo/client'
 import {jsonrpc} from './express'
 import {keys} from 'ts-transformer-keys'
-import {TPendingActions, TAllActions} from './types'
 
 describe('createReduxClient', () => {
 
@@ -77,28 +78,36 @@ describe('createReduxClient', () => {
     type AllActions = TAllActions<typeof client>
 
     const defaultState = {
-      sum: 1,
+      loading: 0,
+      error: '',
+      add: 0,
+      addStringsAsync: '',
     }
 
-    const create = createReducer('myService', defaultState)
+    const reducer = createReducer('myService', defaultState)
     <typeof client>((state, action) => {
       switch (action.method) {
         case 'add':
-          const r1: number = action.payload
-          return state
         case 'addAsync':
-          const r2: number = action.payload
-          return state
-        case 'addStringsAsync':
-          const r3: string = action.payload
-          return state
         case 'addWithContext':
-          const r4: number = action.payload
-          return state
+        case 'addAsyncWithContext':
+          const r1: number = action.payload
+          return {
+            ...state,
+            add: r1,
+          }
+        case 'addStringsAsync':
+          const r2: string = action.payload
+          return {
+            ...state,
+            addStringsAsync: r2,
+          }
         default:
           return state
       }
     })
+
+    const store = createStore({reducer})()
 
     function handleAction(state: any, action: AllActions) {
       if (action.type !== 'myService') {
@@ -123,60 +132,56 @@ describe('createReduxClient', () => {
       }
     }
 
-    return client
+    return {client, store}
   }
 
   describe('action creators', () => {
     describe('add', () => {
       it('creates a redux action with type, method and status', async () => {
-        const client = getClient()
+        const {client, store} = getClient()
         const action = client.add(3, 7)
         expect(action.method).toEqual('add')
         expect(action.type).toEqual('myService')
         expect(action.status).toEqual('pending')
-        const result = await action.payload
+        const result: number = await store.dispatch(action).payload
         expect(result).toEqual(3 + 7)
-        // compilation test
-        expect(result + 2).toEqual(12)
+        expect(store.getState().add).toEqual(10)
       })
     })
     describe('addAsync', () => {
       it('creates a redux action with type, method and status', async () => {
-        const client = getClient()
+        const {client, store} = getClient()
         const action = client.addAsync(3, 7)
         expect(action.method).toEqual('addAsync')
         expect(action.type).toEqual('myService')
         expect(action.status).toEqual('pending')
-        const result = await action.payload
+        const result: number = await store.dispatch(action).payload
         expect(result).toEqual(3 + 7)
-        // compilation test
-        expect(result + 2).toEqual(12)
+        expect(store.getState().add).toEqual(10)
       })
     })
     describe('addWithContext', () => {
       it('creates a redux action with type, method and status', async () => {
-        const client = getClient()
+        const {client, store} = getClient()
         const action = client.addWithContext(3, 7)
         expect(action.method).toEqual('addWithContext')
         expect(action.type).toEqual('myService')
         expect(action.status).toEqual('pending')
-        const result = await action.payload
+        const result: number = await store.dispatch(action).payload
         expect(result).toEqual(3 + 7 + 1000)
-        // compilation test
-        expect(result + 2).toEqual(1012)
+        expect(store.getState().add).toEqual(1010)
       })
     })
     describe('addAsyncWithContext', () => {
       it('creates a redux action with type, method and status', async () => {
-        const client = getClient()
+        const {client, store} = getClient()
         const action = client.addAsyncWithContext(3, 7)
         expect(action.method).toEqual('addAsyncWithContext')
         expect(action.type).toEqual('myService')
         expect(action.status).toEqual('pending')
-        const result = await action.payload
+        const result: number = await store.dispatch(action).payload
         expect(result).toEqual(3 + 7 + 1000)
-        // compilation test
-        expect(result + 2).toEqual(1012)
+        expect(store.getState().add).toEqual(1010)
       })
     })
   })
