@@ -1,3 +1,4 @@
+import {FunctionPropertyNames} from './types'
 import {NextFunction, Request, Response, Router} from 'express'
 
 export const ERROR_PARSE = {
@@ -34,7 +35,7 @@ export interface ISuccessResponse<T> {
   error: null
 }
 
-export interface IJsonRpcError<T> {
+export interface IJSONRPCError<T> {
   code: number
   message: string
   data: T
@@ -44,10 +45,10 @@ export interface IErrorResponse<T> {
   jsonrpc: '2.0'
   id: number | null
   result: null
-  error: IJsonRpcError<T>
+  error: IJSONRPCError<T>
 }
 
-export type IRpcResponse<T> = ISuccessResponse<T> | IErrorResponse<T>
+export type IRPCResponse<T> = ISuccessResponse<T> | IErrorResponse<T>
 
 export function createSuccessResponse<T>(id: number, result: T)
   : ISuccessResponse<T> {
@@ -60,7 +61,7 @@ export function createSuccessResponse<T>(id: number, result: T)
 }
 
 export function createErrorResponse<T>(
-  id: number | null, error: IJsonRpcError<T>)
+  id: number | null, error: IJSONRPCError<T>)
   : IErrorResponse<T> {
   return {
     jsonrpc: '2.0',
@@ -69,11 +70,6 @@ export function createErrorResponse<T>(
     error,
   }
 }
-
-export type FunctionPropertyNames<T> = {
-  // tslint:disable-next-line
-  [K in keyof T]: T[K] extends Function ? K : never
-}[keyof T]
 
 export function pick<T, K extends FunctionPropertyNames<T>>(t: T, keys: K[])
   : Pick<T, K> {
@@ -91,16 +87,18 @@ function isPromise(value: any): value is Promise<unknown> {
     typeof value.then === 'function' && typeof value.catch === 'function'
 }
 
+export type TGetContext<Context> = (req: Request) => Context
+
 /**
  * Adds middleware for handling JSON RPC requests. Expects JSON middleware to
  * already be configured.
  */
-export function jsonrpc<T, F extends FunctionPropertyNames<T>, Ctx>(
+export function jsonrpc<T, F extends FunctionPropertyNames<T>, Context>(
   service: T,
-  functions: F[],
-  getContext: (req: Request) => Ctx,
+  methods: F[],
+  getContext: TGetContext<Context>,
 ) {
-  const rpcService = pick(service, functions)
+  const rpcService = pick(service, methods)
 
   const router = Router()
 

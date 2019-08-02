@@ -1,10 +1,10 @@
 import Axios from 'axios'
-import {TAsyncified} from './types'
+import {FunctionPropertyNames, TAsyncified} from './types'
 
 export function createRemoteClient<T>(
   baseUrl: string,
   url: string,
-  methods: Array<keyof T>,
+  methods: Array<FunctionPropertyNames<T>>,
 ) {
   const axios = Axios.create({
     baseURL: baseUrl,

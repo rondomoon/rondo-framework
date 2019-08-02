@@ -1,3 +1,5 @@
+import {IPendingAction, IResolvedAction, IRejectedAction} from '@rondo/client'
+
 type ArgumentTypes<T> =
   T extends (...args: infer U) => infer R ? U : never
 type RetType<T> = T extends (...args: any[]) => infer R ? R : never
@@ -7,7 +9,9 @@ type RetProm<T> = T extends Promise<any> ? T : Promise<T>
 type PromisifyReturnType<T> = (...a: ArgumentTypes<T>) =>
   RetProm<UnwrapHOC<RetType<T>>>
 
-import {IPendingAction, IResolvedAction, IRejectedAction} from '@rondo/client'
+export type FunctionPropertyNames<T> = {
+  [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never
+}[keyof T]
 
 export type TAsyncified<T> = {
   [K in keyof T]: PromisifyReturnType<T[K]>
