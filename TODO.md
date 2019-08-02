@@ -11,8 +11,7 @@
 - [ ] Integrate Google login
 - [ ] Improve documentation
 
-- [ ] Figure out migration script duplicate queries
-- [ ] Add IOC
+- <strike>[ ] Add IOC</strike>
 
 # JSONRPC
 
@@ -26,3 +25,8 @@
 
 - [x] Fix migrations so that they do not recreate a bunch of changes that
   are not needed. Possibly related to fix in 517dd2f
+
+# Tests
+
+- [ ] Figure out a way to make server-side tests execute successfully without
+  `--runInBand`
