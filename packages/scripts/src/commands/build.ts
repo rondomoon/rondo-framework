@@ -1,6 +1,7 @@
 import {run} from '../run'
 import {join} from 'path'
-import {mkdirSync} from 'fs'
+import * as fs from 'fs'
+import * as p from 'path'
 
 const tsc = 'ttsc'
 
@@ -27,6 +28,31 @@ export async function watchEsm(path: string = '.') {
 
 export async function test(...args: string[]) {
   await run('jest', args)
+}
+
+export async function exec(file: string) {
+  const command = file.endsWith('.ts') ? 'ts-node' : 'node'
+  const args = command === 'ts-node' ?
+    [
+      '--files',
+      '--project',
+      findTsConfig(file),
+    ] : []
+  return run(command, [...args, file])
+}
+
+function findTsConfig(file: string): string {
+  let lastPath = ''
+  file = p.resolve(file, '..')
+  while (file !== lastPath) {
+    const tsconfig = p.join(file, 'tsconfig.json')
+    if (fs.existsSync(tsconfig)) {
+      return p.relative(process.cwd(), tsconfig)
+    }
+    lastPath = file
+    file = p.resolve(file, '..')
+  }
+  return ''
 }
 
 export async function browserify(path: string = '.') {
