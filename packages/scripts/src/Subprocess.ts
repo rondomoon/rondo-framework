@@ -36,7 +36,15 @@ export class Subprocess {
           reject(new Error(`"${this.command}" exited with code ${code}`))
         }
       })
+      let exited = false
+      subprocess.on('exit', () => exited = true)
       subprocess.on('error', reject)
+
+      process.on('exit', () => {
+        if (!exited) {
+          subprocess.kill()
+        }
+      })
     })
   }
 }

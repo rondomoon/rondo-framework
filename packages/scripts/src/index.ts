@@ -3,7 +3,7 @@ import * as commands from './commands'
 import {TCommand} from './TCommand'
 
 async function run(...argv: string[]) {
-  const commandName = argv[0] || 'help'
+  const commandName = argv[0]
   if (!(commandName in commands)) {
     const c = Object.keys(commands).filter(cmd => !cmd.startsWith('_'))
     console.log(
