@@ -1,5 +1,6 @@
 import {run} from '../run'
 import {join} from 'path'
+import {findNodeModules} from '../modules'
 import * as fs from 'fs'
 import * as p from 'path'
 
@@ -38,7 +39,17 @@ export async function exec(file: string) {
       '--project',
       findTsConfig(file),
     ] : []
-  return run(command, [...args, file])
+  await run(command, [...args, file])
+}
+
+export async function createMigration(project: string, name: string) {
+  const typeorm = findNodeModules(project)
+  .map(nm => p.join(nm, 'typeorm'))
+  .find(t => fs.existsSync(t))
+  if (!typeorm) {
+    throw new Error('typeorm not found')
+  }
+  await run('ts-node', [typeorm, 'migration:create', '--name', name], project)
 }
 
 function findTsConfig(file: string): string {

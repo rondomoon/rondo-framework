@@ -15,13 +15,14 @@ export class Subprocess {
     public readonly stdio: StdioOptions = StdioOptions.PIPE,
   ) {}
 
-  async run() {
+  async run(cwd?: string) {
     return new Promise((resolve, reject) => {
       process.stderr.write(`> ${this.command} ${this.args.join(' ')}\n`)
       const subprocess = spawn(this.command, this.args, {
         shell: false,
         stdio: this.stdio,
         env: this.environment,
+        cwd,
       })
 
       if (this.stdio === StdioOptions.PIPE) {
