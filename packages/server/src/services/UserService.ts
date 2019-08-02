@@ -1,5 +1,6 @@
 import createError from 'http-errors'
 import {BaseService} from './BaseService'
+import {DB} from '../database/DB'
 import {ICredentials, INewUser, IUser, trim} from '@rondo/common'
 import {IUserService} from './IUserService'
 import {UserEmail} from '../entities/UserEmail'
@@ -11,7 +12,9 @@ import {Validator} from '../validator'
 const SALT_ROUNDS = 10
 const MIN_PASSWORD_LENGTH = 10
 
-export class UserService extends BaseService implements IUserService {
+export class UserService implements IUserService {
+  constructor(protected readonly db: DB) {}
+
   async createUser(payload: INewUser): Promise<IUser> {
     const newUser = {
       username: trim(payload.username),
@@ -34,11 +37,11 @@ export class UserService extends BaseService implements IUserService {
     .throw()
 
     const password = await this.hash(payload.password)
-    const user = await this.getRepository(User).save({
+    const user = await this.db.getRepository(User).save({
       ...newUser,
       password,
     })
-    await this.getRepository(UserEmail).save({
+    await this.db.getRepository(UserEmail).save({
       email: newUser.username,
       userId: user.id,
     })
@@ -49,7 +52,7 @@ export class UserService extends BaseService implements IUserService {
   }
 
   async findOne(id: number) {
-    const user = await this.getRepository(User).findOne(id, {
+    const user = await this.db.getRepository(User).findOne(id, {
       relations: ['emails'],
     })
 
@@ -66,7 +69,7 @@ export class UserService extends BaseService implements IUserService {
   }
 
   async findUserByEmail(email: string) {
-    const userEmail = await this.getRepository(UserEmail)
+    const userEmail = await this.db.getRepository(UserEmail)
     .findOne({ email }, {
       relations: ['user'],
     })
@@ -91,7 +94,7 @@ export class UserService extends BaseService implements IUserService {
     newPassword: string,
   }) {
     const {userId, oldPassword, newPassword} = params
-    const userRepository = this.getRepository(User)
+    const userRepository = this.db.getRepository(User)
     const user = await userRepository
     .createQueryBuilder('user')
     .select('user')
@@ -109,7 +112,7 @@ export class UserService extends BaseService implements IUserService {
 
   async validateCredentials(credentials: ICredentials) {
     const {username, password} = credentials
-    const user = await this.getRepository(User)
+    const user = await this.db.getRepository(User)
     .createQueryBuilder('user')
     .select('user')
     .addSelect('user.password')
@@ -131,7 +134,7 @@ export class UserService extends BaseService implements IUserService {
   }
 
   async findUserEmails(userId: number) {
-    return this.getRepository(UserEmail).find({ userId })
+    return this.db.getRepository(UserEmail).find({ userId })
   }
 
   protected async hash(password: string): Promise<string> {

@@ -12,10 +12,12 @@ import {IDatabase} from '../database/IDatabase'
 import {ILogger} from '../logger/ILogger'
 import {IRoutes} from '@rondo/common'
 import {ITransactionManager} from '../database/ITransactionManager'
+import {DB} from '../database/DB'
 import {loggerFactory, LoggerFactory} from '../logger/LoggerFactory'
 import {json} from 'body-parser'
 
 export class Application implements IApplication {
+  readonly db: DB
   readonly transactionManager: ITransactionManager
   readonly server: express.Application
 
@@ -29,7 +31,8 @@ export class Application implements IApplication {
 
   constructor(readonly config: IConfig, readonly database: IDatabase) {
     this.transactionManager = database.transactionManager
-    this.userService = new services.UserService(this.transactionManager)
+    this.db = new DB(this.transactionManager)
+    this.userService = new services.UserService(this.db)
 
     this.teamService = new team.TeamService(this.transactionManager)
     this.userPermissions = new user.UserPermissions(this.transactionManager)

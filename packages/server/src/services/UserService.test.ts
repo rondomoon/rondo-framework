@@ -8,7 +8,7 @@ describe('UserService', () => {
   const username = 'test@user.com'
   const password = '1234567890'
 
-  const userService = new UserService(test.transactionManager)
+  const userService = new UserService(test.db)
 
   async function createUser(u = username, p = password) {
     return userService.createUser({

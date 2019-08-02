@@ -1,6 +1,7 @@
 import express from 'express'
 import supertest from 'supertest'
 import {Connection, QueryRunner} from 'typeorm'
+import {DB} from '../database/DB'
 import {
   ENTITY_MANAGER, ITransactionManager,
 } from '../database/ITransactionManager'
@@ -16,11 +17,13 @@ export class TestUtils<T extends IRoutes> {
   readonly app: express.Application
   readonly context: string
   readonly transactionManager: ITransactionManager
+  readonly db: DB
 
   constructor(readonly bootstrap: IBootstrap) {
     this.app = bootstrap.application.server
     this.context = this.bootstrap.getConfig().app.context
     this.transactionManager = this.bootstrap.database.transactionManager
+    this.db = new DB(this.transactionManager)
   }
 
   /**
