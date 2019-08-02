@@ -24,5 +24,5 @@
 
 # ORM
 
-- [ ] Fix migrations so that they do not recreate a bunch of changes that
+- [x] Fix migrations so that they do not recreate a bunch of changes that
   are not needed. Possibly related to fix in 517dd2f
