@@ -25,6 +25,10 @@ export async function watchEsm(path: string = '.') {
   ])
 }
 
+export async function test(...args: string[]) {
+  await run('jest', args)
+}
+
 export async function browserify(path: string = '.') {
   // mkdirSync(join(path, 'build'), {recursive: true})
   await run('browserify', [
