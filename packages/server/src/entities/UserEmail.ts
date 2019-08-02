@@ -4,9 +4,6 @@ import {User} from './User'
 
 @Entity()
 export class UserEmail extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id!: number
-
   @Column({unique: true})
   email!: string
 

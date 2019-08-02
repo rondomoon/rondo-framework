@@ -1,4 +1,4 @@
-import {BaseService} from '../services/BaseService'
+import {DB} from '../database/DB'
 import {ITeamService} from './ITeamService'
 import {IUserInTeam, trim} from '@rondo/common'
 import {IUserTeamParams} from './IUserTeamParams'
@@ -6,7 +6,9 @@ import {Team} from '../entities/Team'
 import {UserTeam} from '../entities/UserTeam'
 import {Validator} from '../validator'
 
-export class TeamService extends BaseService implements ITeamService {
+export class TeamService implements ITeamService {
+
+  constructor(protected readonly db: DB) {}
 
   // TODO check team limit per user
   async create({name, userId}: {name: string, userId: number}) {
@@ -17,7 +19,7 @@ export class TeamService extends BaseService implements ITeamService {
     .ensure('userId')
     .throw()
 
-    const team = await this.getRepository(Team).save({
+    const team = await this.db.getRepository(Team).save({
       name,
       userId,
     })
@@ -33,17 +35,17 @@ export class TeamService extends BaseService implements ITeamService {
   }
 
   async remove({id, userId}: {id: number, userId: number}) {
-    await this.getRepository(UserTeam)
+    await this.db.getRepository(UserTeam)
     .delete({teamId: id, userId})
 
-    await this.getRepository(Team)
+    await this.db.getRepository(Team)
     .delete(id)
 
     return {id}
   }
 
   async update({id, name, userId}: {id: number, name: string, userId: number}) {
-    await this.getRepository(Team)
+    await this.db.getRepository(Team)
     .update({
       id,
     }, {
@@ -55,7 +57,7 @@ export class TeamService extends BaseService implements ITeamService {
 
   async addUser(params: IUserTeamParams) {
     const {userId, teamId, roleId} = params
-    await this.getRepository(UserTeam)
+    await this.db.getRepository(UserTeam)
     .save({userId, teamId, roleId})
 
     const userTeam = await this.createFindUserInTeamQuery()
@@ -71,7 +73,7 @@ export class TeamService extends BaseService implements ITeamService {
 
   async removeUser({teamId, userId, roleId}: IUserTeamParams) {
     // TODO check if this is the last admin team member
-    await this.getRepository(UserTeam)
+    await this.db.getRepository(UserTeam)
     .delete({userId, teamId, roleId})
   }
 
@@ -86,11 +88,11 @@ export class TeamService extends BaseService implements ITeamService {
   }
 
   async findOne(id: number) {
-    return this.getRepository(Team).findOne(id)
+    return this.db.getRepository(Team).findOne(id)
   }
 
   async find(userId: number) {
-    return this.getRepository(Team)
+    return this.db.getRepository(Team)
     .createQueryBuilder('team')
     .select('team')
     .innerJoin('team.userTeams', 'ut')
@@ -99,7 +101,7 @@ export class TeamService extends BaseService implements ITeamService {
   }
 
   protected createFindUserInTeamQuery() {
-    return this.getRepository(UserTeam)
+    return this.db.getRepository(UserTeam)
     .createQueryBuilder('ut')
     .select('ut')
     .innerJoinAndSelect('ut.user', 'user')

@@ -6,13 +6,14 @@ import * as user from '../user'
 import cookieParser from 'cookie-parser'
 import express from 'express'
 import {AsyncRouter, TransactionalRouter} from '../router'
+import {DB} from '../database/DB'
 import {IApplication} from './IApplication'
 import {IConfig} from './IConfig'
 import {IDatabase} from '../database/IDatabase'
 import {ILogger} from '../logger/ILogger'
 import {IRoutes} from '@rondo/common'
+import {IServices} from './IServices'
 import {ITransactionManager} from '../database/ITransactionManager'
-import {DB} from '../database/DB'
 import {loggerFactory, LoggerFactory} from '../logger/LoggerFactory'
 import {json} from 'body-parser'
 
@@ -21,10 +22,7 @@ export class Application implements IApplication {
   readonly transactionManager: ITransactionManager
   readonly server: express.Application
 
-  readonly userService: services.IUserService
-  readonly teamService: team.ITeamService
-  readonly userPermissions: user.IUserPermissions
-
+  readonly services: IServices
   readonly authenticator: middleware.Authenticator
 
   readonly loggerFactory: LoggerFactory = loggerFactory
@@ -32,14 +30,20 @@ export class Application implements IApplication {
   constructor(readonly config: IConfig, readonly database: IDatabase) {
     this.transactionManager = database.transactionManager
     this.db = new DB(this.transactionManager)
-    this.userService = new services.UserService(this.db)
 
-    this.teamService = new team.TeamService(this.transactionManager)
-    this.userPermissions = new user.UserPermissions(this.transactionManager)
+    this.services = this.configureServices()
 
-    this.authenticator = new middleware.Authenticator(this.userService)
+    this.authenticator = new middleware.Authenticator(this.services.userService)
 
     this.server = this.createServer()
+  }
+
+  protected configureServices(): IServices {
+    return {
+      userService: new services.UserService(this.db),
+      teamService: new team.TeamService(this.db),
+      userPermissions: new user.UserPermissions(this.db),
+    }
   }
 
   protected getApiLogger(): ILogger {
@@ -90,18 +94,18 @@ export class Application implements IApplication {
     router.use('/app', routes.application)
 
     router.use('/api', new routes.LoginRoutes(
-      this.userService,
+      this.services.userService,
       this.authenticator,
       this.createTransactionalRouter(),
     ).handle)
     router.use('/api', new routes.UserRoutes(
-      this.userService,
+      this.services.userService,
       this.createTransactionalRouter(),
     ).handle)
 
     router.use('/api', new team.TeamRoutes(
-      this.teamService,
-      this.userPermissions,
+      this.services.teamService,
+      this.services.userPermissions,
       this.createTransactionalRouter(),
     ).handle)
   }
