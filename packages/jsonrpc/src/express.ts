@@ -1,13 +1,14 @@
 import {FunctionPropertyNames} from './types'
 import {NextFunction, Request, Response, Router} from 'express'
-import {createRpcService, ERROR_SERVER} from './jsonrpc'
+import {createRpcService, ERROR_SERVER, ERROR_INVALID_PARAMS} from './jsonrpc'
 import {createError, isJSONRPCError, IJSONRPCError} from './error'
+import {IDEMPOTENT_METHOD_REGEX} from './idempotent'
 
 export type TGetContext<Context> = (req: Request) => Context
 
 export function jsonrpc<Context>(
   getContext: TGetContext<Context>,
-  idempotentMethodRegex = /^(find|fetch|get)/,
+  idempotentMethodRegex = IDEMPOTENT_METHOD_REGEX,
 ) {
   return {
    /**
@@ -22,18 +23,37 @@ export function jsonrpc<Context>(
 
       const router = Router()
 
+      function handleResponse(response: any, res: Response) {
+        if (response === null) {
+          // notification
+          res.status(204).send()
+        } else {
+          res.json(response)
+        }
+      }
+
+      router.get('/', (req, res, next) => {
+        if (!idempotentMethodRegex.test(req.query.method)) {
+          // TODO fix status code and error type
+          const err = createError(ERROR_SERVER, {
+            id: req.query.id,
+            data: null,
+            statusCode: 400,
+          })
+          throw err
+        }
+        callRpcService(req.query, getContext(req))
+        .then(response => handleResponse(response, res))
+        .catch(next)
+      })
+
       router.post('/', (req, res, next) => {
         callRpcService(req.body, getContext(req))
-        .then(response => {
-          if (response === null) {
-            // notification
-            res.status(204).send()
-          } else {
-            res.json(response)
-          }
-        })
-        .catch(err => handleError(req.body.id, err, req, res, next))
+        .then(response => handleResponse(response, res))
+        .catch(next)
       })
+
+      router.use('/', handleError)
 
       return router
     },
@@ -41,12 +61,12 @@ export function jsonrpc<Context>(
 }
 
 function handleError(
-  id: number | string | null,
   err: any,
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
+  const id = req.method === 'POST' ? req.body.id : req.query.id
   // TODO log error
   // TODO make this nicer
 
