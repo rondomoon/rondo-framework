@@ -43,18 +43,19 @@ export function jsonrpc<Context>(
     res.json(errorResponse)
   }
 
-  return {
+  const router = Router()
+
+  const self = {
    /**
     * Adds middleware for handling JSON RPC requests. Expects JSON middleware to
     * already be configured.
     */
     addService<T, F extends FunctionPropertyNames<T>>(
+      path: string,
       service: T,
       methods: F[],
     ) {
       const rpcService = createRpcService(service, methods)
-
-      const router = Router()
 
       function handleResponse(
         response: ISuccessResponse<unknown> | null,
@@ -68,7 +69,7 @@ export function jsonrpc<Context>(
         }
       }
 
-      router.get('/', (req, res, next) => {
+      router.get(path, (req, res, next) => {
         if (!idempotentMethodRegex.test(req.query.method)) {
           // TODO fix status code and error type
           const err = createError(ERROR_METHOD_NOT_FOUND, {
@@ -89,18 +90,21 @@ export function jsonrpc<Context>(
         .catch(next)
       })
 
-      router.post('/', (req, res, next) => {
+      router.post(path, (req, res, next) => {
         rpcService.invoke(req.body, getContext(req))
         .then(response => handleResponse(response, res))
         .catch(next)
       })
 
-      router.use('/', handleError)
-
+      router.use(path, handleError)
+      return self
+    },
+    router() {
       return router
     },
   }
 
+  return self
 }
 
 function getRequestId(req: express.Request) {

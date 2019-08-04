@@ -55,11 +55,12 @@ describe('createActions', () => {
 
   const app = express()
   app.use(bodyParser.json())
-  app.use('/service', jsonrpc(() => ({userId: 1000}), noopLogger)
-    .addService(
-      new Service(),
-      keys<IService>(),
-    ))
+  app.use(
+    '/',
+    jsonrpc(() => ({userId: 1000}), noopLogger)
+    .addService('/service', new Service(), keys<IService>())
+    .router(),
+  )
 
   let baseUrl: string
   let server: Server

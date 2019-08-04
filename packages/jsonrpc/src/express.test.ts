@@ -56,16 +56,17 @@ describe('jsonrpc', () => {
   function createApp() {
     const app = express()
     app.use(bodyParser.json())
-    app.use('/myService',
+    app.use('/',
       jsonrpc(req => ({userId: 1000}), noopLogger)
-      .addService(new Service(5), [
+      .addService('/myService', new Service(5), [
         'add',
         'delay',
         'syncError',
         'asyncError',
         'httpError',
         'addWithContext',
-      ]),
+      ])
+      .router(),
     )
     return app
   }

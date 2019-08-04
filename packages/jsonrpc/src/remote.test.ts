@@ -35,8 +35,12 @@ describe('remote', () => {
   function createApp() {
     const a = express()
     a.use(bodyParser.json())
-    a.use('/myService', jsonrpc(() => ({}), noopLogger)
-      .addService(service, IServiceKeys))
+    a.use(
+      '/',
+      jsonrpc(() => ({}), noopLogger)
+      .addService('/myService', service, IServiceKeys)
+      .router(),
+    )
     return a
   }
 
