@@ -91,7 +91,6 @@ describe('jsonrpc', () => {
         params: ['test'],
       })
       .expect(500)
-      expect(response.body.id).toEqual(1)
       expect(response.body).toEqual({
         jsonrpc: '2.0',
         id: 1,
