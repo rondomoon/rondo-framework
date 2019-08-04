@@ -18,7 +18,6 @@ export function jsonrpc<Context>(
 
   const handleError: ErrorRequestHandler = (err, req, res, next) => {
     logger.error('JSON-RPC Error: %s', err.stack)
-    // TODO log error
 
     if (isJSONRPCError(err)) {
       res.status(err.statusCode)
