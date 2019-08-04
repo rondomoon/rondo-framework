@@ -15,12 +15,16 @@ describe('remote', () => {
 
   interface IService {
     add(a: number, b: number): number
+    fetchItem(id: number): Promise<string>
   }
   const IServiceKeys = keys<IService>()
 
   class Service implements IService {
     add(a: number, b: number) {
       return a + b
+    }
+    async fetchItem(id: number): Promise<string> {
+      return Promise.resolve('id:' + id)
     }
   }
 
@@ -52,11 +56,20 @@ describe('remote', () => {
     })
   })
 
-  describe('method invocation', () => {
+  describe('idempotent method invocation (GET)', () => {
     it('creates a proxy for remote service', async () => {
-      const s = createRemoteClient<IService>(
+      const rpc = createRemoteClient<IService>(
         baseUrl, '/myService', IServiceKeys)
-      const result = await s.add(3, 7)
+      const result = await rpc.fetchItem(5)
+      expect(result).toBe('id:5')
+    })
+  })
+
+  describe('method invocation (POST)', () => {
+    it('creates a proxy for remote service', async () => {
+      const rpc = createRemoteClient<IService>(
+        baseUrl, '/myService', IServiceKeys)
+      const result = await rpc.add(3, 7)
       expect(result).toBe(3 + 7)
     })
   })

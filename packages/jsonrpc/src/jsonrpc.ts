@@ -1,7 +1,7 @@
 export type TId = number | string
 import {ArgumentTypes, FunctionPropertyNames, RetType} from './types'
 import {isPromise} from './isPromise'
-import {createError, IErrorWithData} from './error'
+import {createError, IErrorResponse, IErrorWithData} from './error'
 
 export const ERROR_PARSE = {
   code: -32700,
@@ -43,7 +43,7 @@ export function pick<T, K extends FunctionPropertyNames<T>>(t: T, keys: K[])
   }, {} as Pick<T, K>)
 }
 
-export interface IRequest<M extends string | symbol | number = any, A = any[]> {
+export interface IRequest<M extends string = any, A = any[]> {
   jsonrpc: '2.0'
   id: TId | null
   method: M
@@ -57,13 +57,6 @@ export interface ISuccessResponse<T> {
   error: null
 }
 
-export interface IErrorResponse<T> {
-  jsonrpc: '2.0'
-  id: TId | null
-  result: null
-  error: IErrorWithData<T>
-}
-
 export type IResponse<T = any> = ISuccessResponse<T> | IErrorResponse<T>
 
 export function createSuccessResponse<T>(id: number | string, result: T)
@@ -75,19 +68,6 @@ export function createSuccessResponse<T>(id: number | string, result: T)
     error: null,
   }
 }
-
-export function createErrorResponse<T>(
-  id: number | string | null, error: IErrorWithData<T>)
-  : IErrorResponse<T> {
-  return {
-    jsonrpc: '2.0',
-    id,
-    result: null,
-    error,
-  }
-}
-
-export type TGetContext<Context> = (req: Request) => Context
 
 export const createRpcService =
   <T, M extends FunctionPropertyNames<T>>(

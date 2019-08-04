@@ -1,7 +1,7 @@
 import express, {ErrorRequestHandler} from 'express'
 import {FunctionPropertyNames} from './types'
 import {IDEMPOTENT_METHOD_REGEX} from './idempotent'
-import {IErrorResponse} from './jsonrpc'
+import {IErrorResponse} from './error'
 import {ILogger} from '@rondo/common'
 import {ISuccessResponse} from './jsonrpc'
 import {NextFunction, Request, Response, Router} from 'express'

@@ -10,7 +10,11 @@ type PromisifyReturnType<T> = (...a: ArgumentTypes<T>) =>
   RetProm<UnwrapHOC<RetType<T>>>
 
 export type FunctionPropertyNames<T> = {
-  [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never
+  [K in keyof T]: K extends string
+    ? T[K] extends (...args: any[]) => any
+      ? K
+      : never
+    : never
 }[keyof T]
 
 export type TAsyncified<T> = {
