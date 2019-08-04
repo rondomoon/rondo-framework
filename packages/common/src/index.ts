@@ -1,5 +1,6 @@
 export * from './IAPIDef'
 export * from './ICredentials'
+export * from './ILogger'
 export * from './INewUser'
 export * from './IRequestParams'
 export * from './IRole'

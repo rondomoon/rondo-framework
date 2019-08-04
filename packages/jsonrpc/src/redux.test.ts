@@ -13,6 +13,7 @@ import {createRemoteClient} from './remote'
 import {createStore} from '@rondo/client'
 import {jsonrpc} from './express'
 import {keys} from 'ts-transformer-keys'
+import {noopLogger} from './test-utils'
 
 describe('createActions', () => {
 
@@ -54,10 +55,11 @@ describe('createActions', () => {
 
   const app = express()
   app.use(bodyParser.json())
-  app.use('/service', jsonrpc(() => ({userId: 1000})).addService(
-    new Service(),
-    keys<IService>(),
-  ))
+  app.use('/service', jsonrpc(() => ({userId: 1000}), noopLogger)
+    .addService(
+      new Service(),
+      keys<IService>(),
+    ))
 
   let baseUrl: string
   let server: Server

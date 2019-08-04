@@ -2,6 +2,7 @@ import express, {ErrorRequestHandler} from 'express'
 import {FunctionPropertyNames} from './types'
 import {IDEMPOTENT_METHOD_REGEX} from './idempotent'
 import {IErrorResponse} from './jsonrpc'
+import {ILogger} from '@rondo/common'
 import {ISuccessResponse} from './jsonrpc'
 import {NextFunction, Request, Response, Router} from 'express'
 import {createError, isJSONRPCError, IJSONRPCError, IError} from './error'
@@ -11,8 +12,36 @@ export type TGetContext<Context> = (req: Request) => Context
 
 export function jsonrpc<Context>(
   getContext: TGetContext<Context>,
+  logger: ILogger,
   idempotentMethodRegex = IDEMPOTENT_METHOD_REGEX,
 ) {
+
+  const handleError: ErrorRequestHandler = (err, req, res, next) => {
+    logger.error('JSON-RPC Error: %s', err.stack)
+    // TODO log error
+
+    if (isJSONRPCError(err)) {
+      res.status(err.statusCode)
+      res.json(err.response)
+      return
+    }
+
+    const id = getRequestId(req)
+    const statusCode: number = err.statusCode || 500
+    const errorResponse: IErrorResponse<unknown> = {
+      jsonrpc: '2.0',
+      id,
+      result: null,
+      error: {
+        code: ERROR_SERVER.code,
+        message: statusCode >= 500 ? ERROR_SERVER.message : err.message,
+        data: 'errors' in err ? err.errors : null,
+      },
+    }
+    res.status(statusCode)
+    res.json(errorResponse)
+  }
+
   return {
    /**
     * Adds middleware for handling JSON RPC requests. Expects JSON middleware to
@@ -65,30 +94,6 @@ export function jsonrpc<Context>(
     },
   }
 
-  const handleError: ErrorRequestHandler = (err, req, res, next) => {
-    // TODO log error
-
-    if (isJSONRPCError(err)) {
-      res.status(err.statusCode)
-      res.json(err.response)
-      return
-    }
-
-    const id = getRequestId(req)
-    const statusCode: number = err.statusCode || 500
-    const errorResponse: IErrorResponse<unknown> = {
-      jsonrpc: '2.0',
-      id,
-      result: null,
-      error: {
-        code: ERROR_SERVER.code,
-        message: statusCode >= 500 ? ERROR_SERVER.message : err.message,
-        data: 'errors' in err ? err.errors : null,
-      },
-    }
-    res.status(statusCode)
-    res.json(errorResponse)
-  }
 }
 
 function getRequestId(req: express.Request) {

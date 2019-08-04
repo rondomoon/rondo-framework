@@ -9,6 +9,7 @@ import {Server} from 'http'
 import {createRemoteClient} from './remote'
 import {jsonrpc} from './express'
 import {keys} from 'ts-transformer-keys'
+import {noopLogger} from './test-utils'
 
 describe('remote', () => {
 
@@ -28,7 +29,8 @@ describe('remote', () => {
   function createApp() {
     const a = express()
     a.use(bodyParser.json())
-    a.use('/myService', jsonrpc(() => ({})).addService(service, IServiceKeys))
+    a.use('/myService', jsonrpc(() => ({}), noopLogger)
+      .addService(service, IServiceKeys))
     return a
   }
 

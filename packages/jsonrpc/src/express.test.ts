@@ -3,6 +3,7 @@ import express from 'express'
 import request from 'supertest'
 import {createClient} from './supertest'
 import {jsonrpc} from './express'
+import {noopLogger} from './test-utils'
 
 describe('jsonrpc', () => {
 
@@ -55,15 +56,17 @@ describe('jsonrpc', () => {
   function createApp() {
     const app = express()
     app.use(bodyParser.json())
-    app.use('/myService', jsonrpc(req => ({userId: 1000}))
+    app.use('/myService',
+      jsonrpc(req => ({userId: 1000}), noopLogger)
       .addService(new Service(5), [
-      'add',
-      'delay',
-      'syncError',
-      'asyncError',
-      'httpError',
-      'addWithContext',
-    ]))
+        'add',
+        'delay',
+        'syncError',
+        'asyncError',
+        'httpError',
+        'addWithContext',
+      ]),
+    )
     return app
   }
 
