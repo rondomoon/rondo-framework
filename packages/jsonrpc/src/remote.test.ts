@@ -28,7 +28,7 @@ describe('remote', () => {
   function createApp() {
     const a = express()
     a.use(bodyParser.json())
-    a.use('/myService', jsonrpc(service, IServiceKeys, () => ({})))
+    a.use('/myService', jsonrpc(() => ({})).addService(service, IServiceKeys))
     return a
   }
 

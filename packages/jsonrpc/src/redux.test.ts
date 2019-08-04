@@ -54,9 +54,10 @@ describe('createActions', () => {
 
   const app = express()
   app.use(bodyParser.json())
-  app.use('/service', jsonrpc(new Service(), keys<IService>(), () => ({
-    userId: 1000,
-  })))
+  app.use('/service', jsonrpc(() => ({userId: 1000})).addService(
+    new Service(),
+    keys<IService>(),
+  ))
 
   let baseUrl: string
   let server: Server

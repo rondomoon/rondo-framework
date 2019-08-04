@@ -55,14 +55,15 @@ describe('jsonrpc', () => {
   function createApp() {
     const app = express()
     app.use(bodyParser.json())
-    app.use('/myService', jsonrpc(new Service(5), [
+    app.use('/myService', jsonrpc(req => ({userId: 1000}))
+      .addService(new Service(5), [
       'add',
       'delay',
       'syncError',
       'asyncError',
       'httpError',
       'addWithContext',
-    ], req => ({userId: 1000})))
+    ]))
     return app
   }
 
@@ -97,6 +98,7 @@ describe('jsonrpc', () => {
         result: null,
         error: {
           code: -32000,
+          data: null,
           message: 'Server error',
         },
       })
@@ -106,19 +108,19 @@ describe('jsonrpc', () => {
       expect(err.message).toBe('Server error')
       expect(err.code).toBe(-32000)
     })
-    it('returns an error when message is not in json format', async () => {
+    it('returns an error when message is not readable', async () => {
       const result = await request(createApp())
       .post('/myService')
       .send('a=1')
       .expect(400)
-      expect(result.body.error.message).toEqual('Parse error')
+      expect(result.body.error.message).toEqual('Invalid request')
     })
     it('returns an error when message is not valid', async () => {
       const result = await request(createApp())
       .post('/myService')
       .send({})
       .expect(400)
-      expect(result.body.error.message).toEqual('Invalid Request')
+      expect(result.body.error.message).toEqual('Invalid request')
     })
     it('converts http errors into jsonrpc errors', async () => {
       const err = await getError(client.httpError(403, 'Unauthorized'))

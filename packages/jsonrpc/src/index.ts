@@ -1,4 +1,6 @@
+export * from './error'
 export * from './express'
+export * from './jsonrpc'
 export * from './local'
 export * from './redux'
 export * from './remote'

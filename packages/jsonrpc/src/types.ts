@@ -1,8 +1,8 @@
 import {IPendingAction, IResolvedAction, IRejectedAction} from '@rondo/client'
 
-type ArgumentTypes<T> =
+export type ArgumentTypes<T> =
   T extends (...args: infer U) => infer R ? U : never
-type RetType<T> = T extends (...args: any[]) => infer R ? R : never
+export type RetType<T> = T extends (...args: any[]) => infer R ? R : never
 type UnwrapHOC<T> = T extends (...args: any[]) => infer R ? R : T
 type UnwrapPromise<T> = T extends Promise<infer V> ? V : T
 type RetProm<T> = T extends Promise<any> ? T : Promise<T>
