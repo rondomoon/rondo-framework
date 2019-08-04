@@ -211,6 +211,13 @@ describe('jsonrpc', () => {
         },
       })
     })
+
+    it('cannot call non-idempotent methods using GET request', async () => {
+      const params = encodeURIComponent(JSON.stringify([1, 2]))
+      await request(createApp())
+      .get(`/myService?jsonrpc=2.0&id=1&method=add&params=${params}`)
+      .expect(405)
+    })
   })
 
 })

@@ -85,7 +85,6 @@ export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
         typeof method !== 'string' ||
         !Array.isArray(params)
       ) {
-        console.log(req.jsonrpc, method, params)
         throw createError(ERROR_INVALID_REQUEST, {
           id,
           data: null,

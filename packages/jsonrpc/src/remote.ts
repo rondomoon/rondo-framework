@@ -23,8 +23,8 @@ export function createRemoteClient<T>(
     method: string,
     params: any[],
   ) {
-    const reqMethod = IDEMPOTENT_METHOD_REGEX.test(method) ? 'get' : 'post'
-    const payloadKey = reqMethod === 'post' ? 'data' : 'params'
+    const reqMethod = IDEMPOTENT_METHOD_REGEX.test(method) ? 'GET' : 'POST'
+    const payloadKey = reqMethod === 'POST' ? 'data' : 'params'
 
     const response = await axios({
       method: reqMethod,
@@ -33,7 +33,7 @@ export function createRemoteClient<T>(
         id,
         jsonrpc: '2.0',
         method,
-        params: reqMethod === 'post'
+        params: reqMethod === 'POST'
           ? params
           : JSON.stringify(params),
       },

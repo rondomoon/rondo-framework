@@ -6,7 +6,9 @@ import {ILogger} from '@rondo/common'
 import {ISuccessResponse} from './jsonrpc'
 import {NextFunction, Request, Response, Router} from 'express'
 import {createError, isJSONRPCError, IJSONRPCError, IError} from './error'
-import {createRpcService, ERROR_SERVER, ERROR_INVALID_PARAMS} from './jsonrpc'
+import {
+  createRpcService, ERROR_SERVER, ERROR_INVALID_PARAMS, ERROR_METHOD_NOT_FOUND,
+} from './jsonrpc'
 
 export type TGetContext<Context> = (req: Request) => Context
 
@@ -69,10 +71,10 @@ export function jsonrpc<Context>(
       router.get('/', (req, res, next) => {
         if (!idempotentMethodRegex.test(req.query.method)) {
           // TODO fix status code and error type
-          const err = createError(ERROR_SERVER, {
+          const err = createError(ERROR_METHOD_NOT_FOUND, {
             id: req.query.id,
             data: null,
-            statusCode: 400,
+            statusCode: 405,
           })
           throw err
         }
