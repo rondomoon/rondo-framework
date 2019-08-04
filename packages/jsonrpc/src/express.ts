@@ -50,7 +50,7 @@ export function jsonrpc<Context>(
       service: T,
       methods: F[],
     ) {
-      const callRpcService = createRpcService(service, methods)
+      const rpcService = createRpcService(service, methods)
 
       const router = Router()
 
@@ -76,13 +76,19 @@ export function jsonrpc<Context>(
           })
           throw err
         }
-        callRpcService(req.query, getContext(req))
+        const request = {
+          id: req.query.id,
+          jsonrpc: req.query.jsonrpc,
+          method: req.query.method,
+          params: JSON.parse(req.query.params),
+        }
+        rpcService.invoke(request, getContext(req))
         .then(response => handleResponse(response, res))
         .catch(next)
       })
 
       router.post('/', (req, res, next) => {
-        callRpcService(req.body, getContext(req))
+        rpcService.invoke(req.body, getContext(req))
         .then(response => handleResponse(response, res))
         .catch(next)
       })

@@ -69,51 +69,57 @@ export function createSuccessResponse<T>(id: number | string, result: T)
   }
 }
 
-export const createRpcService =
-  <T, M extends FunctionPropertyNames<T>>(
-    service: T,
-    methods: M[],
-  ) => async <Context>(req: IRequest<M, ArgumentTypes<T[M]>>, context: Context)
-  : Promise<ISuccessResponse<RetType<T[M]>> | null> => {
-    const {id, method, params} = req
+export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
+  service: T,
+  methods: M[],
+) => {
+  return {
+    async invoke<Context>(
+      req: IRequest<M, ArgumentTypes<T[M]>>,
+      context: Context,
+    ): Promise<ISuccessResponse<RetType<T[M]>> | null> {
+      const {id, method, params} = req
 
-    if (
-      req.jsonrpc !== '2.0' ||
-      typeof method !== 'string' ||
-      !Array.isArray(params)
-    ) {
-      throw createError(ERROR_INVALID_REQUEST, {
-        id,
-        data: null,
-        statusCode: 400,
-      })
-    }
+      if (
+        req.jsonrpc !== '2.0' ||
+        typeof method !== 'string' ||
+        !Array.isArray(params)
+      ) {
+        console.log(req.jsonrpc, method, params)
+        throw createError(ERROR_INVALID_REQUEST, {
+          id,
+          data: null,
+          statusCode: 400,
+        })
+      }
 
-    const isNotification = req.id === null || req.id === undefined
+      const isNotification = req.id === null || req.id === undefined
 
-    const rpcService = pick(service, methods)
+      const rpcService = pick(service, methods)
 
-    if (
-      !rpcService.hasOwnProperty(method) ||
-      typeof rpcService[method] !== 'function'
-    ) {
-      throw createError(ERROR_METHOD_NOT_FOUND, {
-        id,
-        data: null,
-        statusCode: 404,
-      })
-    }
+      if (
+        !rpcService.hasOwnProperty(method) ||
+        typeof rpcService[method] !== 'function'
+      ) {
+        throw createError(ERROR_METHOD_NOT_FOUND, {
+          id,
+          data: null,
+          statusCode: 404,
+        })
+      }
 
-    let retValue = (rpcService[method] as any)(...params)
+      let retValue = (rpcService[method] as any)(...params)
 
-    if (typeof retValue === 'function') {
-      retValue = retValue(context)
-    }
+      if (typeof retValue === 'function') {
+        retValue = retValue(context)
+      }
 
-    if (!isPromise(retValue) && isNotification) {
-      return null
-    }
+      if (!isPromise(retValue) && isNotification) {
+        return null
+      }
 
-    retValue = await retValue
-    return createSuccessResponse(req.id as any, retValue)
+      retValue = await retValue
+      return createSuccessResponse(req.id as any, retValue)
+    },
   }
+}

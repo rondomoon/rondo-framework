@@ -15,7 +15,8 @@ describe('remote', () => {
 
   interface IService {
     add(a: number, b: number): number
-    fetchItem(id: number): Promise<string>
+    fetchItem(obj1: {a: number}, obj2: {b: number})
+      : Promise<{a: number, b: number}>
   }
   const IServiceKeys = keys<IService>()
 
@@ -23,8 +24,9 @@ describe('remote', () => {
     add(a: number, b: number) {
       return a + b
     }
-    async fetchItem(id: number): Promise<string> {
-      return Promise.resolve('id:' + id)
+    async fetchItem(obj1: {a: number}, obj2: {b: number})
+      : Promise<{a: number, b: number}> {
+      return Promise.resolve({...obj1, ...obj2})
     }
   }
 
@@ -60,8 +62,8 @@ describe('remote', () => {
     it('creates a proxy for remote service', async () => {
       const rpc = createRemoteClient<IService>(
         baseUrl, '/myService', IServiceKeys)
-      const result = await rpc.fetchItem(5)
-      expect(result).toBe('id:5')
+      const result = await rpc.fetchItem({a: 10}, {b: 20})
+      expect(result).toEqual({a: 10, b: 20})
     })
   })
 

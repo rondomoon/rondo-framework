@@ -33,7 +33,9 @@ export function createRemoteClient<T>(
         id,
         jsonrpc: '2.0',
         method,
-        params,
+        params: reqMethod === 'post'
+          ? params
+          : JSON.stringify(params),
       },
     })
     if (response.data.error) {
