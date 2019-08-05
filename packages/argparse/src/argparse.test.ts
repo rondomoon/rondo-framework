@@ -125,6 +125,76 @@ describe('argparse', () => {
     })
   })
 
+  describe('positional', () => {
+    it('can be defined', () => {
+      const parse = argparse({
+        a: {
+          type: 'number',
+          positional: true,
+        },
+      })
+      expect(parse([]).a).toBe(NaN)
+      expect(parse(['12']).a).toBe(12)
+    })
+    it('works with booleans', () => {
+      const parse = argparse({
+        a: {
+          type: 'boolean',
+          positional: true,
+        },
+      })
+      expect(parse([]).a).toBe(false)
+      expect(parse(['true']).a).toBe(true)
+      expect(parse(['false']).a).toBe(false)
+      expect(() => parse(['invalid'])).toThrowError(/true or false/)
+    })
+    it('works with strings', () => {
+      const parse = argparse({
+        a: {
+          type: 'string',
+          positional: true,
+        },
+      })
+      expect(parse([]).a).toBe('')
+      expect(parse(['a']).a).toBe('a')
+    })
+    it('works with multiple positionals', () => {
+      const parse = argparse({
+        a: {
+          type: 'string',
+          positional: true,
+        },
+        b: {
+          type: 'string',
+          positional: true,
+        },
+      })
+      expect(parse(['aaa', 'bbb'])).toEqual({
+        a: 'aaa',
+        b: 'bbb',
+      })
+    })
+    it('works amongs regular arguments', () => {
+      const parse = argparse({
+        arg1: {
+          type: 'string',
+        },
+        arg2: {
+          type: 'number',
+          positional: true,
+        },
+        arg3: {
+          type: 'string',
+        },
+      })
+      expect(parse(['--arg1', 'one', '2', '--arg3', 'three'])).toEqual({
+        arg1: 'one',
+        arg2: 2,
+        arg3: 'three',
+      })
+    })
+  })
+
   it('throws when required args missing', () => {
     expect(() => argparse({
       one: {

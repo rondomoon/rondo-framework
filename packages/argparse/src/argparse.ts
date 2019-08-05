@@ -14,6 +14,7 @@ export interface IArgConfig<T extends TArgTypeName> {
   description?: string
   default?: TArgType<T>
   required?: boolean
+  positional?: boolean
 }
 
 export interface IArgsConfig {
@@ -64,6 +65,7 @@ export const argparse = <T extends IArgsConfig>(
   const it = iterate(args)
 
   const aliases: Record<string, string> = {}
+  const positional: string[] = []
   const requiredArgs = Object.keys(config).reduce((obj, arg) => {
     const argConfig = config[arg]
     result[arg] = argConfig.default !== undefined
@@ -74,6 +76,9 @@ export const argparse = <T extends IArgsConfig>(
         argConfig.alias in aliases === false,
         'Duplicate alias: ' + argConfig.alias)
       aliases[argConfig.alias] = arg
+    }
+    if (argConfig.positional) {
+      positional.push(arg)
     }
     if (argConfig.required) {
       obj[arg] = true
@@ -108,25 +113,47 @@ export const argparse = <T extends IArgsConfig>(
     return lastArgName
   }
 
+  function getNextPositional(): string {
+    const p = positional.shift()
+    assert(!!p, 'No defined positional arguments')
+    return p!
+  }
+
   while (it.hasNext()) {
     const arg = it.next()
-    assert(arg.substring(0, 1) === '-', 'Arguments must start with -')
-    const argName: string = processFlags(arg)
+    const isPositional = arg.substring(0, 1) !== '-'
+    const argName = !isPositional
+      ? processFlags(arg)
+      : getNextPositional()
     const argConfig = config[argName]
     assert(!!argConfig, 'Unknown argument: ' + arg)
     delete requiredArgs[argName]
     const peek = it.peek()
     switch (argConfig.type) {
       case 'string':
-        assert(it.hasNext(), 'Value of argument must be a string: ' + arg)
-        result[argName] = it.next()
+        if (isPositional) {
+          result[argName] = arg
+        } else {
+          assert(it.hasNext(), 'Value of argument must be a string: ' + arg)
+          result[argName] = it.next()
+        }
         continue
       case 'number':
-        const num = parseInt(it.next(), 10)
+        const num = parseInt(isPositional ? arg : it.next(), 10)
         assert(!isNaN(num), 'Value of argument must be a number: ' + arg)
         result[argName] = num
         continue
       case 'boolean':
+        if (isPositional) {
+          if (arg === 'true') {
+            result[argName] = true
+          } else if (arg === 'false') {
+            result[argName] = false
+          } else {
+            assert(false, 'Value of argument must be true or false: ' + arg)
+          }
+          continue
+        }
         if (peek === 'true') {
           it.next()
           result[argName] = true
