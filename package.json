@@ -9,7 +9,8 @@
     "@rondo/image-upload": "file:packages/image-upload",
     "@rondo/tasq": "file:packages/tasq",
     "@rondo/jsonrpc": "file:packages/jsonrpc",
-    "@rondo/scripts": "file:packages/scripts"
+    "@rondo/scripts": "file:packages/scripts",
+    "@rondo/argparse": "file:packages/argparse"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
