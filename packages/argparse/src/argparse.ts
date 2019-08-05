@@ -10,6 +10,7 @@ export type TArgType<T extends TArgTypeName> =
 
 export interface IArgConfig<T extends TArgTypeName> {
   type: T
+  alias?: string
   default?: TArgType<T>
   required?: boolean
 }
@@ -52,10 +53,14 @@ export function argparse<T extends object>(
   const it = iterate(args)
 
   const usedArgs: Record<string, true> = {}
+  const aliases: Record<string, string> = {}
   const requiredArgs = Object.keys(config).reduce((obj, arg) => {
     const argConfig = config[arg]
     if (argConfig.default !== undefined) {
       result[arg] = argConfig.default
+    }
+    if (argConfig.alias) {
+      aliases[argConfig.alias] = arg
     }
     obj[arg] = !!argConfig.required
     return obj
@@ -63,8 +68,27 @@ export function argparse<T extends object>(
 
   while(it.hasNext()) {
     const arg = it.next()
-    assert(arg.substring(0, 2) === '--', 'Arguments must start with --')
-    const argName = arg.substring(2)
+    assert(arg.substring(0, 1) === '-', 'Arguments must start with -')
+    let argName: string
+    if (arg.substring(1, 2) !== '-') {
+      // flags
+      const flags = arg.substring(1).split('')
+
+      flags.slice(0, flags.length - 2)
+      .forEach(flag => {
+        const alias = aliases[flag]
+        const argConfig = config[alias]
+        assert(!!argConfig, 'Unknown flag: ' + flag)
+        assert(argConfig.type === 'boolean', 'The argument is not a flag/boolean: ' + flag)
+        delete requiredArgs[alias]
+        result[alias] = true
+      })
+
+      const lastArg = flags[flags.length - 1]
+      argName = aliases[lastArg]
+    } else {
+      argName = arg.substring(2)
+    }
     const argConfig = config[argName]
     assert(!!argConfig, 'Unknown argument: ' + arg)
     delete requiredArgs[argName]
