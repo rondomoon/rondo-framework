@@ -1,30 +1,30 @@
-import {run} from '../run'
-import {join} from 'path'
-import {findNodeModules} from '../modules'
 import * as fs from 'fs'
 import * as p from 'path'
+import {argparse} from '@rondo/argparse'
+import {findNodeModules} from '../modules'
+import {join} from 'path'
+import {run} from '../run'
 
 const tsc = 'ttsc'
 
-export async function build(path: string = '.') {
-  await run(tsc, ['--build', path])
-}
-
-export async function buildEsm(path: string = '.') {
-  await run(tsc, ['--build', join(path, 'tsconfig.esm.json')])
-}
-
-export async function watch(path: string = '.') {
-  await run(tsc, ['--build', '--watch', '--preserveWatchOutput',  path])
-}
-
-export async function watchEsm(path: string = '.') {
-  await run(tsc, [
-    '--build',
-    '--watch',
-    '--preserveWatchOutput',
-    join(path, 'tsconfig.esm.json'),
-  ])
+export async function build(...argv: string[]) {
+  const {esm, project, watch} = argparse({
+    project: {
+      type: 'string',
+      alias: 'p',
+      default: '.',
+    },
+    esm: {
+      type: 'boolean',
+    },
+    watch: {
+      type: 'boolean',
+      alias: 'w',
+    },
+  })(argv)
+  const path = esm ? join(project, 'tsconfig.esm.json') : project
+  const watchArgs = watch ? ['--watch', '--preserveWatchOutput'] : []
+  await run(tsc, ['--build', path, ...watchArgs])
 }
 
 export async function test(...args: string[]) {
@@ -90,7 +90,7 @@ export async function uglify(path: string = '.') {
 }
 
 export async function js(path: string = '.') {
-  await buildEsm(path)
+  await build(...['-p', path, '--esm'])
   await browserify(path)
   await uglify(path)
 }
@@ -134,9 +134,9 @@ export async function watchCss(path = '.') {
 }
 
 export async function frontend(path = '.') {
-  await buildEsm(path)
+  await build(...['-p', path, '--esm'])
   const promises = [
-    watchEsm(path),
+    build(...['-p', path, '--watch', '--esm']),
     watchJs(path),
     watchCss(path),
   ]

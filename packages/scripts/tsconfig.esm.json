@@ -3,5 +3,7 @@
   "compilerOptions": {
     "outDir": "esm"
   },
-  "references": []
+  "references": [
+    {"path": "../argparse/tsconfig.esm.json"}
+  ]
 }
