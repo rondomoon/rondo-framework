@@ -51,9 +51,13 @@ const iterate = <T>(arr: T[]): IIterator<T> => {
   }
 }
 
+function createError(message: string) {
+  return new Error('Error parsing arguments: ' + message)
+}
+
 function assert(cond: boolean, message: string) {
   if (!cond) {
-    throw new Error('Error parsing arguments: ' + message)
+    throw createError(message)
   }
 }
 
@@ -118,7 +122,20 @@ export function padRight(str: string, chars: number) {
 }
 
 export function help(config: IArgsConfig) {
-  return Object.keys(config).map(argument => {
+  const keys = Object.keys(config)
+
+  const positionalHelp = [
+    '[OPTIONS]',
+    keys
+    .filter(k => config[k].positional)
+    .map(k => config[k].required
+      ? `${k.toUpperCase()}`
+      : `[${k.toUpperCase()}]`,
+    )
+    .join(' '),
+  ].join(' ')
+
+  const argsHelp = 'Options:\n' + keys.map(argument => {
     const argConfig = config[argument]
     const {alias, type} = argConfig
     const name = alias
@@ -140,6 +157,10 @@ export function help(config: IArgsConfig) {
     return padRight(name + ' ' + type, 30) + ' ' + description + sample
   })
   .join('\n')
+
+  return [positionalHelp, argsHelp]
+  .filter(h => h.length)
+  .join('\n\n')
 }
 
 export function arg<T extends TArgTypeName>(

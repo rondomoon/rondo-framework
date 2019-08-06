@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as p from 'path'
-import {argparse} from '@rondo/argparse'
+import {argparse, arg} from '@rondo/argparse'
 import {findNodeModules} from '../modules'
 import {join} from 'path'
 import {run} from '../run'
@@ -8,22 +8,32 @@ import {run} from '../run'
 const tsc = 'ttsc'
 
 export async function build(...argv: string[]) {
-  const {esm, project, watch} = argparse({
-    project: {
-      type: 'string',
+  const {parse, help} = argparse({
+    project: arg('string', {
       alias: 'p',
       default: '.',
-    },
-    esm: {
-      type: 'boolean',
-    },
-    watch: {
-      type: 'boolean',
+      description: 'Project to build',
+      positional: true,
+    }),
+    esm: arg('boolean', {
+      description: 'Build project from tsconfig.esm.json',
+    }),
+    watch: arg('boolean', {
       alias: 'w',
-    },
-  })(argv)
-  const path = esm ? join(project, 'tsconfig.esm.json') : project
-  const watchArgs = watch ? ['--watch', '--preserveWatchOutput'] : []
+      description: 'Watch for changes',
+    }),
+    help: arg('boolean', {
+      alias: 'h',
+      description: 'Print help message',
+    }),
+  })
+  const args = parse(argv)
+  if (args.help) {
+    console.log('Usage: rondo build ' + help())
+    return
+  }
+  const path = args.esm ? join(args.project, 'tsconfig.esm.json') : args.project
+  const watchArgs = args.watch ? ['--watch', '--preserveWatchOutput'] : []
   await run(tsc, ['--build', path, ...watchArgs])
 }
 

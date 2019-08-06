@@ -220,6 +220,9 @@ describe('argparse', () => {
         three: arg('boolean'),
       })
       expect(help()).toEqual([
+        '[OPTIONS] ',
+        '',
+        'Options:',
         '    --one string               ',
         '    --two number               ',
         '    --three boolean            ',
@@ -234,12 +237,22 @@ describe('argparse', () => {
           default: 'choice-1',
           alias: 'o',
         }),
-        two: arg('number'),
+        two: arg('number', {
+          positional: true,
+          required: true,
+        }),
+        three: arg('number', {
+          positional: true,
+        }),
       })
       expect(help()).toEqual([
+        '[OPTIONS] TWO [THREE]',
+        '',
+        'Options:',
         '-o, --one string                first argument ' +
           '(required, default: choice-1, choices: choice-1,choice-2)',
-        '    --two number               ',
+        '    --two number                (required)',
+        '    --three number             ',
       ].join('\n'))
     })
 

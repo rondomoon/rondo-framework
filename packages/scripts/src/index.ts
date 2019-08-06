@@ -17,7 +17,7 @@ async function run(...argv: string[]) {
 if (typeof require !== 'undefined' && require.main === module) {
   run(...process.argv.slice(2))
   .catch(err => {
-    console.log('> ' + err.stack)
+    console.log('> ' + err.message)
     process.exit(1)
   })
 }
