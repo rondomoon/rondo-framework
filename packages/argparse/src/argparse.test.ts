@@ -9,7 +9,7 @@ describe('argparse', () => {
       four: {
         type: 'boolean',
       },
-    })(['--one', '1', '--two', '2', '--four'])
+    }).parse(['--one', '1', '--two', '2', '--four'])
 
     const one: string = args.one
     const two: number = args.two
@@ -26,7 +26,7 @@ describe('argparse', () => {
         bool: {
           type: 'boolean',
         },
-      })([])
+      }).parse([])
       const value: boolean = result.bool
       expect(value).toBe(false)
     })
@@ -36,10 +36,10 @@ describe('argparse', () => {
           type: 'boolean',
           required: true,
         },
-      })([])).toThrowError(/Missing required args: bool/)
+      }).parse([])).toThrowError(/Missing required args: bool/)
     })
     it('optionally accepts a true/false value', () => {
-      const parse = argparse({
+      const {parse} = argparse({
         bool: {
           type: 'boolean',
           alias: 'b',
@@ -57,7 +57,7 @@ describe('argparse', () => {
       })
     })
     it('can be grouped by shorthand (single dash) notation', () => {
-      const parse = argparse({
+      const {parse} = argparse({
         a1: {
           type: 'boolean',
           alias: 'a',
@@ -97,7 +97,7 @@ describe('argparse', () => {
 
   describe('number', () => {
     it('sets to NaN by default', () => {
-      const parse = argparse({
+      const {parse} = argparse({
         a: {
           type: 'number',
         },
@@ -121,7 +121,7 @@ describe('argparse', () => {
 
   describe('choices', () => {
     it('can enforce typed choices', () => {
-      const parse = argparse({
+      const {parse} = argparse({
         choice: arg('string', {
           choices: ['a', 'b'],
         }),
@@ -144,7 +144,7 @@ describe('argparse', () => {
 
   describe('positional', () => {
     it('can be defined', () => {
-      const parse = argparse({
+      const {parse} = argparse({
         a: {
           type: 'number',
           positional: true,
@@ -154,7 +154,7 @@ describe('argparse', () => {
       expect(parse(['12']).a).toBe(12)
     })
     it('works with booleans', () => {
-      const parse = argparse({
+      const {parse} = argparse({
         a: {
           type: 'boolean',
           positional: true,
@@ -166,7 +166,7 @@ describe('argparse', () => {
       expect(() => parse(['invalid'])).toThrowError(/true or false/)
     })
     it('works with strings', () => {
-      const parse = argparse({
+      const {parse} = argparse({
         a: {
           type: 'string',
           positional: true,
@@ -176,7 +176,7 @@ describe('argparse', () => {
       expect(parse(['a']).a).toBe('a')
     })
     it('works with multiple positionals', () => {
-      const parse = argparse({
+      const {parse} = argparse({
         a: {
           type: 'string',
           positional: true,
@@ -192,7 +192,7 @@ describe('argparse', () => {
       })
     })
     it('works amongs regular arguments', () => {
-      const parse = argparse({
+      const {parse} = argparse({
         arg1: {
           type: 'string',
         },
@@ -212,13 +212,46 @@ describe('argparse', () => {
     })
   })
 
+  describe('help', () => {
+    it('returns help string', () => {
+      const {help} = argparse({
+        one: arg('string'),
+        two: arg('number'),
+        three: arg('boolean'),
+      })
+      expect(help()).toEqual([
+        '    --one string               ',
+        '    --two number               ',
+        '    --three boolean            ',
+      ].join('\n'))
+    })
+    it('returns help string with alias, description, and samples', () => {
+      const {help} = argparse({
+        one: arg('string', {
+          description: 'first argument',
+          required: true,
+          choices: ['choice-1', 'choice-2'],
+          default: 'choice-1',
+          alias: 'o',
+        }),
+        two: arg('number'),
+      })
+      expect(help()).toEqual([
+        '-o, --one string                first argument ' +
+          '(required, default: choice-1, choices: choice-1,choice-2)',
+        '    --two number               ',
+      ].join('\n'))
+    })
+
+  })
+
   it('throws when required args missing', () => {
     expect(() => argparse({
       one: {
         type: 'string',
         required: true,
       },
-    })([])).toThrowError(/missing required/i)
+    }).parse([])).toThrowError(/missing required/i)
   })
 
   it('throws when arg type is unknown', () => {
@@ -226,7 +259,7 @@ describe('argparse', () => {
       a: {
         type: 'test',
       } as any,
-    })(['-a'])).toThrowError(/Unknown type: test/)
+    }).parse(['-a'])).toThrowError(/Unknown type: test/)
   })
 
 })
