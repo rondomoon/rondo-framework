@@ -106,6 +106,10 @@ function getValue(
   return isPositional ? argument : it.next()
 }
 
+export function isHelp(argv: string[]) {
+  return argv.some(a => /^(-h|--help)$/.test(a))
+}
+
 function checkChoice<T>(argument: string, choice: T, choices?: T[]) {
   if (choices) {
     assert(
