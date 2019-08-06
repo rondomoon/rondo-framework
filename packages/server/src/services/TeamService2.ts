@@ -1,0 +1,153 @@
+import {DB} from '../database/DB'
+import {Validator} from '../validator'
+import {Team} from '../entities/Team'
+import {UserTeam} from '../entities/UserTeam'
+import {IUserPermissions} from '../user/IUserPermissions'
+import {
+  trim,
+  team as t,
+  IUserInTeam,
+} from '@rondo/common'
+
+type IContext = t.IContext
+
+export class TeamService2 implements t.ITeamService {
+  constructor(
+    protected readonly db: DB,
+    protected readonly permissions: IUserPermissions,
+  ) {}
+
+  create = (params: t.ITeamCreateParams) => async (context: IContext) => {
+    const {userId} = context
+    const name = trim(params.name)
+
+    new Validator({name, userId})
+    .ensure('name')
+    .ensure('userId')
+    .throw()
+
+    const team = await this.db.getRepository(Team).save({
+      name,
+      userId,
+    })
+
+    await this.addUser({
+      teamId: team.id,
+      userId,
+      // ADMIN role
+      roleId: 1,
+    })(context)
+
+    return team
+  }
+
+  remove = ({id}: t.ITeamRemoveParams) => async (context: IContext) => {
+    const {userId} = context
+
+    await this.permissions.belongsToTeam({
+      teamId: id,
+      userId: context.userId,
+    })
+
+    await this.db.getRepository(UserTeam)
+    .delete({teamId: id, userId})
+
+    await this.db.getRepository(Team)
+    .delete(id)
+
+    return {id}
+  }
+
+  update = ({id, name}: t.ITeamUpdateParams) => async (context: IContext) => {
+    await this.permissions.belongsToTeam({
+      teamId: id,
+      userId: context.userId,
+    })
+
+    await this.db.getRepository(Team)
+    .update({
+      id,
+    }, {
+      name,
+    })
+
+    return (await this.findOne(id))!
+  }
+
+  addUser = (params: t.ITeamAddUserParams) => async (context: IContext) => {
+    const {userId, teamId, roleId} = params
+    await this.db.getRepository(UserTeam)
+    .save({userId, teamId, roleId})
+
+    const userTeam = await this.createFindUserInTeamQuery()
+    .where({
+      userId,
+      teamId,
+      roleId,
+    })
+    .getOne()
+
+    return this.mapUserInTeam(userTeam!)
+  }
+
+  removeUser = (params: t.ITeamAddUserParams) => async (context: IContext) => {
+    const {teamId, userId, roleId} = params
+
+    await this.permissions.belongsToTeam({
+      teamId: params.teamId,
+      userId: context.userId,
+    })
+
+    // TODO check if this is the last admin team member
+    await this.db.getRepository(UserTeam)
+    .delete({userId, teamId, roleId})
+
+    return {teamId, userId, roleId}
+  }
+
+  async findOne(id: number) {
+    return this.db.getRepository(Team).findOne(id)
+  }
+
+  find = () => async ({userId}: IContext) => {
+    return this.db.getRepository(Team)
+    .createQueryBuilder('team')
+    .select('team')
+    .innerJoin('team.userTeams', 'ut')
+    .where('ut.userId = :userId', {userId})
+    .getMany()
+  }
+
+  findUsers = (teamId: number) => async (context: IContext) => {
+    await this.permissions.belongsToTeam({
+      teamId,
+      userId: context.userId,
+    })
+
+    const userTeams = await this.createFindUserInTeamQuery()
+    .where('ut.teamId = :teamId', {
+      teamId,
+    })
+    .getMany()
+
+    return userTeams.map(this.mapUserInTeam)
+  }
+
+  protected mapUserInTeam(ut: UserTeam): IUserInTeam {
+    return {
+      teamId: ut.teamId,
+      userId: ut.userId,
+      displayName: `${ut.user.firstName} ${ut.user.lastName}`,
+      roleId: ut.role!.id,
+      roleName: ut.role!.name,
+    }
+  }
+
+  protected createFindUserInTeamQuery() {
+    return this.db.getRepository(UserTeam)
+    .createQueryBuilder('ut')
+    .select('ut')
+    .innerJoinAndSelect('ut.user', 'user')
+    .innerJoinAndSelect('ut.role', 'role')
+  }
+}

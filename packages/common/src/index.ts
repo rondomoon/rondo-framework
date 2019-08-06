@@ -16,3 +16,6 @@ export * from './filterProps'
 export * from './indexBy'
 export * from './types'
 export * from './without'
+
+import * as team from './team'
+export {team}
