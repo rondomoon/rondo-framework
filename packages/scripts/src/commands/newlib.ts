@@ -1,7 +1,8 @@
-import {argparse, arg, isHelp} from '@rondo/argparse'
-import {run} from '../run'
 import * as fs from 'fs'
+import * as log from '../log'
 import * as path from 'path'
+import {argparse, arg} from '../argparse'
+import {run} from '../run'
 
 export async function newlib(...argv: string[]) {
   const {parse, help} = argparse({
@@ -13,15 +14,11 @@ export async function newlib(...argv: string[]) {
     }),
     // frontend: arg('boolean', {alias: 'f'}),
   })
-  if (isHelp(argv)) {
-    console.log('Usage: rondo newlib ' + help())
-    return
-  }
   const args = parse(argv)
 
   const destDir = path.join('./packages', args.name)
 
-  console.log('mkdir %s', destDir)
+  log.info('mkdir %s', destDir)
   fs.mkdirSync(destDir)
 
   const libraryName = `${args.namespace}/${args.name}`
@@ -31,17 +28,17 @@ export async function newlib(...argv: string[]) {
     const src = file
     const dest = path.join(destDir, path.relative(templateDir, file))
     if (dest === path.join(destDir, 'package.json')) {
-      console.log('Add %s', dest)
+      log.info('Add %s', dest)
       const libPkg = JSON.parse(fs.readFileSync(src, 'utf8'))
       libPkg.name = libraryName
       fs.writeFileSync(dest, JSON.stringify(libPkg, null, '  '))
     } else {
-      console.log('Copy %s', src)
+      log.info('Copy %s', src)
       fs.copyFileSync(src, dest)
     }
   }
 
-  console.log('Update main package.json')
+  log.info('Update main package.json')
   const pkgFile = path.join(process.cwd(), 'package.json')
   const pkg = require(pkgFile)
   pkg.dependencies = pkg.dependencies || {}

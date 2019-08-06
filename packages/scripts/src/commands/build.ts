@@ -1,6 +1,7 @@
 import * as fs from 'fs'
+import * as log from '../log'
 import * as p from 'path'
-import {argparse, arg} from '@rondo/argparse'
+import {argparse, arg} from '../argparse'
 import {findNodeModules} from '../modules'
 import {join} from 'path'
 import {run} from '../run'
@@ -22,16 +23,9 @@ export async function build(...argv: string[]) {
       alias: 'w',
       description: 'Watch for changes',
     }),
-    help: arg('boolean', {
-      alias: 'h',
-      description: 'Print help message',
-    }),
+    help: arg('boolean', {alias: 'h'}),
   })
   const args = parse(argv)
-  if (args.help) {
-    console.log('Usage: rondo build ' + help())
-    return
-  }
   const path = args.esm ? join(args.project, 'tsconfig.esm.json') : args.project
   const watchArgs = args.watch ? ['--watch', '--preserveWatchOutput'] : []
   await run(tsc, ['--build', path, ...watchArgs])

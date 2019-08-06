@@ -8,6 +8,8 @@ export type TArgType<T extends TArgTypeName> =
   ? boolean
   : never
 
+export let exit = () => process.exit()
+
 export interface IArgParam<T extends TArgTypeName> {
   alias?: string
   description?: string
