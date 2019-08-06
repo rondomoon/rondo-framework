@@ -19,6 +19,7 @@ describe('jsonrpc', () => {
     httpError(statusCode: number, message: string): Promise<void>
 
     addWithContext(a: number, b: number): (ctx: IContext) => number
+    addWithContext2(a: number, b: number): Promise<number>
   }
 
   class Service implements IService {
@@ -51,6 +52,9 @@ describe('jsonrpc', () => {
     addWithContext = (a: number, b: number) => (ctx: IContext): number => {
       return a + b + ctx.userId
     }
+    addWithContext2(a: number, b: number, ctx?: IContext) {
+      return Promise.resolve(a + b + ctx!.userId)
+    }
   }
 
   function createApp() {
@@ -65,6 +69,7 @@ describe('jsonrpc', () => {
         'asyncError',
         'httpError',
         'addWithContext',
+        'addWithContext2',
       ])
       .router(),
     )
@@ -142,6 +147,10 @@ describe('jsonrpc', () => {
     })
     it('can use context', async () => {
       const response = await client.addWithContext(5, 7)
+      expect(response).toEqual(1000 + 5 + 7)
+    })
+    it('can use context as extra argument', async () => {
+      const response = await client.addWithContext2(5, 7)
       expect(response).toEqual(1000 + 5 + 7)
     })
     it('handles synchronous notifications', async () => {

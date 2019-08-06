@@ -107,7 +107,7 @@ export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
         })
       }
 
-      let retValue = (rpcService[method] as any)(...params)
+      let retValue = (rpcService[method] as any)(...params, context)
 
       if (typeof retValue === 'function') {
         retValue = retValue(context)
