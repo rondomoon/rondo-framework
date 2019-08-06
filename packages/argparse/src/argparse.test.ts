@@ -1,17 +1,11 @@
-import {argparse, IArgsConfig} from './argparse'
+import {argparse, arg, IArgsConfig} from './argparse'
 
 describe('argparse', () => {
 
   it('parses args', () => {
     const args = argparse({
-      one: {
-        type: 'string',
-        required: true,
-      },
-      two: {
-        type: 'number',
-        default: 1,
-      },
+      one: arg('string', {required: true}),
+      two: arg('number', {default: 100}),
       four: {
         type: 'boolean',
       },
@@ -121,6 +115,29 @@ describe('argparse', () => {
       })
       expect(parse(['--a', '11'])).toEqual({
         a: 11,
+      })
+    })
+  })
+
+  describe('choices', () => {
+    it('can enforce typed choices', () => {
+      const parse = argparse({
+        choice: arg('string', {
+          choices: ['a', 'b'],
+        }),
+        num: arg('number', {
+          choices: [1, 2],
+        }),
+      })
+      expect(() => parse(['--choice', 'c'])).toThrowError(/one of: a, b$/)
+      expect(() => parse(['--num', '3'])).toThrowError(/must be one of: 1, 2$/)
+      expect(parse(['--choice', 'a', '--num', '1'])).toEqual({
+        choice: 'a',
+        num: 1,
+      })
+      expect(parse(['--choice', 'b', '--num', '2'])).toEqual({
+        choice: 'b',
+        num: 2,
       })
     })
   })
