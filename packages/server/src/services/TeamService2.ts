@@ -8,16 +8,21 @@ import {
   team as t,
   IUserInTeam,
 } from '@rondo/common'
+import {Contextual} from '@rondo/jsonrpc'
 
 type IContext = t.IContext
 
-export class TeamService2 implements t.ITeamService {
+export class TeamService2 implements Contextual<t.ITeamService, IContext> {
   constructor(
     protected readonly db: DB,
     protected readonly permissions: IUserPermissions,
   ) {}
 
-  create = (params: t.ITeamCreateParams) => async (context: IContext) => {
+  jerko(params: string, context?: IContext): number {
+    return parseInt(params, 10)
+  }
+
+  async create(params: t.ITeamCreateParams, context: IContext) {
     const {userId} = context
     const name = trim(params.name)
 
@@ -36,12 +41,12 @@ export class TeamService2 implements t.ITeamService {
       userId,
       // ADMIN role
       roleId: 1,
-    })(context)
+    }, context)
 
     return team
   }
 
-  remove = ({id}: t.ITeamRemoveParams) => async (context: IContext) => {
+  async remove({id}: t.ITeamRemoveParams, context: IContext) {
     const {userId} = context
 
     await this.permissions.belongsToTeam({
@@ -58,7 +63,7 @@ export class TeamService2 implements t.ITeamService {
     return {id}
   }
 
-  update = ({id, name}: t.ITeamUpdateParams) => async (context: IContext) => {
+  async update({id, name}: t.ITeamUpdateParams, context: IContext) {
     await this.permissions.belongsToTeam({
       teamId: id,
       userId: context.userId,
@@ -74,7 +79,7 @@ export class TeamService2 implements t.ITeamService {
     return (await this.findOne(id))!
   }
 
-  addUser = (params: t.ITeamAddUserParams) => async (context: IContext) => {
+  async addUser(params: t.ITeamAddUserParams, context: IContext) {
     const {userId, teamId, roleId} = params
     await this.db.getRepository(UserTeam)
     .save({userId, teamId, roleId})
@@ -90,7 +95,7 @@ export class TeamService2 implements t.ITeamService {
     return this.mapUserInTeam(userTeam!)
   }
 
-  removeUser = (params: t.ITeamAddUserParams) => async (context: IContext) => {
+  async removeUser(params: t.ITeamAddUserParams, context: IContext) {
     const {teamId, userId, roleId} = params
 
     await this.permissions.belongsToTeam({
@@ -109,7 +114,8 @@ export class TeamService2 implements t.ITeamService {
     return this.db.getRepository(Team).findOne(id)
   }
 
-  find = () => async ({userId}: IContext) => {
+  async find(context: IContext) {
+    const {userId} = context
     return this.db.getRepository(Team)
     .createQueryBuilder('team')
     .select('team')
@@ -118,7 +124,7 @@ export class TeamService2 implements t.ITeamService {
     .getMany()
   }
 
-  findUsers = (teamId: number) => async (context: IContext) => {
+  async findUsers(teamId: number, context: IContext) {
     await this.permissions.belongsToTeam({
       teamId,
       userId: context.userId,

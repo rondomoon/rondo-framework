@@ -4,8 +4,7 @@
     "outDir": "esm"
   },
   "references": [
-    {
-      "path": "../common/tsconfig.esm.json"
-    }
+    {"path": "../common/tsconfig.esm.json"},
+    {"path": "../jsonrpc/tsconfig.esm.json"}
   ]
 }

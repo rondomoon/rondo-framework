@@ -9,6 +9,25 @@ type RetProm<T> = T extends Promise<any> ? T : Promise<T>
 type PromisifyReturnType<T> = (...a: ArgumentTypes<T>) =>
   RetProm<UnwrapHOC<RetType<T>>>
 
+/**
+ * Helps implement a service from a service definiton that has a context as a
+ * last argument.
+ */
+export type Contextual<T, Cx> = {
+  [K in keyof T]:
+    T[K] extends () => infer R
+      ? (cx: Cx) => R :
+    T[K] extends (a: infer A) => infer R
+      ? (a: A, cx: Cx) => R :
+    T[K] extends (a: infer A, b: infer B) => infer R
+      ? (a: A, b: B, cx: Cx) => R :
+    T[K] extends (a: infer A, b: infer B, c: infer C) => infer R
+      ? (a: A, b: B, c: C, cx: Cx) => R :
+    T[K] extends (a: infer A, b: infer B, c: infer C, d: infer D) => infer R
+      ? (a: A, b: B, c: C, d: D, cx: Cx) => R :
+    never
+}
+
 export type FunctionPropertyNames<T> = {
   [K in keyof T]: K extends string
     ? T[K] extends (...args: any[]) => any

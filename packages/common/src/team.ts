@@ -24,24 +24,24 @@ export interface IContext {
   userId: number
 }
 
-type Contextual<T> = (context: IContext) => Promise<T>
-
 export interface ITeamService {
-  create(params: ITeamCreateParams): Contextual<ITeam>
+  jerko(params: string): number
 
-  remove(params: ITeamRemoveParams): Contextual<{id: number}>
+  create(params: ITeamCreateParams): Promise<ITeam>
 
-  update(params: ITeamUpdateParams): Contextual<ITeam>
+  remove(params: ITeamRemoveParams): Promise<{id: number}>
 
-  addUser(params: ITeamAddUserParams): Contextual<IUserInTeam>
+  update(params: ITeamUpdateParams): Promise<ITeam>
 
-  removeUser(params: ITeamAddUserParams): Contextual<ITeamAddUserParams>
+  addUser(params: ITeamAddUserParams): Promise<IUserInTeam>
+
+  removeUser(params: ITeamAddUserParams): Promise<ITeamAddUserParams>
 
   findOne(id: number): Promise<ITeam | undefined>
 
-  find(userId: number): Contextual<ITeam[]>
+  find(): Promise<ITeam[]>
 
-  findUsers(teamId: number): Contextual<IUserInTeam[]>
+  findUsers(teamId: number): Promise<IUserInTeam[]>
 
   // TODO add other methods
 }
