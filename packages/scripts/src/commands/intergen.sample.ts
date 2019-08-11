@@ -6,9 +6,13 @@ export class Primitives {
   strArray!: string[]
   numArray!: number[]
   boolArray!: boolean[]
+
+  nestedArray!: string[][]
 }
 
 export class Name {
+  private hidden1?: string
+  protected hidden2?: string
   firstName!: string
   lastName!: string
 }
