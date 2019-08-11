@@ -1,0 +1,38 @@
+export class Primitives {
+  str!: string
+  num!: number
+  bool!: boolean
+
+  strArray!: string[]
+  numArray!: number[]
+  boolArray!: boolean[]
+}
+
+export class Name {
+  firstName!: string
+  lastName!: string
+}
+
+export interface IYear {
+  year: number
+}
+
+type AorB = 'A' | 'B'
+
+export class Person {
+  readonly name!: Name
+  readonly aliases?: Name[]
+  readonly aOrB!: AorB
+  readonly inlineAOrB?: 'a' | 'b'
+  readonly inlineInterface?: {
+    a: number
+    b: string
+  }
+  age?: number
+  birthyear: IYear | null = null
+  stringAndNumberTuple!: [string, number]
+}
+
+export class Employee extends Person {
+  duties: string[] = []
+}
