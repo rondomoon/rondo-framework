@@ -21,6 +21,10 @@ export interface IYear {
   year: number
 }
 
+export interface ITyped<T> {
+  value: T
+}
+
 type AorB = 'A' | 'B'
 
 export class Person {
@@ -39,4 +43,10 @@ export class Person {
 
 export class Employee extends Person {
   duties: string[] = []
+}
+
+export class Typed<A, B extends 'string', C = 'number'> {
+  a!: ITyped<A>
+  b!: ITyped<B>
+  c!: ITyped<C>
 }

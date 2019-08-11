@@ -184,10 +184,6 @@ function delint(sourceFile: ts.SourceFile) {
 
   function delintNode(node: ts.Node) {
     // TODO check which classes are exported
-    // TODO check which interfaces are in use
-    // TODO check which type references are in use in addition to the
-    //      primitives like string, string[], number, number[], boolean,
-    //      boolean[]
     // TODO use typeParameters, for example type A<B> = Array<B>
     switch (node.kind) {
       case ts.SyntaxKind.InterfaceDeclaration:
@@ -207,6 +203,7 @@ function delint(sourceFile: ts.SourceFile) {
           throw new Error('no class name: ' + cls.pos)
           break
         }
+        console.log('type params', cls.typeParameters)
         console.log(cls.name.escapedText, processClassMembers(cls.members))
     }
     ts.forEachChild(node, delintNode)
