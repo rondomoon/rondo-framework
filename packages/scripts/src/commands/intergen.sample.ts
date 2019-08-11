@@ -53,4 +53,5 @@ export class Typed<A, B extends 'singleVal', C = 'defVal'> {
   a!: ITyped<A>
   b!: ITyped<B>
   c!: ITyped<C>
+  d!: ITyped<A> | ITyped<B>
 }

@@ -44,37 +44,22 @@ export function typecheck() {
         // This is a top level class, get its symbol
         const symbol = checker.getSymbolAtLocation(node.name)
         if (symbol) {
+          console.log('===')
+          console.log('text', node.getText(node.getSourceFile()))
           console.log('class', symbol.getName())
-
-          // console.log('symbolToString', checker.symbolToString(symbol))
-
-          // const tpd = checker.symbolToTypeParameterDeclarations(symbol)
-          // if (tpd) {
-          //   console.log('  type params: %o', tpd.map(t => {
-          //     ts.getCombinedModifierFlags(t.symbol.valueDeclaration)
-          //     return {
-          //       name: t.name.text,
-          //       constraint: !!t.constraint,
-          //       default: !!t.default,
-          //       // constraint: !!t.constraint
-          //       //   ? checker.getTypeFromTypeNode(t.constraint)
-          //       //   : undefined,
-          //     }
-          //   }))
-          // }
-
           const type = checker.getDeclaredTypeOfSymbol(symbol)
 
           if (type.isClassOrInterface() && type.typeParameters) {
             type.typeParameters.forEach(tp => {
-              console.log('tp.symbol.name', tp.symbol.name)
+              console.log('    tp.symbol.name', tp.symbol.name)
               const constraint = tp.getConstraint()
               if (constraint) {
-                console.log('tp.constraint', checker.typeToString(constraint))
+                console.log('    tp.constraint',
+                  checker.typeToString(constraint))
               }
               const def = tp.getDefault()
               if (def) {
-                console.log('tp.default', checker.typeToString(def))
+                console.log('    tp.default', checker.typeToString(def))
               }
             })
           }
@@ -92,21 +77,22 @@ export function typecheck() {
             })
             .map(p => {
               const propType = checker
-              .getTypeOfSymbolAtLocation(p, p.valueDeclaration!)
+              .getTypeOfSymbolAtLocation(p, p.valueDeclaration)
 
               return {
                 name: p.getName(),
                 type: checker.typeToString(propType),
                 classOrIface: propType.isClassOrInterface(),
+                union: propType.isUnion(),
               }
           }))
           // output.push(serializeClass(symbol))
         }
         // No need to walk any further, class expressions/inner declarations
         // cannot be exported
-      } else if (ts.isModuleDeclaration(node)) {
-        // This is a namespace, visit its children
-        ts.forEachChild(node, visit)
+      // } else if (ts.isModuleDeclaration(node)) {
+      //   // This is a namespace, visit its children
+      //   ts.forEachChild(node, visit)
       }
     }
 
