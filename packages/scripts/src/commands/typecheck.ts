@@ -64,6 +64,21 @@ export function typecheck() {
           // }
 
           const type = checker.getDeclaredTypeOfSymbol(symbol)
+
+          if (type.isClassOrInterface() && type.typeParameters) {
+            type.typeParameters.forEach(tp => {
+              console.log('tp.symbol.name', tp.symbol.name)
+              const constraint = tp.getConstraint()
+              if (constraint) {
+                console.log('tp.constraint', checker.typeToString(constraint))
+              }
+              const def = tp.getDefault()
+              if (def) {
+                console.log('tp.default', checker.typeToString(def))
+              }
+            })
+          }
+
           // const properties = checker.getPropertiesOfType(type)
           const properties = type.getApparentProperties()
 
