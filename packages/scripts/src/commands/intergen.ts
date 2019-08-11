@@ -6,6 +6,47 @@ import {readFileSync} from 'fs'
 //   switch (type
 // }
 
+function processTypeArguments(
+  typeArguments?: ts.NodeArray<ts.TypeNode>,
+): string {
+  if (!typeArguments) {
+    return ''
+  }
+
+  return '<' + typeArguments.map(processTypes).join(', ') + '>'
+}
+
+function processTypeParameters(
+  typeParameters?: ts.NodeArray<ts.TypeParameterDeclaration>,
+): string {
+  if (!typeParameters) {
+    return ''
+  }
+  return '<' + typeParameters
+  .map(tp => ({
+    name: tp.name.text,
+    constraint: tp.constraint
+      ? processTypes(tp.constraint)
+      : undefined,
+    default: tp.default
+      ? processTypes(tp.default)
+      : undefined,
+  }))
+  .map(tp => {
+    if (tp.constraint && tp.default) {
+      return `${tp.name} extends ${tp.constraint} = ${tp.default}`
+    }
+    if (tp.constraint) {
+      return `${tp.name} extends ${tp.constraint}`
+    }
+    if (tp.default) {
+      return `${tp.name} = ${tp.default}`
+    }
+    return tp.name
+  })
+  .join(', ') + '>'
+}
+
 function processLiteral(
   literal: ts.BooleanLiteral | ts.LiteralExpression | ts.PrefixUnaryExpression,
 ) {
@@ -42,8 +83,9 @@ function processTypes(type: ts.TypeNode): string {
       // return literalType.literal.text
     case ts.SyntaxKind.TypeReference:
       const typeRef = type as ts.TypeReferenceNode
+      typeRef.typeArguments
       // FIXME do not use any
-      return (typeRef.typeName as any).escapedText
+      return (typeRef.typeName as any).escapedText + processTypeArguments(typeRef.typeArguments)
     case ts.SyntaxKind.TypeLiteral:
       const typeLiteral = type as ts.TypeLiteralNode
       return '{' + processInterfaceMembers(typeLiteral.members).join('\n') + '}'
@@ -184,17 +226,24 @@ function delint(sourceFile: ts.SourceFile) {
 
   function delintNode(node: ts.Node) {
     // TODO check which classes are exported
-    // TODO use typeParameters, for example type A<B> = Array<B>
     switch (node.kind) {
       case ts.SyntaxKind.InterfaceDeclaration:
         const interfaceDeclaration = node as ts.InterfaceDeclaration
+        let ifaceName = interfaceDeclaration.name.text
+        if (interfaceDeclaration.typeParameters) {
+          ifaceName += processTypeParameters(interfaceDeclaration.typeParameters)
+        }
         console.log(
-          interfaceDeclaration.name.escapedText,
+          ifaceName,
           processInterfaceMembers(interfaceDeclaration.members))
         break
       case ts.SyntaxKind.TypeAliasDeclaration:
         const typeAlias = node as ts.TypeAliasDeclaration
-        console.log('typeAlias')
+        let taName = typeAlias.name.text
+        if (typeAlias.typeParameters) {
+          taName += processTypeParameters(typeAlias.typeParameters)
+        }
+        console.log(taName)
         break
       case ts.SyntaxKind.ClassDeclaration:
         const cls = node as ts.ClassDeclaration
@@ -203,8 +252,11 @@ function delint(sourceFile: ts.SourceFile) {
           throw new Error('no class name: ' + cls.pos)
           break
         }
-        console.log('type params', cls.typeParameters)
-        console.log(cls.name.escapedText, processClassMembers(cls.members))
+        let clsName = cls.name.text
+        if (cls.typeParameters) {
+          clsName += processTypeParameters(cls.typeParameters)
+        }
+        console.log(clsName, processClassMembers(cls.members))
     }
     ts.forEachChild(node, delintNode)
   }

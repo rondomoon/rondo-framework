@@ -45,7 +45,11 @@ export class Employee extends Person {
   duties: string[] = []
 }
 
-export class Typed<A, B extends 'string', C = 'number'> {
+export class Company {
+  personnel1!: Person[]
+}
+
+export class Typed<A, B extends 'singleVal', C = 'defVal'> {
   a!: ITyped<A>
   b!: ITyped<B>
   c!: ITyped<C>
