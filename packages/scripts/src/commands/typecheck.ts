@@ -10,18 +10,8 @@ function isTypeReference(type: ts.ObjectType): type is ts.TypeReference {
 }
 
 export function typecheck() {
-  interface DocEntry {
-    name?: string
-    fileName?: string
-    documentation?: string
-    type?: string
-    constructors?: DocEntry[]
-    parameters?: DocEntry[]
-    returnType?: string
-  }
-
-  /** Generate documentation for all classes in a set of .ts files */
-  function generateDocumentation(
+  /** Generate interfaces for all exported classes in a set of .ts files */
+  function generateInterfaces(
     fileNames: string[],
     options: ts.CompilerOptions,
   ): void {
@@ -71,30 +61,19 @@ export function typecheck() {
     }
 
     function getAllTypeParameters(type: ts.Type): ts.Type[] {
-      // console.log('TTT', checker.typeToString(type),
-      //   {
-      //     isObject: !!(type.flags & ts.TypeFlags.Object),
-      //     isTuple: (type as any).objectFlags & ts.ObjectFlags.Tuple,
-      //     typeFlags: type.flags,
-      //     objectFlags: (type as any).objectFlags,
-      //   },
-      // )
-      if (isObjectType(type)) {
-        if (isTypeReference(type)) {
-          const types: ts.Type[] = [type]
+      if (isObjectType(type) && isTypeReference(type)) {
+        const types: ts.Type[] = [type]
 
-          if (type.typeArguments) {
-            type.typeArguments.forEach(t => {
-              const ta = getAllTypeParameters(t)
-              types.push(...ta)
-            })
-          }
-          return types
+        if (type.typeArguments) {
+          type.typeArguments.forEach(t => {
+            const ta = getAllTypeParameters(t)
+            types.push(...ta)
+          })
         }
+        return types
       }
 
       if (type.isUnionOrIntersection()) {
-        // console.log('TTT isUnionOrIntersection')
         const unionOrIntersectionTypes = type.types
         // const types = [type, ...type.types]
         const types: ts.Type[] = [type]
@@ -105,12 +84,8 @@ export function typecheck() {
         return types
       }
 
-      // type.
-
       if (type.isClassOrInterface()) {
-        // console.log('TTT isClassOrInterface')
         if (type.typeParameters) {
-          // console.log('TTT typeParameters')
           const types = [type, ...type.typeParameters]
           type.typeParameters.forEach(t => {
             const tsp = getAllTypeParameters(t)
@@ -120,13 +95,6 @@ export function typecheck() {
         }
         return [type]
       }
-
-      // if (type.isIntersection()) {
-      // }
-
-      // if (type.isTypeParameter()) {
-      //   console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-      // }
 
       return [type]
     }
@@ -174,14 +142,12 @@ export function typecheck() {
           console.log('  %o', properties
             .filter(p => {
               const flags = ts.getCombinedModifierFlags(p.valueDeclaration)
-              // return s.parent && s.parent.flags & 32 /* Class */
-              // ? flags
-              // : flags & ~28 /* AccessibilityModifier */;
               return !(flags & ts.ModifierFlags.NonPublicAccessibilityModifier)
             })
             .map(p => {
               const vd = p.valueDeclaration
-              const questionToken = ts.isPropertyDeclaration(vd) && !!vd.questionToken
+              const questionToken =
+                ts.isPropertyDeclaration(vd) && !!vd.questionToken
 
               const propType = checker
               .getTypeOfSymbolAtLocation(p, p.valueDeclaration)
@@ -201,13 +167,7 @@ export function typecheck() {
                 .map(typeToString),
               }
           }))
-          // output.push(serializeClass(symbol))
         }
-        // No need to walk any further, class expressions/inner declarations
-        // cannot be exported
-      // } else if (ts.isModuleDeclaration(node)) {
-      //   // This is a namespace, visit its children
-      //   ts.forEachChild(node, visit)
       }
     }
 
@@ -222,7 +182,7 @@ export function typecheck() {
   }
 
   const path = __dirname + '/' + 'intergen.sample.ts'
-  generateDocumentation([path], {
+  generateInterfaces([path], {
     target: ts.ScriptTarget.ES5,
     module: ts.ModuleKind.CommonJS,
   })
