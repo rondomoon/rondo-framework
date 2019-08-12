@@ -32,6 +32,11 @@ export function typecheck() {
     }
 
     return
+    function getAllTypeParameters(type: ts.Type) {
+      // checker.typeToTypeNode
+      // ts.isParameterPropertyDeclaration(type.
+      // if (type.
+    }
 
     /** visit nodes finding exported classes */
     function visit(node: ts.Node) {
@@ -76,14 +81,34 @@ export function typecheck() {
               return !(flags & ts.ModifierFlags.NonPublicAccessibilityModifier)
             })
             .map(p => {
+              const vd = p.valueDeclaration
+              const questionToken = ts.isPropertyDeclaration(vd) && !!vd.questionToken
+
               const propType = checker
               .getTypeOfSymbolAtLocation(p, p.valueDeclaration)
+
+              const s = propType.getSymbol()
+              if (s) {
+                // if (ts,
+                // console.log('   ', p.getName(), checker.getFullyQualifiedName(s))
+                // s.value
+                // checker.
+                // const d = s.getDeclarations()
+                // if (d) {
+                //   d.forEach(dec => {
+                //     console.log('   ', dec.getText())
+                //   })
+                // }
+              }
+
+              p.flags
 
               return {
                 name: p.getName(),
                 type: checker.typeToString(propType),
-                classOrIface: propType.isClassOrInterface(),
-                union: propType.isUnion(),
+                questionToken,
+                // classOrIface: propType.isClassOrInterface(),
+                // union: propType.isUnion(),
               }
           }))
           // output.push(serializeClass(symbol))
