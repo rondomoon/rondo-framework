@@ -53,45 +53,40 @@ export function typecheck() {
      * of types. For example: types.filter(filterGlobalTypes)
      */
     function filterGlobalTypes(type: ts.Type): boolean {
-      console.log('filterGlobalTypes', typeToString(type))
+      // console.log('fgt', typeToString(type))
+      if (type.aliasSymbol) {
+        // keep type aliases
+        return true
+      }
       const symbol = type.getSymbol()
       if (!symbol) {
-        console.log('  no symbol')
+        // console.log(' no symbol')
+        // e.g. string or number types have no symbol
         return false
       }
       if (symbol && !((symbol as any).parent)) {
-        console.log('  no parent')
+        // console.log(' no parent')
         // e.g. Array symbol has no parent
         return false
       }
       if (type.isLiteral()) {
-        console.log('  is literal')
+        // console.log(' is literal')
         return false
       }
       if (type.isUnionOrIntersection()) {
-        console.log('  is union or intersection')
-        // union type params should have already been extracted
+        // console.log(' is u or i')
         return false
       }
       if (isObjectType(type) && isTypeReference(type)) {
-        console.log('  is reference')
-        if (isObjectType(type.target)
-          && type.target.objectFlags & ts.ObjectFlags.Tuple) {
+        // console.log(' is object type')
+        if (isObjectType(type.target) &&
+          type.target.objectFlags & ts.ObjectFlags.Tuple) {
+          // console.log(' is tuple')
           return false
         }
       }
-      // if (isObjectType(type) && type.objectFlags & ts.ObjectFlags.Tuple) {
-      //   console.log('  is tuple')
-      //   // tuple params should have already been extracted
-      //   return false
-      // }
 
-      console.log(' ',
-        type.flags,
-        (type as any).objectFlags,
-        !!symbol,
-        symbol && !!(symbol as any).parent,
-      )
+      // console.log(' keep!')
       return true
     }
 
@@ -99,6 +94,9 @@ export function typecheck() {
      * Converts a generic type to the target of the type reference.
      */
     function mapGenericTypes(type: ts.Type): ts.Type {
+      if (type.aliasSymbol) {
+        return checker.getDeclaredTypeOfSymbol(type.aliasSymbol)
+      }
       if (isObjectType(type) && isTypeReference(type)) {
         return type.target
       }
@@ -117,39 +115,32 @@ export function typecheck() {
      * Recursively retrieves a list of all type parameters.
      */
     function getAllTypeParameters(type: ts.Type): ts.Type[] {
-      if (isObjectType(type) && isTypeReference(type)) {
-        const types: ts.Type[] = [type]
-
-        if (type.typeArguments) {
-          type.typeArguments.forEach(t => {
-            const ta = getAllTypeParameters(t)
-            types.push(...ta)
+      function collectTypeParams(
+        type2: ts.Type, params?: readonly ts.Type[],
+      ): ts.Type[] {
+        const types: ts.Type[] = [type2]
+        if (params) {
+          params.forEach(t => {
+            const atp = getAllTypeParameters(t)
+            types.push(...atp)
           })
         }
         return types
+      }
+
+      if (type.aliasSymbol) {
+        return collectTypeParams(type, type.aliasTypeArguments)
+      }
+      if (isObjectType(type) && isTypeReference(type)) {
+        return collectTypeParams(type, type.typeArguments)
       }
 
       if (type.isUnionOrIntersection()) {
-        const unionOrIntersectionTypes = type.types
-        // const types = [type, ...type.types]
-        const types: ts.Type[] = [type]
-        type.types.forEach(t => {
-          const tsp = getAllTypeParameters(t)
-          types.push(...tsp)
-        })
-        return types
+        return collectTypeParams(type, type.types)
       }
 
       if (type.isClassOrInterface()) {
-        if (type.typeParameters) {
-          const types = [type, ...type.typeParameters]
-          type.typeParameters.forEach(t => {
-            const tsp = getAllTypeParameters(t)
-            types.push(...tsp)
-          })
-          return types
-        }
-        return [type]
+        return collectTypeParams(type, type.typeParameters)
       }
 
       return [type]
@@ -166,6 +157,99 @@ export function typecheck() {
       )
     }
 
+    function handleClassDeclaration(node: ts.ClassDeclaration) {
+      if (!node.name) {
+        return
+      }
+      // This is a top level class, get its symbol
+      const symbol = checker.getSymbolAtLocation(node.name)
+      if (!symbol) {
+        return
+      }
+
+      const typeParameters: ts.TypeParameter[] = []
+      const expandedTypeParameters: ts.Type[] = []
+      const allRelevantTypes: ts.Type[] = []
+      const type = checker.getDeclaredTypeOfSymbol(symbol)
+
+      if (type.isClassOrInterface() && type.typeParameters) {
+        type.typeParameters.forEach(tp => {
+          const constraint = tp.getConstraint()
+          if (constraint) {
+            expandedTypeParameters.push(...getAllTypeParameters(tp))
+          }
+          const def = tp.getDefault()
+          if (def) {
+            expandedTypeParameters.push(...getAllTypeParameters(tp))
+          }
+
+          typeParameters.push(tp)
+        })
+      }
+
+      const properties = type.getApparentProperties()
+
+      const filterClassTypeParameters =
+        (t: ts.Type) => typeParameters.every(tp => tp !== t)
+
+      const classProperties: IClassProperty[] = properties
+      .filter(filterInvisibleProperties)
+      .map(p => {
+        const vd = p.valueDeclaration
+        const optional = ts.isPropertyDeclaration(vd) && !!vd.questionToken
+
+        const propType = checker.getTypeOfSymbolAtLocation(p, vd)
+
+        const typeParams = getAllTypeParameters(propType)
+
+        const relevantTypes = typeParams
+        .filter(filterGlobalTypes)
+        .filter(filterClassTypeParameters)
+        .map(mapGenericTypes)
+        .filter(filterDuplicates)
+
+        allRelevantTypes.push(...relevantTypes)
+
+        return {
+          name: p.getName(),
+          type: propType,
+          relevantTypes,
+          typeString: typeToString(type),
+          optional,
+        }
+      })
+
+      const relevantTypeParameters = expandedTypeParameters
+      .filter(filterGlobalTypes)
+      .filter(mapGenericTypes)
+      .filter(filterDuplicates)
+
+      allRelevantTypes.push(...relevantTypeParameters)
+
+      const classDef: IClassDefinition = {
+        name: symbol.getName(),
+        typeParameters,
+        allRelevantTypes: allRelevantTypes
+        .filter(filterClassTypeParameters)
+        .filter(filterDuplicates),
+        relevantTypeParameters,
+        properties: classProperties,
+      }
+
+      console.log(classDef.name)
+      console.log(' ',
+        classDef.properties
+        .map(p => p.name + ': ' + typeToString(p.type) + '    {' +
+          p.relevantTypes.map(typeToString) + '}')
+        .join('\n  '),
+      )
+      console.log('\n  allRelevantTypes:\n   ',
+        classDef.allRelevantTypes.map(typeToString).join('\n    '))
+      console.log('\n')
+
+      classDefs.push(classDef)
+    }
+
     /**
      * Visit nodes finding exported classes
      */
@@ -175,97 +259,8 @@ export function typecheck() {
         return
       }
 
-      if (ts.isClassDeclaration(node) && node.name) {
-        // This is a top level class, get its symbol
-        const symbol = checker.getSymbolAtLocation(node.name)
-
-        const typeParameters: ts.TypeParameter[] = []
-        const expandedTypeParameters: ts.Type[] = []
-        const allRelevantTypes: ts.Type[] = []
-        if (symbol) {
-          // console.log('===')
-          // console.log('text', node.getText(node.getSourceFile()))
-          // console.log('class', symbol.getName())
-          const type = checker.getDeclaredTypeOfSymbol(symbol)
-
-          if (type.isClassOrInterface() && type.typeParameters) {
-            type.typeParameters.forEach(tp => {
-              // console.log('    tp.symbol.name', tp.symbol.name)
-              const constraint = tp.getConstraint()
-              if (constraint) {
-                expandedTypeParameters.push(...getAllTypeParameters(tp))
-              }
-              const def = tp.getDefault()
-              if (def) {
-                expandedTypeParameters.push(...getAllTypeParameters(tp))
-              }
-
-              typeParameters.push(tp)
-            })
-          }
-
-          const properties = type.getApparentProperties()
-
-          const filterClassTypeParameters =
-            (t: ts.Type) => typeParameters.every(tp => tp !== t)
-
-          const classProperties: IClassProperty[] = properties
-          .filter(filterInvisibleProperties)
-          .map(p => {
-            const vd = p.valueDeclaration
-            const optional = ts.isPropertyDeclaration(vd) && !!vd.questionToken
-
-            const propType = checker.getTypeOfSymbolAtLocation(p, vd)
-
-            const typeParams = getAllTypeParameters(propType)
-
-            const relevantTypes = typeParams
-            .filter(filterGlobalTypes)
-            .filter(filterClassTypeParameters)
-            .map(mapGenericTypes)
-            .filter(filterDuplicates)
-
-            allRelevantTypes.push(...relevantTypes)
-
-            return {
-              name: p.getName(),
-              type: propType,
-              relevantTypes,
-              typeString: typeToString(type),
-              optional,
-            }
-          })
-
-          const relevantTypeParameters = expandedTypeParameters
-          .filter(filterGlobalTypes)
-          .filter(mapGenericTypes)
-          .filter(filterDuplicates)
-
-          allRelevantTypes.push(...relevantTypeParameters)
-
-          const classDef: IClassDefinition = {
-            name: symbol.getName(),
-            typeParameters,
-            allRelevantTypes: allRelevantTypes
-            .filter(filterClassTypeParameters)
-            .filter(filterDuplicates),
-            relevantTypeParameters,
-            properties: classProperties,
-          }
-
-          console.log(classDef.name)
-          console.log(' ',
-            classDef.properties
-            .map(p => p.name + ': ' + typeToString(p.type) + '    {' +
-              p.relevantTypes.map(typeToString) + '}')
-            .join('\n  '),
-          )
-          console.log('\n  allRelevantTypes:\n   ',
-            classDef.allRelevantTypes.map(typeToString).join('\n    '))
-          console.log('\n')
-
-          classDefs.push(classDef)
-        }
+      if (ts.isClassDeclaration(node)) {
+        handleClassDeclaration(node)
       }
     }
 

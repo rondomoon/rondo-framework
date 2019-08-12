@@ -26,6 +26,8 @@ export interface ITyped<T> {
 }
 
 type AorB = 'A' | 'B'
+/* tslint:disable-next-line */
+type Param<T> = {t: T}
 
 export class Person {
   readonly name!: Name
@@ -54,4 +56,5 @@ export class Typed<A, B extends 'singleVal', C = 'defVal'> {
   b!: ITyped<B>
   c!: ITyped<C>
   d!: ITyped<A> | ITyped<B>
+  e!: Param<Company>
 }
