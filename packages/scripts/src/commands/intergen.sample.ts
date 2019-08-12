@@ -18,7 +18,7 @@ export class Name {
 }
 
 export interface IYear {
-  year: number
+  yeak: number
 }
 
 export interface ITyped<T> {

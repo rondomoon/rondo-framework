@@ -32,10 +32,50 @@ export function typecheck() {
     }
 
     return
-    function getAllTypeParameters(type: ts.Type) {
-      // checker.typeToTypeNode
-      // ts.isParameterPropertyDeclaration(type.
-      // if (type.
+    function getAllTypeParameters(type: ts.Type): ts.Type[] {
+      console.log('TTT', checker.typeToString(type), {
+        isClassOrInterface: type.isClassOrInterface(),
+        isUnionOrIntersection: type.isUnionOrIntersection(),
+        isTypeParameter: type.isTypeParameter(),
+        isLiteral: type.isLiteral(),
+        aliasTypeArguments: type.aliasTypeArguments,
+        // baseCon: checker.typeToString(checker.getBaseConstraintOfType(type)),
+      })
+
+      if (type.isUnionOrIntersection()) {
+        // console.log('TTT isUnionOrIntersection')
+        const types = [type, ...type.types]
+        type.types.forEach(t => {
+          const tsp = getAllTypeParameters(t)
+          types.push(...tsp)
+        })
+        return types
+      }
+
+      // type.
+
+      if (type.isClassOrInterface()) {
+        // console.log('TTT isClassOrInterface')
+        if (type.typeParameters) {
+          // console.log('TTT typeParameters')
+          const types = [type, ...type.typeParameters]
+          type.typeParameters.forEach(t => {
+            const tsp = getAllTypeParameters(t)
+            types.push(...tsp)
+          })
+          return types
+        }
+        return [type]
+      }
+
+      // if (type.isIntersection()) {
+      // }
+
+      // if (type.isTypeParameter()) {
+      //   console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+      // }
+
+      return [type]
     }
 
     /** visit nodes finding exported classes */
@@ -103,10 +143,13 @@ export function typecheck() {
 
               p.flags
 
+              console.log('---')
               return {
                 name: p.getName(),
                 type: checker.typeToString(propType),
                 questionToken,
+                typeParams: getAllTypeParameters(propType).map(
+                  t => checker.typeToString(t)),
                 // classOrIface: propType.isClassOrInterface(),
                 // union: propType.isUnion(),
               }
