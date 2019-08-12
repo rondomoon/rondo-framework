@@ -33,18 +33,34 @@ export function typecheck() {
 
     return
     function getAllTypeParameters(type: ts.Type): ts.Type[] {
-      console.log('TTT', checker.typeToString(type), {
-        isClassOrInterface: type.isClassOrInterface(),
-        isUnionOrIntersection: type.isUnionOrIntersection(),
-        isTypeParameter: type.isTypeParameter(),
-        isLiteral: type.isLiteral(),
-        aliasTypeArguments: type.aliasTypeArguments,
-        // baseCon: checker.typeToString(checker.getBaseConstraintOfType(type)),
-      })
+      console.log('TTT', checker.typeToString(type),
+        {
+          isObject: !!(type.flags & ts.TypeFlags.Object),
+          isTuple: (type as any).objectFlags & ts.ObjectFlags.Tuple,
+          objectFlags: (type as any).objectFlags,
+        },
+      )
+      if (type.flags & ts.TypeFlags.Object) {
+        const objectType = type as ts.ObjectType
+        const objectFlags = objectType.objectFlags
+        if (objectFlags & ts.ObjectFlags.Reference) {
+          const types = [type]
+          const typeRef = type as ts.TypeReference
+          if (typeRef.typeArguments) {
+            typeRef.typeArguments.forEach(t => {
+              const ta = getAllTypeParameters(t)
+              types.push(...ta)
+            })
+          }
+          return types
+        }
+      }
 
       if (type.isUnionOrIntersection()) {
         // console.log('TTT isUnionOrIntersection')
-        const types = [type, ...type.types]
+        const unionOrIntersectionTypes = type.types
+        // const types = [type, ...type.types]
+        const types: ts.Type[] = [type]
         type.types.forEach(t => {
           const tsp = getAllTypeParameters(t)
           types.push(...tsp)
