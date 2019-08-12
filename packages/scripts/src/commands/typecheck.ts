@@ -1,6 +1,14 @@
 import * as ts from 'typescript'
 import * as fs from 'fs'
 
+function isObjectType(type: ts.Type): type is ts.ObjectType {
+  return !!(type.flags & ts.TypeFlags.Object)
+}
+
+function isTypeReference(type: ts.ObjectType): type is ts.TypeReference {
+  return !!(type.objectFlags & ts.ObjectFlags.Reference)
+}
+
 export function typecheck() {
   interface DocEntry {
     name?: string
@@ -32,22 +40,51 @@ export function typecheck() {
     }
 
     return
+
+    function typeToString(type: ts.Type): string {
+      return checker.typeToString(type)
+    }
+
+    function filterGlobalTypes(type: ts.Type): boolean {
+      const symbol = type.getSymbol()
+      if (symbol && !((symbol as any).parent)) {
+        // e.g. Array symbol has no parent
+        return false
+      }
+      if (type.isUnionOrIntersection()) {
+        // union type params should have already been extracted
+        return false
+      }
+      return true
+    }
+
+    function mapGenericTypes(type: ts.Type): ts.Type {
+      if (isObjectType(type) && isTypeReference(type)) {
+        return type.target
+      }
+      return type
+    }
+
+    function filterDuplicates(type: ts.Type, i: number, arr: ts.Type[]) {
+      // TODO improve performance of this method
+      return i === arr.indexOf(type)
+    }
+
     function getAllTypeParameters(type: ts.Type): ts.Type[] {
-      console.log('TTT', checker.typeToString(type),
-        {
-          isObject: !!(type.flags & ts.TypeFlags.Object),
-          isTuple: (type as any).objectFlags & ts.ObjectFlags.Tuple,
-          objectFlags: (type as any).objectFlags,
-        },
-      )
-      if (type.flags & ts.TypeFlags.Object) {
-        const objectType = type as ts.ObjectType
-        const objectFlags = objectType.objectFlags
-        if (objectFlags & ts.ObjectFlags.Reference) {
-          const types = [type]
-          const typeRef = type as ts.TypeReference
-          if (typeRef.typeArguments) {
-            typeRef.typeArguments.forEach(t => {
+      // console.log('TTT', checker.typeToString(type),
+      //   {
+      //     isObject: !!(type.flags & ts.TypeFlags.Object),
+      //     isTuple: (type as any).objectFlags & ts.ObjectFlags.Tuple,
+      //     typeFlags: type.flags,
+      //     objectFlags: (type as any).objectFlags,
+      //   },
+      // )
+      if (isObjectType(type)) {
+        if (isTypeReference(type)) {
+          const types: ts.Type[] = [type]
+
+          if (type.typeArguments) {
+            type.typeArguments.forEach(t => {
               const ta = getAllTypeParameters(t)
               types.push(...ta)
             })
@@ -104,9 +141,11 @@ export function typecheck() {
       if (ts.isClassDeclaration(node) && node.name) {
         // This is a top level class, get its symbol
         const symbol = checker.getSymbolAtLocation(node.name)
+
+        const typeParameters: ts.Type[] = []
         if (symbol) {
           console.log('===')
-          console.log('text', node.getText(node.getSourceFile()))
+          // console.log('text', node.getText(node.getSourceFile()))
           console.log('class', symbol.getName())
           const type = checker.getDeclaredTypeOfSymbol(symbol)
 
@@ -115,13 +154,17 @@ export function typecheck() {
               console.log('    tp.symbol.name', tp.symbol.name)
               const constraint = tp.getConstraint()
               if (constraint) {
+                // TODO call getAllTypeParameters here...
                 console.log('    tp.constraint',
                   checker.typeToString(constraint))
               }
               const def = tp.getDefault()
               if (def) {
+                // TODO call getAllTypeParameters here...
                 console.log('    tp.default', checker.typeToString(def))
               }
+
+              typeParameters.push(tp)
             })
           }
 
@@ -143,31 +186,19 @@ export function typecheck() {
               const propType = checker
               .getTypeOfSymbolAtLocation(p, p.valueDeclaration)
 
-              const s = propType.getSymbol()
-              if (s) {
-                // if (ts,
-                // console.log('   ', p.getName(), checker.getFullyQualifiedName(s))
-                // s.value
-                // checker.
-                // const d = s.getDeclarations()
-                // if (d) {
-                //   d.forEach(dec => {
-                //     console.log('   ', dec.getText())
-                //   })
-                // }
-              }
-
-              p.flags
-
-              console.log('---')
+              const typeParams = getAllTypeParameters(propType)
               return {
                 name: p.getName(),
                 type: checker.typeToString(propType),
                 questionToken,
-                typeParams: getAllTypeParameters(propType).map(
-                  t => checker.typeToString(t)),
-                // classOrIface: propType.isClassOrInterface(),
-                // union: propType.isUnion(),
+                typeParams: typeParams.map(typeToString),
+                filteredTypeParams: typeParams
+                .filter(filterGlobalTypes)
+                // filter class type parameters
+                .filter(t => typeParameters.every(tp => tp !== t))
+                .map(mapGenericTypes)
+                .filter(filterDuplicates)
+                .map(typeToString),
               }
           }))
           // output.push(serializeClass(symbol))
