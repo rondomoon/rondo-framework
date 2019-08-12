@@ -30,6 +30,24 @@ interface IClassDefinition {
   properties: IClassProperty[]
 }
 
+/*
+ * TODO
+ *
+ * Interfaces generated from exported class delcarations will be prefixed with
+ * "I". A few cases need to be differentiated:
+ *
+ * a) Private (non-exported) types / interfaces / classes defined and used in
+ *    same module. In case of non-exported classes, an error can be thrown.
+ *    These can be copied and perhaps indexed to prevent collisions.
+ * b) Referenced exported classes from the same file
+ * c) Referenced exported classes from a neighbouring file
+ * d) Referenced imported classes from external modules. Real world example:
+ *    entities in @rondo/comments-server import and use entities from
+ *    @rondo/comments. These types will have to be processed by this module.
+ * e) Referenced interfaces should be re-imported in the output file.
+ *
+ */
+
 export function typecheck() {
   /** Generate interfaces for all exported classes in a set of .ts files */
   function generateInterfaces(
