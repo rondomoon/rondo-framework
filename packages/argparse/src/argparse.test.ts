@@ -142,6 +142,98 @@ describe('argparse', () => {
     })
   })
 
+  describe('string[] and n', () => {
+    it('has a value of n = 1 by default', () => {
+      const {parse, help} = argparse({
+        value: {
+          type: 'string[]',
+        },
+      })
+      expect(parse([]).value).toEqual([])
+      expect(parse(['--value', 'one']).value).toEqual(['one'])
+      expect(help()).toEqual([
+        '[OPTIONS] ',
+        '',
+        'Options:',
+        '    --value [VALUE]            ',
+      ].join('\n'))
+    })
+    it('can be used to extract finite number of values', () => {
+      const {parse, help} = argparse({
+        value: {
+          type: 'string[]',
+          n: 3,
+        },
+        other: {
+          type: 'number',
+          alias: 'o',
+        },
+      })
+      expect(parse([]).value).toEqual([])
+      expect(parse(['--value', 'a', 'b', '--other', '-o', '3'])).toEqual({
+        value: ['a', 'b', '--other'],
+        other: 3,
+      })
+      expect(help()).toEqual([
+        '[OPTIONS] ',
+        '',
+        'Options:',
+        '    --value [VALUE1 VALUE2 VALUE3] ',
+        '-o, --other number             ',
+      ].join('\n'))
+    })
+    it('can be used to collect any remaining arguments when n = "+"', () => {
+      const {parse, help} = argparse({
+        value: arg('string[]', {n: '+', required: true}),
+        other: arg('number'),
+      })
+      expect(() => parse([])).toThrowError(/Missing required args: value/)
+      expect(parse(['--value', 'a', '--other', '3'])).toEqual({
+        value: ['a', '--other', '3'],
+        other: NaN,
+      })
+      expect(parse(['--other', '2', '--value', 'a', '--other', '3'])).toEqual({
+        value: ['a', '--other', '3'],
+        other: 2,
+      })
+      expect(help()).toEqual([
+        '[OPTIONS] ',
+        '',
+        'Options:',
+        '    --value VALUE...            (required)',
+        '    --other number             ',
+      ].join('\n'))
+    })
+    it('can collect remaining positional arguments when n = "*"', () => {
+      const {parse, help} = argparse({
+        value: arg('string[]', {n: '*', required: true, positional: true}),
+        other: arg('number'),
+      })
+      expect(parse(['a', 'b']).value).toEqual(['a', 'b'])
+      expect(() => parse(['--other', '3']).value)
+      .toThrowError(/Missing.*: value/)
+      expect(parse(['--other', '2', '--', '--other', '3'])).toEqual({
+        value: ['--other', '3'],
+        other: 2,
+      })
+      expect(parse(['--', '--other', '3'])).toEqual({
+        value: ['--other', '3'],
+        other: NaN,
+      })
+      expect(parse(['--other', '3', 'a', 'b', 'c'])).toEqual({
+        value: ['a', 'b', 'c'],
+        other: 3,
+      })
+      expect(help()).toEqual([
+        '[OPTIONS] [VALUE...]',
+        '',
+        'Options:',
+        '    --value [VALUE...]          (required)',
+        '    --other number             ',
+      ].join('\n'))
+    })
+  })
+
   describe('positional', () => {
     it('can be defined', () => {
       const {parse} = argparse({

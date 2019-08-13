@@ -1,12 +1,20 @@
-export type TArgTypeName = 'string' | 'number' | 'boolean'
+export type TArgTypeName = 'string' | 'string[]' | 'number' | 'boolean'
 export type TArgType<T extends TArgTypeName> =
   T extends 'string'
   ? string
+  : T extends 'string[]'
+  ? string[]
   : T extends 'number'
   ? number
   : T extends 'boolean'
   ? boolean
   : never
+
+export const N_ONE_OR_MORE = '+'
+export const N_ZERO_OR_MORE = '*'
+export const N_DEFAULT_VALUE = 1
+
+export type TNumberOfArgs = number | '+' | '*'
 
 export let exit = () => process.exit()
 
@@ -17,18 +25,19 @@ export interface IArgParam<T extends TArgTypeName> {
   choices?: Array<TArgType<T>>
   required?: boolean
   positional?: boolean
+  n?: TNumberOfArgs
 }
 
-export interface IArgConfig<T extends TArgTypeName> extends IArgParam<T> {
+export interface IArgument<T extends TArgTypeName> extends IArgParam<T> {
   type: T
 }
 
 export interface IArgsConfig {
-  [arg: string]: IArgConfig<TArgTypeName>
+  [arg: string]: IArgument<TArgTypeName>
 }
 
 export type TArgs<T extends IArgsConfig> = {
-  [k in keyof T]: T[k] extends IArgConfig<infer A> ?
+  [k in keyof T]: T[k] extends IArgument<infer A> ?
     TArgType<A> : never
 }
 
@@ -71,6 +80,8 @@ function getDefaultValue(type: TArgTypeName) {
       return ''
     case 'boolean':
       return false
+    case 'string[]':
+      return [] as string[]
   }
 }
 
@@ -108,6 +119,29 @@ function getValue(
   return isPositional ? argument : it.next()
 }
 
+function extractArray(
+  it: IIterator<string>,
+  argument: string,
+  isPositional: boolean,
+  n: TNumberOfArgs = N_DEFAULT_VALUE,
+): string[] {
+  function getLimit() {
+    const l = typeof n === 'number' ? n : Infinity
+    return isPositional ? l - 1 : l
+  }
+  const limit = getLimit()
+  const array = isPositional ? [argument] : []
+  let i = 0
+  for (; i < limit && it.hasNext(); i++) {
+    array.push(it.next())
+  }
+  if (typeof n === 'number') {
+    assert(i === limit,
+      `Expected ${limit} arguments for ${argument}, but got ${i}`)
+  }
+  return array
+}
+
 export function isHelp(argv: string[]) {
   return argv.some(a => /^(-h|--help)$/.test(a))
 }
@@ -130,14 +164,35 @@ export function padRight(str: string, chars: number) {
 export function help(config: IArgsConfig) {
   const keys = Object.keys(config)
 
+  function getArrayHelp(
+    k: string,
+    required?: boolean,
+    n: TNumberOfArgs = N_DEFAULT_VALUE,
+  ) {
+    k = k.toUpperCase()
+    if (n === N_ZERO_OR_MORE) {
+      return `[${k}...]`
+    }
+    if (n === N_ONE_OR_MORE) {
+      return required ? `${k}...` : `[${k}...]`
+    }
+    if (n === 1) {
+      return required ? k : `[${k}]`
+    }
+
+    const limit: number = n
+    const array = []
+    for (let i = 0; i < limit; i++) {
+      array.push(k + (i + 1))
+    }
+    return required ? array.join(' ') : `[${array.join(' ')}]`
+  }
+
   const positionalHelp = [
     '[OPTIONS]',
     keys
     .filter(k => config[k].positional)
-    .map(k => config[k].required
-      ? `${k.toUpperCase()}`
-      : `[${k.toUpperCase()}]`,
-    )
+    .map(k => getArrayHelp(k, config[k].required, config[k].n))
     .join(' '),
   ].join(' ')
 
@@ -160,7 +215,10 @@ export function help(config: IArgsConfig) {
     const description = argConfig.description
       ? ' ' + argConfig.description : ''
     const sample = samples.length ? ` (${samples.join(', ')})` : ''
-    return padRight(name + ' ' + type, 30) + ' ' + description + sample
+    const argType = type === 'string[]'
+      ? getArrayHelp(argument, argConfig.required, argConfig.n)
+      : type
+    return padRight(name + ' ' + argType, 30) + ' ' + description + sample
   })
   .join('\n')
 
@@ -172,7 +230,7 @@ export function help(config: IArgsConfig) {
 export function arg<T extends TArgTypeName>(
   type: T,
   config: IArgParam<T> = {},
-): IArgConfig<T> {
+): IArgument<T> {
   return {
     ...config,
     type,
@@ -245,9 +303,14 @@ export function argparse<T extends IArgsConfig>(config: T) {
         return p!
       }
 
+      let onlyPositionals = false
       while (it.hasNext()) {
         const argument = it.next()
-        const isPositional = argument.substring(0, 1) !== '-'
+        if (argument === '--' && !onlyPositionals) {
+          onlyPositionals = true
+          continue
+        }
+        const isPositional = argument.substring(0, 1) !== '-' || onlyPositionals
         const argName = !isPositional
           ? processFlags(argument)
           : getNextPositional()
@@ -259,6 +322,10 @@ export function argparse<T extends IArgsConfig>(config: T) {
             result[argName] = getValue(it, argument, isPositional)
             assert(!!result[argName],
               'Value of argument must be a string: ' + argument)
+            break
+          case 'string[]':
+            result[argName] = extractArray(
+              it, argument, isPositional, argConfig.n)
             break
           case 'number':
             const num = parseInt(getValue(it, argument, isPositional), 10)
