@@ -25,6 +25,7 @@ interface IClassProperty {
 
 interface IClassDefinition {
   name: string
+  type: ts.Type
   typeParameters: ts.TypeParameter[]
   relevantTypeParameters: ts.Type[]
   allRelevantTypes: ts.Type[]
@@ -199,7 +200,11 @@ export function typecheck(...argv: string[]) {
       handleType(type)
     }
 
+    const typeDefinitions: Map<ts.Type, IClassDefinition> = new Map()
     function handleType(type: ts.Type) {
+      if (typeDefinitions.has(type)) {
+        return
+      }
       const typeParameters: ts.TypeParameter[] = []
       const expandedTypeParameters: ts.Type[] = []
       const allRelevantTypes: ts.Type[] = []
@@ -260,6 +265,7 @@ export function typecheck(...argv: string[]) {
 
       const classDef: IClassDefinition = {
         name: typeToString(type),
+        type,
         // name: symbol.getName(),
         typeParameters,
         allRelevantTypes: allRelevantTypes
@@ -269,18 +275,22 @@ export function typecheck(...argv: string[]) {
         properties: classProperties,
       }
 
-      console.log(classDef.name)
+      console.log(`interface ${classDef.name} {`)
       console.log(' ',
         classDef.properties
-        .map(p => p.name + ': ' + typeToString(p.type) + '    {' +
-          p.relevantTypes.map(typeToString) + '}')
+        .map(p => p.name + ': ' + typeToString(p.type)) // + '    {' +
+          // p.relevantTypes.map(typeToString) + '}')
         .join('\n  '),
       )
-      console.log('\n  allRelevantTypes:\n   ',
-        classDef.allRelevantTypes.map(typeToString).join('\n    '))
+      console.log('}')
+      // console.log('\n  allRelevantTypes:\n   ',
+      //   classDef.allRelevantTypes.map(typeToString).join('\n    '))
       console.log('\n')
 
       classDefs.push(classDef)
+      typeDefinitions.set(type, classDef)
+
+      allRelevantTypes.map(handleType)
     }
 
     /**
@@ -317,15 +327,28 @@ export function typecheck(...argv: string[]) {
       }
     }
 
-    const Vote = classDefs.find(c => c.name === 'Vote')
-    if (Vote) {
-      console.log('found vote')
-      const U = Vote.allRelevantTypes.find(t => typeToString(t) === 'User')
-      if (U) {
-        console.log('found user')
-        handleType(U)
-      }
-    }
+    // const defs: Map<ts.Type, IClassDefinition> = new Map()
+    // classDefs.forEach(classDef => {
+    //   defs.set(classDef.type, classDef)
+    // })
+
+    // classDefs.forEach(classDef => {
+    //   classDef.allRelevantTypes.forEach(type => {
+    //     if (!defs.has(type)) {
+    //       handleType(type)
+    //     }
+    //   })
+    // })
+
+    // const Vote = classDefs.find(c => c.name === 'Vote')
+    // if (Vote) {
+    //   console.log('found vote')
+    //   const U = Vote.allRelevantTypes.find(t => typeToString(t) === 'User')
+    //   if (U) {
+    //     console.log('found user')
+    //     handleType(U)
+    //   }
+    // }
   }
 
   generateInterfaces([args.file], {
