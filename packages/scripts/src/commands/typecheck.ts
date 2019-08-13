@@ -93,11 +93,16 @@ export function typecheck(...argv: string[]) {
         // e.g. string or number types have no symbol
         return false
       }
-      if (symbol && !((symbol as any).parent)) {
-        // console.log(' no parent')
-        // e.g. Array symbol has no parent
+      if (symbol && symbol.flags & ts.SymbolFlags.Transient) {
+        console.log('  is transient')
+        // Array is transient. not sure if this is the best way to figure this
         return false
       }
+      // if (symbol && !((symbol as any).parent)) {
+      //   // console.log(' no parent', symbol)
+      //   // e.g. Array symbol has no parent
+      //   return false
+      // }
       if (type.isLiteral()) {
         // console.log(' is literal')
         return false
@@ -206,16 +211,16 @@ export function typecheck(...argv: string[]) {
         return
       }
       // if (type.aliasSymbol) {
-      //   TODO figure out how to prevent iterating of properties from types
-      //   such as strings
+      //   // TODO figure out how to prevent iterating of properties from types
+      //   // such as strings
       //   return
       // }
       const typeParameters: ts.TypeParameter[] = []
       const expandedTypeParameters: ts.Type[] = []
       const allRelevantTypes: ts.Type[] = []
 
-      if (type.isClassOrInterface() && type.typeParameters) {
-        type.typeParameters.forEach(tp => {
+      function handleTypeParameters(typeParams: readonly ts.Type[]) {
+        typeParams.forEach(tp => {
           const constraint = tp.getConstraint()
           if (constraint) {
             expandedTypeParameters.push(...getAllTypeParameters(tp))
@@ -227,6 +232,14 @@ export function typecheck(...argv: string[]) {
 
           typeParameters.push(tp)
         })
+      }
+
+      if (type.isClassOrInterface() && type.typeParameters) {
+        handleTypeParameters(type.typeParameters)
+      }
+
+      if (type.aliasSymbol && type.aliasTypeArguments) {
+        handleTypeParameters(type.aliasTypeArguments)
       }
 
       const properties = type.getApparentProperties()
