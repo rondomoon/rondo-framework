@@ -18,7 +18,7 @@ export class Name {
 }
 
 export interface IYear {
-  yeak: number
+  year: number
 }
 
 export interface ITyped<T> {
@@ -26,8 +26,9 @@ export interface ITyped<T> {
 }
 
 type AorB = 'A' | 'B'
+interface IB { a: number }
 /* tslint:disable-next-line */
-type Param<T> = {t: T}
+type Param<T> = {t: T, b: IB}
 
 export class Person {
   readonly name!: Name

@@ -205,6 +205,11 @@ export function typecheck(...argv: string[]) {
       if (typeDefinitions.has(type)) {
         return
       }
+      // if (type.aliasSymbol) {
+      //   TODO figure out how to prevent iterating of properties from types
+      //   such as strings
+      //   return
+      // }
       const typeParameters: ts.TypeParameter[] = []
       const expandedTypeParameters: ts.Type[] = []
       const allRelevantTypes: ts.Type[] = []
@@ -278,19 +283,19 @@ export function typecheck(...argv: string[]) {
       console.log(`interface ${classDef.name} {`)
       console.log(' ',
         classDef.properties
-        .map(p => p.name + ': ' + typeToString(p.type)) // + '    {' +
-          // p.relevantTypes.map(typeToString) + '}')
+        .map(p => p.name + ': ' + typeToString(p.type) + '    {' +
+          p.relevantTypes.map(typeToString) + '}')
         .join('\n  '),
       )
       console.log('}')
-      // console.log('\n  allRelevantTypes:\n   ',
-      //   classDef.allRelevantTypes.map(typeToString).join('\n    '))
+      console.log('\n  allRelevantTypes:\n   ',
+        classDef.allRelevantTypes.map(typeToString).join('\n    '))
       console.log('\n')
 
       classDefs.push(classDef)
       typeDefinitions.set(type, classDef)
 
-      allRelevantTypes.map(handleType)
+      classDef.allRelevantTypes.forEach(handleType)
     }
 
     /**
