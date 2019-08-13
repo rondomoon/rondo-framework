@@ -1,11 +1,11 @@
 import * as fs from 'fs'
 import * as log from '../log'
 import * as path from 'path'
-import {argparse, arg} from '../argparse'
+import {argparse, arg} from '@rondo/argparse'
 import {run} from '../run'
 
 export async function newlib(...argv: string[]) {
-  const {parse, help} = argparse({
+  const {parse} = argparse({
     name: arg('string', {positional: true, required: true}),
     namespace: arg('string', {default: '@rondo'}),
     help: arg('boolean', {

@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as ts from 'typescript'
-import {argparse, arg} from '../argparse'
+import {argparse, arg} from '@rondo/argparse'
 
 function isObjectType(type: ts.Type): type is ts.ObjectType {
   return !!(type.flags & ts.TypeFlags.Object)
@@ -210,11 +210,9 @@ export function typecheck(...argv: string[]) {
       if (typeDefinitions.has(type)) {
         return
       }
-      // if (type.aliasSymbol) {
-      //   // TODO figure out how to prevent iterating of properties from types
-      //   // such as strings
-      //   return
-      // }
+      if (type.aliasSymbol) {
+        throw new Error('Type aliases are not supported')
+      }
       const typeParameters: ts.TypeParameter[] = []
       const expandedTypeParameters: ts.Type[] = []
       const allRelevantTypes: ts.Type[] = []

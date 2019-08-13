@@ -16,8 +16,6 @@ export const N_DEFAULT_VALUE = 1
 
 export type TNumberOfArgs = number | '+' | '*'
 
-export let exit = () => process.exit()
-
 export interface IArgParam<T extends TArgTypeName> {
   alias?: string
   description?: string
@@ -142,10 +140,6 @@ function extractArray(
   return array
 }
 
-export function isHelp(argv: string[]) {
-  return argv.some(a => /^(-h|--help)$/.test(a))
-}
-
 function checkChoice<T>(argument: string, choice: T, choices?: T[]) {
   if (choices) {
     assert(
@@ -161,7 +155,7 @@ export function padRight(str: string, chars: number) {
   return str
 }
 
-export function help(config: IArgsConfig) {
+export function help(command: string, config: IArgsConfig) {
   const keys = Object.keys(config)
 
   function getArrayHelp(
@@ -189,6 +183,7 @@ export function help(config: IArgsConfig) {
   }
 
   const positionalHelp = [
+    command,
     '[OPTIONS]',
     keys
     .filter(k => config[k].positional)
@@ -237,12 +232,16 @@ export function arg<T extends TArgTypeName>(
   }
 }
 
-export function argparse<T extends IArgsConfig>(config: T) {
+export function argparse<T extends IArgsConfig>(
+  config: T,
+  exit: () => void = () => process.exit(),
+  /* tslint:disable-next-line */
+  log: (message: string) => void = console.log.bind(console),
+) {
   return {
-    help(): string {
-      return help(config)
-    },
     parse(args: string[]): TArgs<T> {
+      const command = args[0]
+      args = args.slice(1)
       const result: any = {}
       const it = iterate(args)
 
@@ -315,6 +314,12 @@ export function argparse<T extends IArgsConfig>(config: T) {
           ? processFlags(argument)
           : getNextPositional()
         const argConfig = config[argName]
+        if (!isPositional && argName === 'help') {
+          log(help(command, config))
+          exit()
+          // should never reach this in real life
+          return null as any
+        }
         assert(!!argConfig, 'Unknown argument: ' + argument)
         delete requiredArgs[argName]
         switch (argConfig.type) {

@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import * as log from '../log'
 import * as p from 'path'
-import {argparse, arg} from '../argparse'
+import {argparse, arg} from '@rondo/argparse'
 import {findNodeModules} from '../modules'
 import {join} from 'path'
 import {run} from '../run'
@@ -9,7 +9,7 @@ import {run} from '../run'
 const tsc = 'ttsc'
 
 export async function build(...argv: string[]) {
-  const {parse, help} = argparse({
+  const {parse} = argparse({
     project: arg('string', {
       alias: 'p',
       default: '.',

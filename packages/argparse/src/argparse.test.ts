@@ -2,6 +2,15 @@ import {argparse, arg, IArgsConfig} from './argparse'
 
 describe('argparse', () => {
 
+  const CMD = 'command'
+  const exit = jest.fn()
+  const log = jest.fn()
+
+  beforeEach(() => {
+    exit.mockClear()
+    log.mockClear()
+  })
+
   it('parses args', () => {
     const args = argparse({
       one: arg('string', {required: true}),
@@ -9,7 +18,7 @@ describe('argparse', () => {
       four: {
         type: 'boolean',
       },
-    }).parse(['--one', '1', '--two', '2', '--four'])
+    }).parse([CMD, '--one', '1', '--two', '2', '--four'])
 
     const one: string = args.one
     const two: number = args.two
@@ -26,7 +35,7 @@ describe('argparse', () => {
         bool: {
           type: 'boolean',
         },
-      }).parse([])
+      }).parse([CMD])
       const value: boolean = result.bool
       expect(value).toBe(false)
     })
@@ -36,7 +45,7 @@ describe('argparse', () => {
           type: 'boolean',
           required: true,
         },
-      }).parse([])).toThrowError(/Missing required args: bool/)
+      }).parse([CMD])).toThrowError(/Missing required args: bool/)
     })
     it('optionally accepts a true/false value', () => {
       const {parse} = argparse({
@@ -48,10 +57,10 @@ describe('argparse', () => {
           type: 'string',
         },
       })
-      expect(parse(['--bool']).bool).toBe(true)
-      expect(parse(['--bool', 'false']).bool).toBe(false)
-      expect(parse(['--bool', 'true']).bool).toBe(true)
-      expect(parse(['--bool', '--other', 'value'])).toEqual({
+      expect(parse([CMD, '--bool']).bool).toBe(true)
+      expect(parse([CMD, '--bool', 'false']).bool).toBe(false)
+      expect(parse([CMD, '--bool', 'true']).bool).toBe(true)
+      expect(parse([CMD, '--bool', '--other', 'value'])).toEqual({
         bool: true,
         other: 'value',
       })
@@ -71,27 +80,27 @@ describe('argparse', () => {
           alias: 'o',
         },
       })
-      expect(parse([])).toEqual({
+      expect(parse([CMD])).toEqual({
         a1: false,
         b: false,
         other: '',
       })
-      expect(parse(['-ab'])).toEqual({
+      expect(parse([CMD, '-ab'])).toEqual({
         a1: true,
         b: true,
         other: '',
       })
-      expect(parse(['-ca'])).toEqual({
+      expect(parse([CMD, '-ca'])).toEqual({
         a1: true,
         b: true,
         other: '',
       })
-      expect(parse(['-abo', 'test'])).toEqual({
+      expect(parse([CMD, '-abo', 'test'])).toEqual({
         a1: true,
         b: true,
         other: 'test',
       })
-      expect(() => parse(['-abo'])).toThrowError(/must be a string: -abo/)
+      expect(() => parse([CMD, '-abo'])).toThrowError(/must be a string: -abo/)
     })
   })
 
@@ -102,18 +111,18 @@ describe('argparse', () => {
           type: 'number',
         },
       })
-      expect(parse([])).toEqual({
+      expect(parse([CMD])).toEqual({
         a: NaN,
       })
-      expect(() => parse(['-a'])).toThrowError(/must be a number: -a/)
-      expect(() => parse(['-a', 'no-number']))
+      expect(() => parse([CMD, '-a'])).toThrowError(/must be a number: -a/)
+      expect(() => parse([CMD, '-a', 'no-number']))
       .toThrowError(/must be a number: -a/)
-      expect(() => parse(['--a', 'no-number']))
+      expect(() => parse([CMD, '--a', 'no-number']))
       .toThrowError(/must be a number: --a/)
-      expect(parse(['-a', '10'])).toEqual({
+      expect(parse([CMD, '-a', '10'])).toEqual({
         a: 10,
       })
-      expect(parse(['--a', '11'])).toEqual({
+      expect(parse([CMD, '--a', '11'])).toEqual({
         a: 11,
       })
     })
@@ -129,13 +138,14 @@ describe('argparse', () => {
           choices: [1, 2],
         }),
       })
-      expect(() => parse(['--choice', 'c'])).toThrowError(/one of: a, b$/)
-      expect(() => parse(['--num', '3'])).toThrowError(/must be one of: 1, 2$/)
-      expect(parse(['--choice', 'a', '--num', '1'])).toEqual({
+      expect(() => parse([CMD, '--choice', 'c'])).toThrowError(/one of: a, b$/)
+      expect(() => parse([CMD, '--num', '3']))
+      .toThrowError(/must be one of: 1, 2$/)
+      expect(parse([CMD, '--choice', 'a', '--num', '1'])).toEqual({
         choice: 'a',
         num: 1,
       })
-      expect(parse(['--choice', 'b', '--num', '2'])).toEqual({
+      expect(parse([CMD, '--choice', 'b', '--num', '2'])).toEqual({
         choice: 'b',
         num: 2,
       })
@@ -144,22 +154,25 @@ describe('argparse', () => {
 
   describe('string[] and n', () => {
     it('has a value of n = 1 by default', () => {
-      const {parse, help} = argparse({
+      const {parse} = argparse({
         value: {
           type: 'string[]',
         },
-      })
-      expect(parse([]).value).toEqual([])
-      expect(parse(['--value', 'one']).value).toEqual(['one'])
-      expect(help()).toEqual([
-        '[OPTIONS] ',
+        help: arg('boolean'),
+      }, exit, log)
+      expect(parse([CMD]).value).toEqual([])
+      expect(parse([CMD, '--value', 'one']).value).toEqual(['one'])
+      parse([CMD, '--help'])
+      expect(log.mock.calls[0][0]).toEqual([
+        `${CMD} [OPTIONS] `,
         '',
         'Options:',
         '    --value [VALUE]            ',
+        '    --help boolean             ',
       ].join('\n'))
     })
     it('can be used to extract finite number of values', () => {
-      const {parse, help} = argparse({
+      const {parse} = argparse({
         value: {
           type: 'string[]',
           n: 3,
@@ -168,68 +181,84 @@ describe('argparse', () => {
           type: 'number',
           alias: 'o',
         },
-      })
-      expect(parse([]).value).toEqual([])
-      expect(parse(['--value', 'a', 'b', '--other', '-o', '3'])).toEqual({
+        help: arg('boolean'),
+      }, exit, log)
+      expect(parse([CMD]).value).toEqual([])
+      expect(parse([CMD, '--value', 'a', 'b', '--other', '-o', '3'])).toEqual({
         value: ['a', 'b', '--other'],
         other: 3,
+        help: false,
       })
-      expect(help()).toEqual([
-        '[OPTIONS] ',
+      parse([CMD, '--help'])
+      expect(log.mock.calls[0][0]).toEqual([
+        `${CMD} [OPTIONS] `,
         '',
         'Options:',
         '    --value [VALUE1 VALUE2 VALUE3] ',
         '-o, --other number             ',
+        '    --help boolean             ',
       ].join('\n'))
     })
     it('can be used to collect any remaining arguments when n = "+"', () => {
-      const {parse, help} = argparse({
+      const {parse} = argparse({
         value: arg('string[]', {n: '+', required: true}),
         other: arg('number'),
-      })
-      expect(() => parse([])).toThrowError(/Missing required args: value/)
-      expect(parse(['--value', 'a', '--other', '3'])).toEqual({
+        help: arg('boolean'),
+      }, exit, log)
+      expect(() => parse([CMD])).toThrowError(/Missing required args: value/)
+      expect(parse([CMD, '--value', 'a', '--other', '3'])).toEqual({
         value: ['a', '--other', '3'],
         other: NaN,
+        help: false,
       })
-      expect(parse(['--other', '2', '--value', 'a', '--other', '3'])).toEqual({
+      expect(parse([CMD, '--other', '2', '--value', 'a', '--other', '3']))
+      .toEqual({
         value: ['a', '--other', '3'],
         other: 2,
+        help: false,
       })
-      expect(help()).toEqual([
-        '[OPTIONS] ',
+      parse([CMD, '--help'])
+      expect(log.mock.calls[0][0]).toEqual([
+        `${CMD} [OPTIONS] `,
         '',
         'Options:',
         '    --value VALUE...            (required)',
         '    --other number             ',
+        '    --help boolean             ',
       ].join('\n'))
     })
     it('can collect remaining positional arguments when n = "*"', () => {
-      const {parse, help} = argparse({
+      const {parse} = argparse({
         value: arg('string[]', {n: '*', required: true, positional: true}),
         other: arg('number'),
-      })
-      expect(parse(['a', 'b']).value).toEqual(['a', 'b'])
-      expect(() => parse(['--other', '3']).value)
+        help: arg('boolean'),
+      }, exit, log)
+      expect(parse([CMD, 'a', 'b']).value).toEqual(['a', 'b'])
+      expect(() => parse([CMD, '--other', '3']).value)
       .toThrowError(/Missing.*: value/)
-      expect(parse(['--other', '2', '--', '--other', '3'])).toEqual({
+      expect(parse([CMD, '--other', '2', '--', '--other', '3'])).toEqual({
         value: ['--other', '3'],
         other: 2,
+        help: false,
       })
-      expect(parse(['--', '--other', '3'])).toEqual({
+      expect(parse([CMD, '--', '--other', '3'])).toEqual({
         value: ['--other', '3'],
         other: NaN,
+        help: false,
       })
-      expect(parse(['--other', '3', 'a', 'b', 'c'])).toEqual({
+      expect(parse([CMD, '--other', '3', 'a', 'b', 'c'])).toEqual({
         value: ['a', 'b', 'c'],
         other: 3,
+        help: false,
       })
-      expect(help()).toEqual([
-        '[OPTIONS] [VALUE...]',
+      parse([CMD, '--help'])
+      expect(log.mock.calls[0][0]).toEqual([
+        `${CMD} [OPTIONS] [VALUE...]`,
         '',
         'Options:',
         '    --value [VALUE...]          (required)',
         '    --other number             ',
+        '    --help boolean             ',
       ].join('\n'))
     })
   })
@@ -242,8 +271,8 @@ describe('argparse', () => {
           positional: true,
         },
       })
-      expect(parse([]).a).toBe(NaN)
-      expect(parse(['12']).a).toBe(12)
+      expect(parse([CMD]).a).toBe(NaN)
+      expect(parse([CMD, '12']).a).toBe(12)
     })
     it('works with booleans', () => {
       const {parse} = argparse({
@@ -252,10 +281,10 @@ describe('argparse', () => {
           positional: true,
         },
       })
-      expect(parse([]).a).toBe(false)
-      expect(parse(['true']).a).toBe(true)
-      expect(parse(['false']).a).toBe(false)
-      expect(() => parse(['invalid'])).toThrowError(/true or false/)
+      expect(parse([CMD]).a).toBe(false)
+      expect(parse([CMD, 'true']).a).toBe(true)
+      expect(parse([CMD, 'false']).a).toBe(false)
+      expect(() => parse([CMD, 'invalid'])).toThrowError(/true or false/)
     })
     it('works with strings', () => {
       const {parse} = argparse({
@@ -264,8 +293,8 @@ describe('argparse', () => {
           positional: true,
         },
       })
-      expect(parse([]).a).toBe('')
-      expect(parse(['a']).a).toBe('a')
+      expect(parse([CMD]).a).toBe('')
+      expect(parse([CMD, 'a']).a).toBe('a')
     })
     it('works with multiple positionals', () => {
       const {parse} = argparse({
@@ -278,7 +307,7 @@ describe('argparse', () => {
           positional: true,
         },
       })
-      expect(parse(['aaa', 'bbb'])).toEqual({
+      expect(parse([CMD, 'aaa', 'bbb'])).toEqual({
         a: 'aaa',
         b: 'bbb',
       })
@@ -296,7 +325,7 @@ describe('argparse', () => {
           type: 'string',
         },
       })
-      expect(parse(['--arg1', 'one', '2', '--arg3', 'three'])).toEqual({
+      expect(parse([CMD, '--arg1', 'one', '2', '--arg3', 'three'])).toEqual({
         arg1: 'one',
         arg2: 2,
         arg3: 'three',
@@ -305,23 +334,28 @@ describe('argparse', () => {
   })
 
   describe('help', () => {
-    it('returns help string', () => {
-      const {help} = argparse({
+    it('prints help string and exits', () => {
+      const {parse} = argparse({
         one: arg('string'),
         two: arg('number'),
         three: arg('boolean'),
-      })
-      expect(help()).toEqual([
-        '[OPTIONS] ',
+        help: arg('boolean'),
+      }, exit, log)
+      expect(exit.mock.calls.length).toBe(0)
+      parse([CMD, '--help'])
+      expect(exit.mock.calls.length).toBe(1)
+      expect(log.mock.calls[0][0]).toEqual([
+        `${CMD} [OPTIONS] `,
         '',
         'Options:',
         '    --one string               ',
         '    --two number               ',
         '    --three boolean            ',
+        '    --help boolean             ',
       ].join('\n'))
     })
     it('returns help string with alias, description, and samples', () => {
-      const {help} = argparse({
+      const {parse} = argparse({
         one: arg('string', {
           description: 'first argument',
           required: true,
@@ -336,15 +370,20 @@ describe('argparse', () => {
         three: arg('number', {
           positional: true,
         }),
-      })
-      expect(help()).toEqual([
-        '[OPTIONS] TWO [THREE]',
+        help: arg('boolean'),
+      }, exit, log)
+      expect(exit.mock.calls.length).toBe(0)
+      parse([CMD, '--help'])
+      expect(exit.mock.calls.length).toBe(1)
+      expect(log.mock.calls[0][0]).toEqual([
+        `${CMD} [OPTIONS] TWO [THREE]`,
         '',
         'Options:',
         '-o, --one string                first argument ' +
           '(required, default: choice-1, choices: choice-1,choice-2)',
         '    --two number                (required)',
         '    --three number             ',
+        '    --help boolean             ',
       ].join('\n'))
     })
 
@@ -356,7 +395,7 @@ describe('argparse', () => {
         type: 'string',
         required: true,
       },
-    }).parse([])).toThrowError(/missing required/i)
+    }).parse([CMD])).toThrowError(/missing required/i)
   })
 
   it('throws when arg type is unknown', () => {
@@ -364,7 +403,7 @@ describe('argparse', () => {
       a: {
         type: 'test',
       } as any,
-    }).parse(['-a'])).toThrowError(/Unknown type: test/)
+    }).parse([CMD, '-a'])).toThrowError(/Unknown type: test/)
   })
 
 })
