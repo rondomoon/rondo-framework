@@ -1,5 +1,6 @@
-import * as ts from 'typescript'
 import * as fs from 'fs'
+import * as ts from 'typescript'
+import {argparse, arg} from '../argparse'
 
 function isObjectType(type: ts.Type): type is ts.ObjectType {
   return !!(type.flags & ts.TypeFlags.Object)
@@ -48,7 +49,16 @@ interface IClassDefinition {
  *
  */
 
-export function typecheck() {
+export function typecheck(...argv: string[]) {
+  const args = argparse({
+    file: arg('string', {
+      default: __dirname + '/' + 'intergen.sample.ts',
+      alias: 'f',
+    }),
+    debug: arg('boolean'),
+    help: arg('boolean', {alias: 'h'}),
+  }).parse(argv)
+
   /** Generate interfaces for all exported classes in a set of .ts files */
   function generateInterfaces(
     fileNames: string[],
@@ -185,10 +195,14 @@ export function typecheck() {
         return
       }
 
+      const type = checker.getDeclaredTypeOfSymbol(symbol)
+      handleType(type)
+    }
+
+    function handleType(type: ts.Type) {
       const typeParameters: ts.TypeParameter[] = []
       const expandedTypeParameters: ts.Type[] = []
       const allRelevantTypes: ts.Type[] = []
-      const type = checker.getDeclaredTypeOfSymbol(symbol)
 
       if (type.isClassOrInterface() && type.typeParameters) {
         type.typeParameters.forEach(tp => {
@@ -245,7 +259,8 @@ export function typecheck() {
       allRelevantTypes.push(...relevantTypeParameters)
 
       const classDef: IClassDefinition = {
-        name: symbol.getName(),
+        name: typeToString(type),
+        // name: symbol.getName(),
         typeParameters,
         allRelevantTypes: allRelevantTypes
         .filter(filterClassTypeParameters)
@@ -272,6 +287,18 @@ export function typecheck() {
      * Visit nodes finding exported classes
      */
     function visit(node: ts.Node) {
+      // console.log('node.getText()', node.getText())
+      // console.log('node.kind', node.kind)
+
+      if (ts.isExportDeclaration(node)) {
+        if (node.exportClause) {
+          // console.log('export {...} from', node.exportClause.elements.length)
+        } else {
+          // console.log('export * from...')
+          // it is exporting *
+        }
+      }
+
       // Only consider exported nodes
       if (!isNodeExported(node)) {
         return
@@ -289,10 +316,19 @@ export function typecheck() {
         ts.forEachChild(sourceFile, visit)
       }
     }
+
+    const Vote = classDefs.find(c => c.name === 'Vote')
+    if (Vote) {
+      console.log('found vote')
+      const U = Vote.allRelevantTypes.find(t => typeToString(t) === 'User')
+      if (U) {
+        console.log('found user')
+        handleType(U)
+      }
+    }
   }
 
-  const path = __dirname + '/' + 'intergen.sample.ts'
-  generateInterfaces([path], {
+  generateInterfaces([args.file], {
     target: ts.ScriptTarget.ES5,
     module: ts.ModuleKind.CommonJS,
   })
