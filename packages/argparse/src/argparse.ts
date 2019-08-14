@@ -310,7 +310,9 @@ export function argparse<T extends IArgsConfig>(
       }, {} as Record<string, true>)
 
       function getArgumentName(nameOrAlias: string): string {
-        return nameOrAlias in config ? nameOrAlias : aliases[nameOrAlias]
+        return (nameOrAlias in config
+          ? nameOrAlias
+          : aliases[nameOrAlias]) || nameOrAlias
       }
 
       function processFlags(argument: string): string {
