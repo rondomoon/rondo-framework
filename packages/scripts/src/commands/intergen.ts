@@ -11,6 +11,11 @@ function isTypeReference(type: ts.ObjectType): type is ts.TypeReference {
   return !!(type.objectFlags & ts.ObjectFlags.Reference)
 }
 
+function isAnonymous(type: ts.Type): boolean {
+  return isObjectType(type) && !!(
+    type.objectFlags & ts.ObjectFlags.Anonymous)
+}
+
 function filterInvisibleProperties(type: ts.Symbol): boolean {
   const flags = ts.getCombinedModifierFlags(type.valueDeclaration)
   return !(flags & ts.ModifierFlags.NonPublicAccessibilityModifier)
@@ -51,7 +56,7 @@ interface IClassDefinition {
  *
  */
 
-export function typecheck(...argv: string[]) {
+export function intergen(...argv: string[]): string {
   const args = argparse({
     input: arg('string', {alias: 'i', required: true}),
     debug: arg('boolean'),
@@ -191,8 +196,8 @@ export function typecheck(...argv: string[]) {
     function isNodeExported(node: ts.Node): boolean {
       return (
         (ts.getCombinedModifierFlags(node as any) &
-          ts.ModifierFlags.Export) !== 0 ||
-        (!!node.parent && node.parent.kind === ts.SyntaxKind.SourceFile)
+          ts.ModifierFlags.Export) !== 0
+        // (!!node.parent && node.parent.kind === ts.SyntaxKind.SourceFile)
       )
     }
 
@@ -296,7 +301,10 @@ export function typecheck(...argv: string[]) {
         properties: classProperties,
       }
 
-      classDefs.push(classDef)
+      if (!isAnonymous(type)) {
+        // Prevent defining anonymous declarations as interfaces
+        classDefs.push(classDef)
+      }
       typeDefinitions.set(type, classDef)
 
       classDef.allRelevantTypes.forEach(handleType)
@@ -306,6 +314,11 @@ export function typecheck(...argv: string[]) {
      * Visit nodes finding exported classes
      */
     function visit(node: ts.Node) {
+      console.log(node.getText(),
+        isNodeExported(node),
+        ts.getCombinedModifierFlags(node as any),
+        !!node.parent,
+        node.parent.kind === ts.SyntaxKind.SourceFile)
       // Only consider exported nodes
       if (!isNodeExported(node)) {
         return
@@ -325,8 +338,12 @@ export function typecheck(...argv: string[]) {
     }
 
     function setTypeName(type: ts.Type, mappings: Map<ts.Type, string>) {
+      if (isAnonymous(type)) {
+        return
+      }
       const name = typeToString(type)
-      mappings.set(type, `I${name}`)
+      // (type as any).symbol.name = 'I' + type.symbol.name
+      mappings.set(type, `${name}`)
     }
 
     const nameMappings = new Map<ts.Type, string>()
@@ -339,7 +356,7 @@ export function typecheck(...argv: string[]) {
 
     function createInterface(classDef: IClassDefinition): string {
       const name = nameMappings.get(classDef.type)!
-      const start = `interface ${name} {`
+      const start = `export interface ${name} {`
       const properties = classDef.properties.map(p => {
         return `  ${p.name}: ${nameMappings.get(p.type) || p.typeString}`
       })
@@ -362,4 +379,5 @@ export function typecheck(...argv: string[]) {
   } else {
     fs.writeFileSync(args.output, value)
   }
+  return value
 }
