@@ -193,7 +193,9 @@ export function help(command: string, config: IArgsConfig) {
     .join(' '),
   ].join(' ')
 
-  const argsHelp = 'Options:\n' + keys.map(argument => {
+  const options = keys.filter(k => !config[k].positional)
+
+  const argsHelp = 'Options:\n' + options.map(argument => {
     const argConfig = config[argument]
     const {alias, type} = argConfig
     const name = alias

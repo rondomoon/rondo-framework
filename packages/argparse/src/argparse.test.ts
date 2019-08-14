@@ -256,7 +256,6 @@ describe('argparse', () => {
         `${CMD} [OPTIONS] [VALUE...]`,
         '',
         'Options:',
-        '    --value [VALUE...]          (required)',
         '    --other number             ',
         '    --help boolean             ',
       ].join('\n'))
@@ -381,8 +380,6 @@ describe('argparse', () => {
         'Options:',
         '-o, --one string                first argument ' +
           '(required, default: choice-1, choices: choice-1,choice-2)',
-        '    --two number                (required)',
-        '    --three number             ',
         '    --help boolean             ',
       ].join('\n'))
     })
