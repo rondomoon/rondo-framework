@@ -5,29 +5,44 @@ import {TCommand} from './TCommand'
 import {argparse, arg} from '@rondo/argparse'
 
 const {parse} = argparse({
-  help: arg('boolean'),
+  help: arg('boolean', {alias: 'h'}),
   debug: arg('boolean'),
-  command: arg('string[]', {n: '+', required: true, positional: true}),
+  command: arg('string[]', {
+    n: '+',
+    required: true,
+    positional: true,
+    description: 'Must be one of: ' + Object.keys(commands).join(', '),
+  }),
 })
 
 type TArgs = ReturnType<typeof parse>
 
-async function run(args: TArgs) {
+async function run(args: TArgs, exit: (code: number) => void) {
   const commandName = args.command[0]
   if (!(commandName in commands)) {
     const c = Object.keys(commands).filter(cmd => !cmd.startsWith('_'))
     log.info(`Available commands:\n\n${c.join('\n')}`)
+    exit(1)
     return
   }
   const command = (commands as any)[commandName] as TCommand
   await command(...args.command)
 }
 
+async function start(
+  argv: string[] = process.argv.slice(1),
+  exit = (code: number) => process.exit(code),
+) {
+  let args: TArgs | null = null
+  try {
+    args = parse(argv)
+    await run(args, exit)
+  } catch (err) {
+    log.error((args && args.debug ? err.stack : err.message))
+    exit(1)
+  }
+}
+
 if (typeof require !== 'undefined' && require.main === module) {
-  const args = parse(process.argv.slice(1))
-  run(args)
-  .catch(err => {
-    log.error('> ' + (args.debug ? err.stack : err.message))
-    process.exit(1)
-  })
+  start()
 }

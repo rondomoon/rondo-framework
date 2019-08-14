@@ -164,11 +164,11 @@ describe('argparse', () => {
       expect(parse([CMD, '--value', 'one']).value).toEqual(['one'])
       parse([CMD, '--help'])
       expect(log.mock.calls[0][0]).toEqual([
-        `${CMD} [OPTIONS] `,
+        `${CMD} [OPTIONS]`,
         '',
         'Options:',
-        '    --value [VALUE]            ',
-        '    --help boolean             ',
+        '    --value [VALUE]',
+        '    --help boolean',
       ].join('\n'))
     })
     it('can be used to extract finite number of values', () => {
@@ -191,12 +191,12 @@ describe('argparse', () => {
       })
       parse([CMD, '--help'])
       expect(log.mock.calls[0][0]).toEqual([
-        `${CMD} [OPTIONS] `,
+        `${CMD} [OPTIONS]`,
         '',
         'Options:',
-        '    --value [VALUE1 VALUE2 VALUE3] ',
-        '-o, --other number             ',
-        '    --help boolean             ',
+        '    --value [VALUE1 VALUE2 VALUE3]',
+        '-o, --other number',
+        '    --help boolean',
       ].join('\n'))
     })
     it('can be used to collect any remaining arguments when n = "+"', () => {
@@ -219,12 +219,12 @@ describe('argparse', () => {
       })
       parse([CMD, '--help'])
       expect(log.mock.calls[0][0]).toEqual([
-        `${CMD} [OPTIONS] `,
+        `${CMD} [OPTIONS]`,
         '',
         'Options:',
         '    --value VALUE...            (required)',
-        '    --other number             ',
-        '    --help boolean             ',
+        '    --other number',
+        '    --help boolean',
       ].join('\n'))
     })
     it('can collect remaining positional arguments when n = "*"', () => {
@@ -255,9 +255,12 @@ describe('argparse', () => {
       expect(log.mock.calls[0][0]).toEqual([
         `${CMD} [OPTIONS] [VALUE...]`,
         '',
+        'Positional arguments:',
+        '  VALUE string[]                (required)',
+        '',
         'Options:',
-        '    --other number             ',
-        '    --help boolean             ',
+        '    --other number',
+        '    --help boolean',
       ].join('\n'))
     })
   })
@@ -269,9 +272,14 @@ describe('argparse', () => {
           type: 'number',
           positional: true,
         },
-      })
+      }, exit, log)
       expect(parse([CMD]).a).toBe(NaN)
       expect(parse([CMD, '12']).a).toBe(12)
+      parse([CMD, '--help'])
+      expect(log.mock.calls[0][0]).toEqual(`${CMD} [A]
+
+Positional arguments:
+  A number`)
     })
     it('works with booleans', () => {
       const {parse} = argparse({
@@ -344,13 +352,13 @@ describe('argparse', () => {
       parse([CMD, '--help'])
       expect(exit.mock.calls.length).toBe(1)
       expect(log.mock.calls[0][0]).toEqual([
-        `${CMD} [OPTIONS] `,
+        `${CMD} [OPTIONS]`,
         '',
         'Options:',
-        '    --one string               ',
-        '    --two number               ',
-        '    --three boolean            ',
-        '    --help boolean             ',
+        '    --one string',
+        '    --two number',
+        '    --three boolean',
+        '    --help boolean',
       ].join('\n'))
     })
     it('returns help string with alias, description, and samples', () => {
@@ -377,10 +385,14 @@ describe('argparse', () => {
       expect(log.mock.calls[0][0]).toEqual([
         `${CMD} [OPTIONS] TWO [THREE]`,
         '',
+        'Positional arguments:',
+        '  TWO number                    (required)',
+        '  THREE number',
+        '',
         'Options:',
         '-o, --one string                first argument ' +
           '(required, default: choice-1, choices: choice-1,choice-2)',
-        '    --help boolean             ',
+        '    --help boolean',
       ].join('\n'))
     })
 

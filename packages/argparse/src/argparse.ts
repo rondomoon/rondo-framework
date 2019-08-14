@@ -184,23 +184,7 @@ export function help(command: string, config: IArgsConfig) {
     return required ? array.join(' ') : `[${array.join(' ')}]`
   }
 
-  const positionalHelp = [
-    relative(process.cwd(), command),
-    '[OPTIONS]',
-    keys
-    .filter(k => config[k].positional)
-    .map(k => getArrayHelp(k, config[k].required, config[k].n))
-    .join(' '),
-  ].join(' ')
-
-  const options = keys.filter(k => !config[k].positional)
-
-  const argsHelp = 'Options:\n' + options.map(argument => {
-    const argConfig = config[argument]
-    const {alias, type} = argConfig
-    const name = alias
-      ? `-${alias}, --${argument}`
-      : `    --${argument}`
+  function getDescription(argConfig: IArgument<TArgTypeName>): string {
     const samples = []
     if (argConfig.required) {
       samples.push('required')
@@ -214,14 +198,66 @@ export function help(command: string, config: IArgsConfig) {
     const description = argConfig.description
       ? ' ' + argConfig.description : ''
     const sample = samples.length ? ` (${samples.join(', ')})` : ''
-    const argType = type === 'string[]'
-      ? getArrayHelp(argument, argConfig.required, argConfig.n)
-      : type
-    return padRight(name + ' ' + argType, 30) + ' ' + description + sample
-  })
-  .join('\n')
+    return description + sample
+  }
 
-  return [positionalHelp, argsHelp]
+  function getPaddedName(nameAndType: string, description: string) {
+    return description
+      ? padRight(nameAndType, 30) + ' ' + description
+      : nameAndType
+  }
+
+  function getArgType(
+    type: TArgTypeName, argument: string, required?: boolean, n?: TNumberOfArgs,
+  ): string {
+    return type === 'string[]'
+      ? getArrayHelp(argument, required, n)
+      : type
+  }
+
+  const positionalArgs = keys
+  .filter(k => config[k].positional)
+  .map(argument => {
+    const argConfig = config[argument]
+    const {type, required, n} = argConfig
+    const nameAndType = `  ${argument.toUpperCase()} ${type}`
+    const description = getDescription(argConfig)
+    return getPaddedName(nameAndType, description)
+  })
+
+  const options = keys
+  .filter(k => !config[k].positional)
+  .map(argument => {
+    const argConfig = config[argument]
+    const {alias, type, required, n} = argConfig
+    const name = alias
+      ? `-${alias}, --${argument}`
+      : `    --${argument}`
+    const description = getDescription(argConfig)
+    const argType = getArgType(type, argument, required, n)
+    const nameAndType = `${name} ${argType}`
+    return getPaddedName(nameAndType, description)
+  })
+
+  const positionalHelp = positionalArgs.length
+    ? 'Positional arguments:\n' + positionalArgs.join('\n')
+    : ''
+  const optionsHelp = options.length
+    ? 'Options:\n' + options.join('\n')
+    : ''
+
+  const commandHelp = [
+    relative(process.cwd(), command),
+    options.length ? '[OPTIONS]' : '',
+    keys
+    .filter(k => config[k].positional)
+    .map(k => getArrayHelp(k, config[k].required, config[k].n))
+    .join(' '),
+  ]
+  .filter(k => k.length)
+  .join(' ')
+
+  return [commandHelp, positionalHelp, optionsHelp]
   .filter(h => h.length)
   .join('\n\n')
 }
