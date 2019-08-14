@@ -1,6 +1,7 @@
 import * as fs from 'fs'
 import * as ts from 'typescript'
 import {argparse, arg} from '@rondo/argparse'
+import {error, info} from '../log'
 
 function isObjectType(type: ts.Type): type is ts.ObjectType {
   return !!(type.flags & ts.TypeFlags.Object)
@@ -52,19 +53,23 @@ interface IClassDefinition {
 
 export function typecheck(...argv: string[]) {
   const args = argparse({
-    file: arg('string', {
-      default: __dirname + '/' + 'intergen.sample.ts',
-      alias: 'f',
-    }),
+    input: arg('string', {alias: 'i', required: true}),
     debug: arg('boolean'),
     help: arg('boolean', {alias: 'h'}),
+    output: arg('string', {default: '-'}),
   }).parse(argv)
 
+  function debug(m: string, ...meta: any[]) {
+    if (args.debug) {
+      error(m, ...meta)
+    }
+  }
+
   /** Generate interfaces for all exported classes in a set of .ts files */
-  function generateInterfaces(
+  function classesToInterfaces(
     fileNames: string[],
     options: ts.CompilerOptions,
-  ): void {
+  ): string[] {
     // Build a program using the set of root file names in fileNames
     const program = ts.createProgram(fileNames, options)
 
@@ -82,45 +87,45 @@ export function typecheck(...argv: string[]) {
      * of types. For example: types.filter(filterGlobalTypes)
      */
     function filterGlobalTypes(type: ts.Type): boolean {
-      // console.log('fgt', typeToString(type))
+      debug('filterGlobalTypes: %s', typeToString(type))
       if (type.aliasSymbol) {
         // keep type aliases
         return true
       }
       const symbol = type.getSymbol()
       if (!symbol) {
-        // console.log(' no symbol')
+        debug(' no symbol')
         // e.g. string or number types have no symbol
         return false
       }
       if (symbol && symbol.flags & ts.SymbolFlags.Transient) {
-        console.log('  is transient')
+        debug(' is transient')
         // Array is transient. not sure if this is the best way to figure this
         return false
       }
       // if (symbol && !((symbol as any).parent)) {
-      //   // console.log(' no parent', symbol)
+      //   // debug(' no parent', symbol)
       //   // e.g. Array symbol has no parent
       //   return false
       // }
       if (type.isLiteral()) {
-        // console.log(' is literal')
+        debug(' is literal')
         return false
       }
       if (type.isUnionOrIntersection()) {
-        // console.log(' is u or i')
+        debug(' is u or i')
         return false
       }
       if (isObjectType(type) && isTypeReference(type)) {
-        // console.log(' is object type')
+        debug(' is object type')
         if (isObjectType(type.target) &&
           type.target.objectFlags & ts.ObjectFlags.Tuple) {
-          // console.log(' is tuple')
+          debug(' is tuple')
           return false
         }
       }
 
-      // console.log(' keep!')
+      debug(' keep!')
       return true
     }
 
@@ -267,7 +272,7 @@ export function typecheck(...argv: string[]) {
           name: p.getName(),
           type: propType,
           relevantTypes,
-          typeString: typeToString(type),
+          typeString: typeToString(propType),
           optional,
         }
       })
@@ -291,18 +296,6 @@ export function typecheck(...argv: string[]) {
         properties: classProperties,
       }
 
-      console.log(`interface ${classDef.name} {`)
-      console.log(' ',
-        classDef.properties
-        .map(p => p.name + ': ' + typeToString(p.type) + '    {' +
-          p.relevantTypes.map(typeToString) + '}')
-        .join('\n  '),
-      )
-      console.log('}')
-      console.log('\n  allRelevantTypes:\n   ',
-        classDef.allRelevantTypes.map(typeToString).join('\n    '))
-      console.log('\n')
-
       classDefs.push(classDef)
       typeDefinitions.set(type, classDef)
 
@@ -313,18 +306,6 @@ export function typecheck(...argv: string[]) {
      * Visit nodes finding exported classes
      */
     function visit(node: ts.Node) {
-      // console.log('node.getText()', node.getText())
-      // console.log('node.kind', node.kind)
-
-      if (ts.isExportDeclaration(node)) {
-        if (node.exportClause) {
-          // console.log('export {...} from', node.exportClause.elements.length)
-        } else {
-          // console.log('export * from...')
-          // it is exporting *
-        }
-      }
-
       // Only consider exported nodes
       if (!isNodeExported(node)) {
         return
@@ -343,32 +324,42 @@ export function typecheck(...argv: string[]) {
       }
     }
 
-    // const defs: Map<ts.Type, IClassDefinition> = new Map()
-    // classDefs.forEach(classDef => {
-    //   defs.set(classDef.type, classDef)
-    // })
+    function setTypeName(type: ts.Type, mappings: Map<ts.Type, string>) {
+      const name = typeToString(type)
+      mappings.set(type, `I${name}`)
+    }
 
-    // classDefs.forEach(classDef => {
-    //   classDef.allRelevantTypes.forEach(type => {
-    //     if (!defs.has(type)) {
-    //       handleType(type)
-    //     }
-    //   })
-    // })
+    const nameMappings = new Map<ts.Type, string>()
+    for (const classDef of classDefs) {
+      setTypeName(classDef.type, nameMappings)
+      for (const t of classDef.allRelevantTypes) {
+        setTypeName(classDef.type, nameMappings)
+      }
+    }
 
-    // const Vote = classDefs.find(c => c.name === 'Vote')
-    // if (Vote) {
-    //   console.log('found vote')
-    //   const U = Vote.allRelevantTypes.find(t => typeToString(t) === 'User')
-    //   if (U) {
-    //     console.log('found user')
-    //     handleType(U)
-    //   }
-    // }
+    function createInterface(classDef: IClassDefinition): string {
+      const name = nameMappings.get(classDef.type)!
+      const start = `interface ${name} {`
+      const properties = classDef.properties.map(p => {
+        return `  ${p.name}: ${nameMappings.get(p.type) || p.typeString}`
+      })
+      .join('\n')
+      const end = '}'
+      return `${start}\n${properties}\n${end}`
+    }
+
+    return classDefs.map(createInterface)
   }
 
-  generateInterfaces([args.file], {
+  const interfaces = classesToInterfaces([args.input], {
     target: ts.ScriptTarget.ES5,
     module: ts.ModuleKind.CommonJS,
   })
+
+  const value = interfaces.join('\n\n')
+  if (args.output === '-') {
+    info(value)
+  } else {
+    fs.writeFileSync(args.output, value)
+  }
 }
