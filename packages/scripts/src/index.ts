@@ -4,6 +4,8 @@ import * as log from './log'
 import {TCommand} from './TCommand'
 import {argparse, arg} from '@rondo/argparse'
 
+const commandNames = Object.keys(commands).filter(cmd => !cmd.startsWith('_'))
+
 const {parse} = argparse({
   help: arg('boolean', {alias: 'h'}),
   debug: arg('boolean'),
@@ -11,7 +13,7 @@ const {parse} = argparse({
     n: '+',
     required: true,
     positional: true,
-    description: 'Must be one of: ' + Object.keys(commands).join(', '),
+    description: '\n    ' + commandNames.join('\n    '),
   }),
 })
 
@@ -20,8 +22,9 @@ type TArgs = ReturnType<typeof parse>
 async function run(args: TArgs, exit: (code: number) => void) {
   const commandName = args.command[0]
   if (!(commandName in commands)) {
-    const c = Object.keys(commands).filter(cmd => !cmd.startsWith('_'))
-    log.info(`Available commands:\n\n${c.join('\n')}`)
+    const c = commandNames
+    log.info(
+      'Invalid command! Use the --help argument to see a list of commands')
     exit(1)
     return
   }
