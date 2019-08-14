@@ -314,11 +314,6 @@ export function intergen(...argv: string[]): string {
      * Visit nodes finding exported classes
      */
     function visit(node: ts.Node) {
-      console.log(node.getText(),
-        isNodeExported(node),
-        ts.getCombinedModifierFlags(node as any),
-        !!node.parent,
-        node.parent.kind === ts.SyntaxKind.SourceFile)
       // Only consider exported nodes
       if (!isNodeExported(node)) {
         return

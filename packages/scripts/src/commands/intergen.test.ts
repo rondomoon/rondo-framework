@@ -14,15 +14,20 @@ describe('intergen', () => {
   let i = 0
   function createSourceFile(contents: string) {
     i++
-    const sourceFile = path.join(tmpdir, templateName + i + '.ts')
-    fs.writeFileSync(sourceFile, contents)
-    sourceFiles.push(sourceFile)
-    return sourceFile
+    const module = templateName + i
+    const fullPath = path.join(tmpdir, module + '.ts')
+    fs.writeFileSync(fullPath, contents)
+    sourceFiles.push(fullPath)
+    return {fullPath, module}
+  }
+
+  function start(input: string) {
+    return intergen('intergen', '-i', input)
   }
 
   function execute(source: string): string {
-    const file = createSourceFile(source)
-    return intergen('intergen', '-i', file)
+    const {fullPath} = createSourceFile(source)
+    return start(fullPath)
   }
 
   afterEach(() => {
@@ -154,6 +159,26 @@ export class B {
 
 export interface A {
   a: number
+}`)
+  })
+
+  it('generates interfaces from related source files', () => {
+    const {module: f1} = createSourceFile(`export class A {
+  a: number
+}`)
+    const {module: f2} = createSourceFile(`import {A} from './${f1}'
+export class B {
+  a: A
+}`)
+    const {fullPath} =
+      createSourceFile(`export * from './${f2}'`)
+    const result = start(fullPath)
+    expect(result).toEqual(`export interface A {
+  a: number
+}
+
+export interface B {
+  a: A
 }`)
   })
 
