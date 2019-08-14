@@ -7,20 +7,20 @@ import {argparse, arg} from '@rondo/argparse'
 const {parse} = argparse({
   help: arg('boolean'),
   debug: arg('boolean'),
-  command: arg('string', {required: true, positional: true}),
-  other: arg('string[]', {n: '*', positional: true}),
+  command: arg('string[]', {n: '+', required: true, positional: true}),
 })
 
 type TArgs = ReturnType<typeof parse>
 
 async function run(args: TArgs) {
-  if (!(args.command in commands)) {
+  const commandName = args.command[0]
+  if (!(commandName in commands)) {
     const c = Object.keys(commands).filter(cmd => !cmd.startsWith('_'))
     log.info(`Available commands:\n\n${c.join('\n')}`)
     return
   }
-  const command = (commands as any)[args.command] as TCommand
-  await command(args.command, ...args.other)
+  const command = (commands as any)[commandName] as TCommand
+  await command(...args.command)
 }
 
 if (typeof require !== 'undefined' && require.main === module) {

@@ -1,3 +1,5 @@
+import {relative} from 'path'
+
 export type TArgTypeName = 'string' | 'string[]' | 'number' | 'boolean'
 export type TArgType<T extends TArgTypeName> =
   T extends 'string'
@@ -183,7 +185,7 @@ export function help(command: string, config: IArgsConfig) {
   }
 
   const positionalHelp = [
-    command,
+    relative(process.cwd(), command),
     '[OPTIONS]',
     keys
     .filter(k => config[k].positional)
