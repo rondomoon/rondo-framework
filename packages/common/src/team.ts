@@ -25,8 +25,6 @@ export interface IContext {
 }
 
 export interface ITeamService {
-  jerko(params: string): number
-
   create(params: ITeamCreateParams): Promise<ITeam>
 
   remove(params: ITeamRemoveParams): Promise<{id: number}>

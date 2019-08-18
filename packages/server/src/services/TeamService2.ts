@@ -18,10 +18,6 @@ export class TeamService2 implements Contextual<t.ITeamService, IContext> {
     protected readonly permissions: IUserPermissions,
   ) {}
 
-  jerko(params: string, context?: IContext): number {
-    return parseInt(params, 10)
-  }
-
   async create(params: t.ITeamCreateParams, context: IContext) {
     const {userId} = context
     const name = trim(params.name)

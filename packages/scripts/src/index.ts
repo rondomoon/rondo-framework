@@ -1,31 +1,16 @@
 #!/usr/bin/env node
-import * as commands from './commands'
 import * as log from './log'
 import {TCommand} from './TCommand'
 import {argparse, arg} from '@rondo/argparse'
+import {resolve} from './resolve'
 
-const commandNames = Object.keys(commands).filter(cmd => !cmd.startsWith('_'))
-
-const {parse} = argparse({
-  help: arg('boolean', {alias: 'h'}),
-  debug: arg('boolean'),
-  command: arg('string', {
-    required: true,
-    positional: true,
-    choices: commandNames,
-  }),
-  args: arg('string[]', {
-    n: '*',
-    positional: true,
-  }),
-})
-
-type TArgs = ReturnType<typeof parse>
-
-async function run(args: TArgs, exit: (code: number) => void) {
+async function run(
+  args: any, commands: object, exit: (code: number) => void,
+) {
+  const p = './scripts'
+  const module = await import(p)
   const commandName = args.command
   if (!(commandName in commands)) {
-    const c = commandNames
     log.info(
       'Invalid command! Use the --help argument to see a list of commands')
     exit(1)
@@ -39,10 +24,25 @@ async function start(
   argv: string[] = process.argv.slice(1),
   exit = (code: number) => process.exit(code),
 ) {
-  let args: TArgs | null = null
+  const commands = await resolve()
+  const {parse} = argparse({
+    help: arg('boolean', {alias: 'h'}),
+    debug: arg('boolean'),
+    command: arg('string', {
+      required: true,
+      positional: true,
+      choices: Object.keys(commands).filter(c => !c.startsWith('_')),
+    }),
+    args: arg('string[]', {
+      n: '*',
+      positional: true,
+    }),
+  })
+
+  let args: ReturnType<typeof parse> | null = null
   try {
     args = parse(argv)
-    await run(args, exit)
+    await run(args, commands, exit)
   } catch (err) {
     log.error((args && args.debug ? err.stack : err.message))
     exit(1)

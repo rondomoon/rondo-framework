@@ -31,22 +31,52 @@ export async function build(...argv: string[]) {
   await run(tsc, ['--build', path, ...watchArgs])
 }
 
-export async function test(...args: string[]) {
+export async function test(...argv: string[]) {
+  const {args} = argparse({
+    args: arg('string[]', {
+      n: '*',
+      positional: true,
+    }),
+    help: arg('boolean', {alias: 'h'}),
+  })
+  .parse(argv)
   await run('jest', args)
 }
 
-export async function exec(file: string) {
+export async function exec(...argv: string[]) {
+  const {parse} = argparse({
+    file: arg('string', {
+      required: true,
+      positional: true,
+    }),
+    args: arg('string[]', {
+      n: '*',
+      positional: true,
+    }),
+    help: arg('boolean', {alias: 'h'}),
+  })
+  const args = parse(argv)
+  const {file} = args
   const command = file.endsWith('.ts') ? 'ts-node' : 'node'
-  const args = command === 'ts-node' ?
+  const nodeArgs = command === 'ts-node' ?
     [
       '--files',
       '--project',
       findTsConfig(file),
     ] : []
-  await run(command, [...args, file])
+  await run(command, [...nodeArgs, file, ...args.args])
 }
 
-export async function createMigration(project: string, name: string) {
+export async function createMigration(...argv: string[]) {
+  const args = argparse({
+    name: arg('string', {required: true, positional: true}),
+    project: arg('string', {default: '.'}),
+    help: arg('boolean', {alias: 'h'}),
+  })
+  .parse(argv)
+
+  const {name, project} = args
+
   const typeorm = findNodeModules(project)
   .map(nm => p.join(nm, 'typeorm'))
   .find(t => fs.existsSync(t))
@@ -70,7 +100,7 @@ function findTsConfig(file: string): string {
   return ''
 }
 
-export async function browserify(path: string = '.') {
+async function browserify(path: string = '.') {
   // mkdirSync(join(path, 'build'), {recursive: true})
   await run('browserify', [
     join(path, 'esm', 'index.js'),
@@ -82,7 +112,7 @@ export async function browserify(path: string = '.') {
   ])
 }
 
-export async function uglify(path: string = '.') {
+async function uglify(path: string = '.') {
   await run('uglifyjs', [
     '--compress',
     '--mangle',
@@ -93,13 +123,25 @@ export async function uglify(path: string = '.') {
   ])
 }
 
-export async function js(path: string = '.') {
+export async function js(...argv: string[]) {
+  const args = argparse({
+    path: arg('string', {positional: true, default: '.'}),
+    watch: arg('boolean', {alias: 'w'}),
+    help: arg('boolean', {alias: 'h'}),
+  })
+  .parse(argv)
+
+  const {path, watch} = args
+  return watch ? watchJs(path) : buildJs(path)
+}
+
+async function buildJs(path: string) {
   await build(...['-p', path, '--esm'])
   await browserify(path)
   await uglify(path)
 }
 
-export async function watchJs(path: string = '.') {
+async function watchJs(path: string) {
   await run('watchify', [
     join(path, 'esm', 'index.js'),
     // '-p', '[', 'tsify', '--project', path, ']',
@@ -111,7 +153,20 @@ export async function watchJs(path: string = '.') {
   ])
 }
 
-export async function css(path = '.') {
+export async function css(...argv: string[]) {
+  const args = argparse({
+    path: arg('string', {positional: true, default: '.'}),
+    watch: arg('boolean', {alias: 'w'}),
+    help: arg('boolean', {alias: 'h'}),
+  })
+  .parse(argv)
+
+  const {path, watch} = args
+
+  if (watch) {
+    await watchCss(path)
+  }
+
   await run('node-sass', [
     '--output-style', 'compressed',
     '--output', join(path, 'build'),
@@ -119,7 +174,7 @@ export async function css(path = '.') {
   ])
 }
 
-export async function watchCss(path = '.') {
+async function watchCss(path = '.') {
   await run('node-sass', [
     join(path, 'scss'),
     '--output', join(path, 'build'),
@@ -137,7 +192,13 @@ export async function watchCss(path = '.') {
   ])
 }
 
-export async function frontend(path = '.') {
+export async function frontend(...argv: string[]) {
+  const args = argparse({
+    path: arg('string', {positional: true, default: '.'}),
+    help: arg('boolean', {alias: 'h'}),
+  })
+  .parse(argv)
+  const {path} = args
   await build(...['-p', path, '--esm'])
   const promises = [
     build(...['-p', path, '--watch', '--esm']),
