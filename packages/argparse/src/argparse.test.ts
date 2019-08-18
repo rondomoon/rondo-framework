@@ -167,8 +167,8 @@ describe('argparse', () => {
         `${CMD} [OPTIONS]`,
         '',
         'Options:',
-        '    --value [VALUE]',
-        '    --help boolean',
+        '      --value [VALUE]',
+        '      --help boolean',
       ].join('\n'))
     })
     it('can be used to extract finite number of values', () => {
@@ -194,9 +194,9 @@ describe('argparse', () => {
         `${CMD} [OPTIONS]`,
         '',
         'Options:',
-        '    --value [VALUE1 VALUE2 VALUE3]',
-        '-o, --other number',
-        '    --help boolean',
+        '      --value [VALUE1 VALUE2 VALUE3]',
+        '  -o, --other number',
+        '      --help boolean',
       ].join('\n'))
     })
     it('can be used to collect any remaining arguments when n = "+"', () => {
@@ -222,9 +222,9 @@ describe('argparse', () => {
         `${CMD} [OPTIONS]`,
         '',
         'Options:',
-        '    --value VALUE...            (required)',
-        '    --other number',
-        '    --help boolean',
+        '      --value VALUE...          (required)',
+        '      --other number',
+        '      --help boolean',
       ].join('\n'))
     })
     it('can collect remaining positional arguments when n = "*"', () => {
@@ -259,8 +259,8 @@ describe('argparse', () => {
         '  VALUE string[]                (required)',
         '',
         'Options:',
-        '    --other number',
-        '    --help boolean',
+        '      --other number',
+        '      --help boolean',
       ].join('\n'))
     })
   })
@@ -319,7 +319,7 @@ Positional arguments:
         b: 'bbb',
       })
     })
-    it('works amongs regular arguments', () => {
+    it('works amongst regular arguments', () => {
       const {parse} = argparse({
         arg1: {
           type: 'string',
@@ -332,10 +332,15 @@ Positional arguments:
           type: 'string',
         },
       })
-      expect(parse([CMD, '--arg1', 'one', '2', '--arg3', 'three'])).toEqual({
+      expect(parse([CMD, '--arg1', 'one', '--arg3', 'three', '2'])).toEqual({
         arg1: 'one',
         arg2: 2,
         arg3: 'three',
+      })
+      expect(parse([CMD, '2'])).toEqual({
+        arg1: '',
+        arg2: 2,
+        arg3: '',
       })
     })
   })
@@ -355,10 +360,10 @@ Positional arguments:
         `${CMD} [OPTIONS]`,
         '',
         'Options:',
-        '    --one string',
-        '    --two number',
-        '    --three boolean',
-        '    --help boolean',
+        '      --one string',
+        '      --two number',
+        '      --three boolean',
+        '      --help boolean',
       ].join('\n'))
     })
     it('returns help string with alias, description, and samples', () => {
@@ -390,9 +395,9 @@ Positional arguments:
         '  THREE number',
         '',
         'Options:',
-        '-o, --one string                first argument ' +
-          '(required, default: choice-1, choices: choice-1,choice-2)',
-        '    --help boolean',
+        '  -o, --one string              first argument ' +
+            '(required, default: choice-1, choices: choice-1,choice-2)',
+        '      --help boolean',
       ].join('\n'))
     })
 

@@ -9,18 +9,21 @@ const commandNames = Object.keys(commands).filter(cmd => !cmd.startsWith('_'))
 const {parse} = argparse({
   help: arg('boolean', {alias: 'h'}),
   debug: arg('boolean'),
-  command: arg('string[]', {
-    n: '+',
+  command: arg('string', {
     required: true,
     positional: true,
-    description: '\n    ' + commandNames.join('\n    '),
+    choices: commandNames,
+  }),
+  args: arg('string[]', {
+    n: '*',
+    positional: true,
   }),
 })
 
 type TArgs = ReturnType<typeof parse>
 
 async function run(args: TArgs, exit: (code: number) => void) {
-  const commandName = args.command[0]
+  const commandName = args.command
   if (!(commandName in commands)) {
     const c = commandNames
     log.info(
@@ -29,7 +32,7 @@ async function run(args: TArgs, exit: (code: number) => void) {
     return
   }
   const command = (commands as any)[commandName] as TCommand
-  await command(...args.command)
+  await command(args.command, ...args.args)
 }
 
 async function start(

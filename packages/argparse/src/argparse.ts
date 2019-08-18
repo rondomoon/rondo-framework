@@ -231,8 +231,8 @@ export function help(command: string, config: IArgsConfig) {
     const argConfig = config[argument]
     const {alias, type, required, n} = argConfig
     const name = alias
-      ? `-${alias}, --${argument}`
-      : `    --${argument}`
+      ? `  -${alias}, --${argument}`
+      : `      --${argument}`
     const description = getDescription(argConfig)
     const argType = getArgType(type, argument, required, n)
     const nameAndType = `${name} ${argType}`
@@ -338,9 +338,9 @@ export function argparse<T extends IArgsConfig>(
         return lastArgName
       }
 
-      function getNextPositional(): string {
+      function getNextPositional(argument: string): string {
         const p = positional.shift()
-        assert(!!p, 'No defined positional arguments')
+        assert(!!p, 'Unknown positional argument: ' + argument)
         return p!
       }
 
@@ -352,9 +352,12 @@ export function argparse<T extends IArgsConfig>(
           continue
         }
         const isPositional = argument.substring(0, 1) !== '-' || onlyPositionals
+        if (isPositional) {
+          onlyPositionals = true
+        }
         const argName = !isPositional
           ? processFlags(argument)
-          : getNextPositional()
+          : getNextPositional(argument)
         const argConfig = config[argName]
         if (!isPositional && argName === 'help') {
           log(help(command, config))
