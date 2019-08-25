@@ -1,1 +1,5 @@
 ---
+app:
+  db:
+    database: ':memory:'
+    migrationsRun: true
