@@ -1,4 +1,4 @@
-import {ILogger} from './ILogger'
+import {ILogger} from './logger/ILogger'
 
 export interface ILoggerFactory {
   getLogger(name: string): ILogger

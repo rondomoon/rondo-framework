@@ -10,7 +10,8 @@
     "@rondo.dev/tasq": "file:packages/tasq",
     "@rondo.dev/jsonrpc": "file:packages/jsonrpc",
     "@rondo.dev/scripts": "file:packages/scripts",
-    "@rondo.dev/argparse": "file:packages/argparse"
+    "@rondo.dev/argparse": "file:packages/argparse",
+    "@rondo.dev/logger": "file:packages/logger"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",

@@ -14,7 +14,8 @@ import {ILogger} from '../logger/ILogger'
 import {IRoutes} from '@rondo.dev/common'
 import {IServices} from './IServices'
 import {ITransactionManager} from '../database/ITransactionManager'
-import {loggerFactory, LoggerFactory} from '../logger/LoggerFactory'
+import {loggerFactory} from '../logger'
+import {ILoggerFactory} from '@rondo.dev/logger'
 import {json} from 'body-parser'
 
 export class Application implements IApplication {
@@ -25,7 +26,7 @@ export class Application implements IApplication {
   readonly services: IServices
   readonly authenticator: middleware.Authenticator
 
-  readonly loggerFactory: LoggerFactory = loggerFactory
+  readonly loggerFactory: ILoggerFactory = loggerFactory
 
   constructor(readonly config: IConfig, readonly database: IDatabase) {
     this.transactionManager = database.transactionManager

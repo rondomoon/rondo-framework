@@ -5,8 +5,5 @@
     "rootDir": "src"
   },
   "references": [
-    {"path": "../common"},
-    {"path": "../jsonrpc"},
-    {"path": "../logger"}
   ]
 }
