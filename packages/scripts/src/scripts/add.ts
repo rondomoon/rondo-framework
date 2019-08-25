@@ -4,7 +4,7 @@ import * as path from 'path'
 import {argparse, arg} from '@rondo/argparse'
 import {run} from '../run'
 
-export async function newlib(...argv: string[]) {
+export async function add(...argv: string[]) {
   const {parse} = argparse({
     name: arg('string', {positional: true, required: true}),
     namespace: arg('string', {default: '@rondo'}),
@@ -13,7 +13,7 @@ export async function newlib(...argv: string[]) {
       description: 'Print help message',
     }),
     // frontend: arg('boolean', {alias: 'f'}),
-  })
+  }, 'Create a new library from template')
   const args = parse(argv)
 
   const destDir = path.join('./packages', args.name)
