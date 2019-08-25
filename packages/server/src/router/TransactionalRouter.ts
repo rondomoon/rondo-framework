@@ -1,6 +1,6 @@
 import express from 'express'
 import {AsyncRouter} from './AsyncRouter'
-import {IRoutes, TMethod} from '@rondo/common'
+import {IRoutes, TMethod} from '@rondo.dev/common'
 import {ITransactionManager} from '../database/ITransactionManager'
 import {TTypedHandler} from './TTypedHandler'
 

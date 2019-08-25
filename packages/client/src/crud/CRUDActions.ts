@@ -1,5 +1,5 @@
 import {IHTTPClient, ITypedRequestParams} from '../http'
-import {IRoutes, TFilter, TOnlyDefined} from '@rondo/common'
+import {IRoutes, TFilter, TOnlyDefined} from '@rondo.dev/common'
 import {TCRUDAction} from './TCRUDAction'
 import {TCRUDChangeAction} from './TCRUDAction'
 import {TCRUDCreateAction} from './TCRUDAction'

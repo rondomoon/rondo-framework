@@ -7,8 +7,8 @@ import {
   trim,
   team as t,
   IUserInTeam,
-} from '@rondo/common'
-import {Contextual} from '@rondo/jsonrpc'
+} from '@rondo.dev/common'
+import {Contextual} from '@rondo.dev/jsonrpc'
 
 type IContext = t.IContext
 

@@ -1,4 +1,4 @@
-import {TMethod, IRoutes} from '@rondo/common'
+import {TMethod, IRoutes} from '@rondo.dev/common'
 import {ITypedRequestParams} from './ITypedRequestParams'
 
 export interface IHTTPClient<T extends IRoutes> {

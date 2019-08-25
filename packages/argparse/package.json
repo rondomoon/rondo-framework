@@ -1,5 +1,5 @@
 {
-  "name": "@rondo/argparse",
+  "name": "@rondo.dev/argparse",
   "private": true,
   "scripts": {
     "test": "jest",

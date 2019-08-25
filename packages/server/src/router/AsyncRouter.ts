@@ -1,5 +1,5 @@
 import express from 'express'
-import {IRoutes, TMethod} from '@rondo/common'
+import {IRoutes, TMethod} from '@rondo.dev/common'
 import {TTypedHandler, TTypedMiddleware} from './TTypedHandler'
 
 export class AsyncRouter<R extends IRoutes> {

@@ -1,7 +1,7 @@
 import createError from 'http-errors'
 import {BaseService} from './BaseService'
 import {DB} from '../database/DB'
-import {ICredentials, INewUser, IUser, trim} from '@rondo/common'
+import {ICredentials, INewUser, IUser, trim} from '@rondo.dev/common'
 import {IUserService} from './IUserService'
 import {UserEmail} from '../entities/UserEmail'
 import {User} from '../entities/User'

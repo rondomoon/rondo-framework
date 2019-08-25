@@ -1,4 +1,4 @@
-import {IPendingAction, IResolvedAction, IRejectedAction} from '@rondo/client'
+import {IPendingAction, IResolvedAction, IRejectedAction} from '@rondo.dev/client'
 
 export type ArgumentTypes<T> =
   T extends (...args: infer U) => infer R ? U : never

@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import * as log from '../log'
 import * as p from 'path'
-import {argparse, arg} from '@rondo/argparse'
+import {argparse, arg} from '@rondo.dev/argparse'
 import {findNodeModules} from '../modules'
 import {join} from 'path'
 import {run} from '../run'

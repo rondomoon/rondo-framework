@@ -1,6 +1,6 @@
 import {THandler} from '../middleware/THandler'
 import {AsyncRouter} from '../router'
-import {IRoutes} from '@rondo/common'
+import {IRoutes} from '@rondo.dev/common'
 
 export abstract class BaseRoute<T extends IRoutes> {
   readonly handle: THandler

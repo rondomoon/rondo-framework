@@ -1,5 +1,5 @@
 import React from 'react'
-import {ITeam, IUser, IUserInTeam, TReadonlyRecord} from '@rondo/common'
+import {ITeam, IUser, IUserInTeam, TReadonlyRecord} from '@rondo.dev/common'
 import {TeamActions} from './TeamActions'
 import {FaUser, FaCheck, FaTimes} from 'react-icons/fa'
 

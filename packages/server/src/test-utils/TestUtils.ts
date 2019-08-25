@@ -5,7 +5,7 @@ import {DB} from '../database/DB'
 import {
   ENTITY_MANAGER, ITransactionManager,
 } from '../database/ITransactionManager'
-import {IRoutes} from '@rondo/common'
+import {IRoutes} from '@rondo.dev/common'
 import {IBootstrap} from '../application/IBootstrap'
 import {RequestTester} from './RequestTester'
 import {Role} from '../entities/Role'

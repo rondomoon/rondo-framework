@@ -3,7 +3,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import T from 'react-dom/test-utils'
 import {HTTPClientMock, TestUtils, getError} from '../test-utils'
-import {IAPIDef} from '@rondo/common'
+import {IAPIDef} from '@rondo.dev/common'
 import {MemoryRouter} from 'react-router-dom'
 
 const test = new TestUtils()

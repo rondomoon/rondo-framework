@@ -1,1 +1,1 @@
-export {ILogger} from '@rondo/common'
+export {ILogger} from '@rondo.dev/common'

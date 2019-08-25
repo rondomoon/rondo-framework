@@ -1,6 +1,6 @@
 import React from 'react'
 import {FaUser, FaLock} from 'react-icons/fa'
-import {ICredentials, IUser} from '@rondo/common'
+import {ICredentials, IUser} from '@rondo.dev/common'
 import {Input} from '../components/Input'
 import {Link} from 'react-router-dom'
 import {Redirect} from '../components/Redirect'

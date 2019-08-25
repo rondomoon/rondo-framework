@@ -1,5 +1,5 @@
 import {Bootstrap} from './application/Bootstrap'
-import {IAPIDef} from '@rondo/common'
+import {IAPIDef} from '@rondo.dev/common'
 import {NamespaceMock, TestUtils} from './test-utils'
 import {config} from './config'
 

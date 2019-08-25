@@ -1,4 +1,4 @@
-import {ILogger} from '@rondo/common'
+import {ILogger} from '@rondo.dev/common'
 
 const noop = () => undefined
 

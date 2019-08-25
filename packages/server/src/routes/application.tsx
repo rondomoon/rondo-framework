@@ -1,5 +1,5 @@
 // import React from 'react'
-// import {CComponent} from '@rondo/client'
+// import {CComponent} from '@rondo.dev/client'
 // import {Provider} from 'react-redux'
 import {Router} from 'express'
 // import {createReadStream} from 'fs'

@@ -2,7 +2,7 @@ import * as Feature from './'
 // export ReactDOM from 'react-dom'
 import T from 'react-dom/test-utils'
 import {HTTPClientMock, TestUtils, getError} from '../test-utils'
-import {IAPIDef, ITeam, IUserInTeam} from '@rondo/common'
+import {IAPIDef, ITeam, IUserInTeam} from '@rondo.dev/common'
 import React from 'react'
 import {MemoryRouter} from 'react-router-dom'
 

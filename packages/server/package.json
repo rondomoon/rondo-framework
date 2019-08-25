@@ -1,5 +1,5 @@
 {
-  "name": "@rondo/server",
+  "name": "@rondo.dev/server",
   "private": true,
   "scripts": {
     "test": "jest",

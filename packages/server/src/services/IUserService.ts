@@ -1,4 +1,4 @@
-import {ICredentials, INewUser, IUser} from '@rondo/common'
+import {ICredentials, INewUser, IUser} from '@rondo.dev/common'
 
 export interface IUserService {
   createUser(credentials: INewUser): Promise<IUser>

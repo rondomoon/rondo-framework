@@ -1,6 +1,6 @@
 import {Team} from '../entities/Team'
 import {IUserTeamParams} from './IUserTeamParams'
-import {IUserInTeam} from '@rondo/common'
+import {IUserInTeam} from '@rondo.dev/common'
 
 export interface ITeamService {
   create(params: {name: string, userId: number}): Promise<Team>

@@ -3,7 +3,7 @@ import React from 'react'
 import {AnyAction} from 'redux'
 import {CRUDReducer, TCRUDMethod, TCRUDAsyncMethod} from './'
 import {HTTPClientMock, TestUtils, getError} from '../test-utils'
-import {TMethod} from '@rondo/common'
+import {TMethod} from '@rondo.dev/common'
 import {IPendingAction} from '../actions'
 
 describe('CRUD', () => {

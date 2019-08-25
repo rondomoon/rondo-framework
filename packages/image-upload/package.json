@@ -1,5 +1,5 @@
 {
-  "name": "@rondo/image-upload",
+  "name": "@rondo.dev/image-upload",
   "private": true,
   "peerDependencies": {
     "react": "^16.7.0",

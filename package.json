@@ -1,16 +1,16 @@
 {
   "dependencies": {
-    "@rondo/client": "file:packages/client",
-    "@rondo/common": "file:packages/common",
-    "@rondo/server": "file:packages/server",
-    "@rondo/comments-server": "file:packages/comments-server",
-    "@rondo/comments-common": "file:packages/comments-common",
-    "@rondo/comments-client": "file:packages/comments-client",
-    "@rondo/image-upload": "file:packages/image-upload",
-    "@rondo/tasq": "file:packages/tasq",
-    "@rondo/jsonrpc": "file:packages/jsonrpc",
-    "@rondo/scripts": "file:packages/scripts",
-    "@rondo/argparse": "file:packages/argparse"
+    "@rondo.dev/client": "file:packages/client",
+    "@rondo.dev/common": "file:packages/common",
+    "@rondo.dev/server": "file:packages/server",
+    "@rondo.dev/comments-server": "file:packages/comments-server",
+    "@rondo.dev/comments-common": "file:packages/comments-common",
+    "@rondo.dev/comments-client": "file:packages/comments-client",
+    "@rondo.dev/image-upload": "file:packages/image-upload",
+    "@rondo.dev/tasq": "file:packages/tasq",
+    "@rondo.dev/jsonrpc": "file:packages/jsonrpc",
+    "@rondo.dev/scripts": "file:packages/scripts",
+    "@rondo.dev/argparse": "file:packages/argparse"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",

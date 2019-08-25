@@ -1,4 +1,4 @@
-import {IRoutes, TMethod} from '@rondo/common'
+import {IRoutes, TMethod} from '@rondo.dev/common'
 
 export interface ITypedRequestParams<
   T extends IRoutes,

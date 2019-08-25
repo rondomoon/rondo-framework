@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as ts from 'typescript'
-import {argparse, arg} from '@rondo/argparse'
+import {argparse, arg} from '@rondo.dev/argparse'
 import {error, info} from '../log'
 
 function isObjectType(type: ts.Type): type is ts.ObjectType {
@@ -50,8 +50,8 @@ interface IClassDefinition {
  * b) Referenced exported classes from the same file
  * c) Referenced exported classes from a neighbouring file
  * d) Referenced imported classes from external modules. Real world example:
- *    entities in @rondo/comments-server import and use entities from
- *    @rondo/comments. These types will have to be processed by this module.
+ *    entities in @rondo.dev/comments-server import and use entities from
+ *    @rondo.dev/comments. These types will have to be processed by this module.
  * e) Referenced interfaces should be re-imported in the output file.
  *
  */

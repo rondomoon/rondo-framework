@@ -1,6 +1,6 @@
 import express from 'express'
 import {AsyncRouter} from '../router'
-import {IRoutes} from '@rondo/common'
+import {IRoutes} from '@rondo.dev/common'
 import {IDatabase} from '../database/IDatabase'
 
 export interface IApplication {

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {IHTTPClient} from './IHTTPClient'
 import {IHeader} from './IHeader'
-import {TMethod, IRoutes, URLFormatter} from '@rondo/common'
+import {TMethod, IRoutes, URLFormatter} from '@rondo.dev/common'
 import {IRequest} from './IRequest'
 import {IResponse} from './IResponse'
 import {ITypedRequestParams} from './ITypedRequestParams'

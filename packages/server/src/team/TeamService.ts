@@ -1,6 +1,6 @@
 import {DB} from '../database/DB'
 import {ITeamService} from './ITeamService'
-import {IUserInTeam, trim} from '@rondo/common'
+import {IUserInTeam, trim} from '@rondo.dev/common'
 import {IUserTeamParams} from './IUserTeamParams'
 import {Team} from '../entities/Team'
 import {UserTeam} from '../entities/UserTeam'

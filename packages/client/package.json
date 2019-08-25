@@ -1,5 +1,5 @@
 {
-  "name": "@rondo/client",
+  "name": "@rondo.dev/client",
   "private": true,
   "peerDependencies": {
     "axios": "^0.18.0",

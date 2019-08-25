@@ -1,4 +1,4 @@
-import {IUser} from '@rondo/common'
+import {IUser} from '@rondo.dev/common'
 import {TLoginAction} from './LoginActions'
 
 export interface ILoginState {

@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import {Action} from 'redux'
-import {IAPIDef} from '@rondo/common'
+import {IAPIDef} from '@rondo.dev/common'
 import {IClientConfig} from './IClientConfig'
 import {IHTTPClient, HTTPClient} from '../http'
 import {IRenderer} from './IRenderer'

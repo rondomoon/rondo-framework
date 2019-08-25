@@ -1,5 +1,5 @@
 import {TGetAction, TAsyncAction, IAction, PendingAction} from '../actions'
-import {IAPIDef, ICredentials, INewUser, IUser} from '@rondo/common'
+import {IAPIDef, ICredentials, INewUser, IUser} from '@rondo.dev/common'
 import {IHTTPClient} from '../http/IHTTPClient'
 
 export type TLoginAction =

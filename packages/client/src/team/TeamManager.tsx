@@ -1,6 +1,6 @@
 import React from 'react'
 import {History, Location} from 'history'
-import {ITeam, IUserInTeam, TReadonlyRecord} from '@rondo/common'
+import {ITeam, IUserInTeam, TReadonlyRecord} from '@rondo.dev/common'
 import {Panel, PanelBlock, PanelHeading} from 'bloomer'
 import {Route, Switch} from 'react-router-dom'
 import {TeamActions} from './TeamActions'

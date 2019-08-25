@@ -1,4 +1,4 @@
-import {IAPIDef} from '@rondo/common'
+import {IAPIDef} from '@rondo.dev/common'
 import {IClientConfig} from './IClientConfig'
 import {Store} from 'redux'
 

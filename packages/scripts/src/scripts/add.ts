@@ -1,13 +1,13 @@
 import * as fs from 'fs'
 import * as log from '../log'
 import * as path from 'path'
-import {argparse, arg} from '@rondo/argparse'
+import {argparse, arg} from '@rondo.dev/argparse'
 import {run} from '../run'
 
 export async function add(...argv: string[]) {
   const {parse} = argparse({
     name: arg('string', {positional: true, required: true}),
-    namespace: arg('string', {default: '@rondo'}),
+    namespace: arg('string', {default: '@rondo.dev'}),
     help: arg('boolean', {
       alias: 'h',
       description: 'Print help message',

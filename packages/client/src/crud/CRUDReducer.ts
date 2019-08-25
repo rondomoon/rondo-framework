@@ -1,7 +1,7 @@
 import {IAction, IResolvedAction} from '../actions'
 import {TCRUDAction} from './TCRUDAction'
 import {TCRUDMethod} from './TCRUDMethod'
-import {indexBy, without, TFilter} from '@rondo/common'
+import {indexBy, without, TFilter} from '@rondo.dev/common'
 
 export interface ICRUDEntity {
   readonly id: number

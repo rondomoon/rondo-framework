@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as log from './log'
 import {TCommand} from './TCommand'
-import {argparse, arg} from '@rondo/argparse'
+import {argparse, arg} from '@rondo.dev/argparse'
 import {resolve} from './resolve'
 
 async function run(

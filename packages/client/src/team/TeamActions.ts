@@ -1,7 +1,7 @@
-import {IAPIDef} from '@rondo/common'
+import {IAPIDef} from '@rondo.dev/common'
 import {TGetPendingAction, TAsyncAction, PendingAction} from '../actions'
 import {IHTTPClient} from '../http/IHTTPClient'
-import {ITeam, IUser, IUserInTeam} from '@rondo/common'
+import {ITeam, IUser, IUserInTeam} from '@rondo.dev/common'
 
 export type TTeamAction =
   TAsyncAction<ITeam[], 'TEAMS'>

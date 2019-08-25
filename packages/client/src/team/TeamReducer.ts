@@ -1,6 +1,6 @@
 import {
   ITeam, IUserInTeam, TReadonlyRecord, indexBy, without,
-} from '@rondo/common'
+} from '@rondo.dev/common'
 import {TTeamAction} from './TeamActions'
 import {TGetResolvedAction} from '../actions'
 

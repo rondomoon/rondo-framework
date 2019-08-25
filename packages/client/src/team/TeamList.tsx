@@ -1,7 +1,7 @@
 import React from 'react'
 import {Button, Panel, PanelHeading, PanelBlock} from 'bloomer'
 import {FaPlus, FaEdit, FaTimes} from 'react-icons/fa'
-import {ITeam, TReadonlyRecord} from '@rondo/common'
+import {ITeam, TReadonlyRecord} from '@rondo.dev/common'
 import {Link} from 'react-router-dom'
 import {TeamActions} from './TeamActions'
 import {TeamEditor} from './TeamEditor'

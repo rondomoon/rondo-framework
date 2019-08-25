@@ -1,5 +1,5 @@
 {
-  "name": "@rondo/tasq",
+  "name": "@rondo.dev/tasq",
   "private": true,
   "scripts": {
     "test": "jest",

@@ -1,5 +1,5 @@
 import express from 'express'
-import {IRoutes, TMethod} from '@rondo/common'
+import {IRoutes, TMethod} from '@rondo.dev/common'
 import {ITypedRequest} from './ITypedRequest'
 
 export type TTypedMiddleware<

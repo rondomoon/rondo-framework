@@ -1,5 +1,5 @@
 import {Connector} from '../redux/Connector'
-import {INewUser} from '@rondo/common'
+import {INewUser} from '@rondo.dev/common'
 import {ILoginState} from './LoginReducer'
 import {TStateSelector} from '../redux'
 import {LoginActions} from './LoginActions'

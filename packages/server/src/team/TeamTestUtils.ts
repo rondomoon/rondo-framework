@@ -1,5 +1,5 @@
 import {RequestTester} from '../test-utils'
-import {IAPIDef} from '@rondo/common'
+import {IAPIDef} from '@rondo.dev/common'
 
 export async function createTeam(t: RequestTester<IAPIDef>, name: string) {
   const response = await t

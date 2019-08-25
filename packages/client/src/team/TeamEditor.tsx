@@ -1,6 +1,6 @@
 import React from 'react'
 import {Button, Control, Heading, Help, Input} from 'bloomer'
-import {ITeam} from '@rondo/common'
+import {ITeam} from '@rondo.dev/common'
 import {TeamActions} from './TeamActions'
 import {FaPlusSquare, FaCheck, FaEdit} from 'react-icons/fa'
 
