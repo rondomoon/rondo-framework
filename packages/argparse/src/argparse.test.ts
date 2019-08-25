@@ -159,7 +159,7 @@ describe('argparse', () => {
           type: 'string[]',
         },
         help: arg('boolean'),
-      }, exit, log)
+      }, '', exit, log)
       expect(parse([CMD]).value).toEqual([])
       expect(parse([CMD, '--value', 'one']).value).toEqual(['one'])
       parse([CMD, '--help'])
@@ -182,7 +182,7 @@ describe('argparse', () => {
           alias: 'o',
         },
         help: arg('boolean'),
-      }, exit, log)
+      }, '', exit, log)
       expect(parse([CMD]).value).toEqual([])
       expect(parse([CMD, '--value', 'a', 'b', '--other', '-o', '3'])).toEqual({
         value: ['a', 'b', '--other'],
@@ -204,7 +204,7 @@ describe('argparse', () => {
         value: arg('string[]', {n: '+', required: true}),
         other: arg('number'),
         help: arg('boolean'),
-      }, exit, log)
+      }, '', exit, log)
       expect(() => parse([CMD])).toThrowError(/Missing required args: value/)
       expect(parse([CMD, '--value', 'a', '--other', '3'])).toEqual({
         value: ['a', '--other', '3'],
@@ -232,7 +232,7 @@ describe('argparse', () => {
         value: arg('string[]', {n: '*', required: true, positional: true}),
         other: arg('number'),
         help: arg('boolean'),
-      }, exit, log)
+      }, '', exit, log)
       expect(parse([CMD, 'a', 'b']).value).toEqual(['a', 'b'])
       expect(() => parse([CMD, '--other', '3']).value)
       .toThrowError(/Missing.*: value/)
@@ -272,7 +272,7 @@ describe('argparse', () => {
           type: 'number',
           positional: true,
         },
-      }, exit, log)
+      }, '', exit, log)
       expect(parse([CMD]).a).toBe(NaN)
       expect(parse([CMD, '12']).a).toBe(12)
       parse([CMD, '--help'])
@@ -352,12 +352,14 @@ Positional arguments:
         two: arg('number'),
         three: arg('boolean'),
         help: arg('boolean'),
-      }, exit, log)
+      }, 'This command does something', exit, log)
       expect(exit.mock.calls.length).toBe(0)
       parse([CMD, '--help'])
       expect(exit.mock.calls.length).toBe(1)
       expect(log.mock.calls[0][0]).toEqual([
         `${CMD} [OPTIONS]`,
+        '',
+        'This command does something',
         '',
         'Options:',
         '      --one string',
@@ -383,7 +385,7 @@ Positional arguments:
           positional: true,
         }),
         help: arg('boolean'),
-      }, exit, log)
+      }, '', exit, log)
       expect(exit.mock.calls.length).toBe(0)
       parse([CMD, '--help'])
       expect(exit.mock.calls.length).toBe(1)

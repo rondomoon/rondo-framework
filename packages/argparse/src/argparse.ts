@@ -150,14 +150,14 @@ function checkChoice<T>(argument: string, choice: T, choices?: T[]) {
   }
 }
 
-export function padRight(str: string, chars: number) {
+function padRight(str: string, chars: number) {
   while (str.length < chars) {
     str += ' '
   }
   return str
 }
 
-export function help(command: string, config: IArgsConfig) {
+function help(command: string, config: IArgsConfig, desc: string = '') {
   const keys = Object.keys(config)
 
   function getArrayHelp(
@@ -257,7 +257,7 @@ export function help(command: string, config: IArgsConfig) {
   .filter(k => k.length)
   .join(' ')
 
-  return [commandHelp, positionalHelp, optionsHelp]
+  return [commandHelp, desc, positionalHelp, optionsHelp]
   .filter(h => h.length)
   .join('\n\n')
 }
@@ -274,6 +274,7 @@ export function arg<T extends TArgTypeName>(
 
 export function argparse<T extends IArgsConfig>(
   config: T,
+  description: string = '',
   exit: () => void = () => process.exit(),
   /* tslint:disable-next-line */
   log: (message: string) => void = console.log.bind(console),
@@ -360,7 +361,7 @@ export function argparse<T extends IArgsConfig>(
           : getNextPositional(argument)
         const argConfig = config[argName]
         if (!isPositional && argName === 'help') {
-          log(help(command, config))
+          log(help(command, config, description))
           exit()
           // should never reach this in real life
           return null as any
