@@ -5,7 +5,7 @@ import {
 } from 'typeorm'
 
 const transformer = {
-  from: (value: Date) => value.toISOString(),
+  from: (value: Date) => !isNaN(value.getTime()) ? value.toISOString() : value,
   to: (value: undefined | null | string) => value ? new Date(value) : value,
 }
 

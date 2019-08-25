@@ -31,7 +31,7 @@ export class TeamService implements ITeamService {
       roleId: 1,
     })
 
-    return team
+    return (await this.findOne(team.id))!
   }
 
   async remove({id, userId}: {id: number, userId: number}) {
