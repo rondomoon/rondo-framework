@@ -11,7 +11,7 @@ import {RequestTester} from './RequestTester'
 import {Role} from '../entities/Role'
 
 export class TestUtils<T extends IRoutes> {
-  readonly username = 'test@user.com'
+  readonly username = `test${process.env.JEST_WORKER_ID}@user.com`
   readonly password = 'Password10'
 
   readonly app: express.Application

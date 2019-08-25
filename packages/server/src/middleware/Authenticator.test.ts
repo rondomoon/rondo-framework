@@ -14,7 +14,7 @@ describe('passport.promise', () => {
     app = express()
 
     const userInfo = {
-      username: 'test@user.com',
+      username: `test${process.env.JEST_WORKER_ID}@user.com`,
       firstName: 'test',
       lastName: 'test',
     }

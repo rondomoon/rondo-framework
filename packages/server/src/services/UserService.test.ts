@@ -5,7 +5,7 @@ describe('UserService', () => {
 
   test.withDatabase()
 
-  const username = 'test@user.com'
+  const username = test.username
   const password = '1234567890'
 
   const userService = new UserService(test.db)

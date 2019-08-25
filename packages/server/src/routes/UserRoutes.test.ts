@@ -55,7 +55,7 @@ describe('user', () => {
       const response = await t
       .get('/users/emails/:email', {
         params: {
-          email: 'test@user.com',
+          email: test.username,
         },
       })
       .expect(200)
