@@ -15,7 +15,8 @@ export class Transaction implements IMiddleware {
 
     ns.run(() => {
       // use pregenerated request correlationId
-      const correlationId = req.correlationId || shortid.generate();
+      const correlationId = ns.get(CORRELATION_ID) || req.correlationId ||
+        shortid.generate();
       (req as any).correlationId = correlationId
       ns.set(CORRELATION_ID, correlationId)
       next()

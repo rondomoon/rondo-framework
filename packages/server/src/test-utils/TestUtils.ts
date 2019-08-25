@@ -9,6 +9,8 @@ import {IRoutes} from '@rondo.dev/common'
 import {IBootstrap} from '../application/IBootstrap'
 import {RequestTester} from './RequestTester'
 import {Role} from '../entities/Role'
+import {CORRELATION_ID} from '../middleware'
+import shortid from 'shortid'
 
 export class TestUtils<T extends IRoutes> {
   readonly username = `test${process.env.JEST_WORKER_ID}@user.com`
@@ -41,6 +43,7 @@ export class TestUtils<T extends IRoutes> {
       connection = await database.connect()
       queryRunner = connection.createQueryRunner()
       await queryRunner.connect()
+      namespace.set(CORRELATION_ID, shortid())
       await queryRunner.startTransaction()
       namespace.set(ENTITY_MANAGER, queryRunner.manager)
     })
@@ -51,6 +54,7 @@ export class TestUtils<T extends IRoutes> {
         await queryRunner.rollbackTransaction()
       }
       await queryRunner.release()
+      namespace.set(CORRELATION_ID, undefined)
       namespace.set(ENTITY_MANAGER, undefined)
       await connection.close()
     })
