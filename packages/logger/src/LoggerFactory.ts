@@ -23,7 +23,7 @@ export class LoggerFactory implements ILoggerFactory {
   protected readonly loggers: {[key: string]: ILogger} = {}
   getCorrelationId: () => string = () => ''
 
-  static createFromEnv({
+  static init({
     logs = getDefaultParams(),
   } = {}) {
     const enabledLoggers = logs.split(',').reduce((logConfig, log) => {

@@ -5,7 +5,7 @@ export * from './Logger'
 export * from './LoggerFactory'
 
 import {LoggerFactory} from './LoggerFactory'
-export default LoggerFactory.createFromEnv()
+export default LoggerFactory.init()
 
 import * as transports from './transports'
 export {transports}

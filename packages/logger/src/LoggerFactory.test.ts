@@ -5,7 +5,7 @@ describe('LoggerFactory', () => {
 
   let getLogger: typeof LoggerFactory.prototype.getLogger
   beforeEach(() => {
-    getLogger = LoggerFactory.createFromEnv({
+    getLogger = LoggerFactory.init({
       logs: 'test1:verbose,-test3,t4,logtest5',
     })
     .getLogger
@@ -73,10 +73,10 @@ describe('LoggerFactory', () => {
 
   describe('create', () => {
     it('creates a logger with defaults', () => {
-      LoggerFactory.createFromEnv()
+      LoggerFactory.init()
     })
     it('logs all', () => {
-      const l = LoggerFactory.createFromEnv({ logs: '*' }).getLogger('test')
+      const l = LoggerFactory.init({ logs: '*' }).getLogger('test')
       l.info('test info')
       l.debug('test debug')
       expect((global.console.debug as any).mock.calls).toEqual([])
