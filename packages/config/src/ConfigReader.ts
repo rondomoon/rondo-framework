@@ -1,9 +1,9 @@
+import { readFileSync } from 'fs'
 import YAML from 'js-yaml'
-import {Config} from './Config'
-import {findPackageRoot} from '../files/Find'
-import {join} from 'path'
-import {readFileSync} from 'fs'
-import {apiLogger} from '../logger'
+import { join } from 'path'
+import { Config } from './Config'
+import { findPackageRoot } from './findPackageRoot'
+import loggerFactory, {ILogger} from '@rondo.dev/logger'
 
 const isObject = (value: any) => value !== null && typeof value === 'object'
 
@@ -14,8 +14,9 @@ export class ConfigReader {
 
   constructor(
     readonly path: string,
-    readonly cwd: string|undefined = process.cwd(),
+    readonly cwd: string | undefined = process.cwd(),
     readonly environment = 'CONFIG',
+    readonly logger: ILogger = loggerFactory.getLogger('config'),
   ) {
     const packageRoot = path && findPackageRoot(path)
     this.locations = packageRoot ? [packageRoot] : []
@@ -41,7 +42,7 @@ export class ConfigReader {
           }
           continue
         }
-        apiLogger.info('config: Found config file: %s', configFilename)
+        this.logger.info('config: Found config file: %s', configFilename)
         success += 1
       }
     }
@@ -52,12 +53,12 @@ export class ConfigReader {
     }
 
     if (filename) {
-      apiLogger.info('config: Reading extra config file: %s', filename)
+      this.logger.info('config: Reading extra config file: %s', filename)
       this.readFile(filename)
     }
 
     if (env) {
-      apiLogger.info('config: Parsing env variable: %s', this.environment)
+      this.logger.info('config: Parsing env variable: %s', this.environment)
       this.parse(env)
     }
 

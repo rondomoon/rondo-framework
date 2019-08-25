@@ -1,5 +1,4 @@
 export * from './application'
-export * from './config/index'
 export * from './database'
 export * from './entities'
 export * from './error'

@@ -1,7 +1,7 @@
 import {resolve, join} from 'path'
 import {statSync, Stats} from 'fs'
 
-export function findNearestDirectory(
+function findNearestDirectory(
   dir: string, filename: string,
 ) {
   let currentDir = dir

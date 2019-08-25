@@ -1,0 +1,13 @@
+{
+  "name": "@rondo.dev/config",
+  "private": true,
+  "scripts": {
+    "test": "jest",
+    "lint": "tslint --project .",
+    "compile": "tsc",
+    "clean": "rm -rf lib/"
+  },
+  "dependencies": {},
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts"
+}

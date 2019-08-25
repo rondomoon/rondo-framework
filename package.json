@@ -11,7 +11,8 @@
     "@rondo.dev/jsonrpc": "file:packages/jsonrpc",
     "@rondo.dev/scripts": "file:packages/scripts",
     "@rondo.dev/argparse": "file:packages/argparse",
-    "@rondo.dev/logger": "file:packages/logger"
+    "@rondo.dev/logger": "file:packages/logger",
+    "@rondo.dev/config": "file:packages/config"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",

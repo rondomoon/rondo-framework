@@ -1,4 +1,4 @@
-import {ConfigReader} from './config/index'
+import ConfigReader from '@rondo.dev/config'
 import {IConfig} from './application'
 import URL from 'url'
 
