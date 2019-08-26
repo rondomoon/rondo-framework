@@ -2,6 +2,7 @@ import {ILogger} from './ILogger'
 import {Logger, QueryRunner} from 'typeorm'
 import {Namespace} from 'cls-hooked'
 import {CORRELATION_ID} from '../middleware/Transaction'
+import { TRANSACTION_ID } from '../database'
 
 export class SqlLogger implements Logger {
   constructor(
@@ -80,8 +81,9 @@ export class SqlLogger implements Logger {
   }
 
   protected getCorrelationId(): string | undefined {
-    const correlationId: string = this.ns.get(CORRELATION_ID)
-    return correlationId || ''
+    const correlationId: string = this.ns.get(CORRELATION_ID) || '-'
+    const transactionId: string = this.ns.get(TRANSACTION_ID) || '-'
+    return correlationId + ' ' + transactionId
   }
 
 }
