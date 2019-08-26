@@ -101,6 +101,7 @@ export class SessionStore<S extends ISession> extends Store {
 
   protected async cleanup() {
     const now = Date.now()
+    // FIXME causes deadlocks in tests
     await this.getRepository().delete({
       expiredAt: LessThan(now),
     } as any)
