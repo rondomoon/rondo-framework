@@ -1,5 +1,8 @@
 import {Namespace} from 'cls-hooked'
-import {ENTITY_MANAGER, ITransactionManager} from './ITransactionManager'
+import shortid from 'shortid'
+import {
+  ENTITY_MANAGER, ITransactionManager, TRANSACTION_ID
+} from './ITransactionManager'
 import {
   Connection,
   EntityManager,
@@ -34,23 +37,36 @@ export class TransactionManager implements ITransactionManager {
     return !!this.ns.get(ENTITY_MANAGER)
   }
 
-  async doInTransaction<T>(fn: (entityManager: EntityManager) => Promise<T>) {
+  async doInTransaction<T>(fn: (em: EntityManager) => Promise<T>) {
     const alreadyInTransaction = this.isInTransaction()
     if (alreadyInTransaction) {
       return await fn(this.getEntityManager())
     }
 
-    return this.getConnection().manager
-    .transaction(async entityManager => {
-      this.setEntityManager(entityManager)
+    return this.doInNewTransaction(fn)
+  }
+
+  async doInNewTransaction<T>(fn: (em: EntityManager) => Promise<T>) {
+    return this.ns.runAndReturn(async () => {
+      this.setTransactionId(shortid())
       try {
-        return await fn(entityManager)
+        return await this.getConnection().manager
+        .transaction(async entityManager => {
+          this.setEntityManager(entityManager)
+          try {
+            return await fn(entityManager)
+          } finally {
+            this.setEntityManager(undefined)
+          }
+        })
       } finally {
-        if (!alreadyInTransaction) {
-          this.setEntityManager(undefined)
-        }
+        this.setTransactionId(undefined)
       }
     })
+  }
+
+  protected setTransactionId(transactionId: string | undefined) {
+    this.ns.set(TRANSACTION_ID, transactionId)
   }
 
   protected setEntityManager(entityManager: EntityManager | undefined) {
