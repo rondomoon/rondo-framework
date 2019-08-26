@@ -2,7 +2,7 @@ import express from 'express'
 import supertest from 'supertest'
 import {Connection, QueryRunner} from 'typeorm'
 import {
-  ENTITY_MANAGER, ITransactionManager,
+  ENTITY_MANAGER, ITransactionManager, TRANSACTION_ID,
 } from '../database/ITransactionManager'
 import {IRoutes} from '@rondo.dev/common'
 import {IBootstrap} from '../application/IBootstrap'
@@ -44,7 +44,7 @@ export class TestUtils<T extends IRoutes> {
       connection = await database.connect()
       queryRunner = connection.createQueryRunner()
       await queryRunner.connect()
-      namespace.set(CORRELATION_ID, shortid())
+      namespace.set(TRANSACTION_ID, shortid())
       await queryRunner.startTransaction()
       namespace.set(ENTITY_MANAGER, queryRunner.manager)
     })
@@ -55,7 +55,7 @@ export class TestUtils<T extends IRoutes> {
         await queryRunner.rollbackTransaction()
       }
       await queryRunner.release()
-      namespace.set(CORRELATION_ID, undefined)
+      namespace.set(TRANSACTION_ID, undefined)
       namespace.set(ENTITY_MANAGER, undefined)
       await connection.close();
       (namespace as any).exit(context)
