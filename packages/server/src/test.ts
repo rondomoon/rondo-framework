@@ -6,7 +6,7 @@ import {createNamespace} from 'cls-hooked'
 
 export const exit = jest.fn()
 
-const bootstrap = new Bootstrap(
+export const bootstrap = new Bootstrap(
   config,
   createNamespace('test'),
   exit,
