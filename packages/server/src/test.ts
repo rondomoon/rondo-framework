@@ -1,13 +1,14 @@
 import {Bootstrap} from './application/Bootstrap'
 import {IAPIDef} from '@rondo.dev/common'
-import {NamespaceMock, TestUtils} from './test-utils'
+import {TestUtils} from './test-utils'
 import {config} from './config'
+import {createNamespace} from 'cls-hooked'
 
 export const exit = jest.fn()
 
 const bootstrap = new Bootstrap(
   config,
-  new NamespaceMock(),
+  createNamespace('test'),
   exit,
 )
 

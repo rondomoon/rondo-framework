@@ -39,7 +39,11 @@ export class TestUtils<T extends IRoutes> {
     let connection!: Connection
     let queryRunner: QueryRunner
 
+    let context: any
+
     beforeEach(async () => {
+      context = namespace.createContext();
+      (namespace as any).enter(context)
       connection = await database.connect()
       queryRunner = connection.createQueryRunner()
       await queryRunner.connect()
@@ -56,7 +60,8 @@ export class TestUtils<T extends IRoutes> {
       await queryRunner.release()
       namespace.set(CORRELATION_ID, undefined)
       namespace.set(ENTITY_MANAGER, undefined)
-      await connection.close()
+      await connection.close();
+      (namespace as any).exit(context)
     })
   }
 
