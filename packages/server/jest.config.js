@@ -13,6 +13,5 @@ module.exports = {
     'jsx'
   ],
   setupFiles: ['<rootDir>/jest.setup.js'],
-  maxConcurrency: 1,
   verbose: false
 }

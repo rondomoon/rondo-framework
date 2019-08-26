@@ -1,6 +1,7 @@
 import {Store} from 'express-session'
 import {ISession} from './ISession'
 import {Repository, LessThan} from 'typeorm'
+import {debounce} from '@rondo.dev/tasq'
 
 type SessionData = Express.SessionData
 type Callback = (err?: any, session?: SessionData) => void
@@ -23,12 +24,25 @@ export type TRepositoryFactory<T> = () => Repository<T>
 export class SessionStore<S extends ISession> extends Store {
 
   protected readonly getRepository: TRepositoryFactory<S>
+  protected readonly cleanup: (...args: never[]) => void
 
   constructor(
     protected readonly options: ISessionStoreOptions<S>,
   ) {
     super()
     this.getRepository = options.getRepository
+
+    this.cleanup = debounce(async () => {
+      try {
+        const now = Date.now()
+        // FIXME causes deadlocks in tests
+        await this.getRepository().delete({
+          expiredAt: LessThan(now),
+        } as any)
+      } catch (err) {
+        console.log('error cleaning sessions', err)
+      }
+    }, 1000)
   }
 
   protected async promiseToCallback<T>(
@@ -61,16 +75,17 @@ export class SessionStore<S extends ISession> extends Store {
   }
 
   set = (sid: string, session: SessionData, callback?: CallbackErr) => {
-    const promise1 = this.options.cleanup
-      ? this.cleanup() : Promise.resolve()
-    const promise2 = promise1.then(() => this.saveSession(
+    const promise = Promise.resolve()
+    .then(() => this.saveSession(
       this.options.buildSession(session, {
         id: sid,
         expiredAt: Date.now() + this.getTTL(session) * 1000,
         json: JSON.stringify(session),
       }),
     ))
-    this.promiseToCallback(promise2, callback)
+    this.promiseToCallback(promise, callback)
+
+    this.cleanup()
   }
 
   destroy =  (sid: string, callback?: CallbackErr) => {
@@ -97,14 +112,6 @@ export class SessionStore<S extends ISession> extends Store {
   protected getTTL(session: SessionData): number {
     const maxAge = session.cookie.maxAge
     return typeof maxAge === 'number' ? maxAge : this.options.ttl
-  }
-
-  protected async cleanup() {
-    const now = Date.now()
-    // FIXME causes deadlocks in tests
-    await this.getRepository().delete({
-      expiredAt: LessThan(now),
-    } as any)
   }
 
 }

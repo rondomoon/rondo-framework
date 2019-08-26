@@ -1,7 +1,7 @@
 export function debounce<A, R>(fn: (...args: A[]) => R, delay: number) {
   let timeout: NodeJS.Timeout | null = null
 
-  return async function debounceImpl(...args: A[]) {
+  return function debounceImpl(...args: A[]): void {
     if (timeout) {
       clearTimeout(timeout)
     }

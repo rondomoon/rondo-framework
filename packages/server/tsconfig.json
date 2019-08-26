@@ -8,6 +8,7 @@
     {"path": "../common"},
     {"path": "../jsonrpc"},
     {"path": "../logger"},
-    {"path": "../config"}
+    {"path": "../config"},
+    {"path": "../tasq"}
   ]
 }
