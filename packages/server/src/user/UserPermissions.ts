@@ -1,10 +1,10 @@
 import createError from 'http-errors'
-import {DB} from '../database/DB'
+import {IDatabase} from '../database/IDatabase'
 import {UserTeam} from '../entities/UserTeam'
 import {IUserPermissions} from './IUserPermissions'
 
 export class UserPermissions implements IUserPermissions {
-  constructor(protected readonly db: DB) {}
+  constructor(protected readonly db: IDatabase) {}
 
   async belongsToTeam(params: {userId: number, teamId: number}) {
     const {userId, teamId} = params

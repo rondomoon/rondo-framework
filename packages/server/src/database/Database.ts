@@ -1,7 +1,15 @@
 import {IDatabase} from './IDatabase'
 import {Namespace} from 'cls-hooked'
 import {TransactionManager} from './TransactionManager'
-import {createConnection, Connection, ConnectionOptions, Logger} from 'typeorm'
+import {
+  createConnection,
+  Connection,
+  ConnectionOptions,
+  Logger,
+  EntitySchema,
+  ObjectType,
+  Repository,
+} from 'typeorm'
 
 export class Database implements IDatabase {
   protected connection?: Connection
@@ -35,6 +43,16 @@ export class Database implements IDatabase {
 
   async close() {
     await this.getConnection().close()
+  }
+
+  getEntityManager() {
+    return this.transactionManager.getEntityManager()
+  }
+
+  getRepository<Entity>(
+    target: ObjectType<Entity> | EntitySchema<Entity> | string,
+  ): Repository<Entity> {
+    return this.transactionManager.getRepository(target)
   }
 
 }

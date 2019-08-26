@@ -1,4 +1,4 @@
-import {DB} from '../database/DB'
+import {IDatabase} from '../database/IDatabase'
 import {ITeamService} from './ITeamService'
 import {IUserInTeam, trim} from '@rondo.dev/common'
 import {IUserTeamParams} from './IUserTeamParams'
@@ -8,7 +8,7 @@ import {Validator} from '../validator'
 
 export class TeamService implements ITeamService {
 
-  constructor(protected readonly db: DB) {}
+  constructor(protected readonly db: IDatabase) {}
 
   // TODO check team limit per user
   async create({name, userId}: {name: string, userId: number}) {

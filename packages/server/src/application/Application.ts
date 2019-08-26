@@ -6,7 +6,6 @@ import * as user from '../user'
 import cookieParser from 'cookie-parser'
 import express from 'express'
 import {AsyncRouter, TransactionalRouter} from '../router'
-import {DB} from '../database/DB'
 import {IApplication} from './IApplication'
 import {IConfig} from './IConfig'
 import {IDatabase} from '../database/IDatabase'
@@ -19,7 +18,6 @@ import {ILoggerFactory} from '@rondo.dev/logger'
 import {json} from 'body-parser'
 
 export class Application implements IApplication {
-  readonly db: DB
   readonly transactionManager: ITransactionManager
   readonly server: express.Application
 
@@ -30,7 +28,6 @@ export class Application implements IApplication {
 
   constructor(readonly config: IConfig, readonly database: IDatabase) {
     this.transactionManager = database.transactionManager
-    this.db = new DB(this.transactionManager)
 
     this.services = this.configureServices()
 
@@ -41,9 +38,9 @@ export class Application implements IApplication {
 
   protected configureServices(): IServices {
     return {
-      userService: new services.UserService(this.db),
-      teamService: new team.TeamService(this.db),
-      userPermissions: new user.UserPermissions(this.db),
+      userService: new services.UserService(this.database),
+      teamService: new team.TeamService(this.database),
+      userPermissions: new user.UserPermissions(this.database),
     }
   }
 

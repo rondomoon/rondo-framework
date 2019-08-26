@@ -1,4 +1,4 @@
-import {DB} from '../database/DB'
+import {IDatabase} from '../database/IDatabase'
 import {Validator} from '../validator'
 import {Team} from '../entities/Team'
 import {UserTeam} from '../entities/UserTeam'
@@ -14,7 +14,7 @@ type IContext = t.IContext
 
 export class TeamService2 implements Contextual<t.ITeamService, IContext> {
   constructor(
-    protected readonly db: DB,
+    protected readonly db: IDatabase,
     protected readonly permissions: IUserPermissions,
   ) {}
 
