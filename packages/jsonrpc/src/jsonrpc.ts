@@ -108,7 +108,7 @@ export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
       }
 
       const validators = getValidatorsForMethod<Context>(
-        (service as any).__proto__, method)
+        (service as any), method)
 
       validators.forEach(v => {
         const success = v(context)

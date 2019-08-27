@@ -27,5 +27,5 @@ export function getValidatorsForMethod<Context>(
   target: any,
   method: string,
 ): Array<Validate<Context>> {
-  return Reflect.getOwnMetadata(ensureKey, target, method) || []
+  return Reflect.getMetadata(ensureKey, target, method) || []
 }
