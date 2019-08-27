@@ -3,6 +3,7 @@ import request from 'supertest'
 import {SessionStore} from './SessionStore'
 import {ISession} from './ISession'
 import ExpressSession from 'express-session'
+import loggerFactory from '@rondo.dev/logger'
 import {
   createConnection, Column, Connection, Entity, Index, PrimaryColumn,
   Repository,
@@ -51,7 +52,8 @@ describe('SessionStore', () => {
         maxAge: 10,
       },
       store: new SessionStore({
-        cleanup: 1,
+        logger: loggerFactory.getLogger('api'),
+        cleanupDelay: 60 * 1000,
         getRepository: () => repository,
         ttl: 1,
         buildSession: (sd, s) => ({...s, extraData: 'test'}),

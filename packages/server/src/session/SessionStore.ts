@@ -2,6 +2,7 @@ import {Store} from 'express-session'
 import {ISession} from './ISession'
 import {Repository, LessThan} from 'typeorm'
 import {debounce} from '@rondo.dev/tasq'
+import { ILogger } from '@rondo.dev/logger'
 
 type SessionData = Express.SessionData
 type Callback = (err?: any, session?: SessionData) => void
@@ -9,8 +10,9 @@ type CallbackErr = (err?: any) => void
 
 export interface ISessionStoreOptions<S extends ISession> {
   readonly ttl: number
-  readonly cleanup: number
+  readonly cleanupDelay: number
   readonly getRepository: TRepositoryFactory<S>
+  readonly logger: ILogger,
   buildSession(sessionData: SessionData, session: ISession): S
 }
 
@@ -24,25 +26,27 @@ export type TRepositoryFactory<T> = () => Repository<T>
 export class SessionStore<S extends ISession> extends Store {
 
   protected readonly getRepository: TRepositoryFactory<S>
-  protected readonly cleanup: (...args: never[]) => void
+
+  readonly cleanup = debounce(async () => {
+    try {
+      const now = Date.now()
+      // this method is debounced because is caused deadlock errors in tests.
+      // Be wary of future problems. Debounce should fix it but this still
+      // needs to be thorughly tested. The problem is a the delete statement
+      // which locks the whole table.
+      await this.getRepository().delete({
+        expiredAt: LessThan(now),
+      } as any)
+    } catch (err) {
+      this.options.logger.error('Error cleaning sessions: %s', err.stack)
+    }
+  }, 1000)
 
   constructor(
     protected readonly options: ISessionStoreOptions<S>,
   ) {
     super()
     this.getRepository = options.getRepository
-
-    this.cleanup = debounce(async () => {
-      try {
-        const now = Date.now()
-        // FIXME causes deadlocks in tests
-        await this.getRepository().delete({
-          expiredAt: LessThan(now),
-        } as any)
-      } catch (err) {
-        console.log('error cleaning sessions', err)
-      }
-    }, 1000)
   }
 
   protected async promiseToCallback<T>(
@@ -75,6 +79,8 @@ export class SessionStore<S extends ISession> extends Store {
   }
 
   set = (sid: string, session: SessionData, callback?: CallbackErr) => {
+    this.cleanup.cancel()
+
     const promise = Promise.resolve()
     .then(() => this.saveSession(
       this.options.buildSession(session, {

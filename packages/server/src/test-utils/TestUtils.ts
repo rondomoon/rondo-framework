@@ -38,10 +38,13 @@ export class TestUtils<T extends IRoutes> {
 
     let context: any
 
+    beforeAll(async () => {
+      connection = await database.connect()
+    })
+
     beforeEach(async () => {
       context = namespace.createContext();
       (namespace as any).enter(context)
-      connection = await database.connect()
       queryRunner = connection.createQueryRunner()
       await queryRunner.connect()
       namespace.set(TRANSACTION_ID, shortid())
@@ -56,9 +59,12 @@ export class TestUtils<T extends IRoutes> {
       }
       await queryRunner.release()
       namespace.set(TRANSACTION_ID, undefined)
-      namespace.set(ENTITY_MANAGER, undefined)
-      await connection.close();
+      namespace.set(ENTITY_MANAGER, undefined);
       (namespace as any).exit(context)
+    })
+
+    afterAll(async () => {
+      await database.close()
     })
   }
 

@@ -6,6 +6,7 @@ import {ITransactionManager} from '../database/ITransactionManager'
 import {Session as SessionEntity} from '../entities/Session'
 import {SessionStore} from '../session/SessionStore'
 import {UrlWithStringQuery} from 'url'
+import {apiLogger} from '../logger'
 
 export interface ISessionOptions {
   transactionManager: ITransactionManager,
@@ -32,7 +33,8 @@ export class SessionMiddleware implements IMiddleware {
         path: params.baseUrl.path,
       },
       store: new SessionStore({
-        cleanup: 1,
+        cleanupDelay: 60 * 1000,
+        logger: apiLogger,
         getRepository: this.getRepository,
         ttl: 1,
         buildSession: this.buildSession,
