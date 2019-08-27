@@ -16,7 +16,6 @@ describe('ensure', () => {
   it('decorates class methods', () => {
     class Service {
       @ensure<IContext>(validate)
-      // @ensureMethod<IContext>(validate)
       fetchData() {
         return 1
       }
