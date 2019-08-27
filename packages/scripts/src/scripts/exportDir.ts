@@ -1,6 +1,7 @@
 import * as fs from 'fs'
 import {argparse, arg} from '@rondo.dev/argparse'
 import {join} from 'path'
+import {info} from '../log'
 
 export async function exportDir(...argv: string[]) {
   const args = argparse({
@@ -22,7 +23,6 @@ export async function exportDir(...argv: string[]) {
   .map(item => `export * from './${item}'\n`)
   .reduce((str, item) => str += item, '')
 
-  // tslint:disable-next-line
-  console.log('Writing to %s', out)
+  info('Writing to %s', out)
   fs.writeFileSync(join(dir, 'index.ts'), index)
 }
