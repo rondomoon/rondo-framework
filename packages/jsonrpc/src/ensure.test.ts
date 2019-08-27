@@ -31,6 +31,16 @@ describe('ensure', () => {
     expect(validators2).toEqual([])
   })
 
+  it('works with properties/instance method definitions', () => {
+    class Service {
+      @ensure<IContext>(validate)
+      fetchData = () => 1
+    }
+    const s = new Service()
+    const validators = getValidatorsForMethod(s, 'fetchData')
+    expect(validators).toEqual([ validate ])
+  })
+
   it('decorates classes', () => {
     @ensure(validate)
     class Service {
@@ -61,6 +71,7 @@ describe('ensure', () => {
     const s = new Service2()
     const validators = getValidatorsForInstance(s)
     expect(validators).toEqual([ validate ])
+
   })
 
 })
