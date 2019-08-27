@@ -2,6 +2,7 @@ export type TId = number | string
 import {ArgumentTypes, FunctionPropertyNames, RetType} from './types'
 import {isPromise} from './isPromise'
 import {createError, IErrorResponse, IErrorWithData} from './error'
+import {getValidatorsForMethod} from './ensure'
 
 export const ERROR_PARSE = {
   code: -32700,
@@ -73,6 +74,7 @@ export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
   service: T,
   methods: M[],
 ) => {
+  const rpcService = pick(service, methods)
   return {
     async invoke<Context>(
       req: IRequest<M, ArgumentTypes<T[M]>>,
@@ -94,8 +96,6 @@ export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
 
       const isNotification = req.id === null || req.id === undefined
 
-      const rpcService = pick(service, methods)
-
       if (
         !rpcService.hasOwnProperty(method) ||
         typeof rpcService[method] !== 'function'
@@ -106,6 +106,20 @@ export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
           statusCode: 404,
         })
       }
+
+      const validators = getValidatorsForMethod<Context>(
+        (service as any).__proto__, method)
+
+      validators.forEach(v => {
+        const success = v(context)
+        if (!success) {
+          throw createError(ERROR_INVALID_REQUEST, {
+            id,
+            data: null,
+            statusCode: 400,
+          })
+        }
+      })
 
       let retValue = (rpcService[method] as any)(...params, context)
 

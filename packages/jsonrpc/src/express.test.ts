@@ -4,6 +4,7 @@ import request from 'supertest'
 import {createClient} from './supertest'
 import {jsonrpc} from './express'
 import {noopLogger} from './test-utils'
+import {ensure} from './ensure'
 
 describe('jsonrpc', () => {
 
@@ -21,6 +22,8 @@ describe('jsonrpc', () => {
     addWithContext(a: number, b: number): (ctx: IContext) => number
     addWithContext2(a: number, b: number): Promise<number>
   }
+
+  const ensureLoggedIn = ensure<IContext>(c => !!c.userId)
 
   class Service implements IService {
     constructor(readonly time: number) {}
@@ -52,16 +55,20 @@ describe('jsonrpc', () => {
     addWithContext = (a: number, b: number) => (ctx: IContext): number => {
       return a + b + ctx.userId
     }
+
+    @ensureLoggedIn
     addWithContext2(a: number, b: number, ctx?: IContext) {
       return Promise.resolve(a + b + ctx!.userId)
     }
   }
 
+  let userId: number | undefined = 1000
   function createApp() {
+    userId = 1000
     const app = express()
     app.use(bodyParser.json())
     app.use('/',
-      jsonrpc(req => ({userId: 1000}), noopLogger)
+      jsonrpc(req => ({userId}), noopLogger)
       .addService('/myService', new Service(5), [
         'add',
         'delay',
@@ -78,7 +85,7 @@ describe('jsonrpc', () => {
 
   const client = createClient<IService>(createApp(), '/myService')
 
-  async function getError(promise: Promise<void>) {
+  async function getError(promise: Promise<unknown>) {
     let error
     try {
       await promise
@@ -152,6 +159,11 @@ describe('jsonrpc', () => {
     it('can use context as extra argument', async () => {
       const response = await client.addWithContext2(5, 7)
       expect(response).toEqual(1000 + 5 + 7)
+    })
+    it('can validate context using @ensure decorator', async () => {
+      userId = undefined
+      const err = await getError(client.addWithContext2(5, 7))
+      expect(err.message).toMatch(/Invalid request/)
     })
     it('handles synchronous notifications', async () => {
       await request(createApp())
