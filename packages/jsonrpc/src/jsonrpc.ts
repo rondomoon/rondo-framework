@@ -2,7 +2,8 @@ export type TId = number | string
 import {ArgumentTypes, FunctionPropertyNames, RetType} from './types'
 import {isPromise} from './isPromise'
 import {createError, IErrorResponse, IErrorWithData} from './error'
-import {getValidatorsForMethod} from './ensure'
+import {getValidatorsForMethod, getValidatorsForInstance} from './ensure'
+import {Validate} from './ensure'
 
 export const ERROR_PARSE = {
   code: -32700,
@@ -70,6 +71,31 @@ export function createSuccessResponse<T>(id: number | string, result: T)
   }
 }
 
+function validateServiceContext<T, M extends FunctionPropertyNames<T>, Context>(
+  id: string | number | null,
+  service: T,
+  method: M,
+  context: Context,
+) {
+
+  function doValidate(validate: Validate<Context>) {
+    const success = validate(context)
+    if (!success) {
+      throw createError(ERROR_INVALID_REQUEST, {
+        id,
+        data: null,
+        statusCode: 400,
+      })
+    }
+  }
+
+  getValidatorsForInstance<Context>(service)
+  .forEach(doValidate)
+
+  getValidatorsForMethod<Context>(service, method)
+  .forEach(doValidate)
+}
+
 export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
   service: T,
   methods: M[],
@@ -107,19 +133,7 @@ export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
         })
       }
 
-      const validators = getValidatorsForMethod<Context>(
-        (service as any), method)
-
-      validators.forEach(validate => {
-        const success = validate(context)
-        if (!success) {
-          throw createError(ERROR_INVALID_REQUEST, {
-            id,
-            data: null,
-            statusCode: 400,
-          })
-        }
-      })
+      validateServiceContext(id, service, method, context)
 
       let retValue = (rpcService[method] as any)(...params, context)
 
