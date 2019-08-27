@@ -110,8 +110,8 @@ export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
       const validators = getValidatorsForMethod<Context>(
         (service as any), method)
 
-      validators.forEach(v => {
-        const success = v(context)
+      validators.forEach(validate => {
+        const success = validate(context)
         if (!success) {
           throw createError(ERROR_INVALID_REQUEST, {
             id,
