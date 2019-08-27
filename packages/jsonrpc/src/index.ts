@@ -1,3 +1,4 @@
+export * from './ensure'
 export * from './error'
 export * from './express'
 export * from './jsonrpc'
