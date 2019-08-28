@@ -71,15 +71,17 @@ export function createSuccessResponse<T>(id: number | string, result: T)
   }
 }
 
-function validateServiceContext<T, M extends FunctionPropertyNames<T>, Context>(
+async function validateServiceContext<
+  T, M extends FunctionPropertyNames<T>, Context
+>(
   id: string | number | null,
   service: T,
   method: M,
   context: Context,
 ) {
 
-  function doValidate(validate: Validate<Context>) {
-    const success = validate(context)
+  async function doValidate(validate: Validate<Context>) {
+    const success = await validate(context)
     if (!success) {
       throw createError(ERROR_INVALID_REQUEST, {
         id,
@@ -89,11 +91,13 @@ function validateServiceContext<T, M extends FunctionPropertyNames<T>, Context>(
     }
   }
 
-  getValidatorsForInstance<Context>(service)
-  .forEach(doValidate)
+  for (const validate of getValidatorsForInstance<Context>(service)) {
+    await doValidate(validate)
+  }
 
-  getValidatorsForMethod<Context>(service, method)
-  .forEach(doValidate)
+  for (const validate of getValidatorsForMethod<Context>(service, method)) {
+    await doValidate(validate)
+  }
 }
 
 export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
@@ -133,7 +137,7 @@ export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
         })
       }
 
-      validateServiceContext(id, service, method, context)
+      await validateServiceContext(id, service, method, context)
 
       let retValue = (rpcService[method] as any)(...params, context)
 

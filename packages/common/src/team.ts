@@ -1,4 +1,5 @@
-import {ITeam} from './ITeam'
+// import {ITeam} from './ITeam'
+import {Team} from './entities'
 import {IUserInTeam} from './IUserInTeam'
 
 export interface ITeamAddUserParams {
@@ -25,19 +26,19 @@ export interface IContext {
 }
 
 export interface ITeamService {
-  create(params: ITeamCreateParams): Promise<ITeam>
+  create(params: ITeamCreateParams): Promise<Team>
 
   remove(params: ITeamRemoveParams): Promise<{id: number}>
 
-  update(params: ITeamUpdateParams): Promise<ITeam>
+  update(params: ITeamUpdateParams): Promise<Team>
 
   addUser(params: ITeamAddUserParams): Promise<IUserInTeam>
 
   removeUser(params: ITeamAddUserParams): Promise<ITeamAddUserParams>
 
-  findOne(id: number): Promise<ITeam | undefined>
+  findOne(id: number): Promise<Team | undefined>
 
-  find(): Promise<ITeam[]>
+  find(): Promise<Team[]>
 
   findUsers(teamId: number): Promise<IUserInTeam[]>
 

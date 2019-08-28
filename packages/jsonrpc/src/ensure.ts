@@ -3,7 +3,7 @@ import 'reflect-metadata'
 export const ensureKey = Symbol('ensure')
 export const ensureClassKey = Symbol('ensureClass')
 
-export type Validate<Context> = (context: Context) => boolean
+export type Validate<Context> = (context: Context) => boolean | Promise<boolean>
 
 export function ensure<Context>(
   validate: Validate<Context>,

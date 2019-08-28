@@ -5,13 +5,14 @@ import {UserTeam} from '../entities/UserTeam'
 import {IUserPermissions} from '../user/IUserPermissions'
 import {
   trim,
+  IContext,
+  entities as e,
   team as t,
   IUserInTeam,
 } from '@rondo.dev/common'
 import {Contextual} from '@rondo.dev/jsonrpc'
 
-type IContext = t.IContext
-
+// TODO ensureLoggedIn
 export class TeamService2 implements Contextual<t.ITeamService, IContext> {
   constructor(
     protected readonly db: IDatabase,
@@ -19,7 +20,7 @@ export class TeamService2 implements Contextual<t.ITeamService, IContext> {
   ) {}
 
   async create(params: t.ITeamCreateParams, context: IContext) {
-    const {userId} = context
+    const userId = context.user!.id
     const name = trim(params.name)
 
     new Validator({name, userId})
@@ -43,11 +44,11 @@ export class TeamService2 implements Contextual<t.ITeamService, IContext> {
   }
 
   async remove({id}: t.ITeamRemoveParams, context: IContext) {
-    const {userId} = context
+    const userId = context.user!.id
 
     await this.permissions.belongsToTeam({
       teamId: id,
-      userId: context.userId,
+      userId,
     })
 
     await this.db.getRepository(UserTeam)
@@ -60,9 +61,11 @@ export class TeamService2 implements Contextual<t.ITeamService, IContext> {
   }
 
   async update({id, name}: t.ITeamUpdateParams, context: IContext) {
+    const userId = context.user!.id
+
     await this.permissions.belongsToTeam({
       teamId: id,
-      userId: context.userId,
+      userId,
     })
 
     await this.db.getRepository(Team)
@@ -96,7 +99,7 @@ export class TeamService2 implements Contextual<t.ITeamService, IContext> {
 
     await this.permissions.belongsToTeam({
       teamId: params.teamId,
-      userId: context.userId,
+      userId: context.user!.id,
     })
 
     // TODO check if this is the last admin team member
@@ -111,7 +114,8 @@ export class TeamService2 implements Contextual<t.ITeamService, IContext> {
   }
 
   async find(context: IContext) {
-    const {userId} = context
+    const userId = context.user!.id
+
     return this.db.getRepository(Team)
     .createQueryBuilder('team')
     .select('team')
@@ -121,9 +125,11 @@ export class TeamService2 implements Contextual<t.ITeamService, IContext> {
   }
 
   async findUsers(teamId: number, context: IContext) {
+    const userId = context.user!.id
+
     await this.permissions.belongsToTeam({
       teamId,
-      userId: context.userId,
+      userId,
     })
 
     const userTeams = await this.createFindUserInTeamQuery()

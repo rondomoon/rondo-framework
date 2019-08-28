@@ -1,3 +1,5 @@
+export * from './entities'
+export * from './IContext'
 export * from './IAPIDef'
 export * from './ICredentials'
 export * from './ILogger'
@@ -19,3 +21,6 @@ export * from './without'
 
 import * as team from './team'
 export {team}
+
+import * as entities from './entities'
+export {entities}
