@@ -22,5 +22,8 @@ export * from './without'
 import * as team from './team'
 export {team}
 
+import * as user from './user'
+export {user}
+
 import * as entities from './entities'
 export {entities}

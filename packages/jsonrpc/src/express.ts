@@ -12,11 +12,20 @@ import {
 
 export type TGetContext<Context> = (req: Request) => Context
 
+export interface IJSONRPCReturnType {
+  addService<T, F extends FunctionPropertyNames<T>>(
+    path: string,
+    service: T,
+    methods: F[],
+  ): IJSONRPCReturnType,
+  router(): Router
+}
+
 export function jsonrpc<Context>(
   getContext: TGetContext<Context>,
   logger: ILogger,
   idempotentMethodRegex = IDEMPOTENT_METHOD_REGEX,
-) {
+): IJSONRPCReturnType {
 
   const handleError: ErrorRequestHandler = (err, req, res, next) => {
     logger.error('JSON-RPC Error: %s', err.stack)

@@ -1,10 +1,12 @@
 import * as middleware from '../middleware'
 import * as routes from '../routes'
+import * as rpc from '../rpc'
 import * as services from '../services'
 import * as team from '../team'
 import * as user from '../user'
 import cookieParser from 'cookie-parser'
 import express from 'express'
+import {keys} from 'ts-transformer-keys'
 import {AsyncRouter, TransactionalRouter} from '../router'
 import {IApplication} from './IApplication'
 import {IConfig} from './IConfig'
@@ -16,6 +18,7 @@ import {ITransactionManager} from '../database/ITransactionManager'
 import {loggerFactory} from '../logger'
 import {ILoggerFactory} from '@rondo.dev/logger'
 import {json} from 'body-parser'
+import {jsonrpc} from '@rondo.dev/jsonrpc'
 
 export class Application implements IApplication {
   readonly transactionManager: ITransactionManager
@@ -106,6 +109,21 @@ export class Application implements IApplication {
       this.services.userPermissions,
       this.createTransactionalRouter(),
     ).handle)
+
+    router.use(
+      '/rpc',
+      jsonrpc(
+        req => ({user: req.user}),
+        this.getApiLogger(),
+      )
+      .addService('/teamService',
+        new rpc.TeamService(this.database, this.services.userPermissions),
+        keys<rpc.TeamService>())
+      .addService('/userService',
+        new rpc.UserService(this.database),
+        keys<rpc.UserService>())
+      .router(),
+    )
   }
 
   protected configureApiErrorHandling(router: express.Router) {

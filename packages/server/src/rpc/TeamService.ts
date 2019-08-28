@@ -5,15 +5,14 @@ import {UserTeam} from '../entities/UserTeam'
 import {IUserPermissions} from '../user/IUserPermissions'
 import {
   trim,
-  IContext,
   entities as e,
   team as t,
   IUserInTeam,
 } from '@rondo.dev/common'
-import {Contextual} from '@rondo.dev/jsonrpc'
+import { ensureLoggedIn, IContext, RPC } from './RPC'
 
-// TODO ensureLoggedIn
-export class TeamService2 implements Contextual<t.ITeamService, IContext> {
+@ensureLoggedIn
+export class TeamService implements RPC<t.ITeamService> {
   constructor(
     protected readonly db: IDatabase,
     protected readonly permissions: IUserPermissions,
