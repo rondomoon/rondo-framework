@@ -61,7 +61,7 @@ export function intergen(...argv: string[]): string {
     input: arg('string', {alias: 'i', required: true}),
     debug: arg('boolean'),
     help: arg('boolean', {alias: 'h'}),
-    output: arg('string', {default: '-'}),
+    output: arg('string', {alias: 'o', default: '-'}),
   }).parse(argv)
 
   function debug(m: string, ...meta: any[]) {
