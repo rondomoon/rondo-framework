@@ -6,7 +6,7 @@ import bodyParser from 'body-parser'
 import express from 'express'
 import {AddressInfo} from 'net'
 import {Server} from 'http'
-import {TPendingActions, TAllActions} from './types'
+import {Contextual, TPendingActions, TAllActions} from './types'
 import {combineReducers} from 'redux'
 import {createActions, createReducer} from './redux'
 import {createRemoteClient} from './remote'
@@ -21,9 +21,8 @@ describe('createActions', () => {
     add(a: number, b: number): number
     addAsync(a: number, b: number): Promise<number>
     addStringsAsync(a: string, b: string): Promise<string>
-    addWithContext(a: number, b: number): (ctx: IContext) => number
-    addAsyncWithContext(a: number, b: number): (ctx: IContext) =>
-      Promise<number>
+    addWithContext(a: number, b: number): number
+    addAsyncWithContext(a: number, b: number): Promise<number>
     throwError(bool: boolean): boolean
   }
 
@@ -31,21 +30,21 @@ describe('createActions', () => {
     userId: number
   }
 
-  class Service implements IService {
-    add(a: number, b: number) {
+  class Service implements Contextual<IService, IContext> {
+    add(cx: IContext, a: number, b: number) {
       return a + b
     }
-    addAsync(a: number, b: number) {
+    addAsync(cx: IContext, a: number, b: number) {
       return new Promise<number>(resolve => resolve(a + b))
     }
-    addStringsAsync(a: string, b: string) {
+    addStringsAsync(cx: IContext, a: string, b: string) {
       return new Promise<string>(resolve => resolve(a + b))
     }
-    addWithContext = (a: number, b: number) => (ctx: IContext) =>
-      a + b + ctx.userId
-    addAsyncWithContext = (a: number, b: number) => (ctx: IContext) =>
-      new Promise<number>(resolve => resolve(a + b + ctx.userId))
-    throwError(bool: boolean) {
+    addWithContext = (cx: IContext, a: number, b: number) =>
+      a + b + cx.userId
+    addAsyncWithContext = (cx: IContext, a: number, b: number) =>
+      new Promise<number>(resolve => resolve(a + b + cx.userId))
+    throwError(cx: IContext, bool: boolean) {
       if (bool) {
         throw new Error('test')
       }

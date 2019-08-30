@@ -6,6 +6,7 @@ import {createClient} from './supertest'
 import {ensure} from './ensure'
 import {jsonrpc} from './express'
 import {noopLogger} from './test-utils'
+import {Contextual} from './types'
 
 describe('jsonrpc', () => {
 
@@ -20,15 +21,15 @@ describe('jsonrpc', () => {
     asyncError(message: string): Promise<void>
     httpError(statusCode: number, message: string): Promise<void>
 
-    addWithContext(a: number, b: number): (ctx: IContext) => number
+    addWithContext(a: number, b: number): number
     addWithContext2(a: number, b: number): Promise<number>
   }
 
   const ensureLoggedIn = ensure<IContext>(c => !!c.userId)
 
-  class Service implements IService {
+  class Service implements Contextual<IService, IContext> {
     constructor(readonly time: number) {}
-    add(a: number, b: number) {
+    add(context: IContext, a: number, b: number) {
       return a + b
     }
     multiply(...numbers: number[]) {
@@ -39,13 +40,13 @@ describe('jsonrpc', () => {
         setTimeout(resolve, this.time)
       })
     }
-    syncError(message: string) {
+    syncError(context: IContext, message: string) {
       throw new Error(message)
     }
-    async asyncError(message: string) {
+    async asyncError(context: IContext, message: string) {
       throw new Error(message)
     }
-    async httpError(statusCode: number, message: string) {
+    async httpError(context: IContext, statusCode: number, message: string) {
       const err: any = new Error(message)
       err.statusCode = statusCode
       err.errors = [{
@@ -53,12 +54,12 @@ describe('jsonrpc', () => {
       }]
       throw err
     }
-    addWithContext = (a: number, b: number) => (ctx: IContext): number => {
+    addWithContext = (ctx: IContext, a: number, b: number) => {
       return a + b + ctx.userId
     }
 
     @ensureLoggedIn
-    addWithContext2(a: number, b: number, ctx?: IContext) {
+    addWithContext2(ctx: IContext, a: number, b: number) {
       return Promise.resolve(a + b + ctx!.userId)
     }
   }

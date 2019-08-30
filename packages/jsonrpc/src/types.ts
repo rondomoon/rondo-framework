@@ -3,11 +3,10 @@ import {IPendingAction, IResolvedAction, IRejectedAction} from '@rondo.dev/clien
 export type ArgumentTypes<T> =
   T extends (...args: infer U) => infer R ? U : never
 export type RetType<T> = T extends (...args: any[]) => infer R ? R : never
-type UnwrapHOC<T> = T extends (...args: any[]) => infer R ? R : T
 type UnwrapPromise<T> = T extends Promise<infer V> ? V : T
 type RetProm<T> = T extends Promise<any> ? T : Promise<T>
 type PromisifyReturnType<T> = (...a: ArgumentTypes<T>) =>
-  RetProm<UnwrapHOC<RetType<T>>>
+  RetProm<RetType<T>>
 
 /**
  * Helps implement a service from a service definiton that has a context as a
@@ -15,16 +14,15 @@ type PromisifyReturnType<T> = (...a: ArgumentTypes<T>) =>
  */
 export type Contextual<T, Cx> = {
   [K in keyof T]:
-    T[K] extends () => infer R
-      ? (cx: Cx) => R :
-    T[K] extends (a: infer A) => infer R
-      ? (a: A, cx: Cx) => R :
-    T[K] extends (a: infer A, b: infer B) => infer R
-      ? (a: A, b: B, cx: Cx) => R :
-    T[K] extends (a: infer A, b: infer B, c: infer C) => infer R
-      ? (a: A, b: B, c: C, cx: Cx) => R :
-    T[K] extends (a: infer A, b: infer B, c: infer C, d: infer D) => infer R
-      ? (a: A, b: B, c: C, d: D, cx: Cx) => R :
+    T[K] extends (...args: infer A) => infer R
+      ? (cx: Cx, ...args: A) => R :
+    never
+}
+
+export type ReverseContextual<T> = {
+  [K in keyof T]:
+    T[K] extends (cx: any, ...args: infer A) => infer R
+      ? (...args: A) => R :
     never
 }
 
@@ -46,7 +44,7 @@ export interface IReduxed<ActionType extends string> {
 
 export type TReduxed<T, ActionType extends string> = {
   [K in keyof T]: (...a: ArgumentTypes<T[K]>) =>
-    IRPCPendingAction<UnwrapPromise<UnwrapHOC<RetType<T[K]>>>, ActionType, K>
+    IRPCPendingAction<UnwrapPromise<RetType<T[K]>>, ActionType, K>
 }
 
 export type TReduxHandlers<T, State> = {

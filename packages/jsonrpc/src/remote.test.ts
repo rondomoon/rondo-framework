@@ -10,6 +10,7 @@ import {createRemoteClient} from './remote'
 import {jsonrpc} from './express'
 import {keys} from 'ts-transformer-keys'
 import {noopLogger} from './test-utils'
+import {Contextual} from './types'
 
 describe('remote', () => {
 
@@ -20,11 +21,11 @@ describe('remote', () => {
   }
   const IServiceKeys = keys<IService>()
 
-  class Service implements IService {
-    add(a: number, b: number) {
+  class Service implements Contextual<IService, {}> {
+    add(ctx: {}, a: number, b: number) {
       return a + b
     }
-    async fetchItem(obj1: {a: number}, obj2: {b: number})
+    async fetchItem(ctx: {}, obj1: {a: number}, obj2: {b: number})
       : Promise<{a: number, b: number}> {
       return Promise.resolve({...obj1, ...obj2})
     }

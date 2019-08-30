@@ -1,11 +1,12 @@
 import {createLocalClient} from './local'
 import {keys} from 'ts-transformer-keys'
+import {Contextual, ReverseContextual, TAsyncified} from './types'
 
 describe('local', () => {
 
   interface IService {
     add(a: number, b: number): number
-    addWithContext(a: number, b: number): (context: IContext) => number
+    addWithContext(a: number, b: number): number
   }
   const IServiceKeys = keys<IService>()
 
@@ -13,19 +14,18 @@ describe('local', () => {
     userId: 1000
   }
 
-  class Service implements IService {
-    add(a: number, b: number) {
+  class Service implements Contextual<IService, IContext> {
+    add(cx: IContext, a: number, b: number) {
       return a + b
     }
-    addWithContext = (a: number, b: number) => (context: IContext) => {
-      return a + b + context.userId
+    addWithContext = (cx: IContext, a: number, b: number) => {
+      return a + b + cx.userId
     }
   }
 
   const service = new Service()
-  const proxy = createLocalClient<IService>(service, {
-    userId: 1000,
-  })
+
+  const proxy = createLocalClient(service, () => ({userId: 1000}))
 
   describe('add', () => {
     it('should add two numbers', async () => {
