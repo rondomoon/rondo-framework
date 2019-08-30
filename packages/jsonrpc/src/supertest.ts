@@ -2,7 +2,7 @@ import request from 'supertest'
 import {Application} from 'express'
 import {TAsyncified} from './types'
 
-export function createClient<T>( app: Application, path: string,
+export function createClient<T>(app: Application, path: string,
 ) {
   let id = 0
   const proxy = new Proxy({}, {
