@@ -25,7 +25,7 @@ describe('local', () => {
 
   const service = new Service()
 
-  const proxy = createLocalClient(service, () => ({userId: 1000}))
+  const proxy = createLocalClient(service, {userId: 1000})
 
   describe('add', () => {
     it('should add two numbers', async () => {
