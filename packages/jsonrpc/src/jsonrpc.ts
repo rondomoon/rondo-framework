@@ -157,6 +157,10 @@ export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
 
       await validateServiceContext(id, service, method, context)
 
+      // FIXME TODO if user specified too many parameters in the request,
+      // they might override the context argument! this is dangerous as it
+      // could allow them to set any userId they would like. We should compare
+      // method arguments length before invoking this function.
       let retValue = (rpcService[method] as any)(...params, context)
 
       if (typeof retValue === 'function') {
