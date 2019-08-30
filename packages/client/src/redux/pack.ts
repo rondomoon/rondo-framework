@@ -1,5 +1,5 @@
 import { ComponentType, PureComponent } from 'react'
-import { connect, Omit } from 'react-redux'
+import { connect, Omit, MapDispatchToPropsParam } from 'react-redux'
 import { Dispatch } from 'redux'
 import { TStateSelector } from './TStateSelector'
 
@@ -34,7 +34,7 @@ export function pack<
 >(
   getLocalState: TStateSelector<State, LocalState>,
   mapStateToProps: (state: LocalState) => StateProps,
-  mapDispatchToProps: (dispatch: Dispatch) => DispatchProps,
+  mapDispatchToProps: MapDispatchToPropsParam<DispatchProps, Props>,
   Component: React.ComponentType<Props>,
 ): ComponentType<
   Omit<Props, keyof Props & (keyof StateProps | keyof DispatchProps)>
