@@ -116,6 +116,10 @@ export class Application implements IApplication {
     return jsonrpc(
       req => ({user: req.user}),
       this.getApiLogger(),
+      (path, service, callback) => this
+      .database
+      .transactionManager
+      .doInNewTransaction(() => callback()),
     )
   }
 
