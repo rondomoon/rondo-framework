@@ -8,6 +8,7 @@ import {NextFunction, Request, Response, Router} from 'express'
 import {createError, isJSONRPCError, IJSONRPCError, IError} from './error'
 import {
   createRpcService, ERROR_SERVER, ERROR_INVALID_PARAMS, ERROR_METHOD_NOT_FOUND,
+  IRequest,
 } from './jsonrpc'
 
 export type TGetContext<Context> = (req: Request) => Context
@@ -21,9 +22,19 @@ export interface IJSONRPCReturnType {
   router(): Router
 }
 
+async function wrap<A, R>(
+  path: string, request: A, fn: () => Promise<R>): Promise<R> {
+  const result = await fn()
+  return result
+}
+
 export function jsonrpc<Context>(
   getContext: TGetContext<Context>,
   logger: ILogger,
+  wrapCall: <A extends IRequest, R>(
+    path: string,
+    request: A,
+    fn: (request?: A) => Promise<R>) => Promise<R> = wrap,
   idempotentMethodRegex = IDEMPOTENT_METHOD_REGEX,
 ): IJSONRPCReturnType {
 
@@ -94,13 +105,15 @@ export function jsonrpc<Context>(
           method: req.query.method,
           params: JSON.parse(req.query.params),
         }
-        rpcService.invoke(request, getContext(req))
+        wrapCall(path, request,
+          (body = request) => rpcService.invoke(body, getContext(req)))
         .then(response => handleResponse(response, res))
         .catch(next)
       })
 
       router.post(path, (req, res, next) => {
-        rpcService.invoke(req.body, getContext(req))
+        wrapCall(path, req.body,
+          (body = req.body) => rpcService.invoke(body, getContext(req)))
         .then(response => handleResponse(response, res))
         .catch(next)
       })

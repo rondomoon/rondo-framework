@@ -45,6 +45,21 @@ export function pick<T, K extends FunctionPropertyNames<T>>(t: T, keys: K[])
   }, {} as Pick<T, K>)
 }
 
+export function getAllMethods<T>(obj: T): Array<FunctionPropertyNames<T>> {
+  const props = new Set<string>()
+  do {
+    const l = Object.getOwnPropertyNames(obj)
+    .filter((p, i, arr) => {
+      return typeof (obj as any)[p] === 'function' &&
+        p !== 'constructor'
+    })
+    .forEach(p => props.add(p))
+    obj = Object.getPrototypeOf(obj)
+  } while (Object.getPrototypeOf(obj))
+
+  return Array.from(props) as unknown as Array<FunctionPropertyNames<T>>
+}
+
 export interface IRequest<M extends string = any, A = any[]> {
   jsonrpc: '2.0'
   id: TId | null
@@ -104,7 +119,9 @@ export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
   service: T,
   methods?: M[],
 ) => {
-  const rpcService = methods ? pick(service, methods) : service
+
+  const rpcService = methods ? pick(service, methods) :
+    pick(service, getAllMethods(service))
   return {
     async invoke<Context>(
       req: IRequest<M, ArgumentTypes<T[M]>>,

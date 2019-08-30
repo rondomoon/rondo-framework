@@ -1,10 +1,11 @@
 import bodyParser from 'body-parser'
 import express from 'express'
 import request from 'supertest'
+import {IRequest} from './jsonrpc'
 import {createClient} from './supertest'
+import {ensure} from './ensure'
 import {jsonrpc} from './express'
 import {noopLogger} from './test-utils'
-import {ensure} from './ensure'
 
 describe('jsonrpc', () => {
 
@@ -239,6 +240,54 @@ describe('jsonrpc', () => {
       await request(createApp())
       .get(`/myService?jsonrpc=2.0&id=1&method=add&params=${params}`)
       .expect(405)
+    })
+
+    describe('wrapCall', () => {
+
+      let requests: IRequest[] = []
+      let results: any[] = []
+      function create() {
+        requests = []
+        results = []
+
+        userId = 1000
+        const app = express()
+        const myService = new Service(5)
+        // console.log('service', myService, Object.
+        app.use(bodyParser.json())
+        app.use('/',
+          jsonrpc(
+            req => ({userId}),
+            noopLogger,
+            async (path, req, makeRequest) => {
+              requests.push(req)
+              const result = await makeRequest()
+              results.push(result)
+              return result
+            },
+          )
+          .addService('/myService', myService)
+          .router(),
+        )
+        return app
+      }
+
+      it('should wrap POST rpc method call', async () => {
+        const req = {
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'add',
+          params: [1, 2],
+        }
+        const response = await request(create())
+        .post('/myService')
+        .send(req)
+
+        expect(response.body.result).toEqual(3)
+        expect(requests).toEqual([ req ])
+        expect(results).toEqual([ response.body ])
+      })
+
     })
   })
 
