@@ -60,7 +60,7 @@ function ensureMethod<Context>(
 export function getValidatorsForInstance<Context>(
   target: any,
 ): Array<Validate<Context>> {
-  return getValidatorsForClass(target.__proto__.constructor)
+  return getValidatorsForClass(Object.getPrototypeOf(target).constructor)
 }
 
 export function getValidatorsForClass<Context>(
