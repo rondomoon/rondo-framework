@@ -11,3 +11,6 @@ export * from './session'
 export * from './user'
 export * from './team'
 export * from './validator'
+
+import * as rpc from './rpc'
+export {rpc}

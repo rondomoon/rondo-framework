@@ -16,7 +16,7 @@ export interface IJSONRPCReturnType {
   addService<T, F extends FunctionPropertyNames<T>>(
     path: string,
     service: T,
-    methods: F[],
+    methods?: F[],
   ): IJSONRPCReturnType,
   router(): Router
 }
@@ -62,7 +62,7 @@ export function jsonrpc<Context>(
     addService<T, F extends FunctionPropertyNames<T>>(
       path: string,
       service: T,
-      methods: F[],
+      methods?: F[],
     ) {
       const rpcService = createRpcService(service, methods)
 

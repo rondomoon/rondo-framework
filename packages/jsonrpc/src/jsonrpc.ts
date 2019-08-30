@@ -102,9 +102,9 @@ async function validateServiceContext<
 
 export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
   service: T,
-  methods: M[],
+  methods?: M[],
 ) => {
-  const rpcService = pick(service, methods)
+  const rpcService = methods ? pick(service, methods) : service
   return {
     async invoke<Context>(
       req: IRequest<M, ArgumentTypes<T[M]>>,
@@ -127,6 +127,7 @@ export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
       const isNotification = req.id === null || req.id === undefined
 
       if (
+        method.startsWith('_') ||
         !rpcService.hasOwnProperty(method) ||
         typeof rpcService[method] !== 'function'
       ) {

@@ -60,6 +60,7 @@ export class Application implements IApplication {
 
     this.configureMiddleware(router)
     this.configureRouter(router)
+    this.configureRPC(router)
     this.configureApiErrorHandling(router)
     this.configureFrontend(router)
 
@@ -109,17 +110,23 @@ export class Application implements IApplication {
       this.services.userPermissions,
       this.createTransactionalRouter(),
     ).handle)
+  }
 
+  protected jsonrpc() {
+    return jsonrpc(
+      req => ({user: req.user}),
+      this.getApiLogger(),
+    )
+  }
+
+  protected configureRPC(router: express.Router) {
     router.use(
       '/rpc',
-      jsonrpc(
-        req => ({user: req.user}),
-        this.getApiLogger(),
-      )
-      .addService('/teamService',
+      this.jsonrpc()
+      .addService('/team',
         new rpc.TeamService(this.database, this.services.userPermissions),
         keys<rpc.TeamService>())
-      .addService('/userService',
+      .addService('/user',
         new rpc.UserService(this.database),
         keys<rpc.UserService>())
       .router(),
