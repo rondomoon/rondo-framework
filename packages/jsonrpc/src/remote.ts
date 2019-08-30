@@ -8,15 +8,12 @@ export const createNumberGenerator = (val: number) => () => ++val
 export const constantId = (val: string) => () => val
 
 export function createRemoteClient<T>(
-  baseUrl: string,
   url: string,
   methods: Array<FunctionPropertyNames<T>>,
   getNextRequestId: TRequestIdGenerator<string | number> = constantId('c'),
   idempotentMethodRegex = IDEMPOTENT_METHOD_REGEX,
 ) {
-  const axios = Axios.create({
-    baseURL: baseUrl,
-  })
+  const axios = Axios.create()
 
   async function createRequest(
     id: string | number | null,

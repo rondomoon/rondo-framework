@@ -65,7 +65,7 @@ describe('remote', () => {
   describe('idempotent method invocation (GET)', () => {
     it('creates a proxy for remote service', async () => {
       const rpc = createRemoteClient<IService>(
-        baseUrl, '/myService', IServiceKeys)
+        baseUrl + '/myService', IServiceKeys)
       const result = await rpc.fetchItem({a: 10}, {b: 20})
       expect(result).toEqual({a: 10, b: 20})
     })
@@ -74,7 +74,7 @@ describe('remote', () => {
   describe('method invocation (POST)', () => {
     it('creates a proxy for remote service', async () => {
       const rpc = createRemoteClient<IService>(
-        baseUrl, '/myService', IServiceKeys)
+        baseUrl + '/myService', IServiceKeys)
       const result = await rpc.add(3, 7)
       expect(result).toBe(3 + 7)
     })

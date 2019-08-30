@@ -6,7 +6,6 @@ import {
   TAllActions,
   TReduxHandlers,
 } from './types'
-import {createRemoteClient} from './remote'
 
 export function createActions<T, ActionType extends string>(
   client: TAsyncified<T>,

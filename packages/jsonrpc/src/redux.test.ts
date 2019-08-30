@@ -80,7 +80,7 @@ describe('createActions', () => {
 
   function getClient() {
     const remoteClient = createRemoteClient<IService>(
-      baseUrl, '/service', keys<IService>())
+      baseUrl + '/service', keys<IService>())
     const client = createActions(remoteClient, 'myService')
 
     const defaultState = {
