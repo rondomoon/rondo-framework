@@ -5,7 +5,7 @@
   },
   "references": [
     {
-      "path": "../common/tsconfig.esm.json"
+      "path": "../comments-common/tsconfig.esm.json"
     }
   ]
 }
