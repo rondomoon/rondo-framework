@@ -9,6 +9,8 @@ import {IDatabase} from '../database/IDatabase'
 import {Server} from 'http'
 import {SqlLogger, loggerFactory} from '../logger'
 import {createNamespace, Namespace} from 'cls-hooked'
+import { configureApplication } from './configureApplication'
+import { createApplication } from './createApplication'
 
 export class Bootstrap implements IBootstrap {
   protected server?: Server
@@ -36,7 +38,7 @@ export class Bootstrap implements IBootstrap {
   }
 
   protected createApplication(database: IDatabase): IApplication {
-    return new Application(this.getConfig(), database)
+    return createApplication(configureApplication(this.getConfig(), database))
   }
 
   async exec(command: string = 'listen') {
