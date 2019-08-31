@@ -6,7 +6,7 @@ import * as Middleware from '../middleware'
 import * as Services from '../services'
 import * as Team from '../team'
 import * as User from '../user'
-import { IApplicationConfig } from './IApplicationConfig'
+import { IServerConfig } from './IServerConfig'
 import { IConfig } from './IConfig'
 import { IServices } from './IServices'
 import * as routes from '../routes'
@@ -15,13 +15,13 @@ import { IRoutes, IContext } from '@rondo.dev/common'
 import { Express } from 'express-serve-static-core'
 
 export type AppConfigurator<
-  T extends IApplicationConfig = IApplicationConfig
+  T extends IServerConfig = IServerConfig
 > = (
   config: IConfig,
   database: IDatabase,
 ) => T
 
-export const configureApplication: AppConfigurator = (config, database) => {
+export const configureServer: AppConfigurator = (config, database) => {
 
   const logger = loggerFactory.getLogger('api')
 

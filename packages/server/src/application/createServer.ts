@@ -1,8 +1,8 @@
-import { IApplicationConfig } from './IApplicationConfig'
+import { IServerConfig } from './IServerConfig'
 import { IApplication } from './IApplication'
 import express from 'express'
 
-export function createApplication(appConfig: IApplicationConfig): IApplication {
+export function createServer(appConfig: IServerConfig): IApplication {
   const {config, database, framework} = appConfig
   const server = express()
 

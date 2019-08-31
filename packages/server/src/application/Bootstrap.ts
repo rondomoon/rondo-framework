@@ -5,8 +5,8 @@ import { AddressInfo } from 'net'
 import { Database } from '../database/Database'
 import { IDatabase } from '../database/IDatabase'
 import { loggerFactory, SqlLogger } from '../logger'
-import { configureApplication } from './configureApplication'
-import { createApplication } from './createApplication'
+import { configureServer } from './configureServer'
+import { createServer } from './createServer'
 import { IApplication } from './IApplication'
 import { IBootstrap } from './IBootstrap'
 import { IConfig } from './IConfig'
@@ -37,7 +37,7 @@ export class Bootstrap implements IBootstrap {
   }
 
   protected createApplication(database: IDatabase): IApplication {
-    return createApplication(configureApplication(this.getConfig(), database))
+    return createServer(configureServer(this.getConfig(), database))
   }
 
   async exec(command: string = 'listen') {
