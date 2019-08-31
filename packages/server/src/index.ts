@@ -1,3 +1,8 @@
+if (require.main === module) {
+  if (!process.env.LOG) {
+    process.env.LOG = 'api,sql:warn'
+  }
+}
 export * from './application'
 export * from './database'
 export * from './entities'
@@ -14,3 +19,9 @@ export * from './validator'
 
 import * as rpc from './rpc'
 export {rpc}
+
+import bootstrap from './bootstrap'
+
+if (require.main === module) {
+  bootstrap.exec(process.argv[2])
+}

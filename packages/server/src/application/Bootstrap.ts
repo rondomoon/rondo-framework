@@ -5,23 +5,60 @@ import { AddressInfo } from 'net'
 import { Database } from '../database/Database'
 import { IDatabase } from '../database/IDatabase'
 import { loggerFactory, SqlLogger } from '../logger'
-import { configureServer } from './configureServer'
+import { ServerConfigurator } from './configureServer'
 import { createServer } from './createServer'
 import { IApplication } from './IApplication'
 import { IBootstrap } from './IBootstrap'
 import { IConfig } from './IConfig'
+import { IServerConfig } from './IServerConfig'
+
+export interface IBootstrapParams {
+  readonly config: IConfig
+  readonly configureServer: ServerConfigurator
+  readonly namespace?: Namespace
+  readonly exit?: (code: number) => void
+  readonly entities?: object
+  readonly migrations?: object
+}
+
+// tslint:disable-next-line
+function getFunctions(obj: object): Function[] {
+  return Object.keys(obj)
+  .map(k => (obj as any)[k])
+  .filter(f => typeof f === 'function')
+}
 
 export class Bootstrap implements IBootstrap {
+  protected config: IConfig
+  protected configureServer: ServerConfigurator
+  protected namespace: Namespace
+  protected exit: (code: number) => void
+
   protected server?: Server
   protected inUse: boolean = false
   readonly application: IApplication
   readonly database: IDatabase
 
-  constructor(
-    private readonly config: IConfig,
-    protected readonly namespace: Namespace = createNamespace('application'),
-    protected readonly exit: (code: number) => void = process.exit,
-  ) {
+  constructor(params: IBootstrapParams) {
+    this.config = {
+      ...params.config,
+      app: {
+        ...params.config.app,
+        db: {
+          ...params.config.app.db,
+          entities: params.entities
+            ? getFunctions(params.entities)
+            : params.config.app.db.entities,
+          migrations: params.migrations
+            ? getFunctions(params.migrations)
+            : params.config.app.db.migrations,
+        },
+      },
+    }
+    this.configureServer = params.configureServer
+    this.namespace = params.namespace || createNamespace('application')
+    this.exit = params.exit || process.exit
+
     this.database = this.createDatabase()
     this.application = this.createApplication(this.database)
   }
@@ -31,12 +68,13 @@ export class Bootstrap implements IBootstrap {
   }
 
   protected createDatabase(): IDatabase {
-    const sqlLogger = new SqlLogger(
-      loggerFactory.getLogger('sql'), this.namespace)
-    return new Database(this.namespace, sqlLogger, this.getConfig().app.db)
+    const {namespace} = this
+    const sqlLogger = new SqlLogger(loggerFactory.getLogger('sql'), namespace)
+    return new Database(namespace, sqlLogger, this.getConfig().app.db)
   }
 
   protected createApplication(database: IDatabase): IApplication {
+    const {configureServer} = this
     return createServer(configureServer(this.getConfig(), database))
   }
 

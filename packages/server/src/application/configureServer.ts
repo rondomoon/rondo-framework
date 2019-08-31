@@ -14,14 +14,14 @@ import { TransactionalRouter } from '../router'
 import { IRoutes, IContext } from '@rondo.dev/common'
 import { Express } from 'express-serve-static-core'
 
-export type AppConfigurator<
+export type ServerConfigurator<
   T extends IServerConfig = IServerConfig
 > = (
   config: IConfig,
   database: IDatabase,
 ) => T
 
-export const configureServer: AppConfigurator = (config, database) => {
+export const configureServer: ServerConfigurator = (config, database) => {
 
   const logger = loggerFactory.getLogger('api')
 

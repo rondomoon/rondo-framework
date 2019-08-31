@@ -1,12 +1,8 @@
-if (!process.env.LOG) {
-  process.env.LOG = 'api,sql:warn'
-}
-
 import {config} from './config'
 import {Bootstrap} from './application/Bootstrap'
+import {configureServer} from './application/configureServer'
 
-export const bootstrap = new Bootstrap(config)
-// FIXME determine a port by parsing app url from config
-const port: string | number = process.env.PORT || 3000
-
-bootstrap.listen(port)
+export default new Bootstrap({
+  config,
+  configureServer,
+})
