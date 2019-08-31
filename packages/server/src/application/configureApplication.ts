@@ -14,10 +14,14 @@ import { TransactionalRouter } from '../router'
 import { IRoutes, IContext } from '@rondo.dev/common'
 import { Express } from 'express-serve-static-core'
 
-export function configureApplication(
+export type AppConfigurator<
+  T extends IApplicationConfig = IApplicationConfig
+> = (
   config: IConfig,
   database: IDatabase,
-): IApplicationConfig {
+) => T
+
+export const configureApplication: AppConfigurator = (config, database) => {
 
   const logger = loggerFactory.getLogger('api')
 
@@ -33,51 +37,59 @@ export function configureApplication(
   const createTransactionalRouter = <T extends IRoutes>() =>
     new TransactionalRouter<T>(transactionManager)
 
-  const getContext = (req: Express.Request): IContext => ({user: req.user})
+  const globalErrorHandler = new Middleware.ErrorPageHandler(logger).handle
 
   return {
     config,
     database,
     logger,
     services,
+    globalErrorHandler,
     framework: {
-      middleware: [
-        new Middleware.SessionMiddleware({
-          transactionManager,
-          baseUrl: config.app.baseUrl,
-          sessionName: config.app.session.name,
-          sessionSecret: config.app.session.secret,
-        }).handle,
-        new Middleware.RequestLogger(logger).handle,
-        json(),
-        cookieParser(config.app.session.secret),
-        new Middleware.CSRFMiddleware({
-          baseUrl: config.app.baseUrl,
-          cookieName: config.app.session.name + '_csrf',
-        }).handle,
-        new Middleware.Transaction(database.namespace).handle,
-        authenticator.handle,
-      ],
-      app: [routes.application],
-      api: [
-        new routes.LoginRoutes(
-          services.userService,
-          authenticator,
-          createTransactionalRouter(),
-        ).handle,
-        new routes.UserRoutes(
-          services.userService,
-          createTransactionalRouter(),
-        ).handle,
-        new Team.TeamRoutes(
-          services.teamService,
-          services.userPermissions,
-          createTransactionalRouter(),
-        ).handle,
-      ],
-      apiError: new Middleware.ErrorApiHandler(logger).handle,
-      frontend: [],
-      error: new Middleware.ErrorPageHandler(logger).handle,
+      middleware: {
+        path: '/',
+        handle: [
+          new Middleware.SessionMiddleware({
+            transactionManager,
+            baseUrl: config.app.baseUrl,
+            sessionName: config.app.session.name,
+            sessionSecret: config.app.session.secret,
+          }).handle,
+          new Middleware.RequestLogger(logger).handle,
+          json(),
+          cookieParser(config.app.session.secret),
+          new Middleware.CSRFMiddleware({
+            baseUrl: config.app.baseUrl,
+            cookieName: config.app.session.name + '_csrf',
+          }).handle,
+          new Middleware.Transaction(database.namespace).handle,
+          authenticator.handle,
+        ],
+      },
+      app: {
+        path: '/app',
+        handle: [routes.application],
+      },
+      api: {
+        path: '/api',
+        handle: [
+          new routes.LoginRoutes(
+            services.userService,
+            authenticator,
+            createTransactionalRouter(),
+          ).handle,
+          new routes.UserRoutes(
+            services.userService,
+            createTransactionalRouter(),
+          ).handle,
+          new Team.TeamRoutes(
+            services.teamService,
+            services.userPermissions,
+            createTransactionalRouter(),
+          ).handle,
+        ],
+        error: new Middleware.ErrorApiHandler(logger).handle,
+      },
     },
   }
 }
