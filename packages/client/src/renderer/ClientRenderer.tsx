@@ -10,32 +10,26 @@ import {Router} from 'react-router-dom'
 import {Store} from 'redux'
 import {createBrowserHistory} from 'history'
 
-export interface IClientRendererParams<A extends Action, D extends IAPIDef> {
-  readonly RootComponent: React.ComponentType<{
-    config: IClientConfig,
-    http: IHTTPClient<D>
-  }>,
+export interface IClientRendererParams<Props> {
+  readonly RootComponent: React.ComponentType<Props>
   readonly target?: HTMLElement
   readonly hydrate: boolean // TODO make this better
 }
 
-export class ClientRenderer<A extends Action, D extends IAPIDef>
-  implements IRenderer {
-  constructor(readonly params: IClientRendererParams<A, D>) {}
+export class ClientRenderer<Props>
+  implements IRenderer<Props> {
+  constructor(readonly params: IClientRendererParams<Props>) {}
 
   render<State>(
     url: string,
     store: Store<State>,
-    config = (window as any).__APP_CONFIG__ as IClientConfig,
+    props: Props,
+    config: IClientConfig,
   ) {
     const {
       RootComponent,
       target = document.getElementById('container'),
     } = this.params
-
-    const http = new HTTPClient<D>(config.baseUrl + '/api', {
-      'x-csrf-token': config.csrfToken,
-    })
 
     const history = createBrowserHistory({
       basename: config.baseUrl,
@@ -45,7 +39,7 @@ export class ClientRenderer<A extends Action, D extends IAPIDef>
       ReactDOM.hydrate(
         <Provider store={store}>
           <Router history={history}>
-            <RootComponent config={config} http={http} />
+            <RootComponent {...props} />
           </Router>
         </Provider>,
         target,
@@ -54,7 +48,7 @@ export class ClientRenderer<A extends Action, D extends IAPIDef>
       ReactDOM.render(
         <Provider store={store}>
           <Router history={history}>
-            <RootComponent config={config} http={http} />
+            <RootComponent {...props} />
           </Router>
         </Provider>,
         target,

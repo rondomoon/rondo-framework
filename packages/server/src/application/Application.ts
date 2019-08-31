@@ -12,7 +12,7 @@ import {IApplication} from './IApplication'
 import {IConfig} from './IConfig'
 import {IDatabase} from '../database/IDatabase'
 import {ILogger} from '../logger/ILogger'
-import {IRoutes} from '@rondo.dev/common'
+import {IRoutes, IContext} from '@rondo.dev/common'
 import {IServices} from './IServices'
 import {ITransactionManager} from '../database/ITransactionManager'
 import {loggerFactory} from '../logger'
@@ -112,9 +112,13 @@ export class Application implements IApplication {
     ).handle)
   }
 
+  protected getContext(req: express.Request): IContext {
+    return {user: req.user}
+  }
+
   protected jsonrpc() {
     return jsonrpc(
-      req => ({user: req.user}),
+      req => this.getContext(req),
       this.getApiLogger(),
       (path, service, callback) => this
       .database
@@ -124,17 +128,7 @@ export class Application implements IApplication {
   }
 
   protected configureRPC(router: express.Router) {
-    router.use(
-      '/rpc',
-      this.jsonrpc()
-      .addService('/team',
-        new rpc.TeamService(this.database, this.services.userPermissions),
-        keys<rpc.TeamService>())
-      .addService('/user',
-        new rpc.UserService(this.database),
-        keys<rpc.UserService>())
-      .router(),
-    )
+    // Override this method
   }
 
   protected configureApiErrorHandling(router: express.Router) {

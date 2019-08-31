@@ -1,4 +1,4 @@
-import * as util from './util'
+import * as util from './bulk'
 import express from 'express'
 import {Contextual} from './types'
 import {jsonrpc} from './express'

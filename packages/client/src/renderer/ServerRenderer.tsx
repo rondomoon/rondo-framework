@@ -11,27 +11,20 @@ import {StaticRouter} from 'react-router-dom'
 import {Store} from 'redux'
 import {renderToNodeStream} from 'react-dom/server'
 
-export class ServerRenderer<A extends Action, D extends IAPIDef>
-  implements IRenderer {
+export class ServerRenderer<Props> implements IRenderer<Props> {
   constructor(
-    readonly RootComponent: React.ComponentType<{
-      config: IClientConfig,
-      http: IHTTPClient<D>
-    }>,
+    readonly RootComponent: React.ComponentType<Props>,
   ) {}
   async render<State>(
     url: string,
     store: Store<State>,
+    props: Props,
     config: IClientConfig,
     host: string = '',
     headers: Record<string, string> = {},
   ) {
     const {RootComponent} = this
     // TODO set cookie in headers here...
-    const http = new HTTPClient<D>(
-      'http://' + host + config.baseUrl + '/api',
-      headers,
-    )
 
     const context: StaticRouterContext = {}
 
@@ -42,7 +35,7 @@ export class ServerRenderer<A extends Action, D extends IAPIDef>
           location={url}
           context={context}
         >
-          <RootComponent config={config} http={http} />
+          <RootComponent {...props} />
         </StaticRouter>
       </Provider>
     )

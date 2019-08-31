@@ -18,7 +18,7 @@ export class TeamService implements RPC<t.ITeamService> {
     protected readonly permissions: IUserPermissions,
   ) {}
 
-  async create(params: t.ITeamCreateParams, context: IContext) {
+  async create(context: IContext, params: t.ITeamCreateParams) {
     const userId = context.user!.id
     const name = trim(params.name)
 
@@ -32,17 +32,17 @@ export class TeamService implements RPC<t.ITeamService> {
       userId,
     })
 
-    await this.addUser({
+    await this.addUser(context, {
       teamId: team.id,
       userId,
       // ADMIN role
       roleId: 1,
-    }, context)
+    })
 
     return team
   }
 
-  async remove({id}: t.ITeamRemoveParams, context: IContext) {
+  async remove(context: IContext, {id}: t.ITeamRemoveParams) {
     const userId = context.user!.id
 
     await this.permissions.belongsToTeam({
@@ -59,7 +59,7 @@ export class TeamService implements RPC<t.ITeamService> {
     return {id}
   }
 
-  async update({id, name}: t.ITeamUpdateParams, context: IContext) {
+  async update(context: IContext, {id, name}: t.ITeamUpdateParams) {
     const userId = context.user!.id
 
     await this.permissions.belongsToTeam({
@@ -74,15 +74,15 @@ export class TeamService implements RPC<t.ITeamService> {
       name,
     })
 
-    return (await this.findOne(id))!
+    return (await this.findOne(context, id))!
   }
 
-  async addUser(params: t.ITeamAddUserParams, context: IContext) {
+  async addUser(context: IContext, params: t.ITeamAddUserParams) {
     const {userId, teamId, roleId} = params
     await this.db.getRepository(UserTeam)
     .save({userId, teamId, roleId})
 
-    const userTeam = await this.createFindUserInTeamQuery()
+    const userTeam = await this._createFindUserInTeamQuery()
     .where({
       userId,
       teamId,
@@ -90,10 +90,10 @@ export class TeamService implements RPC<t.ITeamService> {
     })
     .getOne()
 
-    return this.mapUserInTeam(userTeam!)
+    return this._mapUserInTeam(userTeam!)
   }
 
-  async removeUser(params: t.ITeamAddUserParams, context: IContext) {
+  async removeUser(context: IContext, params: t.ITeamAddUserParams) {
     const {teamId, userId, roleId} = params
 
     await this.permissions.belongsToTeam({
@@ -108,7 +108,7 @@ export class TeamService implements RPC<t.ITeamService> {
     return {teamId, userId, roleId}
   }
 
-  async findOne(id: number) {
+  async findOne(context: IContext, id: number) {
     return this.db.getRepository(Team).findOne(id)
   }
 
@@ -123,7 +123,7 @@ export class TeamService implements RPC<t.ITeamService> {
     .getMany()
   }
 
-  async findUsers(teamId: number, context: IContext) {
+  async findUsers(context: IContext, teamId: number) {
     const userId = context.user!.id
 
     await this.permissions.belongsToTeam({
@@ -131,16 +131,16 @@ export class TeamService implements RPC<t.ITeamService> {
       userId,
     })
 
-    const userTeams = await this.createFindUserInTeamQuery()
+    const userTeams = await this._createFindUserInTeamQuery()
     .where('ut.teamId = :teamId', {
       teamId,
     })
     .getMany()
 
-    return userTeams.map(this.mapUserInTeam)
+    return userTeams.map(this._mapUserInTeam)
   }
 
-  protected mapUserInTeam(ut: UserTeam): IUserInTeam {
+  protected _mapUserInTeam(ut: UserTeam): IUserInTeam {
     return {
       teamId: ut.teamId,
       userId: ut.userId,
@@ -150,7 +150,7 @@ export class TeamService implements RPC<t.ITeamService> {
     }
   }
 
-  protected createFindUserInTeamQuery() {
+  protected _createFindUserInTeamQuery() {
     return this.db.getRepository(UserTeam)
     .createQueryBuilder('ut')
     .select('ut')

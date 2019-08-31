@@ -9,5 +9,7 @@ export * from './middleware'
 export * from './redux'
 export * from './renderer'
 export * from './store'
-export * from './team'
 export * from './test-utils'
+
+import * as team from './team'
+export {team}

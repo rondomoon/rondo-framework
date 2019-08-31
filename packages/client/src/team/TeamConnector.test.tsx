@@ -40,10 +40,7 @@ describe('TeamConnector', () => {
     reducers: {Team: Feature.Team},
     select: state => state.Team,
   })
-  .withComponent(select =>
-    new Feature
-    .TeamConnector(teamActions)
-    .connect(select))
+  .withComponent(select => Feature.configure(teamActions, select))
   .withJSX((Component, props) =>
     <MemoryRouter initialEntries={historyEntries}>
       <Component {...props} />

@@ -1,5 +1,5 @@
 import {IJSONRPCReturnType} from './express'
-import {TAsyncified, TReduxed} from './types'
+import {Contextual, TAsyncified, TReduxed} from './types'
 import {createActions} from './redux'
 import {createLocalClient, LocalClient} from './local'
 
@@ -7,9 +7,12 @@ function keys<T>(obj: T): Array<keyof T & string> {
   return Object.keys(obj) as Array<keyof T & string>
 }
 
-type BulkLocalClient<T> = {[K in keyof T & string]: LocalClient<T[K]>}
-type BulkActions<T> = {[K in keyof T & string]: TReduxed<T[K], K>}
-type BulkRemoteClient<T> = {[K in keyof T & string]: TAsyncified<T[K]>}
+export type BulkServices<T, Cx> = {
+  [K in keyof T & string]: Contextual<T[K], Cx>
+}
+export type BulkLocalClient<T> = {[K in keyof T & string]: LocalClient<T[K]>}
+export type BulkActions<T> = {[K in keyof T & string]: TReduxed<T[K], K>}
+export type BulkClient<T> = {[K in keyof T & string]: TAsyncified<T[K]>}
 
 function bulkCreate<T, R>(
   src: T,
@@ -22,7 +25,7 @@ function bulkCreate<T, R>(
   }, {} as any)
 }
 
-export function bulkCreateLocalClient<T, Cx>(
+export function bulkCreateLocalClient<Cx, T extends Contextual<{}, Cx>>(
   src: T,
   context: Cx,
 ): BulkLocalClient<T> {

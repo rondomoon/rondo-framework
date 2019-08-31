@@ -13,7 +13,7 @@ const MIN_PASSWORD_LENGTH = 10
 export class UserService implements RPC<u.IUserService> {
   constructor(protected readonly db: IDatabase) {}
 
-  async changePassword(params: u.IChangePasswordParams, context: IContext) {
+  async changePassword(context: IContext, params: u.IChangePasswordParams) {
     const userId = context.user!.id
     const {oldPassword, newPassword} = params
     const userRepository = this.db.getRepository(User)
@@ -27,12 +27,12 @@ export class UserService implements RPC<u.IUserService> {
     if (!(user && isValid)) {
       throw createError(400, 'Passwords do not match')
     }
-    const password = await this.hash(newPassword)
+    const password = await this._hash(newPassword)
     await userRepository
     .update(userId, { password })
   }
 
-  async findOne(id: number) {
+  async findOne(context: IContext, id: number) {
     const user = await this.db.getRepository(User).findOne(id, {
       relations: ['emails'],
     })
@@ -49,7 +49,7 @@ export class UserService implements RPC<u.IUserService> {
     }
   }
 
-  async findUserByEmail(email: string) {
+  async findUserByEmail(context: IContext, email: string) {
     const userEmail = await this.db.getRepository(UserEmail)
     .findOne({ email }, {
       relations: ['user'],
@@ -69,7 +69,7 @@ export class UserService implements RPC<u.IUserService> {
     }
   }
 
-  protected async hash(password: string): Promise<string> {
+  protected async _hash(password: string): Promise<string> {
     return hash(password, SALT_ROUNDS)
   }
 }

@@ -1,37 +1,32 @@
 import {Connector} from '../redux/Connector'
-import {TStateSelector} from '../redux'
+import {pack, TStateSelector} from '../redux'
 import {ITeamState} from './TeamReducer'
 import {TeamActions} from './TeamActions'
 import {TeamManager} from './TeamManager'
 import {bindActionCreators} from 'redux'
 import {withRouter} from 'react-router-dom'
 
-export class TeamConnector extends Connector<ITeamState> {
-  constructor(protected readonly teamActions: TeamActions) {
-    super()
-  }
+export function configure<State>(
+  teamActions: TeamActions,
+  getLocalState: TStateSelector<State, ITeamState>,
+) {
+  const Component = pack(
+    getLocalState,
+    state => ({...state}),
+    d => ({
+      addUser: bindActionCreators(teamActions.addUser, d),
+      removeUser: bindActionCreators(teamActions.removeUser, d),
+      createTeam: bindActionCreators(teamActions.createTeam, d),
+      updateTeam: bindActionCreators(teamActions.updateTeam, d),
+      removeTeam: bindActionCreators(teamActions.removeTeam, d),
+      fetchMyTeams: bindActionCreators(teamActions.fetchMyTeams, d),
+      fetchUsersInTeam:
+        bindActionCreators(teamActions.fetchUsersInTeam, d),
+      findUserByEmail:
+        bindActionCreators(teamActions.findUserByEmail, d),
+    }),
+    TeamManager,
+  )
 
-  connect<State>(getLocalState: TStateSelector<State, ITeamState>) {
-    const Component = this.wrap(
-      getLocalState,
-      state => ({
-        ...state,
-      }),
-      d => ({
-        addUser: bindActionCreators(this.teamActions.addUser, d),
-        removeUser: bindActionCreators(this.teamActions.removeUser, d),
-        createTeam: bindActionCreators(this.teamActions.createTeam, d),
-        updateTeam: bindActionCreators(this.teamActions.updateTeam, d),
-        removeTeam: bindActionCreators(this.teamActions.removeTeam, d),
-        fetchMyTeams: bindActionCreators(this.teamActions.fetchMyTeams, d),
-        fetchUsersInTeam:
-          bindActionCreators(this.teamActions.fetchUsersInTeam, d),
-        findUserByEmail:
-          bindActionCreators(this.teamActions.findUserByEmail, d),
-      }),
-      TeamManager,
-    )
-
-    return Component
-  }
+  return Component
 }
