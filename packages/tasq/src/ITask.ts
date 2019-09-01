@@ -1,5 +1,9 @@
 export interface ITask<T> {
-  id: number
-  definition: T
+  readonly id: number
+  readonly definition: T
 }
 
+export interface IResult<T> {
+  readonly id: number
+  readonly result: T
+}

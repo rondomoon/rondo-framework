@@ -16,37 +16,20 @@ interface ITaskEventHandler {
 
 export interface ITaskManager<T> {
   post(task: T): void
-
   wait(): Promise<void>
-
-  addListener<E extends keyof ITaskEventHandler>(
-    event: E, listener: ITaskEventHandler[E]): void
-  removeListener<E extends keyof ITaskEventHandler>(
-    event: E, listener: ITaskEventHandler[E]): void
 }
 
-export class TaskManager<T> implements ITaskManager<T> {
+export class TaskManager<T, R> implements ITaskManager<T> {
   protected taskQueue = new LinkedList<ITask<T>>()
   protected workers: Set<Promise<void>> = new Set()
-  protected events = new EventEmitter()
-
-  protected deferredTasks = new Map<number, Deferred<void>>()
+  protected deferredTasks = new Map<number, Deferred<R>>()
 
   protected taskCount = 0
 
   constructor(
     readonly n: number = 1,
-    readonly createExecutor: ExecutorFactory<T>,
+    readonly createExecutor: ExecutorFactory<T, R>,
   ) {
-  }
-
-  addListener<E extends keyof ITaskEventHandler>(
-    event: E, listener: ITaskEventHandler[E]): void {
-    this.events.addListener(event, listener)
-  }
-  removeListener<E extends keyof ITaskEventHandler>(
-    event: E, listener: ITaskEventHandler[E]): void {
-    this.events.removeListener(event, listener)
   }
 
   async post(definition: T) {
@@ -56,7 +39,7 @@ export class TaskManager<T> implements ITaskManager<T> {
       definition,
     })
 
-    const deferred = new Deferred<void>()
+    const deferred = new Deferred<R>()
     this.deferredTasks.set(id, deferred)
 
     if (this.workers.size < this.n) {
@@ -76,17 +59,16 @@ export class TaskManager<T> implements ITaskManager<T> {
     const promise = new Worker(
       this.createExecutor(),
       this.taskQueue,
-      (id, err) => {
-        const deferred = this.deferredTasks.get(id)
+      (err, result) => {
+        const deferred = this.deferredTasks.get(result.id)
         if (!deferred) {
-          throw new Error('No deferred found for task id:' + id)
-          // TODO this should not happen!
+          throw new Error('No deferred found for task id:' + result.id)
           return
         }
         if (err) {
           deferred.reject(err)
         } else {
-          deferred.resolve()
+          deferred.resolve(result.result)
         }
       },
     )

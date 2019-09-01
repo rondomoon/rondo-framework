@@ -1,17 +1,19 @@
 import cp from 'child_process'
 import { LinkedList } from './LinkedList'
 import { IExecutor } from './Executor'
-import { ITask } from './ITask'
+import { IResult, ITask } from './ITask'
 
 export interface IWorker<T> {
   start(): Promise<void>
 }
 
-export class Worker<T> implements IWorker<T> {
+export type ICallback<R> = (err: Error | undefined, result: IResult<R>) => void
+
+export class Worker<T, R> implements IWorker<T> {
   constructor(
-    protected executor: IExecutor<T>,
+    protected executor: IExecutor<T, R>,
     protected taskQueue: LinkedList<ITask<T>>,
-    protected callback: (id: number, err?: Error) => void,
+    protected callback: ICallback<R>,
   ) {
   }
 
@@ -19,10 +21,16 @@ export class Worker<T> implements IWorker<T> {
     let task = this.taskQueue.shift()
     while (task !== undefined) {
       try {
-        await this.executor.execute(task)
-        this.callback(task.id)
+        const result = await this.executor.execute(task)
+        this.callback(undefined, {
+          id: task.id,
+          result,
+        })
       } catch (err) {
-        this.callback(task.id, err)
+        this.callback(err, {
+          id: task.id,
+          result: {} as any,
+        })
       }
       task = this.taskQueue.shift()
     }

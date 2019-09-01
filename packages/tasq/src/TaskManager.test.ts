@@ -60,13 +60,38 @@ describe('TaskManager', () => {
 
   })
 
+  async function getError(p: Promise<unknown>): Promise<Error> {
+    let error: Error | undefined
+    try {
+      await p
+    } catch (err) {
+      error = err
+    }
+    expect(error).toBeDefined()
+    return error!
+  }
+
   describe('error handling', () => {
     it('does not fail on error', async () => {
+      const tm = new TaskManager<number>(2,
+        () => new PromiseExecutor(async task => {
+          await delay(task.definition)
+          if (task.definition % 2 === 0) {
+            throw new Error('Test error: ' + task.id)
+          }
+        }))
 
-    })
+      const results = await Promise.all([
+        tm.post(1),
+        getError(tm.post(2)),
+        tm.post(3),
+        getError(tm.post(4)),
+      ])
 
-    it('triggers failure event on error', async () => {
-
+      expect(results[0]).toBe(undefined)
+      expect(results[1].message).toMatch(/test error/i)
+      expect(results[2]).toBe(undefined)
+      expect(results[3].message).toMatch(/test error/i)
     })
   })
 
