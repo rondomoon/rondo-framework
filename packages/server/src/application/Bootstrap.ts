@@ -150,12 +150,21 @@ export class Bootstrap implements IBootstrap {
   }
 
   getAddress(): AddressInfo | string {
-    return this.server!.address()
+    const address = this.server!.address()
+    if (!address) {
+      throw new Error('Server addres is null')
+    }
+    return address
   }
 
   async close(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.server!.close(resolve)
+      this.server!.close(err => {
+        if (!err) {
+          return resolve()
+        }
+        reject(err)
+      })
       this.server = undefined
       this.inUse = false
     })

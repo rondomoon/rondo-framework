@@ -76,7 +76,7 @@ function updateDependency(
   if (!deps || !deps[name] || version.wanted === version.latest) {
     return pkg
   }
-  info('  %s.%s %s ==> %s', key, name, version.wanted, version.latest)
+  info('  [%s] %s %s ==> %s', key, name, version.wanted, version.latest)
   return {
     ...pkg,
     [key]: {

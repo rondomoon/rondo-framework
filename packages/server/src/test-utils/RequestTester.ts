@@ -8,7 +8,7 @@ import {
 // https://stackoverflow.com/questions/48215950/exclude-property-from-type
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 
-interface ITest extends Omit<Omit<supertest.Test, 'then'>, 'catch'> {}
+interface ITest extends Omit<supertest.Test, 'then' | 'catch' | 'finally'> {}
 
 interface IResponse<
   R extends IRoutes,
