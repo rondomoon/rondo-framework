@@ -41,6 +41,7 @@ export class TeamManager extends React.PureComponent<ITeamManagerProps> {
     const action = this.props.createTeam(team)
     action.payload
     .then(() => this.props.history.push('/teams'))
+    .catch(() => {/* do nothing */})
     return action
   }
   render() {

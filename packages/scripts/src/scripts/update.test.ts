@@ -10,9 +10,10 @@ describe('update', () => {
 
   const stringify = (obj: object) => JSON.stringify(obj, null, '  ')
 
-  const readMock = fs.readFileSync as jest.Mock<typeof fs.readFileSync>
+  const readMock =
+    fs.readFileSync as unknown as jest.Mock<typeof fs.readFileSync>
   const writeMock = fs.writeFileSync as jest.Mock<typeof fs.writeFileSync>
-  const cpMock = cp.execFileSync as jest.Mock<typeof cp.execFileSync>
+  const cpMock = cp.execFileSync as unknown as jest.Mock<typeof cp.execFileSync>
 
   let outdated: Record<string, IOutdated> = {}
   beforeEach(() => {
@@ -35,17 +36,17 @@ describe('update', () => {
       devDependencies: {
         b: '^3.4.6',
       },
-    }))
+    }) as any)
   })
 
   it('does not change when no changes', async () => {
-    cpMock.mockReturnValue('{}')
+    cpMock.mockReturnValue('{}' as any)
     await update('update', '/my/dir')
     expect(writeMock.mock.calls.length).toBe(0)
   })
 
   it('does not change when npm outdated output is empty', async () => {
-    cpMock.mockReturnValue('')
+    cpMock.mockReturnValue('' as any)
     await update('update', '/my/dir')
     expect(writeMock.mock.calls.length).toBe(0)
   })

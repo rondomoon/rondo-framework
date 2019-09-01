@@ -26,8 +26,8 @@ export class Subprocess {
       })
 
       if (this.stdio === StdioOptions.PIPE) {
-        subprocess.stdout.on('data', data => process.stdout.write(data))
-        subprocess.stderr.on('data', data => process.stderr.write(data))
+        subprocess.stdout!.on('data', data => process.stdout.write(data))
+        subprocess.stderr!.on('data', data => process.stderr.write(data))
       }
 
       subprocess.on('close', code => {

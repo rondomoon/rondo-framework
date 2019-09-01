@@ -31,10 +31,14 @@ export class TestUtils {
   readonly createStore = createStore
 
   render(jsx: JSX.Element) {
-    const component = T
-    .renderIntoDocument(jsx) as unknown as React.Component<any>
-    const node = ReactDOM.findDOMNode(component) as Element
-    return {component, node}
+    const $div = document.createElement('div')
+    const component = ReactDOM.render(
+      <div>{jsx}</div>, $div) as unknown as React.Component<any>
+    const node = (ReactDOM.findDOMNode(component) as Element).children[0]
+    return {
+      component,
+      node,
+    }
   }
 
   combineReducers<S>(reducers: ReducersMapObject<S, any>): Reducer<S>
