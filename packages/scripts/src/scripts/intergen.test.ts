@@ -22,7 +22,9 @@ describe('intergen', () => {
   }
 
   function start(input: string) {
-    return intergen('intergen', '-i', input)
+    const result = intergen('intergen', '-i', input)
+    // remove header
+    return result.split('\n').slice(3).join('\n')
   }
 
   function execute(source: string): string {
