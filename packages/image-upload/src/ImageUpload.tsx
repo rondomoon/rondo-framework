@@ -23,7 +23,7 @@ export class ImageUpload extends React.PureComponent<IImageUploadProps> {
     try {
       await this.handleChange(event)
     } catch (err) {
-      console.log('Error in handleChange', err)
+      // console.log('Error in handleChange', err)
     }
   }
   handleChange = async (event: React.SyntheticEvent<HTMLInputElement>) => {
