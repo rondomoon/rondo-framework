@@ -3,11 +3,7 @@ import {LinkedList} from './LinkedList'
 import {Deferred} from './Deferred'
 import { Worker } from './Worker'
 import { ExecutorFactory } from './Executor'
-
-interface ITask<T> {
-  id: number
-  definition: T
-}
+import { IRequest } from './ITask'
 
 interface ITaskEventHandler {
   success: () => void
@@ -20,7 +16,7 @@ export interface ITaskManager<T> {
 }
 
 export class TaskManager<T, R> implements ITaskManager<T> {
-  protected taskQueue = new LinkedList<ITask<T>>()
+  protected taskQueue = new LinkedList<IRequest<T>>()
   protected workers: Set<Promise<void>> = new Set()
   protected deferredTasks = new Map<number, Deferred<R>>()
 
@@ -32,11 +28,11 @@ export class TaskManager<T, R> implements ITaskManager<T> {
   ) {
   }
 
-  async post(definition: T) {
+  async post(params: T) {
     const id = this.getNextTaskId()
     this.taskQueue.push({
       id,
-      definition,
+      params,
     })
 
     const deferred = new Deferred<R>()
@@ -59,16 +55,16 @@ export class TaskManager<T, R> implements ITaskManager<T> {
     const promise = new Worker(
       this.createExecutor(),
       this.taskQueue,
-      (err, result) => {
-        const deferred = this.deferredTasks.get(result.id)
+      response => {
+        const deferred = this.deferredTasks.get(response.id)
         if (!deferred) {
-          throw new Error('No deferred found for task id:' + result.id)
+          throw new Error('No deferred found for task id:' + response.id)
           return
         }
-        if (err) {
-          deferred.reject(err)
+        if (response.type === 'error') {
+          deferred.reject(response.error)
         } else {
-          deferred.resolve(result.result)
+          deferred.resolve(response.result)
         }
       },
     )

@@ -1,11 +1,14 @@
-import {ITask} from '../ITask'
+import { Messenger } from '../Messenger'
+import { IExecutor } from '../Executor'
+import { IRequest } from '../ITask'
 
-process.on('message', async (task: ITask<[number, number]>) => {
-  await new Promise(delay => {
-    delay(task.definition)
-    process.send!('status_' + task.id, {
-      id: task.id,
-      result: task.definition[0] + task.definition[1],
+const executor = new (class implements IExecutor<[number, number], number> {
+  async execute(task: IRequest<[number, number]>) {
+    await new Promise(resolve => {
+      setTimeout(resolve, 1)
     })
-  })
-})
+    return task.params[0] + task.params[1]
+  }
+})()
+
+export const messenger = new Messenger(executor)

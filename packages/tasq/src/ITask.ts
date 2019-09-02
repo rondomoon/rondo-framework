@@ -1,9 +1,18 @@
-export interface ITask<T> {
-  readonly id: number
-  readonly definition: T
+export interface IRequest<T> {
+  id: number
+  params: T
 }
 
-export interface IResult<T> {
-  readonly id: number
-  readonly result: T
+export interface ISuccessMessage<T> {
+  id: number
+  result: T
+  type: 'success'
 }
+
+export interface IErrorMessage {
+  id: number
+  error: Error
+  type: 'error'
+}
+
+export type TResponse<T> = ISuccessMessage<T> | IErrorMessage

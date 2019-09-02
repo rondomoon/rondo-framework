@@ -13,8 +13,8 @@ describe('TaskManager', () => {
       const te = new TaskManager<number, void>(
         1,
         () => new PromiseExecutor(async task => {
-          await delay(task.definition)
-          results.push(task.definition)
+          await delay(task.params)
+          results.push(task.params)
         }),
       )
       te.post(10)
@@ -28,8 +28,8 @@ describe('TaskManager', () => {
       const te = new TaskManager<number, void>(
         2,
         () => new PromiseExecutor(async task => {
-          await delay(task.definition)
-          results.push(task.definition)
+          await delay(task.params)
+          results.push(task.params)
         }),
       )
       te.post(100) // worker1
@@ -45,8 +45,8 @@ describe('TaskManager', () => {
       const te = new TaskManager<number, void>(
         2,
         () => new PromiseExecutor(async task => {
-          await delay(task.definition)
-          results.push(task.definition)
+          await delay(task.params)
+          results.push(task.params)
         }),
       )
       await Promise.all([
@@ -67,9 +67,9 @@ describe('TaskManager', () => {
       const te = new TaskManager<IParams, number>(
         2,
         () => new PromiseExecutor(async task => {
-          const {definition} = task
-          await delay(definition.delay)
-          return definition.a + definition.b
+          const {params} = task
+          await delay(params.delay)
+          return params.a + params.b
         }),
       )
     })
@@ -91,8 +91,8 @@ describe('TaskManager', () => {
     it('does not fail on error', async () => {
       const tm = new TaskManager<number, void>(2,
         () => new PromiseExecutor(async task => {
-          await delay(task.definition)
-          if (task.definition % 2 === 0) {
+          await delay(task.params)
+          if (task.params % 2 === 0) {
             throw new Error('Test error: ' + task.id)
           }
         }))
