@@ -18,7 +18,7 @@
 - [x] Implement JSONRPC
 - [x] Make it easy to create actions and reducers based on JSONRPC method
   sigatures
-- [ ] Refactor part of functionality as POC
+- [x] Refactor part of functionality as POC
 - [ ] Refactor comments projects to only use JSONRPC
 
 # ORM
@@ -30,3 +30,5 @@
 
 - [ ] Figure out a way to make server-side tests execute successfully without
   `--runInBand`
+
+# Issues
