@@ -10,7 +10,7 @@ describe('TaskManager', () => {
   describe('post', () => {
     it('posts new tasks and executes asynchronously', async () => {
       const results: number[] = []
-      const te = new TaskManager<number>(
+      const te = new TaskManager<number, void>(
         1,
         () => new PromiseExecutor(async task => {
           await delay(task.definition)
@@ -25,7 +25,7 @@ describe('TaskManager', () => {
     })
     it('executes tasks in different order', async () => {
       const results: number[] = []
-      const te = new TaskManager<number>(
+      const te = new TaskManager<number, void>(
         2,
         () => new PromiseExecutor(async task => {
           await delay(task.definition)
@@ -42,7 +42,7 @@ describe('TaskManager', () => {
 
     it('returns promises when job posted', async () => {
       const results: number[] = []
-      const te = new TaskManager<number>(
+      const te = new TaskManager<number, void>(
         2,
         () => new PromiseExecutor(async task => {
           await delay(task.definition)
@@ -56,6 +56,22 @@ describe('TaskManager', () => {
         te.post(10), // worker1
       ])
       expect(results).toEqual([50, 100, 10, 85])
+    })
+
+    it('can return values from promises', async () => {
+      interface IParams {
+        a: number,
+        b: number,
+        delay: number
+      }
+      const te = new TaskManager<IParams, number>(
+        2,
+        () => new PromiseExecutor(async task => {
+          const {definition} = task
+          await delay(definition.delay)
+          return definition.a + definition.b
+        }),
+      )
     })
 
   })
@@ -73,7 +89,7 @@ describe('TaskManager', () => {
 
   describe('error handling', () => {
     it('does not fail on error', async () => {
-      const tm = new TaskManager<number>(2,
+      const tm = new TaskManager<number, void>(2,
         () => new PromiseExecutor(async task => {
           await delay(task.definition)
           if (task.definition % 2 === 0) {
