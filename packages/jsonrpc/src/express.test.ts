@@ -57,7 +57,9 @@ describe('jsonrpc', () => {
     addWithContext = (ctx: IContext, a: number, b: number) => {
       return a + b + ctx.userId
     }
-
+    _private = () => {
+      return 1
+    }
     @ensureLoggedIn
     addWithContext2(ctx: IContext, a: number, b: number) {
       return Promise.resolve(a + b + ctx!.userId)
@@ -212,6 +214,19 @@ describe('jsonrpc', () => {
           data: null,
         },
       })
+    })
+
+    it('cannot call private _-prefixed methods', async () => {
+      await request(createApp())
+      .post('/myService')
+      .send({
+        id: 123,
+        jsonrpc: '2.0',
+        method: '_private',
+        params: [],
+      })
+      .expect(404)
+      .expect(/Method not found/)
     })
 
     it('cannot call any other methods in objects prototype', async () => {
