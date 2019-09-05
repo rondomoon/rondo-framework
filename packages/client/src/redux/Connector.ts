@@ -17,6 +17,8 @@ import {ComponentType} from 'react'
  * the Actions class might depend on the HTTPClient class, and then it becomes
  * easy to mock it during tests, or swap out different dependencies for
  * different applications.
+ *
+ * @deprecated
  */
 export abstract class Connector<LocalState> {
 
