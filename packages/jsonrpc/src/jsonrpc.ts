@@ -51,6 +51,7 @@ export function getAllMethods<T>(obj: T): Array<FunctionPropertyNames<T>> {
     const l = Object.getOwnPropertyNames(obj)
     .filter((p, i, arr) => {
       return typeof (obj as any)[p] === 'function' &&
+        p.startsWith('_') === false &&
         p !== 'constructor'
     })
     .forEach(p => props.add(p))
@@ -144,7 +145,6 @@ export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
       const isNotification = req.id === null || req.id === undefined
 
       if (
-        method.startsWith('_') ||
         !rpcService.hasOwnProperty(method) ||
         typeof rpcService[method] !== 'function'
       ) {
