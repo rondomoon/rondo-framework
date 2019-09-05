@@ -9,11 +9,11 @@ import { TStateSelector } from './TStateSelector'
  * For example:
  *
  *
- *     function configure(
+ *     function configure<State>(
  *        actions: Actions,
  *        getLocalState: (state: State) => LocalState,
  *     ) {
- *       pack(
+ *       return pack(
  *         getLocalState,
  *         function mapStateToProps(localState: LocalState) {
  *           return localState,
