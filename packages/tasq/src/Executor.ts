@@ -12,12 +12,10 @@ export class PromiseExecutor<T, R> implements IExecutor<T, R> {
   constructor(readonly execute: (task: IRequest<T>) => Promise<R>) {}
 }
 
-class SubprocessExecutor<T, R> implements IExecutor<T, R> {
+export class SubprocessExecutor<T, R> implements IExecutor<T, R> {
   process: cp.ChildProcess
 
-  constructor(
-    protected sourceFile: string, protected taskQueue: LinkedList<IRequest<T>>,
-  ) {
+  constructor(protected sourceFile: string) {
     this.process = cp.fork(sourceFile)
   }
 
