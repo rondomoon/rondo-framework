@@ -20,7 +20,7 @@ export interface IAPIDef {
   '/auth/logout': {
     'get': {}
   }
-  '/users/password': {
+  '/auth/password': {
     'post': {
       body: {
         oldPassword: string

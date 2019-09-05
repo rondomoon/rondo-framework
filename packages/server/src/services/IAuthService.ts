@@ -1,6 +1,6 @@
 import {ICredentials, INewUser, IUser} from '@rondo.dev/common'
 
-export interface IUserService {
+export interface IAuthService {
   createUser(credentials: INewUser): Promise<IUser>
   changePassword(params: {
     userId: number,

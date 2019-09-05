@@ -1,5 +1,5 @@
 import {Authenticator as A, Passport} from 'passport'
-import {IUserService} from '../services'
+import {IAuthService} from '../services'
 import {Strategy as LocalStrategy} from 'passport-local'
 import {THandler} from './THandler'
 import {IMiddleware} from './IMiddleware'
@@ -9,7 +9,7 @@ export class Authenticator implements IMiddleware {
   protected readonly passport: A
   readonly handle: THandler[]
 
-  constructor(protected readonly userService: IUserService) {
+  constructor(protected readonly authService: IAuthService) {
     this.passport = new Passport() as any
 
     this.configurePassport()
@@ -45,7 +45,7 @@ export class Authenticator implements IMiddleware {
   protected deserializeUser =
     // TODO parametrize user type
     (userId: number, done: (err?: Error, user?: any) => void) => {
-    this.userService.findOne(userId)
+    this.authService.findOne(userId)
     .then(user => done(undefined, user))
     .catch(done)
   }
@@ -67,7 +67,7 @@ export class Authenticator implements IMiddleware {
     password: string,
     done: (err?: Error, user?: any) => void,
   ) => {
-    this.userService.validateCredentials({ username, password })
+    this.authService.validateCredentials({ username, password })
     .then(user => done(undefined, user))
     .catch(done)
   }

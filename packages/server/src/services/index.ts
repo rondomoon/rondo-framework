@@ -1,3 +1,3 @@
 export * from './BaseService'
-export * from './IUserService'
-export * from './UserService'
+export * from './IAuthService'
+export * from './AuthService'

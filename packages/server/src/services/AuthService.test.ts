@@ -1,17 +1,17 @@
 import {test} from '../test'
-import {UserService} from './UserService'
+import {AuthService} from './AuthService'
 
-describe('UserService', () => {
+describe('AuthService', () => {
 
   test.withDatabase()
 
   const username = test.username
   const password = '1234567890'
 
-  const userService = new UserService(test.bootstrap.database)
+  const authService = new AuthService(test.bootstrap.database)
 
   async function createUser(u = username, p = password) {
-    return userService.createUser({
+    return authService.createUser({
       username: u,
       password: p,
       firstName: 'test',
@@ -23,7 +23,7 @@ describe('UserService', () => {
     it('creates a new user with bcrypted password', async () => {
       const result = await createUser()
       expect(result.id).toBeTruthy()
-      const user = await userService.findOne(result.id)
+      const user = await authService.findOne(result.id)
       expect(user).toBeTruthy()
       expect(user).not.toHaveProperty('password')
     })
@@ -48,7 +48,7 @@ describe('UserService', () => {
   describe('findUserByMail', () => {
     it('returns user without password', async () => {
       await createUser()
-      const user = await userService.findUserByEmail(username)
+      const user = await authService.findUserByEmail(username)
       expect(user).toBeTruthy()
       expect(user).not.toHaveProperty('password')
     })
@@ -57,7 +57,7 @@ describe('UserService', () => {
   describe('getUserEmails', () => {
     it('returns user emails', async () => {
       const {id} = await createUser()
-      const emails = await userService.findUserEmails(id)
+      const emails = await authService.findUserEmails(id)
       expect(emails).toEqual([{
         id: jasmine.any(Number),
         userId: id,
@@ -71,24 +71,24 @@ describe('UserService', () => {
   describe('validateCredentials', () => {
     it('returns user when password is valid', async () => {
       await createUser()
-      expect(await userService.validateCredentials({ username, password }))
+      expect(await authService.validateCredentials({ username, password }))
       .toBeTruthy()
     })
 
     it('returns undefined when no user', async () => {
-      expect(await userService.validateCredentials({ username, password }))
+      expect(await authService.validateCredentials({ username, password }))
       .toBe(undefined)
     })
 
     it('returns undefined when password is invalid', async () => {
       await createUser()
-      expect(await userService.validateCredentials({ username, password: 't' }))
+      expect(await authService.validateCredentials({ username, password: 't' }))
       .toBe(undefined)
     })
 
     it('does not return a password', async () => {
       await createUser()
-      const user =  await userService
+      const user =  await authService
       .validateCredentials({ username, password })
       expect(user).not.toHaveProperty('password')
     })

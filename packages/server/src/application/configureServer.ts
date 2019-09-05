@@ -26,12 +26,12 @@ export const configureServer: ServerConfigurator = (config, database) => {
   const logger = loggerFactory.getLogger('api')
 
   const services: IServices = {
-    userService: new Services.UserService(database),
+    authService: new Services.AuthService(database),
     teamService: new Team.TeamService(database),
     userPermissions: new User.UserPermissions(database),
   }
 
-  const authenticator = new Middleware.Authenticator(services.userService)
+  const authenticator = new Middleware.Authenticator(services.authService)
   const transactionManager = database.transactionManager
 
   const createTransactionalRouter = <T extends IRoutes>() =>
@@ -73,13 +73,13 @@ export const configureServer: ServerConfigurator = (config, database) => {
       api: {
         path: '/api',
         handle: [
-          new routes.LoginRoutes(
-            services.userService,
+          new routes.AuthRoutes(
+            services.authService,
             authenticator,
             createTransactionalRouter(),
           ).handle,
           new routes.UserRoutes(
-            services.userService,
+            services.authService,
             createTransactionalRouter(),
           ).handle,
           new Team.TeamRoutes(

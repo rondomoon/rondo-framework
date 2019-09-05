@@ -2,7 +2,7 @@ import createError from 'http-errors'
 import {BaseService} from './BaseService'
 import {IDatabase} from '../database/IDatabase'
 import {ICredentials, INewUser, IUser, trim} from '@rondo.dev/common'
-import {IUserService} from './IUserService'
+import {IAuthService} from './IAuthService'
 import {UserEmail} from '../entities/UserEmail'
 import {User} from '../entities/User'
 import {compare, hash} from 'bcrypt'
@@ -12,7 +12,7 @@ import {Validator} from '../validator'
 const SALT_ROUNDS = 10
 const MIN_PASSWORD_LENGTH = 10
 
-export class UserService implements IUserService {
+export class AuthService implements IAuthService {
   constructor(protected readonly db: IDatabase) {}
 
   async createUser(payload: INewUser): Promise<IUser> {

@@ -2,11 +2,11 @@ import express, {Application} from 'express'
 import request from 'supertest'
 import {Authenticator} from './Authenticator'
 import {ICredentials} from '@rondo.dev/common'
-import {IUserService} from '../services'
+import {IAuthService} from '../services'
 import {handlePromise} from './handlePromise'
 import {urlencoded} from 'body-parser'
 
-describe('passport.promise', () => {
+describe('Authenticator', () => {
 
   let app: Application
   let loginMiddleware: any
@@ -18,7 +18,7 @@ describe('passport.promise', () => {
       firstName: 'test',
       lastName: 'test',
     }
-    const userService = new (class implements IUserService {
+    const authService = new (class implements IAuthService {
       async createUser() {
         return {id: 1, ...userInfo}
       }
@@ -40,7 +40,7 @@ describe('passport.promise', () => {
         return undefined
       }
     })()
-    const authenticator = new Authenticator(userService)
+    const authenticator = new Authenticator(authService)
 
     app.use(urlencoded({ extended: false }))
     app.use(authenticator.handle)

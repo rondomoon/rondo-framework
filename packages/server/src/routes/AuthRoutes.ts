@@ -1,12 +1,13 @@
 import {AsyncRouter} from '../router'
 import {BaseRoute} from './BaseRoute'
 import {IAPIDef} from '@rondo.dev/common'
-import {IUserService} from '../services'
+import {IAuthService} from '../services'
 import {Authenticator} from '../middleware'
+import {ensureLoggedInApi} from '../middleware'
 
-export class LoginRoutes extends BaseRoute<IAPIDef> {
+export class AuthRoutes extends BaseRoute<IAPIDef> {
   constructor(
-    protected readonly userService: IUserService,
+    protected readonly authService: IAuthService,
     protected readonly authenticator: Authenticator,
     protected readonly t: AsyncRouter<IAPIDef>,
   ) {
@@ -15,7 +16,7 @@ export class LoginRoutes extends BaseRoute<IAPIDef> {
 
   setup(t: AsyncRouter<IAPIDef>) {
     t.post('/auth/register', async (req, res) => {
-      const user = await this.userService.createUser({
+      const user = await this.authService.createUser({
         username: req.body.username,
         password: req.body.password,
         firstName: req.body.firstName,
@@ -35,6 +36,14 @@ export class LoginRoutes extends BaseRoute<IAPIDef> {
       }
       await req.logInPromise(user)
       return user
+    })
+
+    t.post('/auth/password', [ensureLoggedInApi], async req => {
+      await this.authService.changePassword({
+        userId: req.user!.id,
+        oldPassword: req.body.oldPassword,
+        newPassword: req.body.newPassword,
+      })
     })
 
     t.get('/auth/logout', async (req, res) => {
