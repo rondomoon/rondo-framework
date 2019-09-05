@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore, Dispatch } from 'redux'
@@ -34,8 +34,10 @@ describe('pack', () => {
   }
 
   function FunctionalComponent(props: IProps) {
+    const update = useCallback(() => props.update(1, 'one'), [])
+
     return (
-      <button onClick={() => props.update(1, 'one')}>
+      <button onClick={update}>
         {props.a + props.b}
       </button>
     )
