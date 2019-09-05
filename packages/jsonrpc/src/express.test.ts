@@ -243,7 +243,7 @@ describe('jsonrpc', () => {
       .expect(405)
     })
 
-    describe('wrapCall', () => {
+    describe('hook', () => {
 
       let requests: IRequest[] = []
       let results: any[] = []
@@ -258,10 +258,10 @@ describe('jsonrpc', () => {
         app.use(bodyParser.json())
         app.use('/',
           jsonrpc(
-            req => ({userId}),
+            req => Promise.resolve({userId}),
             noopLogger,
-            async (path, req, makeRequest) => {
-              requests.push(req)
+            async (details, makeRequest) => {
+              requests.push(details.request)
               const result = await makeRequest()
               results.push(result)
               return result

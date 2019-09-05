@@ -11,7 +11,7 @@ import {
   IRequest,
 } from './jsonrpc'
 
-export type TGetContext<Context> = (req: Request) => Context
+export type TGetContext<Context> = (req: Request) => Promise<Context> | Context
 
 export interface IJSONRPCReturnType {
   addService<T, F extends FunctionPropertyNames<T>>(
@@ -22,19 +22,26 @@ export interface IJSONRPCReturnType {
   router(): Router
 }
 
-async function wrap<A, R>(
-  path: string, request: A, fn: () => Promise<R>): Promise<R> {
-  const result = await fn()
+export interface IInvocationDetails<A extends IRequest, Context> {
+  context: Context
+  path: string
+  request: A
+}
+
+async function defaultHook<A extends IRequest, R, Context>(
+  details: IInvocationDetails<A, Context>,
+  invoke: () => Promise<R>,
+): Promise<R> {
+  const result = await invoke()
   return result
 }
 
 export function jsonrpc<Context>(
   getContext: TGetContext<Context>,
   logger: ILogger,
-  wrapCall: <A extends IRequest, R>(
-    path: string,
-    request: A,
-    fn: (request?: A) => Promise<R>) => Promise<R> = wrap,
+  hook: <A extends IRequest, R>(
+    details: IInvocationDetails<A, Context>,
+    invoke: (request?: A) => Promise<R>) => Promise<R> = defaultHook,
   idempotentMethodRegex = IDEMPOTENT_METHOD_REGEX,
 ): IJSONRPCReturnType {
 
@@ -105,15 +112,21 @@ export function jsonrpc<Context>(
           method: req.query.method,
           params: JSON.parse(req.query.params),
         }
-        wrapCall(path, request,
-          (body = request) => rpcService.invoke(body, getContext(req)))
+        Promise.resolve(getContext(req))
+        .then(context =>
+          hook(
+            {path, request, context},
+            (body = request) => rpcService.invoke(body, context)))
         .then(response => handleResponse(response, res))
         .catch(next)
       })
 
       router.post(path, (req, res, next) => {
-        wrapCall(path, req.body,
-          (body = req.body) => rpcService.invoke(body, getContext(req)))
+        Promise.resolve(getContext(req))
+        .then(context =>
+          hook(
+            {path, request: req.body, context},
+            (body = req.body) => rpcService.invoke(body, context)))
         .then(response => handleResponse(response, res))
         .catch(next)
       })
