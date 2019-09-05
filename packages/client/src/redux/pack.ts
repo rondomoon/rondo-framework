@@ -1,5 +1,5 @@
 import { ComponentType, PureComponent } from 'react'
-import { connect, Omit, MapDispatchToPropsParam } from 'react-redux'
+import { connect, Omit, MapDispatchToPropsParam, Matching, GetProps, ResolveThunks } from 'react-redux'
 import { Dispatch } from 'redux'
 import { TStateSelector } from './TStateSelector'
 
@@ -29,22 +29,21 @@ export function pack<
     LocalState,
     State,
     Props,
-    StateProps extends Partial<Props>,
-    DispatchProps extends Partial<Props>,
+    StateProps,
+    DispatchProps,
+    C extends React.ComponentType<
+      Matching<StateProps & ResolveThunks<DispatchProps>, GetProps<C>>>
 >(
   getLocalState: TStateSelector<State, LocalState>,
   mapStateToProps: (state: LocalState) => StateProps,
   mapDispatchToProps: MapDispatchToPropsParam<DispatchProps, Props>,
-  Component: React.ComponentType<Props>,
-): ComponentType<
-  Omit<Props, keyof Props & (keyof StateProps | keyof DispatchProps)>
-> {
-
+  Component: C,
+) {
   return connect(
     (state: State) => {
       const l = getLocalState(state)
       return mapStateToProps(l)
     },
     mapDispatchToProps,
-  )(Component as any) as any
+  )(Component)
 }
