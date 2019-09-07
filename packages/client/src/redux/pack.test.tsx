@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react'
 import ReactDOM from 'react-dom'
+import TestUtils from 'react-dom/test-utils'
 import { Provider } from 'react-redux'
-import { createStore, Dispatch } from 'redux'
+import { createStore } from 'redux'
 import { pack } from './pack'
 import { TStateSelector } from './TStateSelector'
-import TestUtils from 'react-dom/test-utils'
 
 describe('pack', () => {
 
