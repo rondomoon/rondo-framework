@@ -8,6 +8,7 @@
 - [ ] Add tests for site manager
 - [ ] Fix React SSR error handling
 - [ ] Add React error boundaries
+- [ ] Use strings as ids for big decimals
 - [ ] Integrate Google login
 - [ ] Improve documentation
 
