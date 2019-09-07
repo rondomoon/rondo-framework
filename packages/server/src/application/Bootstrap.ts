@@ -130,13 +130,14 @@ export class Bootstrap implements IBootstrap {
     await this.database.connect()
 
     await new Promise((resolve, reject) => {
+      const _resolve = () => resolve()
       if (!port) {
-        this.server = this.application.server.listen(resolve)
+        this.server = this.application.server.listen(_resolve)
         return
       } else if (typeof port === 'number' && hostname) {
-        this.server = this.application.server.listen(port, hostname, resolve)
+        this.server = this.application.server.listen(port, hostname, _resolve)
       } else {
-        this.server = this.application.server.listen(port, resolve)
+        this.server = this.application.server.listen(port, _resolve)
       }
     })
 

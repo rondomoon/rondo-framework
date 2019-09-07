@@ -1,9 +1,7 @@
-import express from 'express'
-import {AsyncRouter} from '../router'
-import {IRoutes} from '@rondo.dev/common'
-import {IDatabase} from '../database/IDatabase'
+import { IDatabase } from '../database/IDatabase';
+import { IAppServer } from './IAppServer';
 
 export interface IApplication {
-  readonly server: express.Application
+  readonly server: IAppServer
   readonly database: IDatabase
 }

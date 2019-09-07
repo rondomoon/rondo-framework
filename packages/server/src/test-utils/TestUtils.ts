@@ -13,12 +13,13 @@ import shortid from 'shortid'
 import { AddressInfo } from 'net'
 import { createRemoteClient, FunctionPropertyNames, TAsyncified } from '@rondo.dev/jsonrpc'
 import {Server} from 'http'
+import { IAppServer } from '../application/IAppServer'
 
 export class TestUtils<T extends IRoutes> {
   readonly username = `test${process.env.JEST_WORKER_ID}@user.com`
   readonly password = 'Password10'
 
-  readonly app: express.Application
+  readonly app: IAppServer
   readonly context: string
   readonly transactionManager: ITransactionManager
 
@@ -134,7 +135,7 @@ export class TestUtils<T extends IRoutes> {
 
     return {
       headers: {
-        "cookie": [cookies, cookie].join('; '),
+        'cookie': [cookies, cookie].join('; '),
         'x-csrf-token': token,
       },
       userId: response.body.id,
@@ -155,7 +156,7 @@ export class TestUtils<T extends IRoutes> {
 
     return {
       headers: {
-        "cookie": [cookies, cookie].join('; '),
+        'cookie': [cookies, cookie].join('; '),
         'x-csrf-token': token,
       },
     }
