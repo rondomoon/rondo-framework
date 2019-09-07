@@ -133,9 +133,11 @@ export class TestUtils<T extends IRoutes> {
     const cookies = this.getCookies(response.header['set-cookie'])
 
     return {
-      cookie: [cookies, cookie].join('; '),
+      headers: {
+        "cookie": [cookies, cookie].join('; '),
+        'x-csrf-token': token,
+      },
       userId: response.body.id,
-      token,
     }
   }
 
@@ -152,8 +154,10 @@ export class TestUtils<T extends IRoutes> {
     const cookies = this.getCookies(response.header['set-cookie'])
 
     return {
-      cookie: [cookies, cookie].join('; '),
-      token,
+      headers: {
+        "cookie": [cookies, cookie].join('; '),
+        'x-csrf-token': token,
+      },
     }
   }
 

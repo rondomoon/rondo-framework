@@ -6,13 +6,11 @@ describe('user', () => {
   const t = test.request('/api')
 
   let cookie!: string
-  let token!: string
   beforeEach(async () => {
     await test.registerAccount()
     const session = await test.login()
-    cookie = session.cookie
-    token = session.token
-    t.setHeaders({ cookie, 'x-csrf-token': token })
+    cookie = session.headers.cookie
+    t.setHeaders(session.headers)
   })
 
   describe('GET /users/profile', () => {

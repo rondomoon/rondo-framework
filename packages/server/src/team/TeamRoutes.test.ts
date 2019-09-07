@@ -6,15 +6,11 @@ describe('team', () => {
   test.withDatabase()
   const t = test.request('/api')
 
-  let cookie!: string
-  let token!: string
   let mainUserId: number
   beforeEach(async () => {
     const session = await test.registerAccount()
-    cookie = session.cookie
-    token = session.token
     mainUserId = session.userId
-    t.setHeaders({ cookie, 'x-csrf-token': token })
+    t.setHeaders(session.headers)
   })
 
   describe('POST /teams', () => {

@@ -26,9 +26,7 @@ describe('/auth', () => {
     const t = test.request('/api')
     beforeEach(async () => {
       const session = await test.registerAccount()
-      const token = session.token
-      const cookie = session.cookie
-      t.setHeaders({cookie, 'x-csrf-token': token})
+      t.setHeaders(session.headers)
     })
 
     it('should prevent access when user not logged in', async () => {
@@ -64,7 +62,7 @@ describe('/auth', () => {
     let cookie!: string
     beforeEach(async () => {
       await test.registerAccount()
-      cookie = (await test.login()).cookie
+      cookie = (await test.login()).headers.cookie
     })
 
     it('should log out the user', async () => {

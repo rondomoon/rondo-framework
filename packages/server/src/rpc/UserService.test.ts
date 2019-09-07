@@ -5,15 +5,10 @@ describe('user', () => {
 
   test.withDatabase()
 
-  let cookie!: string
-  let token!: string
   let headers: Record<string, string> = {}
   beforeEach(async () => {
     await test.registerAccount()
-    const session = await test.login()
-    cookie = session.cookie
-    token = session.token
-    headers = {cookie, 'x-csrf-token': token}
+    headers = (await test.login()).headers
   })
 
   const createService = () => {
