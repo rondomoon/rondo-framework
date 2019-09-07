@@ -13,6 +13,8 @@ import * as routes from '../routes'
 import { TransactionalRouter } from '../router'
 import { IRoutes, IContext } from '@rondo.dev/common'
 import { Express } from 'express-serve-static-core'
+import { jsonrpc, bulkjsonrpc } from '@rondo.dev/jsonrpc'
+import * as rpc from '../rpc'
 
 export type ServerConfigurator<
   T extends IServerConfig = IServerConfig
@@ -30,6 +32,21 @@ export const configureServer: ServerConfigurator = (config, database) => {
     teamService: new Team.TeamService(database),
     userPermissions: new User.UserPermissions(database),
   }
+
+  const rpcServices = {
+    userService: new rpc.UserService(database),
+    teamService: new rpc.TeamService(database, services.userPermissions),
+  }
+
+  const getContext = (req: Express.Request): IContext => ({user: req.user})
+
+  const rpcMiddleware = jsonrpc(
+    req => getContext(req),
+    logger,
+    // (details, invoke) => database
+    // .transactionManager
+    // .doInNewTransaction(() => invoke()),
+  )
 
   const authenticator = new Middleware.Authenticator(services.authService)
   const transactionManager = database.transactionManager
@@ -89,6 +106,10 @@ export const configureServer: ServerConfigurator = (config, database) => {
           ).handle,
         ],
         error: new Middleware.ErrorApiHandler(logger).handle,
+      },
+      rpc: {
+        path: '/rpc',
+        handle: [bulkjsonrpc(rpcMiddleware, rpcServices)],
       },
     },
   }

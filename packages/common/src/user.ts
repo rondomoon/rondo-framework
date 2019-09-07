@@ -1,6 +1,7 @@
 import {ICredentials} from './ICredentials'
 import {IUser} from './IUser'
 import * as e from './entities'
+import {keys} from 'ts-transformer-keys'
 
 export interface IChangePasswordParams {
   oldPassword: string
@@ -13,8 +14,8 @@ export interface ICreateUserParams extends ICredentials {
 }
 
 export interface IUserService {
-  changePassword(params: IChangePasswordParams): Promise<void>
-  // validateCredentials(credentials: ICredentials): Promise<e.User | undefined>
-  findOne(id: number): Promise<IUser | undefined>
+  getProfile(): Promise<IUser>
   findUserByEmail(email: string): Promise<IUser | undefined>
 }
+
+export const UserServiceMethods = keys<IUserService>()

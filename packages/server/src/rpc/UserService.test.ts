@@ -1,0 +1,48 @@
+import {test} from '../test'
+import {user} from '@rondo.dev/common'
+
+describe('user', () => {
+
+  test.withDatabase()
+
+  let cookie!: string
+  let token!: string
+  let headers: Record<string, string> = {}
+  beforeEach(async () => {
+    await test.registerAccount()
+    const session = await test.login()
+    cookie = session.cookie
+    token = session.token
+    headers = {cookie, 'x-csrf-token': token}
+  })
+
+  const createService = () => {
+    return test.rpc<user.IUserService>(
+      '/rpc/userService',
+      user.UserServiceMethods,
+      headers,
+    )
+  }
+
+  describe('findOne', () => {
+    it('fetches current user\'s profile', async () => {
+      const profile = await createService().getProfile()
+      expect(profile.id).toEqual(jasmine.any(Number))
+    })
+  })
+
+  describe('findUserByEmail', () => {
+    it('returns undefined when user no found', async () => {
+      const profile = await createService().findUserByEmail(
+        'totallynonexisting@email.com')
+      expect(profile).toBe(undefined)
+    })
+
+    it('returns user profile when found', async () => {
+      const profile = await createService().findUserByEmail(
+        test.username)
+      expect(profile).not.toBe(undefined)
+    })
+  })
+
+})

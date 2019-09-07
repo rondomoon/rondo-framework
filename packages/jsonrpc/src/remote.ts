@@ -10,6 +10,7 @@ export const constantId = (val: string) => () => val
 export function createRemoteClient<T>(
   url: string,
   methods: Array<FunctionPropertyNames<T>>,
+  headers: Record<string, string> = {},
   getNextRequestId: TRequestIdGenerator<string | number> = constantId('c'),
   idempotentMethodRegex = IDEMPOTENT_METHOD_REGEX,
 ) {
@@ -26,6 +27,7 @@ export function createRemoteClient<T>(
     const response = await axios({
       method: reqMethod,
       url,
+      headers,
       [payloadKey]: {
         id,
         jsonrpc: '2.0',

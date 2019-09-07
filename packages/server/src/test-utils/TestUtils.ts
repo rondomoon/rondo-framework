@@ -10,6 +10,9 @@ import {RequestTester} from './RequestTester'
 import {Role} from '../entities/Role'
 import {CORRELATION_ID} from '../middleware'
 import shortid from 'shortid'
+import { AddressInfo } from 'net'
+import { createRemoteClient, FunctionPropertyNames, TAsyncified } from '@rondo.dev/jsonrpc'
+import {Server} from 'http'
 
 export class TestUtils<T extends IRoutes> {
   readonly username = `test${process.env.JEST_WORKER_ID}@user.com`
@@ -158,6 +161,39 @@ export class TestUtils<T extends IRoutes> {
     return new RequestTester<T>(
       this.app,
       `${this.bootstrap.getConfig().app.baseUrl.path!}${baseUrl}`)
+  }
+
+  /**
+   * Starts the server, invokes a rpc method, and closes the server after
+   * invocation.
+   */
+  rpc = <S>(
+    serviceUrl: string,
+    methods: Array<FunctionPropertyNames<S>>,
+    headers: Record<string, string>,
+  ) => {
+    const {app} = this
+    const url = `${this.bootstrap.getConfig().app.baseUrl.path!}${serviceUrl}`
+
+    const service = methods.reduce((obj, method) => {
+      obj[method] = async function makeRequest(...args: any[]) {
+        let server!: Server
+        await new Promise(resolve => {
+          server = app.listen(0, '127.0.0.1', resolve)
+        })
+        const addr = server.address() as AddressInfo
+        const fullUrl = `http://${addr.address}:${addr.port}${url}`
+        const remoteService = createRemoteClient<S>(fullUrl, methods, headers)
+        try {
+          return await remoteService[method](...args as any)
+        } finally {
+          await new Promise(resolve => server.close(resolve))
+        }
+      }
+      return obj
+    }, {} as any)
+
+    return service as TAsyncified<S>
   }
 
   private getCookies(setCookiesString: string[]): string {
