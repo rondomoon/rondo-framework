@@ -39,7 +39,7 @@ export class TeamService implements RPC<t.ITeamService> {
       roleId: 1,
     })
 
-    return team
+    return (await this.findOne(context, team.id))!
   }
 
   async remove(context: IContext, {id}: t.ITeamRemoveParams) {

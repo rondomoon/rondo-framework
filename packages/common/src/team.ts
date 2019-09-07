@@ -1,6 +1,7 @@
 // import {ITeam} from './ITeam'
 import {Team} from './entities'
 import {IUserInTeam} from './IUserInTeam'
+import { keys } from 'ts-transformer-keys'
 
 export interface ITeamAddUserParams {
   teamId: number
@@ -44,3 +45,5 @@ export interface ITeamService {
 
   // TODO add other methods
 }
+
+export const TeamServiceMethods = keys<ITeamService>()
