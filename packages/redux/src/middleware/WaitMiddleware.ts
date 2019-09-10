@@ -49,11 +49,10 @@ export class WaitMiddleware {
     }
 
     const actionsByName = actions.reduce((obj, type) => {
-      obj[type] = true
+      obj[type] = (obj[type] || 0) + 1
       return obj
-    }, {} as Record<string, boolean>)
-    // no duplicates here so we cannot use actions.length
-    let count = Object.keys(actionsByName).length
+    }, {} as Record<string, number>)
+    let count = actions.length
 
     return new Promise((resolve, reject) => {
       if (!actions.length) {
@@ -75,7 +74,7 @@ export class WaitMiddleware {
           case 'pending':
             return
           case 'resolved':
-            actionsByName[action.type] = false
+            actionsByName[action.type]--
             count--
             if (count === 0) {
               resolve()

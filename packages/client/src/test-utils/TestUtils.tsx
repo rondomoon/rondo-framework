@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import T from 'react-dom/test-utils'
-import {createStore, TStateSelector} from '@rondo.dev/redux'
+import {createStore, TStateSelector, WaitMiddleware} from '@rondo.dev/redux'
 import {Provider} from 'react-redux'
 import {
   Action,
@@ -10,7 +10,10 @@ import {
   Reducer,
   ReducersMapObject,
   combineReducers,
+  Store as ReduxStore,
+  Unsubscribe,
 } from 'redux'
+import { format } from 'util'
 
 interface IRenderParams<State, LocalState> {
   reducers: ReducersMapObject<State, any>
@@ -56,8 +59,12 @@ export class TestUtils {
   ) {
     const {reducers, select} = params
 
+    const waitMiddleware = new WaitMiddleware()
+    const recorder = waitMiddleware.record()
+
     let store = this.createStore({
       reducer: this.combineReducers(reducers),
+      extraMiddleware: [waitMiddleware.handle],
     })()
 
     const withState = (state: DeepPartial<State>) => {
@@ -104,6 +111,9 @@ export class TestUtils {
         store,
         Component,
         withJSX,
+        async waitForActions() {
+          await waitMiddleware.waitForRecorded(recorder, 2000)
+        },
       }
 
       return self
@@ -119,4 +129,5 @@ interface ISelf<Props, Store, Component, CreateJSX> {
   Component: Component
   withJSX: (localCreateJSX: CreateJSX)
   => ISelf<Props, Store, Component, CreateJSX>
+  waitForActions(): Promise<void>
 }

@@ -1,29 +1,21 @@
-import {Connector} from '../redux/Connector'
-import {pack, TStateSelector} from '@rondo.dev/redux'
-import {ITeamState} from './TeamReducer'
-import {TeamActions} from './TeamActions'
-import {TeamManager} from './TeamManager'
-import {bindActionCreators} from 'redux'
-import {withRouter} from 'react-router-dom'
+import { team, user } from '@rondo.dev/common'
+import { TReduxed } from '@rondo.dev/jsonrpc'
+import { bindActionCreators, pack, TStateSelector } from '@rondo.dev/redux'
+import { TeamManager } from './TeamManager'
+import { ITeamState } from './TeamReducer'
 
 export function configure<State>(
-  teamActions: TeamActions,
+  teamActions: team.TeamActions,
+  userActions: user.UserActions,
   getLocalState: TStateSelector<State, ITeamState>,
 ) {
   const Component = pack(
     getLocalState,
     state => ({...state}),
-    d => ({
-      addUser: bindActionCreators(teamActions.addUser, d),
-      removeUser: bindActionCreators(teamActions.removeUser, d),
-      createTeam: bindActionCreators(teamActions.createTeam, d),
-      updateTeam: bindActionCreators(teamActions.updateTeam, d),
-      removeTeam: bindActionCreators(teamActions.removeTeam, d),
-      fetchMyTeams: bindActionCreators(teamActions.fetchMyTeams, d),
-      fetchUsersInTeam:
-        bindActionCreators(teamActions.fetchUsersInTeam, d),
-      findUserByEmail:
-        bindActionCreators(teamActions.findUserByEmail, d),
+    dispatch => ({
+      teamActions: bindActionCreators(teamActions, dispatch),
+      findUserByEmail: bindActionCreators(
+        userActions.findUserByEmail, dispatch),
     }),
     TeamManager,
   )

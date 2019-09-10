@@ -1,12 +1,13 @@
-import * as Feature from './'
-// export ReactDOM from 'react-dom'
-import T from 'react-dom/test-utils'
-import {TestUtils} from '../test-utils'
-import {HTTPClientMock} from '@rondo.dev/http-client'
-import {getError} from '@rondo.dev/test-utils'
-import {IAPIDef, ITeam, IUserInTeam} from '@rondo.dev/common'
+import { IAPIDef, IUserInTeam, team as Team, user as User } from '@rondo.dev/common'
+import { HTTPClientMock } from '@rondo.dev/http-client'
+import { getError } from '@rondo.dev/test-utils'
 import React from 'react'
-import {MemoryRouter} from 'react-router-dom'
+import T from 'react-dom/test-utils'
+import { MemoryRouter } from 'react-router-dom'
+import { TestUtils } from '../test-utils'
+import * as Feature from './'
+import { createActions, createRemoteClient } from '@rondo.dev/jsonrpc'
+import createClientMock from '@rondo.dev/jsonrpc/lib/createClientMock'
 
 const test = new TestUtils()
 
@@ -16,24 +17,22 @@ describe('TeamConnector', () => {
     push: jest.fn(),
   }
 
-  let teamActions!: Feature.TeamActions
-  let http: HTTPClientMock<IAPIDef>
+  const [teamClient, teamClientMock] =
+    createClientMock<Team.ITeamService>(Team.TeamServiceMethods)
+  const [userClient, userClientMock] =
+    createClientMock<User.IUserService>(User.UserServiceMethods)
+  let teamActions!: Team.TeamActions
+  let userActions!: User.UserActions
   beforeEach(() => {
-    http = new HTTPClientMock<IAPIDef>()
+    teamClientMock.find.mockResolvedValue(teams)
+    teamClientMock.findUsers.mockResolvedValue(users)
 
-    http.mockAdd({
-      method: 'get',
-      url: '/my/teams',
-    }, teams)
-    http.mockAdd({
-      method: 'get',
-      url: '/teams/:teamId/users',
-      params: {
-        teamId: 123,
-      },
-    }, users)
+    teamActions = createActions(teamClient, 'teamService')
+    userActions = createActions(userClient, 'userService')
+  })
 
-    teamActions = new Feature.TeamActions(http)
+  afterEach(() => {
+    jest.clearAllMocks()
   })
 
   let historyEntries = ['/teams']
@@ -42,30 +41,41 @@ describe('TeamConnector', () => {
     reducers: {Team: Feature.Team},
     select: state => state.Team,
   })
-  .withComponent(select => Feature.configure(teamActions, select))
+  .withComponent(select => Feature.configure(teamActions, userActions, select))
   .withJSX((Component, props) =>
     <MemoryRouter initialEntries={historyEntries}>
       <Component {...props} />
     </MemoryRouter>,
   )
 
-  const teams: ITeam[] = [{id: 100, name: 'my-team', userId: 1}]
-
-  const users: IUserInTeam[] = [{
-    teamId: 123,
+  const teams: Team.Team[] = [{
+    id: 100,
+    name: 'my-team',
     userId: 1,
-    displayName: 'test test',
-    roleId: 1,
-    roleName: 'ADMIN',
+    createDate: '',
+    updateDate: '',
+    userTeams: [],
   }]
 
+  const users: Team.ITeamUsers = {
+    teamId: 123,
+    usersInTeam: [{
+      teamId: 123,
+      userId: 1,
+      displayName: 'test test',
+      roleId: 1,
+      roleName: 'ADMIN',
+    }],
+  }
+
   it('it fetches user teams on render', async () => {
-    const {node} = createTestProvider().render({
+    const {waitForActions, render} = createTestProvider()
+    const {node} = render({
       history,
       location: {} as any,
       match: {} as any,
     })
-    await http.wait()
+    await waitForActions()
     expect(node.innerHTML).toContain('my-team')
   })
 
@@ -74,14 +84,17 @@ describe('TeamConnector', () => {
       historyEntries = ['/teams/new']
     })
 
-    it('sends a POST request to POST /teams', async () => {
-      const newTeam: Partial<ITeam> = {id: 101, name: 'new-team'}
-      http.mockAdd({
-        method: 'post',
-        url: '/teams',
-        data: {name: 'new-team'},
-      }, newTeam)
-      const {render, store} = createTestProvider()
+    it('creates a new team', async () => {
+      const newTeam: Team.Team = {
+        id: 101,
+        name: 'new-team',
+        createDate: '',
+        updateDate: '',
+        userId: 9,
+        userTeams: [],
+      }
+      teamClientMock.create.mockResolvedValue(newTeam)
+      const {render, store, waitForActions} = createTestProvider()
       const {node} = render({
         history,
         location: {} as any,
@@ -92,20 +105,16 @@ describe('TeamConnector', () => {
       .querySelector('input') as HTMLInputElement
       T.Simulate.change(nameInput, {target: {value: newTeam.name}} as any)
       T.Simulate.submit(addTeamForm)
-      await http.wait()
-      const {Team} = store.getState()
-      expect(Team.teamIds).toEqual([100, 101])
-      expect(Team.teamsById[101]).toEqual(newTeam)
+      await waitForActions()
+      const state = store.getState()
+      expect(state.Team.teamIds).toEqual([100, 101])
+      expect(state.Team.teamsById[101]).toEqual(newTeam)
     })
 
     it('displays an error', async () => {
       const error = {error: 'An error'}
-      http.mockAdd({
-        method: 'post',
-        url: '/teams',
-        data: {name: 'test'},
-      }, error, 400)
-      const {render} = createTestProvider()
+      teamClientMock.create.mockRejectedValue(new Error('Test Error'))
+      const {render, waitForActions} = createTestProvider()
       const {node} = render({
         history,
         location: {} as any,
@@ -116,10 +125,10 @@ describe('TeamConnector', () => {
       .querySelector('input') as HTMLInputElement
       T.Simulate.change(nameInput, {target: {value: 'test'}} as any)
       T.Simulate.submit(addTeamForm)
-      const error2 = await getError(http.wait())
-      expect(error2.message).toMatch(/HTTP Status: 400/)
+      const error2 = await getError(waitForActions())
+      expect(error2.message).toMatch(/Test Error/)
       expect(nameInput.value).toEqual('test')
-      expect(addTeamForm.innerHTML).toMatch(/HTTP Status: 400/)
+      expect(addTeamForm.innerHTML).toMatch(/Test Error/)
     })
   })
 

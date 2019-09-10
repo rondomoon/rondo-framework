@@ -1,4 +1,3 @@
-export * from './TeamActions'
 export * from './TeamConnector'
 export * from './TeamList'
 export * from './TeamManager'

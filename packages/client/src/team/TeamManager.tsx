@@ -1,32 +1,24 @@
+import { IUserInTeam, team as Team, TReadonlyRecord, user as User } from '@rondo.dev/common'
+import { Panel, PanelBlock, PanelHeading } from 'bloomer'
+import { History, Location } from 'history'
 import React from 'react'
-import {History, Location} from 'history'
-import {ITeam, IUserInTeam, TReadonlyRecord} from '@rondo.dev/common'
-import {Panel, PanelBlock, PanelHeading} from 'bloomer'
-import {Route, Switch} from 'react-router-dom'
-import {TeamActions} from './TeamActions'
-import {TeamEditor} from './TeamEditor'
-import {TeamList} from './TeamList'
-import {TeamUserList} from './TeamUserList'
-import {match as Match} from 'react-router'
+import { match as Match } from 'react-router'
+import { Route, Switch } from 'react-router-dom'
+import { TeamEditor } from './TeamEditor'
+import { TeamList } from './TeamList'
+import { TeamUserList } from './TeamUserList'
 
 export interface ITeamManagerProps {
   history: History
   location: Location
   match: Match<any>
 
-  ListButtons?: React.ComponentType<{team: ITeam}>
+  ListButtons?: React.ComponentType<{team: Team.Team}>
 
-  createTeam: TeamActions['createTeam']
-  updateTeam: TeamActions['updateTeam']
-  removeTeam: TeamActions['removeTeam']
+  teamActions: Team.TeamActions
+  findUserByEmail: User.UserActions['findUserByEmail']
 
-  addUser: TeamActions['addUser']
-  removeUser: TeamActions['removeUser']
-  fetchMyTeams: TeamActions['fetchMyTeams']
-  fetchUsersInTeam: TeamActions['fetchUsersInTeam']
-  findUserByEmail: TeamActions['findUserByEmail']
-
-  teamsById: TReadonlyRecord<number, ITeam>
+  teamsById: TReadonlyRecord<number, Team.Team>
   teamIds: ReadonlyArray<number>
 
   userKeysByTeamId: TReadonlyRecord<number, ReadonlyArray<string>>
@@ -35,10 +27,10 @@ export interface ITeamManagerProps {
 
 export class TeamManager extends React.PureComponent<ITeamManagerProps> {
   async componentDidMount() {
-    await this.props.fetchMyTeams()
+    await this.props.teamActions.find()
   }
   handleCreateNewTeam = (team: {name: string}) => {
-    const action = this.props.createTeam(team)
+    const action = this.props.teamActions.create(team)
     action.payload
     .then(() => this.props.history.push('/teams'))
     .catch(() => {/* do nothing */})
@@ -62,8 +54,8 @@ export class TeamManager extends React.PureComponent<ITeamManagerProps> {
                 ListButtons={this.props.ListButtons}
                 teamsById={teamsById}
                 teamIds={this.props.teamIds}
-                onAddTeam={this.props.createTeam}
-                onRemoveTeam={this.props.removeTeam}
+                onAddTeam={this.props.teamActions.create}
+                onRemoveTeam={this.props.teamActions.remove}
               />
             </>
           }/>
@@ -79,16 +71,16 @@ export class TeamManager extends React.PureComponent<ITeamManagerProps> {
                     {team && <TeamEditor
                       type='update'
                       team={team}
-                      onUpdateTeam={this.props.updateTeam}
+                      onUpdateTeam={this.props.teamActions.update}
                     />}
                     {!team && 'No team loaded'}
                   </PanelBlock>
                 </Panel>
                 {team && <TeamUserList
-                  onAddUser={this.props.addUser}
-                  onRemoveUser={this.props.removeUser}
+                  onAddUser={this.props.teamActions.addUser}
+                  onRemoveUser={this.props.teamActions.removeUser}
                   findUserByEmail={this.props.findUserByEmail}
-                  fetchUsersInTeam={this.props.fetchUsersInTeam}
+                  fetchUsersInTeam={this.props.teamActions.findUsers}
                   team={team}
                   userKeysByTeamId={this.props.userKeysByTeamId}
                   usersByKey={this.props.usersByKey}

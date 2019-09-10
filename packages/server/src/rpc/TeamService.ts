@@ -137,7 +137,10 @@ export class TeamService implements RPC<t.ITeamService> {
     })
     .getMany()
 
-    return userTeams.map(this._mapUserInTeam)
+    return {
+      teamId,
+      usersInTeam: userTeams.map(this._mapUserInTeam),
+    }
   }
 
   protected _mapUserInTeam(ut: UserTeam): IUserInTeam {

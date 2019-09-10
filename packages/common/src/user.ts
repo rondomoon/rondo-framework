@@ -1,7 +1,7 @@
-import {ICredentials} from './ICredentials'
-import {IUser} from './IUser'
-import * as e from './entities'
-import {keys} from 'ts-transformer-keys'
+import { TReduxed } from '@rondo.dev/jsonrpc'
+import { keys } from 'ts-transformer-keys'
+import { ICredentials } from './ICredentials'
+import { IUser } from './IUser'
 
 export interface IChangePasswordParams {
   oldPassword: string
@@ -19,3 +19,4 @@ export interface IUserService {
 }
 
 export const UserServiceMethods = keys<IUserService>()
+export type UserActions = TReduxed<IUserService, 'userService'>

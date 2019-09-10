@@ -1,16 +1,15 @@
+import { team as Team } from '@rondo.dev/common'
+import { Button, Control, Heading, Help, Input } from 'bloomer'
 import React from 'react'
-import {Button, Control, Heading, Help, Input} from 'bloomer'
-import {ITeam} from '@rondo.dev/common'
-import {TeamActions} from './TeamActions'
-import {FaPlusSquare, FaCheck, FaEdit} from 'react-icons/fa'
+import { FaCheck, FaEdit, FaPlusSquare } from 'react-icons/fa'
 
 export type TTeamEditorProps = {
   type: 'add'
-  onAddTeam: TeamActions['createTeam']
+  onAddTeam: Team.TeamActions['create']
 } | {
   type: 'update'
-  onUpdateTeam: TeamActions['updateTeam']
-  team: ITeam
+  onUpdateTeam: Team.TeamActions['update']
+  team: Team.Team
 }
 
 export interface ITeamEditorState {
@@ -28,7 +27,7 @@ extends React.PureComponent<TTeamEditorProps, ITeamEditorState> {
       name: props.type === 'update' ? this.getName(props.team) : '',
     }
   }
-  getName(team?: ITeam) {
+  getName(team?: Team.Team) {
     return team ? team.name : ''
   }
   componentWillReceiveProps(nextProps: TTeamEditorProps) {

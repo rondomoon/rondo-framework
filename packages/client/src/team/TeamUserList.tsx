@@ -1,35 +1,33 @@
-import React from 'react'
-import {ITeam, IUser, IUserInTeam, TReadonlyRecord} from '@rondo.dev/common'
-import {TeamActions} from './TeamActions'
-import {FaUser, FaCheck, FaTimes} from 'react-icons/fa'
+import { IUser, IUserInTeam, team as Team, TReadonlyRecord, user as User } from '@rondo.dev/common';
+import { Button, Control, Heading, Help, Input, Panel, PanelBlock, PanelHeading } from 'bloomer';
+import React from 'react';
+import { FaCheck, FaTimes, FaUser } from 'react-icons/fa';
 
-import {
-  Button, Control, Heading, Help, Input, Panel, PanelHeading, PanelBlock
-} from 'bloomer'
 
 const EMPTY_ARRAY: ReadonlyArray<string> = []
 
 export interface ITeamUsersProps {
   // fetchMyTeams: () => void,
-  fetchUsersInTeam: TeamActions['fetchUsersInTeam']
-  findUserByEmail: TeamActions['findUserByEmail']
+  fetchUsersInTeam: Team.TeamActions['findUsers']
+  findUserByEmail: User.UserActions['findUserByEmail']
 
-  onAddUser: TeamActions['addUser']
-  onRemoveUser: TeamActions['removeUser']
+  onAddUser: Team.TeamActions['addUser']
+  onRemoveUser: Team.TeamActions['removeUser']
 
-  team: ITeam
+  team: Team.Team
   userKeysByTeamId: TReadonlyRecord<number, ReadonlyArray<string>>
   usersByKey: TReadonlyRecord<string, IUserInTeam>
 }
 
 export interface ITeamUserProps {
-  onRemoveUser: (params: {userId: number, teamId: number}) => void
+  onRemoveUser: (
+    params: {userId: number, teamId: number, roleId: number}) => void
   user: IUserInTeam
 }
 
 export interface IAddUserProps {
-  onAddUser: TeamActions['addUser']
-  onSearchUser: TeamActions['findUserByEmail']
+  onAddUser: Team.TeamActions['addUser']
+  onSearchUser: User.UserActions['findUserByEmail']
   teamId: number
 }
 
@@ -42,7 +40,7 @@ export interface IAddUserState {
 export class TeamUser extends React.PureComponent<ITeamUserProps> {
   handleRemoveUser = async () => {
     const {onRemoveUser, user} = this.props
-    await onRemoveUser(user)
+    await onRemoveUser({...user, roleId: 1})
   }
   render() {
     const {user} = this.props
@@ -145,7 +143,7 @@ export class TeamUserList extends React.PureComponent<ITeamUsersProps> {
   }
   async fetchUsersInTeam(teamId: number) {
     if (teamId) {
-      await this.props.fetchUsersInTeam({teamId})
+      await this.props.fetchUsersInTeam(teamId)
     }
   }
   render() {

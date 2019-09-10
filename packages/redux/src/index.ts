@@ -1,4 +1,5 @@
 export * from './actions'
+export * from './bindActionCreators'
 export * from './middleware'
 export * from './store'
 export * from './pack'
