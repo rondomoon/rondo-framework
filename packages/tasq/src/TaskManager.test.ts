@@ -1,5 +1,6 @@
 import {TaskManager} from './TaskManager'
 import { PromiseExecutor } from './Executor'
+import { getError } from '@rondo.dev/test-utils'
 
 describe('TaskManager', () => {
 
@@ -75,17 +76,6 @@ describe('TaskManager', () => {
     })
 
   })
-
-  async function getError(p: Promise<unknown>): Promise<Error> {
-    let error: Error | undefined
-    try {
-      await p
-    } catch (err) {
-      error = err
-    }
-    expect(error).toBeDefined()
-    return error!
-  }
 
   describe('error handling', () => {
     it('does not fail on error', async () => {

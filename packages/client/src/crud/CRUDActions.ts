@@ -1,10 +1,8 @@
-import {IHTTPClient, ITypedRequestParams} from '../http'
-import {IRoutes, TFilter, TOnlyDefined} from '@rondo.dev/common'
-import {TCRUDAction} from './TCRUDAction'
-import {TCRUDChangeAction} from './TCRUDAction'
-import {TCRUDCreateAction} from './TCRUDAction'
-import {TCRUDEditAction} from './TCRUDAction'
-import {TCRUDMethod} from './TCRUDMethod'
+import { TFilter, TOnlyDefined } from '@rondo.dev/common'
+import { IHTTPClient } from '@rondo.dev/http-client'
+import { IRoutes } from '@rondo.dev/http-types'
+import { TCRUDAction, TCRUDChangeAction, TCRUDCreateAction, TCRUDEditAction } from './TCRUDAction'
+import { TCRUDMethod } from './TCRUDMethod'
 
 type TAction <T, ActionType extends string, Method extends TCRUDMethod> =
   TFilter<TCRUDAction<T, ActionType> , {method: Method, status: 'pending'}>

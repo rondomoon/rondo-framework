@@ -9,6 +9,8 @@
     {"path": "../jsonrpc"},
     {"path": "../logger"},
     {"path": "../config"},
-    {"path": "../tasq"}
+    {"path": "../tasq"},
+    {"path": "../http-client"},
+    {"path": "../http-types"}
   ]
 }

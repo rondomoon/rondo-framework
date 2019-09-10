@@ -1,5 +1,5 @@
 import {Connector} from '../redux/Connector'
-import {pack, TStateSelector} from '../redux'
+import {pack, TStateSelector} from '@rondo.dev/redux'
 import {ITeamState} from './TeamReducer'
 import {TeamActions} from './TeamActions'
 import {TeamManager} from './TeamManager'

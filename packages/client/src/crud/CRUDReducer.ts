@@ -1,4 +1,4 @@
-import {IAction, IResolvedAction} from '../actions'
+import {IAction, IResolvedAction} from '@rondo.dev/redux'
 import {TCRUDAction} from './TCRUDAction'
 import {TCRUDMethod} from './TCRUDMethod'
 import {indexBy, without, TFilter} from '@rondo.dev/common'

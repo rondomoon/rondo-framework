@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "esm"
+  },
+  "references": [
+    {"path": "../logger/tsconfig.esm.json"}
+  ]
+}

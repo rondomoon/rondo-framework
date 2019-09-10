@@ -1,4 +1,4 @@
-import {IAction, TAsyncAction} from '../actions'
+import {IAction, TAsyncAction} from '@rondo.dev/redux'
 import {TCRUDMethod} from './TCRUDMethod'
 
 // Async actions

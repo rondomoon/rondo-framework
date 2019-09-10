@@ -1,8 +1,8 @@
-import {HTTPClient} from '../http/HTTPClient'
-import {IRequest} from '../http/IRequest'
-import {IResponse} from '../http/IResponse'
-import {IRoutes, TMethod} from '@rondo.dev/common'
-import {ITypedRequestParams} from '../http/ITypedRequestParams'
+import {HTTPClient} from './HTTPClient'
+import {IRequest} from './IRequest'
+import {IResponse} from './IResponse'
+import {IRoutes, TMethod} from '@rondo.dev/http-types'
+import {ITypedRequestParams} from './ITypedRequestParams'
 
 interface IReqRes {
   req: IRequest

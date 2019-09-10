@@ -12,7 +12,11 @@
     "@rondo.dev/scripts": "file:packages/scripts",
     "@rondo.dev/argparse": "file:packages/argparse",
     "@rondo.dev/logger": "file:packages/logger",
-    "@rondo.dev/config": "file:packages/config"
+    "@rondo.dev/config": "file:packages/config",
+    "@rondo.dev/redux": "file:packages/redux",
+    "@rondo.dev/http-client": "file:packages/http-client",
+    "@rondo.dev/test-utils": "file:packages/test-utils",
+    "@rondo.dev/http-types": "file:packages/http-types"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",

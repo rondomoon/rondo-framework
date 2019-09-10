@@ -1,7 +1,8 @@
-import {Crumb} from './Crumb'
-import {Connector, TStateSelector} from '../redux'
-import {ICrumbsState} from './CrumbsReducer'
-import {CrumbsActions} from './CrumbsActions'
+import { TStateSelector } from '@rondo.dev/redux'
+import { Connector } from '../redux'
+import { Crumb } from './Crumb'
+import { CrumbsActions } from './CrumbsActions'
+import { ICrumbsState } from './CrumbsReducer'
 
 export class CrumbsConnector extends Connector<ICrumbsState> {
   protected readonly breadcrumbsActions = new CrumbsActions()

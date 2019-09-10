@@ -2,7 +2,7 @@ import React from 'react'
 import {History, Location} from 'history'
 import {IWithRouterProps} from './IWithRouterProps'
 import {Link as RouterLink, LinkProps} from 'react-router-dom'
-import {URLFormatter} from '@rondo.dev/common'
+import {URLFormatter} from '@rondo.dev/http-client'
 import {withRouter} from 'react-router'
 
 export interface ILinkProps

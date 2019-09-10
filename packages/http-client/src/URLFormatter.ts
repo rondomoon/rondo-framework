@@ -1,4 +1,3 @@
-import assert from 'assert'
 import {IRequestParams} from './IRequestParams'
 import {IRequestQuery} from './IRequestQuery'
 

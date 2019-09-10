@@ -1,6 +1,6 @@
 import {createStore, applyMiddleware, Store} from 'redux'
 import {PromiseMiddleware} from './PromiseMiddleware'
-import {getError} from '../test-utils'
+import {getError} from '@rondo.dev/test-utils'
 
 describe('PromiseMiddleware', () => {
 

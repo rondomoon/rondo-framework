@@ -1,11 +1,11 @@
-import {Connector} from '../redux/Connector'
-import {ICredentials} from '@rondo.dev/common'
-import {ILoginState} from './LoginReducer'
-import {TStateSelector} from '../redux'
-import {LoginActions} from './LoginActions'
-import {LoginForm} from './LoginForm'
-import {bindActionCreators} from 'redux'
-import {withForm} from './withForm'
+import { ICredentials } from '@rondo.dev/common'
+import { TStateSelector } from '@rondo.dev/redux'
+import { bindActionCreators } from 'redux'
+import { Connector } from '../redux/Connector'
+import { LoginActions } from './LoginActions'
+import { LoginForm } from './LoginForm'
+import { ILoginState } from './LoginReducer'
+import { withForm } from './withForm'
 
 const defaultCredentials: ICredentials = {
   username: '',

@@ -6,6 +6,10 @@
   "references": [
     {"path": "../common/tsconfig.esm.json"},
     {"path": "../jsonrpc/tsconfig.esm.json"},
-    {"path": "../logger/tsconfig.esm.json"}
+    {"path": "../logger/tsconfig.esm.json"},
+    {"path": "../config/tsconfig.esm.json"},
+    {"path": "../tasq/tsconfig.esm.json"},
+    {"path": "../http-client/tsconfig.esm.json"},
+    {"path": "../http-types/tsconfig.esm.json"}
   ]
 }

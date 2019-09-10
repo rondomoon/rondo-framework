@@ -2,7 +2,7 @@ import {
   ITeam, IUserInTeam, TReadonlyRecord, indexBy, without,
 } from '@rondo.dev/common'
 import {TTeamAction} from './TeamActions'
-import {TGetResolvedAction} from '../actions'
+import {TGetResolvedAction} from '@rondo.dev/redux'
 
 export interface ITeamState {
   readonly error: string

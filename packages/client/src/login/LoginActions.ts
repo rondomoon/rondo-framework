@@ -1,6 +1,6 @@
-import {TGetAction, TAsyncAction, IAction, PendingAction} from '../actions'
+import {TGetAction, TAsyncAction, IAction, PendingAction} from '@rondo.dev/redux'
 import {IAPIDef, ICredentials, INewUser, IUser} from '@rondo.dev/common'
-import {IHTTPClient} from '../http/IHTTPClient'
+import {IHTTPClient} from '@rondo.dev/http-client'
 
 export type TLoginAction =
   TAsyncAction<IUser, 'LOGIN'>

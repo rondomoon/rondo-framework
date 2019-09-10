@@ -1,4 +1,4 @@
-import {TGetAction, IAction} from '../actions'
+import {TGetAction, IAction} from '@rondo.dev/redux'
 import {ICrumbLink} from './ICrumbLink'
 
 export interface ICrumbs {

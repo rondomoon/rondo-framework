@@ -1,9 +1,6 @@
+import { URLFormatter } from '@rondo.dev/http-client'
+import { IRoutes, TMethod } from '@rondo.dev/http-types'
 import supertest from 'supertest'
-import {
-  TMethod,
-  IRoutes,
-  URLFormatter,
-} from '@rondo.dev/common'
 
 // https://stackoverflow.com/questions/48215950/exclude-property-from-type
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>

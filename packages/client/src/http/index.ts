@@ -1,6 +1,0 @@
-export * from './HTTPClient'
-export * from './IHTTPClient'
-export * from './IHeader'
-export * from './IRequest'
-export * from './IResponse'
-export * from './ITypedRequestParams'

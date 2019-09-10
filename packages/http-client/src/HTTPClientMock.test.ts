@@ -1,5 +1,5 @@
 import {HTTPClientMock} from './HTTPClientMock'
-import {getError} from './getError'
+import {getError} from '@rondo.dev/test-utils'
 
 describe('HTTPClientMock', () => {
 

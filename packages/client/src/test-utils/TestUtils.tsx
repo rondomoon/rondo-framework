@@ -1,9 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import T from 'react-dom/test-utils'
-import {TStateSelector} from '../redux'
+import {createStore, TStateSelector} from '@rondo.dev/redux'
 import {Provider} from 'react-redux'
-import {createStore} from '../store'
 import {
   Action,
   AnyAction,

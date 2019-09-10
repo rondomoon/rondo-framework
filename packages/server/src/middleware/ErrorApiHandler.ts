@@ -1,5 +1,5 @@
 import {TErrorHandler} from './TErrorHandler'
-import {ILogger} from '../logger/ILogger'
+import {ILogger} from '@rondo.dev/logger'
 import {IMiddleware} from './IMiddleware'
 import {ValidationError} from '../validator'
 

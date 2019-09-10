@@ -1,4 +1,4 @@
-import {ILogger} from '../logger/ILogger'
+import {ILogger} from '@rondo.dev/logger'
 import {IMiddleware} from './IMiddleware'
 import {TErrorHandler} from './TErrorHandler'
 

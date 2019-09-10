@@ -1,5 +1,5 @@
 import React from 'react'
-import {IPendingAction} from '../actions'
+import {IPendingAction} from '@rondo.dev/redux'
 
 export interface IComponentProps<Data> {
   onSubmit: () => void

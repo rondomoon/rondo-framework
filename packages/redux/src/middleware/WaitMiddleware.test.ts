@@ -3,7 +3,7 @@ import {
   IAction, IPendingAction, IResolvedAction, IRejectedAction,
 } from '../actions'
 import {applyMiddleware, createStore, AnyAction} from 'redux'
-import {getError} from '../test-utils'
+import { getError } from '@rondo.dev/test-utils'
 
 describe('WaitMiddleware', () => {
 

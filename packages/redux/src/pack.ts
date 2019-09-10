@@ -1,7 +1,12 @@
 import { ComponentType, PureComponent } from 'react'
 import { connect, Omit, MapDispatchToPropsParam, Matching, GetProps, ResolveThunks } from 'react-redux'
 import { Dispatch } from 'redux'
-import { TStateSelector } from './TStateSelector'
+
+/*
+ * Select and return a part of the state
+ */
+export type TStateSelector<GlobalState, StateSlice>
+  = (state: GlobalState) => StateSlice
 
 /**
  * This function can be used to pack React components into reusable modules.

@@ -1,4 +1,4 @@
-import {TStateSelector} from './TStateSelector'
+import {TStateSelector} from '@rondo.dev/redux'
 import {connect, Omit} from 'react-redux'
 import {Dispatch} from 'redux'
 import {ComponentType} from 'react'

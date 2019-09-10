@@ -1,10 +1,11 @@
-import {createCRUDActions} from './CRUDActions'
-import React from 'react'
-import {AnyAction} from 'redux'
-import {CRUDReducer, TCRUDMethod, TCRUDAsyncMethod} from './'
-import {HTTPClientMock, TestUtils, getError} from '../test-utils'
-import {TMethod} from '@rondo.dev/common'
-import {IPendingAction} from '../actions'
+import { HTTPClientMock } from '@rondo.dev/http-client'
+import { TMethod } from '@rondo.dev/http-types'
+import { IPendingAction } from '@rondo.dev/redux'
+import { getError } from '@rondo.dev/test-utils'
+import { AnyAction } from 'redux'
+import { TestUtils } from '../test-utils'
+import { CRUDReducer, TCRUDAsyncMethod } from './'
+import { createCRUDActions } from './CRUDActions'
 
 describe('CRUD', () => {
 

@@ -1,15 +1,12 @@
 import React from 'react'
+import { renderToNodeStream } from 'react-dom/server'
+import { Provider } from 'react-redux'
+import { StaticRouterContext } from 'react-router'
+import { StaticRouter } from 'react-router-dom'
 import ssrPrepass from 'react-ssr-prepass'
-import {Action} from 'redux'
-import {IAPIDef} from '@rondo.dev/common'
-import {IClientConfig} from './IClientConfig'
-import {IHTTPClient, HTTPClient} from '../http'
-import {IRenderer} from './IRenderer'
-import {Provider} from 'react-redux'
-import {StaticRouterContext} from 'react-router'
-import {StaticRouter} from 'react-router-dom'
-import {Store} from 'redux'
-import {renderToNodeStream} from 'react-dom/server'
+import { Store } from 'redux'
+import { IClientConfig } from './IClientConfig'
+import { IRenderer } from './IRenderer'
 
 export class ServerRenderer<Props> implements IRenderer<Props> {
   constructor(

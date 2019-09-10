@@ -1,4 +1,4 @@
-import {ILogger} from './ILogger'
+import {ILogger} from '@rondo.dev/logger'
 import {Logger, QueryRunner} from 'typeorm'
 import {Namespace} from 'cls-hooked'
 import {CORRELATION_ID} from '../middleware/Transaction'

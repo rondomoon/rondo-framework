@@ -1,5 +1,5 @@
 import {THandler} from './THandler'
-import {ILogger} from '../logger/ILogger'
+import {ILogger} from '@rondo.dev/logger'
 import {IMiddleware} from './IMiddleware'
 import shortid from 'shortid'
 

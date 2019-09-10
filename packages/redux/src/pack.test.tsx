@@ -3,8 +3,7 @@ import ReactDOM from 'react-dom'
 import TestUtils from 'react-dom/test-utils'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
-import { pack } from './pack'
-import { TStateSelector } from './TStateSelector'
+import { pack, TStateSelector } from './pack'
 
 describe('pack', () => {
 

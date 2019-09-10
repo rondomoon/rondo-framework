@@ -1,4 +1,4 @@
-import {TMethod} from '@rondo.dev/common'
+import {TMethod} from '@rondo.dev/http-types'
 
 export interface IRequest {
   method: TMethod,
