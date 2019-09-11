@@ -92,11 +92,17 @@ export class TestUtils {
         const jsx = createJSX
           ? createJSX(Component, props)
           : <Component {...props} />
-        return this.render(
+        const result = this.render(
           <Provider store={store}>
             {jsx}
           </Provider>,
         )
+        return {
+          ...result,
+          async waitForActions(timeout = 2000) {
+            await waitMiddleware.waitForRecorded(recorder)
+          },
+        }
       }
 
       const withJSX = (localCreateJSX: CreateJSX) => {
@@ -106,14 +112,11 @@ export class TestUtils {
 
       const self: ISelf<
         Props, typeof store, typeof Component, CreateJSX
-        > = {
+      > = {
         render,
         store,
         Component,
         withJSX,
-        async waitForActions() {
-          await waitMiddleware.waitForRecorded(recorder, 2000)
-        },
       }
 
       return self
@@ -124,10 +127,13 @@ export class TestUtils {
 }
 
 interface ISelf<Props, Store, Component, CreateJSX> {
-  render: (props: Props) => ReturnType<TestUtils['render']>
+  render: (props: Props) => {
+    component: React.Component<any>
+    node: Element
+    waitForActions(timeout?: number): Promise<void>
+  }
   store: Store
   Component: Component
   withJSX: (localCreateJSX: CreateJSX)
   => ISelf<Props, Store, Component, CreateJSX>
-  waitForActions(): Promise<void>
 }
