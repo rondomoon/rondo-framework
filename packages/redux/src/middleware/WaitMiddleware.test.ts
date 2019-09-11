@@ -110,7 +110,7 @@ describe('WaitMiddleware', () => {
 
   describe('record', () => {
 
-    it('records pending actions', async () => {
+    it('records pending actions by default', async () => {
       const wm = new WaitMiddleware()
       const store = getStore(wm)
       const recorder = wm.record()
@@ -126,6 +126,16 @@ describe('WaitMiddleware', () => {
         status: 'resolved',
       })
       await promise
+    })
+
+    it('records custom actions', async () => {
+      const wm = new WaitMiddleware()
+      const store = getStore(wm)
+      const recorder = wm.record(action => action.type.startsWith('test'))
+      store.dispatch({type: 'test1'} as any)
+      store.dispatch({type: 'tes'} as any)
+      store.dispatch({type: 'test3'} as any)
+      expect(recorder.getActionTypes()).toEqual(['test1', 'test3'])
     })
   })
 

@@ -14,10 +14,10 @@ export class WaitMiddleware {
   }
 
   /**
-   * Starts recording pending actions and returns the recorder.
+   * Starts recording actions and returns the recorder.
    */
-  record(): Recorder {
-    const recorder = new Recorder()
+  record(shouldRecord: ShouldRecord = defaultShouldRecord): Recorder {
+    const recorder = new Recorder(shouldRecord)
     this.recorders.push(recorder)
     return recorder
   }
@@ -91,15 +91,25 @@ export class WaitMiddleware {
   }
 }
 
+/**
+ * Returns true when an action should be recorded, false otherwise
+ */
+export type ShouldRecord = (action: AnyAction) => boolean
+
+export const defaultShouldRecord: ShouldRecord =
+  (action: AnyAction) => 'status' in action && action.status === 'pending'
+
 class Recorder {
   protected actionTypes: string[] = []
+
+  constructor(protected readonly shouldRecord: ShouldRecord) {}
 
   getActionTypes(): string[] {
     return this.actionTypes.slice()
   }
 
   record(action: AnyAction) {
-    if ('status' in action && action.status === 'pending') {
+    if (this.shouldRecord(action)) {
       this.actionTypes.push(action.type)
     }
   }
