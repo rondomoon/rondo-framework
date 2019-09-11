@@ -1,4 +1,4 @@
-import { IUserInTeam, team as Team, TReadonlyRecord, user as User } from '@rondo.dev/common'
+import { IUserInTeam, TReadonlyRecord, TeamActions, UserActions, Team } from '@rondo.dev/common'
 import { Panel, PanelBlock, PanelHeading } from 'bloomer'
 import { History, Location } from 'history'
 import React from 'react'
@@ -13,12 +13,12 @@ export interface ITeamManagerProps {
   location: Location
   match: Match<any>
 
-  ListButtons?: React.ComponentType<{team: Team.Team}>
+  ListButtons?: React.ComponentType<{team: Team}>
 
-  teamActions: Team.TeamActions
-  findUserByEmail: User.UserActions['findUserByEmail']
+  teamActions: TeamActions
+  findUserByEmail: UserActions['findUserByEmail']
 
-  teamsById: TReadonlyRecord<number, Team.Team>
+  teamsById: TReadonlyRecord<number, Team>
   teamIds: ReadonlyArray<number>
 
   userKeysByTeamId: TReadonlyRecord<number, ReadonlyArray<string>>

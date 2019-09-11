@@ -1,38 +1,12 @@
-// import {ITeam} from './ITeam'
 import { TReduxed } from '@rondo.dev/jsonrpc'
 import { keys } from 'ts-transformer-keys'
-import { Team } from './entities'
+import { Team } from '../entities'
+import { ITeamAddUserParams } from './ITeamAddUserParams'
+import { ITeamCreateParams } from './ITeamCreateParams'
+import { ITeamRemoveParams } from './ITeamRemoveParams'
+import { ITeamUpdateParams } from './ITeamUpdateParams'
+import { ITeamUsers } from './ITeamUsers'
 import { IUserInTeam } from './IUserInTeam'
-
-export { Team }
-
-export interface ITeamAddUserParams {
-  teamId: number
-  userId: number
-  roleId: number
-}
-
-export interface ITeamCreateParams {
-  name: string
-}
-
-export interface ITeamRemoveParams {
-  id: number
-}
-
-export interface ITeamUpdateParams {
-  id: number
-  name: string
-}
-
-export interface ITeamUsers {
-  teamId: number
-  usersInTeam: IUserInTeam[]
-}
-
-export interface IContext {
-  userId: number
-}
 
 export interface ITeamService {
   create(params: ITeamCreateParams): Promise<Team>
@@ -50,8 +24,6 @@ export interface ITeamService {
   find(): Promise<Team[]>
 
   findUsers(teamId: number): Promise<ITeamUsers>
-
-  // TODO add other methods
 }
 
 export const TeamServiceMethods = keys<ITeamService>()

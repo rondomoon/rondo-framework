@@ -1,4 +1,4 @@
-import { user as u } from '@rondo.dev/common'
+import { IUserService } from '@rondo.dev/common'
 import { compare, hash } from 'bcrypt'
 import createError from 'http-errors'
 import { IDatabase } from '../database/IDatabase'
@@ -10,7 +10,7 @@ const SALT_ROUNDS = 10
 const MIN_PASSWORD_LENGTH = 10
 
 @ensureLoggedIn
-export class UserService implements RPC<u.IUserService> {
+export class UserService implements RPC<IUserService> {
   constructor(protected readonly db: IDatabase) {}
 
   async getProfile(context: IContext) {

@@ -1,6 +1,5 @@
-import { ICredentials } from './ICredentials'
-import { INewUser } from './INewUser'
-import { IUser } from './IUser'
+import { IUser, INewUser } from './user'
+import { ICredentials } from './auth'
 
 export interface IAPIDef {
   '/auth/register': {

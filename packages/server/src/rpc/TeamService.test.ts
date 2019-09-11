@@ -1,4 +1,4 @@
-import { team as Team } from '@rondo.dev/common'
+import { TeamServiceMethods, ITeamService } from '@rondo.dev/common'
 import { test } from '../test'
 
 describe('team', () => {
@@ -15,9 +15,9 @@ describe('team', () => {
   })
 
   const getClient = () =>
-    test.rpc<Team.ITeamService>(
+    test.rpc<ITeamService>(
       '/rpc/teamService',
-      Team.TeamServiceMethods,
+      TeamServiceMethods,
       headers,
     )
 

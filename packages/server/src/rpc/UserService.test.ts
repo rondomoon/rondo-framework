@@ -1,5 +1,5 @@
 import {test} from '../test'
-import {user} from '@rondo.dev/common'
+import { IUserService, UserServiceMethods } from '@rondo.dev/common'
 
 describe('user', () => {
 
@@ -12,9 +12,9 @@ describe('user', () => {
   })
 
   const createService = () => {
-    return test.rpc<user.IUserService>(
+    return test.rpc<IUserService>(
       '/rpc/userService',
-      user.UserServiceMethods,
+      UserServiceMethods,
       headers,
     )
   }

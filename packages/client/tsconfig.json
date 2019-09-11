@@ -6,6 +6,6 @@
   },
   "references": [
     {"path": "../redux"},
-    {"path": "../comments-common"}
+    {"path": "../common"}
   ]
 }

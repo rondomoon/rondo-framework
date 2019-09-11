@@ -1,4 +1,4 @@
-import { indexBy, ITeam, IUserInTeam, team as T, TReadonlyRecord, without } from '@rondo.dev/common'
+import { indexBy, Team as _Team, IUserInTeam, TReadonlyRecord, without, TeamActions } from '@rondo.dev/common'
 import { createReducer } from '@rondo.dev/jsonrpc'
 
 export interface ITeamState {
@@ -6,7 +6,7 @@ export interface ITeamState {
   readonly error: string
 
   readonly teamIds: ReadonlyArray<number>
-  readonly teamsById: TReadonlyRecord<number, ITeam>
+  readonly teamsById: TReadonlyRecord<number, _Team>
 
   readonly userKeysByTeamId: TReadonlyRecord<number, ReadonlyArray<string>>
   readonly usersByKey: TReadonlyRecord<string, IUserInTeam>
@@ -28,7 +28,7 @@ function getUserKey(userInTeam: {userId: number, teamId: number}) {
 }
 
 export const Team = createReducer('teamService', defaultState)
-.withMapping<T.TeamActions>({
+.withMapping<TeamActions>({
   create(state, action) {
     return {
       teamIds: state.teamIds.indexOf(action.payload.id) >= 0

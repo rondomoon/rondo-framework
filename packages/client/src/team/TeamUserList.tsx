@@ -1,4 +1,4 @@
-import { IUser, IUserInTeam, team as Team, TReadonlyRecord, user as User } from '@rondo.dev/common'
+import { IUser, IUserInTeam, TReadonlyRecord, TeamActions, UserActions, Team } from '@rondo.dev/common'
 import { Button, Control, Heading, Help, Input, Panel, PanelBlock, PanelHeading } from 'bloomer'
 import React from 'react'
 import { FaCheck, FaTimes, FaUser } from 'react-icons/fa'
@@ -7,13 +7,13 @@ const EMPTY_ARRAY: ReadonlyArray<string> = []
 
 export interface ITeamUsersProps {
   // fetchMyTeams: () => void,
-  fetchUsersInTeam: Team.TeamActions['findUsers']
-  findUserByEmail: User.UserActions['findUserByEmail']
+  fetchUsersInTeam: TeamActions['findUsers']
+  findUserByEmail: UserActions['findUserByEmail']
 
-  onAddUser: Team.TeamActions['addUser']
-  onRemoveUser: Team.TeamActions['removeUser']
+  onAddUser: TeamActions['addUser']
+  onRemoveUser: TeamActions['removeUser']
 
-  team: Team.Team
+  team: Team
   userKeysByTeamId: TReadonlyRecord<number, ReadonlyArray<string>>
   usersByKey: TReadonlyRecord<string, IUserInTeam>
 }
@@ -25,8 +25,8 @@ export interface ITeamUserProps {
 }
 
 export interface IAddUserProps {
-  onAddUser: Team.TeamActions['addUser']
-  onSearchUser: User.UserActions['findUserByEmail']
+  onAddUser: TeamActions['addUser']
+  onSearchUser: UserActions['findUserByEmail']
   teamId: number
 }
 

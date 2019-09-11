@@ -1,4 +1,4 @@
-import { IAPIDef, IUserInTeam, team as Team, user as User } from '@rondo.dev/common'
+import { IAPIDef, IUserInTeam, ITeamService, TeamServiceMethods, UserServiceMethods, TeamActions, UserActions, IUserService, ITeamUsers, Team } from '@rondo.dev/common'
 import { HTTPClientMock } from '@rondo.dev/http-client'
 import { getError } from '@rondo.dev/test-utils'
 import React from 'react'
@@ -18,11 +18,11 @@ describe('TeamConnector', () => {
   }
 
   const [teamClient, teamClientMock] =
-    createClientMock<Team.ITeamService>(Team.TeamServiceMethods)
+    createClientMock<ITeamService>(TeamServiceMethods)
   const [userClient, userClientMock] =
-    createClientMock<User.IUserService>(User.UserServiceMethods)
-  let teamActions!: Team.TeamActions
-  let userActions!: User.UserActions
+    createClientMock<IUserService>(UserServiceMethods)
+  let teamActions!: TeamActions
+  let userActions!: UserActions
   beforeEach(() => {
     teamClientMock.find.mockResolvedValue(teams)
     teamClientMock.findUsers.mockResolvedValue(users)
@@ -48,7 +48,7 @@ describe('TeamConnector', () => {
     </MemoryRouter>,
   )
 
-  const teams: Team.Team[] = [{
+  const teams: Team[] = [{
     id: 100,
     name: 'my-team',
     userId: 1,
@@ -57,7 +57,7 @@ describe('TeamConnector', () => {
     userTeams: [],
   }]
 
-  const users: Team.ITeamUsers = {
+  const users: ITeamUsers = {
     teamId: 123,
     usersInTeam: [{
       teamId: 123,
@@ -84,7 +84,7 @@ describe('TeamConnector', () => {
     })
 
     it('creates a new team', async () => {
-      const newTeam: Team.Team = {
+      const newTeam: Team = {
         id: 101,
         name: 'new-team',
         createDate: '',

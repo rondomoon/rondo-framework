@@ -1,21 +1,21 @@
-import { team as Team, TReadonlyRecord } from '@rondo.dev/common'
+import { TReadonlyRecord, Team, TeamActions } from '@rondo.dev/common'
 import { Button, Panel, PanelBlock, PanelHeading } from 'bloomer'
 import React from 'react'
 import { FaEdit, FaPlus, FaTimes } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 
 export interface ITeamListProps {
-  ListButtons?: React.ComponentType<{team: Team.Team}>
-  teamsById: TReadonlyRecord<number, Team.Team>
+  ListButtons?: React.ComponentType<{team: Team}>
+  teamsById: TReadonlyRecord<number, Team>
   teamIds: ReadonlyArray<number>
-  onAddTeam: Team.TeamActions['create']
-  onRemoveTeam: Team.TeamActions['remove']
+  onAddTeam: TeamActions['create']
+  onRemoveTeam: TeamActions['remove']
 }
 
 export interface ITeamProps {
-  ListButtons?: React.ComponentType<{team: Team.Team}>
-  team: Team.Team
-  onRemoveTeam: Team.TeamActions['remove']
+  ListButtons?: React.ComponentType<{team: Team}>
+  team: Team
+  onRemoveTeam: TeamActions['remove']
 }
 
 export class TeamRow extends React.PureComponent<ITeamProps> {

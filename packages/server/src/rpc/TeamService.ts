@@ -6,19 +6,23 @@ import {IUserPermissions} from '../services/IUserPermissions'
 import {
   trim,
   entities as e,
-  team as t,
-  IUserInTeam,
+  ITeamService,
+  ITeamCreateParams,
+  ITeamRemoveParams,
+  ITeamUpdateParams,
+  ITeamAddUserParams,
 } from '@rondo.dev/common'
 import { ensureLoggedIn, IContext, RPC } from './RPC'
+import { IUserInTeam } from '@rondo.dev/common/lib/team/IUserInTeam'
 
 @ensureLoggedIn
-export class TeamService implements RPC<t.ITeamService> {
+export class TeamService implements RPC<ITeamService> {
   constructor(
     protected readonly db: IDatabase,
     protected readonly permissions: IUserPermissions,
   ) {}
 
-  async create(context: IContext, params: t.ITeamCreateParams) {
+  async create(context: IContext, params: ITeamCreateParams) {
     const userId = context.user!.id
     const name = trim(params.name)
 
@@ -42,7 +46,7 @@ export class TeamService implements RPC<t.ITeamService> {
     return (await this.findOne(context, team.id))!
   }
 
-  async remove(context: IContext, {id}: t.ITeamRemoveParams) {
+  async remove(context: IContext, {id}: ITeamRemoveParams) {
     const userId = context.user!.id
 
     await this.permissions.belongsToTeam({
@@ -59,7 +63,7 @@ export class TeamService implements RPC<t.ITeamService> {
     return {id}
   }
 
-  async update(context: IContext, {id, name}: t.ITeamUpdateParams) {
+  async update(context: IContext, {id, name}: ITeamUpdateParams) {
     const userId = context.user!.id
 
     await this.permissions.belongsToTeam({
@@ -77,7 +81,7 @@ export class TeamService implements RPC<t.ITeamService> {
     return (await this.findOne(context, id))!
   }
 
-  async addUser(context: IContext, params: t.ITeamAddUserParams) {
+  async addUser(context: IContext, params: ITeamAddUserParams) {
     const {userId, teamId, roleId} = params
     await this.db.getRepository(UserTeam)
     .save({userId, teamId, roleId})
@@ -93,7 +97,7 @@ export class TeamService implements RPC<t.ITeamService> {
     return this._mapUserInTeam(userTeam!)
   }
 
-  async removeUser(context: IContext, params: t.ITeamAddUserParams) {
+  async removeUser(context: IContext, params: ITeamAddUserParams) {
     const {teamId, userId, roleId} = params
 
     await this.permissions.belongsToTeam({
