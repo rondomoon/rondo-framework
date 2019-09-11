@@ -1,5 +1,6 @@
 export * from './add'
 export * from './build'
+export * from './clean'
 export * from './exportDir'
 export * from './intergen'
 export * from './syncEsm'
