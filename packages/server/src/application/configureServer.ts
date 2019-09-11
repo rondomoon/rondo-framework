@@ -10,8 +10,6 @@ import { TransactionalRouter } from '../router'
 import * as routes from '../routes'
 import * as rpc from '../rpc'
 import * as Services from '../services'
-import * as Team from '../team'
-import * as User from '../user'
 import { IConfig } from './IConfig'
 import { IServerConfig } from './IServerConfig'
 import { IServices } from './IServices'
@@ -29,8 +27,7 @@ export const configureServer: ServerConfigurator = (config, database) => {
 
   const services: IServices = {
     authService: new Services.AuthService(database),
-    teamService: new Team.TeamService(database),
-    userPermissions: new User.UserPermissions(database),
+    userPermissions: new Services.UserPermissions(database),
   }
 
   const rpcServices = {
@@ -93,15 +90,6 @@ export const configureServer: ServerConfigurator = (config, database) => {
           new routes.AuthRoutes(
             services.authService,
             authenticator,
-            createTransactionalRouter(),
-          ).handle,
-          new routes.UserRoutes(
-            services.authService,
-            createTransactionalRouter(),
-          ).handle,
-          new Team.TeamRoutes(
-            services.teamService,
-            services.userPermissions,
             createTransactionalRouter(),
           ).handle,
         ],

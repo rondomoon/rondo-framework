@@ -2,7 +2,7 @@ import {IDatabase} from '../database/IDatabase'
 import {Validator} from '../validator'
 import {Team} from '../entities/Team'
 import {UserTeam} from '../entities/UserTeam'
-import {IUserPermissions} from '../user/IUserPermissions'
+import {IUserPermissions} from '../services/IUserPermissions'
 import {
   trim,
   entities as e,

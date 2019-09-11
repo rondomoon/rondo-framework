@@ -101,9 +101,9 @@ describe('team', () => {
       const teamId = team.id
       const {userId} = await test.registerAccount('test2@user.com')
       await client.addUser({userId, teamId, roleId: 1})
-      const users = await client.findUsers(teamId)
-      expect(users.length).toBe(2)
-      expect(users).toEqual([{
+      const {usersInTeam} = await client.findUsers(teamId)
+      expect(usersInTeam.length).toBe(2)
+      expect(usersInTeam).toEqual([{
         teamId,
         userId: mainUserId,
         displayName: jasmine.any(String),

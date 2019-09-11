@@ -15,6 +15,7 @@ export interface ICreateUserParams extends ICredentials {
 
 export interface IUserService {
   getProfile(): Promise<IUser>
+  // TODO exposing search by email might be a security concern
   findUserByEmail(email: string): Promise<IUser | undefined>
 }
 
