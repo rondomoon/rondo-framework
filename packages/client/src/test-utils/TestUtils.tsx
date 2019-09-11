@@ -60,7 +60,6 @@ export class TestUtils {
     const {reducers, select} = params
 
     const waitMiddleware = new WaitMiddleware()
-    const recorder = waitMiddleware.record()
 
     let store = this.createStore({
       reducer: this.combineReducers(reducers),
@@ -89,9 +88,12 @@ export class TestUtils {
       let createJSX: CreateJSX | undefined
 
       const render = (props: Props) => {
+        const recorder = waitMiddleware.record()
+
         const jsx = createJSX
           ? createJSX(Component, props)
           : <Component {...props} />
+
         const result = this.render(
           <Provider store={store}>
             {jsx}
