@@ -1,8 +1,7 @@
-import { IUser, IUserInTeam, team as Team, TReadonlyRecord, user as User } from '@rondo.dev/common';
-import { Button, Control, Heading, Help, Input, Panel, PanelBlock, PanelHeading } from 'bloomer';
-import React from 'react';
-import { FaCheck, FaTimes, FaUser } from 'react-icons/fa';
-
+import { IUser, IUserInTeam, team as Team, TReadonlyRecord, user as User } from '@rondo.dev/common'
+import { Button, Control, Heading, Help, Input, Panel, PanelBlock, PanelHeading } from 'bloomer'
+import React from 'react'
+import { FaCheck, FaTimes, FaUser } from 'react-icons/fa'
 
 const EMPTY_ARRAY: ReadonlyArray<string> = []
 

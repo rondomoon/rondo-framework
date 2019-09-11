@@ -1,5 +1,5 @@
-import { indexBy, ITeam, IUserInTeam, team as T, TReadonlyRecord, without } from '@rondo.dev/common';
-import { createReducer } from '@rondo.dev/jsonrpc';
+import { indexBy, ITeam, IUserInTeam, team as T, TReadonlyRecord, without } from '@rondo.dev/common'
+import { createReducer } from '@rondo.dev/jsonrpc'
 
 export interface ITeamState {
   readonly loading: number
@@ -107,7 +107,6 @@ export const Team = createReducer('teamService', defaultState)
     }, {} as Record<string, IUserInTeam>)
 
     return {
-      ...state,
       userKeysByTeamId: {
         ...state.userKeysByTeamId,
         [action.payload.teamId]: action.payload.usersInTeam

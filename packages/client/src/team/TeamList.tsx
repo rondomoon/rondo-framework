@@ -1,8 +1,8 @@
-import { team as Team, TReadonlyRecord } from '@rondo.dev/common';
-import { Button, Panel, PanelBlock, PanelHeading } from 'bloomer';
-import React from 'react';
-import { FaEdit, FaPlus, FaTimes } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { team as Team, TReadonlyRecord } from '@rondo.dev/common'
+import { Button, Panel, PanelBlock, PanelHeading } from 'bloomer'
+import React from 'react'
+import { FaEdit, FaPlus, FaTimes } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
 
 export interface ITeamListProps {
   ListButtons?: React.ComponentType<{team: Team.Team}>
