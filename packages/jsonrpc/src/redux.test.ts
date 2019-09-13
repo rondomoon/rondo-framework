@@ -6,7 +6,7 @@ import bodyParser from 'body-parser'
 import express from 'express'
 import {AddressInfo} from 'net'
 import {Server} from 'http'
-import {Contextual, TPendingActions, TAllActions} from './types'
+import {WithContext, TPendingActions, TAllActions} from './types'
 import {combineReducers} from 'redux'
 import {createActions, createReducer} from './redux'
 import {createRemoteClient} from './remote'
@@ -30,7 +30,7 @@ describe('createActions', () => {
     userId: number
   }
 
-  class Service implements Contextual<IService, IContext> {
+  class Service implements WithContext<IService, IContext> {
     add(cx: IContext, a: number, b: number) {
       return a + b
     }

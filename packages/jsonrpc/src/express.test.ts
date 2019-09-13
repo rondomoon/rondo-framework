@@ -6,7 +6,7 @@ import {createClient} from './supertest'
 import {ensure} from './ensure'
 import {jsonrpc} from './express'
 import {noopLogger} from './test-utils'
-import {Contextual} from './types'
+import {WithContext} from './types'
 
 describe('jsonrpc', () => {
 
@@ -27,7 +27,7 @@ describe('jsonrpc', () => {
 
   const ensureLoggedIn = ensure<IContext>(c => !!c.userId)
 
-  class Service implements Contextual<IService, IContext> {
+  class Service implements WithContext<IService, IContext> {
     constructor(readonly time: number) {}
     add(context: IContext, a: number, b: number) {
       return a + b

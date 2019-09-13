@@ -1,14 +1,14 @@
 import {
-  IReduxed,
-  TAsyncified,
-  TReduxed,
+  IRPCActions,
+  RPCClient,
+  RPCActions,
   TResolvedActions,
   TAllActions,
-  TReduxHandlers,
+  RPCReduxHandlers,
 } from './types'
 
 export function createActions<T, ActionType extends string>(
-  client: TAsyncified<T>,
+  client: RPCClient<T>,
   type: ActionType,
 ) {
   const service = Object.keys(client).reduce((obj, method: any) => {
@@ -24,7 +24,7 @@ export function createActions<T, ActionType extends string>(
     return obj
   }, {} as any)
 
-  return service as TReduxed<T, ActionType>
+  return service as RPCActions<T, ActionType>
 }
 
 export interface IState {
@@ -38,7 +38,7 @@ export function createReducer<ActionType extends string, State extends IState>(
 ) {
 
   const self = {
-    withHandler<R extends IReduxed<ActionType>>(
+    withHandler<R extends IRPCActions<ActionType>>(
       handleAction: (state: State, action: TResolvedActions<R>) => State,
     ): (state: State | undefined, action: TAllActions<R>) => State {
       return (state: State = defaultState, action: TAllActions<R>): State => {
@@ -66,8 +66,8 @@ export function createReducer<ActionType extends string, State extends IState>(
         }, action)
       }
     },
-    withMapping<R extends IReduxed<ActionType>>(
-      handlers: TReduxHandlers<R, State>,
+    withMapping<R extends IRPCActions<ActionType>>(
+      handlers: RPCReduxHandlers<R, State>,
     ) {
       return self.withHandler<R>((state, action) => {
         if (action.method in handlers) {

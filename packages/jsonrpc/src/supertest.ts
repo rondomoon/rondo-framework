@@ -1,6 +1,6 @@
 import request from 'supertest'
 import {Application} from 'express'
-import {TAsyncified} from './types'
+import {RPCClient} from './types'
 
 export function createClient<T>(app: Application, path: string,
 ) {
@@ -25,5 +25,5 @@ export function createClient<T>(app: Application, path: string,
       }
     },
   })
-  return proxy as TAsyncified<T>
+  return proxy as RPCClient<T>
 }

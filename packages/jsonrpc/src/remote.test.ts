@@ -10,7 +10,7 @@ import {createRemoteClient} from './remote'
 import {jsonrpc} from './express'
 import {keys} from 'ts-transformer-keys'
 import {noopLogger} from './test-utils'
-import {Contextual} from './types'
+import {WithContext} from './types'
 
 describe('remote', () => {
 
@@ -21,7 +21,7 @@ describe('remote', () => {
   }
   const IServiceKeys = keys<IService>()
 
-  class Service implements Contextual<IService, {}> {
+  class Service implements WithContext<IService, {}> {
     add(ctx: {}, a: number, b: number) {
       return a + b
     }

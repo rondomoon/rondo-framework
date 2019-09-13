@@ -1,4 +1,4 @@
-import { FunctionPropertyNames, TAsyncified } from './types'
+import { FunctionPropertyNames, RPCClient } from './types'
 
 export type TMocked<T> = {
   [K in keyof T]:
@@ -20,7 +20,7 @@ export type TMocked<T> = {
  */
 export default function createClientMock<T extends object>(
   methods: Array<FunctionPropertyNames<T>>,
-): [TAsyncified<T>, TMocked<TAsyncified<T>>] {
+): [RPCClient<T>, TMocked<RPCClient<T>>] {
   const client = methods
   .reduce((obj, prop) => {
     obj[prop] = jest.fn()
@@ -28,7 +28,7 @@ export default function createClientMock<T extends object>(
   }, {} as any)
 
   return [
-    client as TAsyncified<T>,
-    client as TMocked<TAsyncified<T>>,
+    client as RPCClient<T>,
+    client as TMocked<RPCClient<T>>,
   ]
 }

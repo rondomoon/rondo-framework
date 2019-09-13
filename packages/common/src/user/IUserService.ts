@@ -1,4 +1,4 @@
-import { TReduxed } from '@rondo.dev/jsonrpc'
+import { RPCActions } from '@rondo.dev/jsonrpc'
 import { keys } from 'ts-transformer-keys'
 import { IUser } from './IUser'
 
@@ -9,4 +9,4 @@ export interface IUserService {
 }
 
 export const UserServiceMethods = keys<IUserService>()
-export type UserActions = TReduxed<IUserService, 'userService'>
+export type UserActions = RPCActions<IUserService, 'userService'>

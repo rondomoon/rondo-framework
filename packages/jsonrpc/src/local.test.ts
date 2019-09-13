@@ -1,6 +1,6 @@
 import {createLocalClient} from './local'
 import {keys} from 'ts-transformer-keys'
-import {Contextual, ReverseContextual, TAsyncified} from './types'
+import {WithContext, WithoutContext, RPCClient} from './types'
 
 describe('local', () => {
 
@@ -14,7 +14,7 @@ describe('local', () => {
     userId: 1000
   }
 
-  class Service implements Contextual<IService, IContext> {
+  class Service implements WithContext<IService, IContext> {
     add(cx: IContext, a: number, b: number) {
       return a + b
     }

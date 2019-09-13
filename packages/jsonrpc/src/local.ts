@@ -1,9 +1,9 @@
-import {TAsyncified, Contextual, ReverseContextual} from './types'
+import {RPCClient, WithContext, WithoutContext} from './types'
 import {Request} from 'express'
 import {TGetContext} from './express'
 import {getAllMethods} from './jsonrpc'
 
-export type LocalClient<T> = TAsyncified<ReverseContextual<T>>
+export type LocalClient<T> = RPCClient<WithoutContext<T>>
 
 /**
  * Creates a local client for a specific service instance. The actual service
@@ -11,7 +11,7 @@ export type LocalClient<T> = TAsyncified<ReverseContextual<T>>
  * on the client- and server-side.
  *
  * The service argument is expected to be a class implementing the
- * Contextual<Service, Context> type. The first (context) argument will be
+ * WithContext<Service, Context> type. The first (context) argument will be
  * automatically removed from all methods in the service, and the supplied
  * context argument will be used instead.
  */

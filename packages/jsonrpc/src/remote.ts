@@ -1,5 +1,5 @@
 import Axios from 'axios'
-import {FunctionPropertyNames, TAsyncified} from './types'
+import {FunctionPropertyNames, RPCClient} from './types'
 import {IDEMPOTENT_METHOD_REGEX} from './idempotent'
 
 export type TRequestIdGenerator<T extends string | number> = () => T
@@ -51,5 +51,5 @@ export function createRemoteClient<T>(
     return obj
   }, {} as any)
 
-  return service as TAsyncified<T>
+  return service as RPCClient<T>
 }

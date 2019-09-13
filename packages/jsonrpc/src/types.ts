@@ -12,14 +12,14 @@ type PromisifyReturnType<T> = (...a: ArgumentTypes<T>) =>
  * Helps implement a service from a service definiton that has a context as a
  * last argument.
  */
-export type Contextual<T, Cx> = {
+export type WithContext<T, Cx> = {
   [K in keyof T]:
     T[K] extends (...args: infer A) => infer R
       ? (cx: Cx, ...args: A) => R :
     never
 }
 
-export type ReverseContextual<T> = {
+export type WithoutContext<T> = {
   [K in keyof T]:
     T[K] extends (cx: any, ...args: infer A) => infer R
       ? (...args: A) => R :
@@ -34,20 +34,20 @@ export type FunctionPropertyNames<T> = {
     : never
 }[keyof T]
 
-export type TAsyncified<T> = {
+export type RPCClient<T> = {
   [K in keyof T]: PromisifyReturnType<T[K]>
 }
 
-export interface IReduxed<ActionType extends string> {
+export interface IRPCActions<ActionType extends string> {
   [key: string]: (...a: any[]) => IRPCPendingAction<any, ActionType, typeof key>
 }
 
-export type TReduxed<T, ActionType extends string> = {
+export type RPCActions<T, ActionType extends string> = {
   [K in keyof T]: (...a: ArgumentTypes<T[K]>) =>
     IRPCPendingAction<UnwrapPromise<RetType<T[K]>>, ActionType, K>
 }
 
-export type TReduxHandlers<T, State> = {
+export type RPCReduxHandlers<T, State> = {
   [K in keyof T]: (
     state: State,
     action: TResolved<TPending<RetType<T[K]>>>,

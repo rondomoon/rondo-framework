@@ -1,4 +1,4 @@
-import { TReduxed } from '@rondo.dev/jsonrpc'
+import { RPCActions } from '@rondo.dev/jsonrpc'
 import { keys } from 'ts-transformer-keys'
 import { Team } from '../entities'
 import { ITeamAddUserParams } from './ITeamAddUserParams'
@@ -27,4 +27,4 @@ export interface ITeamService {
 }
 
 export const TeamServiceMethods = keys<ITeamService>()
-export type TeamActions = TReduxed<ITeamService, 'teamService'>
+export type TeamActions = RPCActions<ITeamService, 'teamService'>

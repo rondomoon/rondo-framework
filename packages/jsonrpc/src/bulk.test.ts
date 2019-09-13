@@ -1,6 +1,6 @@
 import * as util from './bulk'
 import express from 'express'
-import {Contextual} from './types'
+import {WithContext} from './types'
 import {jsonrpc} from './express'
 import {noopLogger} from './test-utils'
 import {createClient} from './supertest'
@@ -21,13 +21,13 @@ describe('util', () => {
     userId: number
   }
 
-  class Service1 implements Contextual<IS1, IContext> {
+  class Service1 implements WithContext<IS1, IContext> {
     add(cx: IContext, a: number, b: number) {
       return a + b + cx.userId
     }
   }
 
-  class Service2 implements Contextual<IS2, IContext> {
+  class Service2 implements WithContext<IS2, IContext> {
     mul(cx: IContext, a: number, b: number) {
       return a * b + cx.userId
     }

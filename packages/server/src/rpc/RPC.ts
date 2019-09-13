@@ -1,8 +1,8 @@
 import { IContext } from '@rondo.dev/common'
-import { Contextual, ensure } from '@rondo.dev/jsonrpc'
+import { WithContext, ensure } from '@rondo.dev/jsonrpc'
 
 export { IContext }
-export type RPC<Service> = Contextual<Service, IContext>
+export type RPC<Service> = WithContext<Service, IContext>
 
 export const ensureLoggedIn = ensure<IContext>(
   c => !!c.user && !!c.user.id,

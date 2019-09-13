@@ -11,7 +11,7 @@ import {Role} from '../entities/Role'
 import {CORRELATION_ID} from '../middleware'
 import shortid from 'shortid'
 import { AddressInfo } from 'net'
-import { createRemoteClient, FunctionPropertyNames, TAsyncified } from '@rondo.dev/jsonrpc'
+import { createRemoteClient, FunctionPropertyNames, RPCClient } from '@rondo.dev/jsonrpc'
 import {Server} from 'http'
 import { IAppServer } from '../application/IAppServer'
 
@@ -198,7 +198,7 @@ export class TestUtils<T extends IRoutes> {
       return obj
     }, {} as any)
 
-    return service as TAsyncified<S>
+    return service as RPCClient<S>
   }
 
   private getCookies(setCookiesString: string[]): string {
