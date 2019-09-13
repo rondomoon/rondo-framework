@@ -1,16 +1,17 @@
-import { IAPIDef } from '@rondo.dev/common'
-import { HTTPClientMock } from '@rondo.dev/http-client'
-import { getError } from '@rondo.dev/test-utils'
-import React from 'react'
-import ReactDOM from 'react-dom'
-import T from 'react-dom/test-utils'
-import { MemoryRouter } from 'react-router-dom'
-import { TestUtils } from '../test-utils'
-import * as Feature from './'
+import { IAPIDef } from '@rondo.dev/common';
+import { HTTPClientMock } from '@rondo.dev/http-client';
+import { getError } from '@rondo.dev/test-utils';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import T from 'react-dom/test-utils';
+import { MemoryRouter } from 'react-router-dom';
+import { TestUtils } from '../test-utils';
+import * as Feature from './';
+import { configureRegister } from './configureRegister';
 
 const test = new TestUtils()
 
-describe('LoginForm', () => {
+describe('configureRegister', () => {
 
   const http = new HTTPClientMock<IAPIDef>()
   const loginActions = new Feature.LoginActions(http)
@@ -20,7 +21,7 @@ describe('LoginForm', () => {
     select: state => state.Login,
   })
   .withComponent(
-    select => new Feature.LoginConnector(loginActions).connect(select),
+    select => configureRegister(select, loginActions),
   )
   .withJSX((Component, props) =>
     <MemoryRouter><Component {...props} /></MemoryRouter>,
@@ -36,19 +37,23 @@ describe('LoginForm', () => {
 
   describe('submit', () => {
 
-    const data = {username: 'user', password: 'pass'}
+    const data = {
+      username: 'user',
+      password: 'pass',
+      firstName: '',
+      lastName: '',
+    }
     const onSuccess = jest.fn()
     let node: Element
     let component: React.Component
     beforeEach(() => {
       http.mockAdd({
         method: 'post',
-        url: '/auth/login',
+        url: '/auth/register',
         data,
       }, {id: 123})
 
-      const t = createTestProvider()
-      const r = t.render({onSuccess})
+      const r = createTestProvider().render({onSuccess})
       node = r.node
       component = r.component
       T.Simulate.change(
@@ -61,16 +66,25 @@ describe('LoginForm', () => {
       )
     })
 
-    it('should submit a form, clear it and redirect it', async () => {
+    it('should submit a form, clear it, and redirect', async () => {
       T.Simulate.submit(node)
       const {req} = await http.wait()
       expect(req).toEqual({
         method: 'post',
-        url: '/auth/login',
+        url: '/auth/register',
         data,
       })
       expect(onSuccess.mock.calls.length).toBe(1)
-      // TODO test clear username/password
+      expect(
+        (node.querySelector('input[name="username"]') as HTMLInputElement)
+        .value,
+      )
+      .toEqual('')
+      expect(
+        (node.querySelector('input[name="password"]') as HTMLInputElement)
+        .value,
+      )
+      .toEqual('')
       node = ReactDOM.findDOMNode(component) as Element
       expect(node.innerHTML).toMatch(/<a href="\/">/)
     })
@@ -78,7 +92,7 @@ describe('LoginForm', () => {
     it('sets the error message on failure', async () => {
       http.mockAdd({
         method: 'post',
-        url: '/auth/login',
+        url: '/auth/register',
         data,
       }, {error: 'test'}, 500)
       T.Simulate.submit(node)

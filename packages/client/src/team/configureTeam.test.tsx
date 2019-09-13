@@ -1,13 +1,12 @@
-import { IAPIDef, IUserInTeam, ITeamService, TeamServiceMethods, UserServiceMethods, TeamActions, UserActions, IUserService, ITeamUsers, Team } from '@rondo.dev/common'
-import { HTTPClientMock } from '@rondo.dev/http-client'
+import { ITeamService, ITeamUsers, IUserService, Team, TeamActions, TeamServiceMethods, UserActions, UserServiceMethods } from '@rondo.dev/common'
+import { createActions } from '@rondo.dev/jsonrpc'
+import createClientMock from '@rondo.dev/jsonrpc/lib/createClientMock'
 import { getError } from '@rondo.dev/test-utils'
 import React from 'react'
 import T from 'react-dom/test-utils'
 import { MemoryRouter } from 'react-router-dom'
 import { TestUtils } from '../test-utils'
 import * as Feature from './'
-import { createActions, createRemoteClient } from '@rondo.dev/jsonrpc'
-import createClientMock from '@rondo.dev/jsonrpc/lib/createClientMock'
 
 const test = new TestUtils()
 
@@ -41,7 +40,8 @@ describe('TeamConnector', () => {
     reducers: {Team: Feature.Team},
     select: state => state.Team,
   })
-  .withComponent(select => Feature.configure(teamActions, userActions, select))
+  .withComponent(select =>
+    Feature.configureTeam(select, teamActions, userActions))
   .withJSX((Component, props) =>
     <MemoryRouter initialEntries={historyEntries}>
       <Component {...props} />
