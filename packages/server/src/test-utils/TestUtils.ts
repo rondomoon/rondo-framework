@@ -16,7 +16,7 @@ import {Server} from 'http'
 import { IAppServer } from '../application/IAppServer'
 
 export class TestUtils<T extends IRoutes> {
-  readonly username = `test${process.env.JEST_WORKER_ID}@user.com`
+  readonly username = this.createTestUsername()
   readonly password = 'Password10'
 
   readonly app: IAppServer
@@ -27,6 +27,10 @@ export class TestUtils<T extends IRoutes> {
     this.app = bootstrap.application.server
     this.context = this.bootstrap.getConfig().app.context
     this.transactionManager = this.bootstrap.database.transactionManager
+  }
+
+  createTestUsername(id = 1) {
+    return `test${process.env.JEST_WORKER_ID}_${id}@user.com`
   }
 
   /**

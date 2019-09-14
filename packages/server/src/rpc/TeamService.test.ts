@@ -78,7 +78,7 @@ describe('team', () => {
       const client = getClient()
       const team = await client.create({name: 'test'})
       const teamId = team.id
-      const {userId} = await test.registerAccount('test2@user.com')
+      const {userId} = await test.registerAccount(test.createTestUsername(2))
       await client.addUser({userId, teamId, roleId: 1})
     })
   })
@@ -88,7 +88,7 @@ describe('team', () => {
       const client = getClient()
       const team = await client.create({name: 'test'})
       const teamId = team.id
-      const {userId} = await test.registerAccount('test2@user.com')
+      const {userId} = await test.registerAccount(test.createTestUsername(2))
       await client.addUser({userId, teamId, roleId: 1})
       await client.removeUser({userId, teamId, roleId: 1})
     })
@@ -99,7 +99,7 @@ describe('team', () => {
       const client = getClient()
       const team = await client.create({name: 'test'})
       const teamId = team.id
-      const {userId} = await test.registerAccount('test2@user.com')
+      const {userId} = await test.registerAccount(test.createTestUsername(2))
       await client.addUser({userId, teamId, roleId: 1})
       const {usersInTeam} = await client.findUsers(teamId)
       expect(usersInTeam.length).toBe(2)
