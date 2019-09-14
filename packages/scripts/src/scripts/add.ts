@@ -8,6 +8,11 @@ export async function add(...argv: string[]) {
   const {parse} = argparse({
     name: arg('string', {positional: true, required: true}),
     namespace: arg('string', {default: '@rondo.dev'}),
+    template: arg('string', {
+      default: path.join(__dirname, '..', '..', 'template'),
+      alias: 't',
+      description: 'Path to project template directory',
+    }),
     help: arg('boolean', {
       alias: 'h',
       description: 'Print help message',
@@ -23,7 +28,7 @@ export async function add(...argv: string[]) {
 
   const libraryName = `${args.namespace}/${args.name}`
 
-  const templateDir = path.join('.', 'template')
+  const templateDir = args.template
   for (const file of await walk(templateDir)) {
     const src = file
     const dest = path.join(destDir, path.relative(templateDir, file))

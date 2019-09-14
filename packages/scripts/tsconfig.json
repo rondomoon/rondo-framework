@@ -4,6 +4,12 @@
     "outDir": "lib",
     "rootDir": "src"
   },
+  "exclude": [
+    "node_modules",
+    "template",
+    "lib",
+    "esm"
+  ],
   "references": [
     {"path": "../argparse"}
   ]
