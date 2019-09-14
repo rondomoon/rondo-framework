@@ -1,19 +1,11 @@
-import {IDatabase} from '../database/IDatabase'
-import {Validator} from '../validator'
-import {Team} from '../entities/Team'
-import {UserTeam} from '../entities/UserTeam'
-import {IUserPermissions} from '../services/IUserPermissions'
-import {
-  trim,
-  entities as e,
-  ITeamService,
-  ITeamCreateParams,
-  ITeamRemoveParams,
-  ITeamUpdateParams,
-  ITeamAddUserParams,
-} from '@rondo.dev/common'
-import { ensureLoggedIn, IContext, RPC } from './RPC'
+import { ITeamAddUserParams, ITeamCreateParams, ITeamRemoveParams, ITeamService, ITeamUpdateParams, trim } from '@rondo.dev/common'
 import { IUserInTeam } from '@rondo.dev/common/lib/team/IUserInTeam'
+import Validator from '@rondo.dev/validator'
+import { IDatabase } from '../database/IDatabase'
+import { Team } from '../entities/Team'
+import { UserTeam } from '../entities/UserTeam'
+import { IUserPermissions } from '../services/IUserPermissions'
+import { ensureLoggedIn, IContext, RPC } from './RPC'
 
 @ensureLoggedIn
 export class TeamService implements RPC<ITeamService> {

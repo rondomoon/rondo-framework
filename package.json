@@ -16,7 +16,8 @@
     "@rondo.dev/redux": "file:packages/redux",
     "@rondo.dev/http-client": "file:packages/http-client",
     "@rondo.dev/test-utils": "file:packages/test-utils",
-    "@rondo.dev/http-types": "file:packages/http-types"
+    "@rondo.dev/http-types": "file:packages/http-types",
+    "@rondo.dev/validator": "file:packages/validator"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",

@@ -1,7 +1,7 @@
 import {TErrorHandler} from './TErrorHandler'
 import {ILogger} from '@rondo.dev/logger'
 import {IMiddleware} from './IMiddleware'
-import {ValidationError} from '../validator'
+import {ValidationError} from '@rondo.dev/validator'
 
 export class ErrorApiHandler implements IMiddleware {
   constructor(readonly logger: ILogger) {}

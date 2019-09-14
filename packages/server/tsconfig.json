@@ -11,6 +11,7 @@
     {"path": "../config"},
     {"path": "../tasq"},
     {"path": "../http-client"},
-    {"path": "../http-types"}
+    {"path": "../http-types"},
+    {"path": "../validator"}
   ]
 }

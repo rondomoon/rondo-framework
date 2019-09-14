@@ -13,7 +13,6 @@ export * from './router'
 export * from './routes'
 export * from './services'
 export * from './session'
-export * from './validator'
 
 import * as rpc from './rpc'
 export {rpc}
