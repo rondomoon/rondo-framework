@@ -1,13 +1,12 @@
-import createError from 'http-errors'
-import {BaseService} from './BaseService'
-import {IDatabase} from '../database/IDatabase'
-import {ICredentials, INewUser, IUser, trim} from '@rondo.dev/common'
-import {IAuthService} from './IAuthService'
-import {UserEmail} from '../entities/UserEmail'
-import {User} from '../entities/User'
-import {compare, hash} from 'bcrypt'
-import {validate as validateEmail} from 'email-validator'
-import {Validator} from '../validator'
+import { ICredentials, INewUser, IUser, trim } from '@rondo.dev/common';
+import { compare, hash } from 'bcrypt';
+import { validate as validateEmail } from 'email-validator';
+import createError from 'http-errors';
+import { IDatabase } from '../database/IDatabase';
+import { User } from '../entities/User';
+import { UserEmail } from '../entities/UserEmail';
+import { Validator } from '../validator';
+import { IAuthService } from './IAuthService';
 
 const SALT_ROUNDS = 10
 const MIN_PASSWORD_LENGTH = 10
