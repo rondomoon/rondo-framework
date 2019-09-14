@@ -3,9 +3,12 @@
   "compilerOptions": {
     "outDir": "esm"
   },
-  "references": [{
-    "path": "../test-utils/tsconfig.esm.json"
-  }, {
-    "path": "../http-types/tsconfig.json"
-  }]
+  "references": [
+    {
+      "path": "../test-utils/tsconfig.esm.json"
+    },
+    {
+      "path": "../http-types/tsconfig.esm.json"
+    }
+  ]
 }

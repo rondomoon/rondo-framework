@@ -5,6 +5,9 @@
   },
   "references": [
     {
+      "path": "../redux/tsconfig.esm.json"
+    },
+    {
       "path": "../common/tsconfig.esm.json"
     }
   ]

@@ -10,6 +10,6 @@
   "dependencies": {},
   "types": "lib/index.d.ts",
   "devDependencies": {},
-  "module": "lib/index.js",
+  "module": "esm/index.js",
   "main": "lib/index.js"
 }

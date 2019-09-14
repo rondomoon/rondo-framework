@@ -11,11 +11,11 @@ interface IRef {
   path: string
 }
 
-export async function syncEsm(...argv: string[]) {
+export async function syncEsmConfig(...argv: string[]) {
   const args = argparse({
     packages: arg('string', {default: 'packages/', positional: true}),
     help: arg('boolean', {alias: 'h'}),
-  })
+  }, `Synchronizes ${TSCONFIG_ESM_FILENAME} files with ${TSCONFIG_FILENAME}`)
   .parse(argv)
 
   const pkgDir = args.packages

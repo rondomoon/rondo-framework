@@ -4,6 +4,8 @@
     "outDir": "esm"
   },
   "references": [
-    {"path": "../logger/tsconfig.esm.json"}
+    {
+      "path": "../logger/tsconfig.esm.json"
+    }
   ]
 }
