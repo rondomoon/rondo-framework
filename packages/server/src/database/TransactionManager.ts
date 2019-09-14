@@ -1,15 +1,10 @@
-import {Namespace} from 'cls-hooked'
+import loggerFactory from '@rondo.dev/logger'
+import { Namespace } from 'cls-hooked'
 import shortid from 'shortid'
-import {
-  ENTITY_MANAGER, ITransactionManager, TRANSACTION_ID
-} from './ITransactionManager'
-import {
-  Connection,
-  EntityManager,
-  EntitySchema,
-  ObjectType,
-  Repository,
-} from 'typeorm'
+import { Connection, EntityManager, EntitySchema, ObjectType, Repository } from 'typeorm'
+import { ENTITY_MANAGER, ITransactionManager, TRANSACTION_ID } from './ITransactionManager'
+
+const log = loggerFactory.getLogger('db')
 
 export type TConnectionGetter = () => Connection
 
@@ -40,9 +35,11 @@ export class TransactionManager implements ITransactionManager {
   async doInTransaction<T>(fn: (em: EntityManager) => Promise<T>) {
     const alreadyInTransaction = this.isInTransaction()
     if (alreadyInTransaction) {
+      log.info('doInTransaction: reusing existing transaction')
       return await fn(this.getEntityManager())
     }
 
+    log.info('doInTransaction: starting new transaction')
     return this.doInNewTransaction(fn)
   }
 
