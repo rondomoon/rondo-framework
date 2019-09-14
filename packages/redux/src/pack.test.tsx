@@ -7,13 +7,15 @@ import { pack, TStateSelector } from './pack'
 
 describe('pack', () => {
 
+  interface IChangeAction {
+    payload: {a: number, b: string},
+    type: 'CHANGE'
+  }
+
   interface IProps {
     a: number
     b: string
-    update(a: number, b: string): {
-      payload: {a: number, b: string},
-      type: 'CHANGE',
-    }
+    update(a: number, b: string): IChangeAction
     c: string[]
   }
 
@@ -71,7 +73,7 @@ describe('pack', () => {
       getLocalState,
       (localState: LocalState) => localState,
       {
-        update(a: number, b: string) {
+        update(a: number, b: string): IChangeAction {
           return {
             payload: {a, b},
             type: 'CHANGE',
@@ -89,7 +91,7 @@ describe('pack', () => {
       getLocalState,
       (localState: LocalState) => localState,
       {
-        update(a: number, b: string) {
+        update(a: number, b: string): IChangeAction {
           return {
             payload: {a, b},
             type: 'CHANGE',
