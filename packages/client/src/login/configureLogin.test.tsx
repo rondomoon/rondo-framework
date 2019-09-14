@@ -1,13 +1,13 @@
-import { IAPIDef } from '@rondo.dev/common';
-import { HTTPClientMock } from '@rondo.dev/http-client';
-import { getError } from '@rondo.dev/test-utils';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import T from 'react-dom/test-utils';
-import { MemoryRouter } from 'react-router-dom';
-import { TestUtils } from '../test-utils';
-import * as Feature from './';
-import { configureLogin } from './configureLogin';
+import { IAPIDef } from '@rondo.dev/common'
+import { HTTPClientMock } from '@rondo.dev/http-client'
+import { getError } from '@rondo.dev/test-utils'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import T from 'react-dom/test-utils'
+import { MemoryRouter } from 'react-router-dom'
+import { TestUtils } from '../test-utils'
+import * as Feature from './'
+import { configureLogin } from './configureLogin'
 
 const test = new TestUtils()
 

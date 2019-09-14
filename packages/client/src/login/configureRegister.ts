@@ -1,10 +1,10 @@
-import { INewUser } from '@rondo.dev/common';
-import { pack, TStateSelector } from '@rondo.dev/redux';
-import { bindActionCreators } from 'redux';
-import { LoginActions } from './LoginActions';
-import { ILoginState } from './LoginReducer';
-import { RegisterForm } from './RegisterForm';
-import { withForm } from './withForm';
+import { INewUser } from '@rondo.dev/common'
+import { pack, TStateSelector } from '@rondo.dev/redux'
+import { bindActionCreators } from 'redux'
+import { LoginActions } from './LoginActions'
+import { ILoginState } from './LoginReducer'
+import { RegisterForm } from './RegisterForm'
+import { withForm } from './withForm'
 
 const defaultCredentials: INewUser = {
   username: '',
