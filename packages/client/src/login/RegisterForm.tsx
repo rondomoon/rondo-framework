@@ -1,20 +1,20 @@
+import { NewUser, UserProfile } from '@rondo.dev/common'
 import React from 'react'
-import {FaEnvelope, FaUser, FaLock} from 'react-icons/fa'
-import {INewUser, IUser} from '@rondo.dev/common'
-import {Input} from '../components/Input'
-import {Link} from 'react-router-dom'
-import {Redirect} from '../components/Redirect'
+import { FaEnvelope, FaLock, FaUser } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
+import { Input } from '../components/Input'
+import { Redirect } from '../components/Redirect'
 
-export interface IRegisterFormProps {
+export interface RegisterFormProps {
   error?: string
   onSubmit: () => void
   onChange: (name: string, value: string) => void
-  data: INewUser
-  user?: IUser
+  data: NewUser
+  user?: UserProfile
   redirectTo: string
 }
 
-export class RegisterForm extends React.PureComponent<IRegisterFormProps> {
+export class RegisterForm extends React.PureComponent<RegisterFormProps> {
   render() {
     if (this.props.user) {
       return <Redirect to={this.props.redirectTo} />

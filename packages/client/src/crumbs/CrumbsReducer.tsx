@@ -1,15 +1,17 @@
-import {ICrumbs, TCrumbsAction} from './CrumbsActions'
+import {Crumbs, CrumbsAction} from './CrumbsActions'
 
-export interface ICrumbsState extends ICrumbs {
+export interface CrumbsState extends Crumbs {
 }
 
-const defaultState: ICrumbsState = {
+const defaultState: CrumbsState = {
   links: [],
   current: 'Home',
 }
 
-export function Crumbs(state = defaultState, action: TCrumbsAction)
-  : ICrumbsState {
+export function Crumbs(
+  state = defaultState,
+  action: CrumbsAction,
+): CrumbsState {
   switch (action.type) {
     case 'BREADCRUMBS_SET':
       return {

@@ -1,11 +1,10 @@
-import { IAPIDef } from '@rondo.dev/common'
+import { APIDef } from '@rondo.dev/common'
 import { HTTPClientMock } from '@rondo.dev/http-client'
 import { getError } from '@rondo.dev/test-utils'
 import React from 'react'
-import ReactDOM from 'react-dom'
 import T from 'react-dom/test-utils'
 import { MemoryRouter } from 'react-router-dom'
-import { TestUtils } from '../test-utils'
+import { TestContainer, TestUtils } from '../test-utils'
 import * as Feature from './'
 import { configureLogin } from './configureLogin'
 
@@ -13,7 +12,7 @@ const test = new TestUtils()
 
 describe('configureLogin', () => {
 
-  const http = new HTTPClientMock<IAPIDef>()
+  const http = new HTTPClientMock<APIDef>()
   const loginActions = new Feature.LoginActions(http)
 
   const createTestProvider = () => test.withProvider({
@@ -40,7 +39,7 @@ describe('configureLogin', () => {
     const data = {username: 'user', password: 'pass'}
     const onSuccess = jest.fn()
     let node: Element
-    let component: React.Component
+    let component: TestContainer
     beforeEach(() => {
       http.mockAdd({
         method: 'post',
@@ -72,8 +71,7 @@ describe('configureLogin', () => {
       })
       expect(onSuccess.mock.calls.length).toBe(1)
       // TODO test clear username/password
-      node = ReactDOM.findDOMNode(component) as Element
-      expect(node.innerHTML).toMatch(/<a href="\/">/)
+      expect(component.ref.current!.innerHTML).toMatch(/<a href="\/">/)
     })
 
     it('sets the error message on failure', async () => {

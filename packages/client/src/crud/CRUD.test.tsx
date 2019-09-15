@@ -1,69 +1,69 @@
 import { HTTPClientMock } from '@rondo.dev/http-client'
-import { TMethod } from '@rondo.dev/http-types'
-import { IPendingAction } from '@rondo.dev/redux'
+import { Method } from '@rondo.dev/http-types'
+import { PendingAction } from '@rondo.dev/redux'
 import { getError } from '@rondo.dev/test-utils'
 import { AnyAction } from 'redux'
 import { TestUtils } from '../test-utils'
-import { CRUDReducer, TCRUDAsyncMethod } from './'
+import { CRUDReducer, CRUDAsyncMethod } from './'
 import { createCRUDActions } from './CRUDActions'
 
 describe('CRUD', () => {
 
-  interface ITwo {
+  interface Two {
     id: number
     name: string
   }
 
-  interface ITwoCreateBody {
+  interface TwoCreateBody {
     name: string
   }
 
-  interface ITwoListParams {
+  interface TwoListParams {
     oneId: number
   }
 
-  interface ITwoSpecificParams {
+  interface TwoSpecificParams {
     oneId: number
     twoId: number
   }
 
-  interface ITestAPI {
+  interface TestAPI {
     '/one/:oneId/two/:twoId': {
       get: {
-        params: ITwoSpecificParams
-        response: ITwo
+        params: TwoSpecificParams
+        response: Two
       }
       put: {
-        params: ITwoSpecificParams
-        body: ITwoCreateBody
-        response: ITwo
+        params: TwoSpecificParams
+        body: TwoCreateBody
+        response: Two
       }
       delete: {
-        params: ITwoSpecificParams
+        params: TwoSpecificParams
         response: {id: number} // TODO return ITwoSpecificParams
       }
     }
     '/one/:oneId/two': {
       get: {
-        params: ITwoListParams
-        response: ITwo[]
+        params: TwoListParams
+        response: Two[]
       }
       post: {
-        params: ITwoListParams
-        body: ITwoCreateBody
-        response: ITwo
+        params: TwoListParams
+        body: TwoCreateBody
+        response: Two
       }
     }
   }
 
-  const http = new HTTPClientMock<ITestAPI>()
+  const http = new HTTPClientMock<TestAPI>()
   const actions = createCRUDActions(
     http,
     '/one/:oneId/two/:twoId',
     '/one/:oneId/two',
     'TEST',
   )
-  const crudReducer = new CRUDReducer<ITwo, 'TEST'>('TEST', {name: ''})
+  const crudReducer = new CRUDReducer<Two, 'TEST'>('TEST', {name: ''})
   const Crud = crudReducer.reduce
 
   const test = new TestUtils()
@@ -101,8 +101,8 @@ describe('CRUD', () => {
   })
 
   function dispatch(
-    method: TCRUDAsyncMethod,
-    action: IPendingAction<unknown, string>,
+    method: CRUDAsyncMethod,
+    action: PendingAction<unknown, string>,
   ) {
     store.dispatch(action)
     expect(store.getState().Crud.status[method].isLoading).toBe(true)
@@ -110,13 +110,13 @@ describe('CRUD', () => {
     return action
   }
 
-  function getUrl(method: TCRUDAsyncMethod) {
+  function getUrl(method: CRUDAsyncMethod) {
     return method === 'save' || method === 'findMany'
       ? '/one/1/two'
       : '/one/1/two/2'
   }
 
-  function getHTTPMethod(method: TCRUDAsyncMethod): TMethod {
+  function getHTTPMethod(method: CRUDAsyncMethod): Method {
     switch (method) {
       case 'save':
         return 'post'
@@ -132,7 +132,7 @@ describe('CRUD', () => {
 
   describe('Promise rejections', () => {
     const testCases: Array<{
-      method: TCRUDAsyncMethod
+      method: CRUDAsyncMethod
       params: any
     }> = [{
       method: 'findOne',
@@ -204,7 +204,7 @@ describe('CRUD', () => {
     const entity = {id: 100, name: 'test'}
 
     const testCases: Array<{
-      method: TCRUDAsyncMethod,
+      method: CRUDAsyncMethod
       params: any
       body?: any
       response: any

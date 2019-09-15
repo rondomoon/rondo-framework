@@ -1,14 +1,14 @@
-import {IUser} from '@rondo.dev/common'
+import {UserProfile} from '@rondo.dev/common'
 import {TLoginAction} from './LoginActions'
 
-export interface ILoginState {
+export interface LoginState {
   readonly error: string
   readonly isLoading: boolean
-  readonly user?: IUser
+  readonly user?: UserProfile
   readonly redirectTo: string
 }
 
-const defaultState: ILoginState = {
+const defaultState: LoginState = {
   error: '',
   isLoading: false,
   user: undefined,
@@ -18,7 +18,7 @@ const defaultState: ILoginState = {
 export function Login(
   state = defaultState,
   action: TLoginAction,
-): ILoginState {
+): LoginState {
   switch (action.type) {
     // sync actions
     case 'LOGIN_REDIRECT_SET':

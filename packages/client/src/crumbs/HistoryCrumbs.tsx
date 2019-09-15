@@ -1,32 +1,32 @@
+import { History } from 'history'
 import React from 'react'
-import {Crumb} from './Crumb'
-import {History, Location} from 'history'
-import {ICrumbLink} from './ICrumbLink'
-import {match as Match, matchPath, withRouter} from 'react-router'
-import {withHistory} from '../components'
+import { match as Match, matchPath } from 'react-router'
+import { withHistory } from '../components'
+import { Crumb } from './Crumb'
+import { CrumbLink } from './CrumbLink'
 
-export interface ICrumbsRoute {
+export interface CrumbsRoute {
   exact?: boolean
-  links: ICrumbLink[]
+  links: CrumbLink[]
   current: string
 }
 
-export interface IHistoryCrumbsProps {
+export interface HistoryCrumbsProps {
   history: History
-  routes: Record<string, ICrumbsRoute>
+  routes: Record<string, CrumbsRoute>
 }
 
-export interface IHistoryCrumbsState {
-  links: ICrumbLink[]
+export interface HistoryCrumbsState {
+  links: CrumbLink[]
   current: string
 }
 
 export const HistoryCrumbs = withHistory(
   class InnerHistoryCrumbs
-  extends React.PureComponent<IHistoryCrumbsProps, IHistoryCrumbsState> {
+  extends React.PureComponent<HistoryCrumbsProps, HistoryCrumbsState> {
     unlisten!: () => void
 
-    constructor(props: IHistoryCrumbsProps) {
+    constructor(props: HistoryCrumbsProps) {
       super(props)
       this.state = {
         links: [],
@@ -48,7 +48,7 @@ export const HistoryCrumbs = withHistory(
     handleChange(path: string) {
       const {routes} = this.props
 
-      let found: null | {match: Match<{}>, route: ICrumbsRoute} = null
+      let found: null | {match: Match<{}>, route: CrumbsRoute} = null
 
       Object.keys(routes).some(route => {
         const match = matchPath(path, {

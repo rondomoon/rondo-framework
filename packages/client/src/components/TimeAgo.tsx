@@ -1,12 +1,12 @@
 import {format} from 'timeago.js'
 import React from 'react'
 
-export interface ITimeAgoProps {
+export interface TimeAgoProps {
   className?: string
   date: Date | string
 }
 
-export class TimeAgo extends React.PureComponent<ITimeAgoProps> {
+export class TimeAgo extends React.PureComponent<TimeAgoProps> {
   render() {
     return (
       <time className={this.props.className}>

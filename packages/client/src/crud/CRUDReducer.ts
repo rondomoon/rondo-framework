@@ -1,45 +1,44 @@
-import {IAction, IResolvedAction} from '@rondo.dev/redux'
-import {TCRUDAction} from './TCRUDAction'
-import {TCRUDMethod} from './TCRUDMethod'
-import {indexBy, without, TFilter} from '@rondo.dev/common'
+import { indexBy, without } from '@rondo.dev/common'
+import { CRUDAction } from './CRUDAction'
+import { CRUDMethod } from './CRUDMethod'
 
-export interface ICRUDEntity {
+export interface CRUDEntity {
   readonly id: number
 }
 
-export interface ICRUDMethodStatus {
+export interface CRUDMethodStatus {
   readonly isLoading: boolean
   readonly error: string
 }
 
-export interface ICRUDState<T extends ICRUDEntity> {
+export interface CRUDState<T extends CRUDEntity> {
   readonly ids: ReadonlyArray<number>
   readonly byId: Record<number, T>
-  readonly status: ICRUDStatus
-  readonly form: ICRUDForm<T>
+  readonly status: CRUDStatus
+  readonly form: CRUDForm<T>
 }
 
-export interface ICRUDForm<T extends ICRUDEntity> {
-  readonly createItem: Pick<T, Exclude<keyof T, 'id'>>,
+export interface CRUDForm<T extends CRUDEntity> {
+  readonly createItem: Pick<T, Exclude<keyof T, 'id'>>
   readonly createErrors: Partial<Record<keyof T, string>>
 
   readonly itemsById: Record<number, T>
   readonly errorsById: Record<number, Partial<Record<keyof T, string>>>
 }
 
-export interface ICRUDStatus {
-  readonly save: ICRUDMethodStatus
-  readonly update: ICRUDMethodStatus
-  readonly remove: ICRUDMethodStatus
-  readonly findOne: ICRUDMethodStatus
-  readonly findMany: ICRUDMethodStatus
+export interface CRUDStatus {
+  readonly save: CRUDMethodStatus
+  readonly update: CRUDMethodStatus
+  readonly remove: CRUDMethodStatus
+  readonly findOne: CRUDMethodStatus
+  readonly findMany: CRUDMethodStatus
 }
 
 export class CRUDReducer<
-  T extends ICRUDEntity,
+  T extends CRUDEntity,
   ActionType extends string,
 > {
-  readonly defaultState: ICRUDState<T>
+  readonly defaultState: CRUDState<T>
 
   constructor(
     readonly actionName: ActionType,
@@ -67,14 +66,14 @@ export class CRUDReducer<
     }
   }
 
-  getDefaultMethodStatus(): ICRUDMethodStatus {
+  getDefaultMethodStatus(): CRUDMethodStatus {
     return {
       error: '',
       isLoading: false,
     }
   }
 
-  protected getSuccessStatus(): ICRUDMethodStatus {
+  protected getSuccessStatus(): CRUDMethodStatus {
     return {
       isLoading: false,
       error: '',
@@ -82,10 +81,10 @@ export class CRUDReducer<
   }
 
   handleRejected = (
-    state: ICRUDState<T>,
-    method: TCRUDMethod,
+    state: CRUDState<T>,
+    method: CRUDMethod,
     error: Error,
-  ): ICRUDState<T> => {
+  ): CRUDState<T> => {
     return {
       ...state,
       status: {
@@ -99,9 +98,9 @@ export class CRUDReducer<
   }
 
   handleLoading = (
-    state: ICRUDState<T>,
-    method: TCRUDMethod,
-  ): ICRUDState<T> => {
+    state: CRUDState<T>,
+    method: CRUDMethod,
+  ): CRUDState<T> => {
     return {
       ...state,
       status: {
@@ -114,7 +113,7 @@ export class CRUDReducer<
     }
   }
 
-  handleFindOne = (state: ICRUDState<T>, payload: T): ICRUDState<T> => {
+  handleFindOne = (state: CRUDState<T>, payload: T): CRUDState<T> => {
     const ids = !state.byId[payload.id]
       ? [...state.ids, payload.id]
       : state.ids
@@ -132,7 +131,7 @@ export class CRUDReducer<
     }
   }
 
-  handleSave = (state: ICRUDState<T>, payload: T): ICRUDState<T> => {
+  handleSave = (state: CRUDState<T>, payload: T): CRUDState<T> => {
     return {
        ...state,
        ids: [...state.ids, payload.id],
@@ -147,7 +146,7 @@ export class CRUDReducer<
      }
   }
 
-  handleUpdate = (state: ICRUDState<T>, payload: T): ICRUDState<T> => {
+  handleUpdate = (state: CRUDState<T>, payload: T): CRUDState<T> => {
     return {
       ...state,
       byId: {
@@ -160,7 +159,7 @@ export class CRUDReducer<
     }
   }
 
-  handleRemove = (state: ICRUDState<T>, payload: T): ICRUDState<T> => {
+  handleRemove = (state: CRUDState<T>, payload: T): CRUDState<T> => {
     // FIXME site does not get removed because payload looks different!
     return {
       ...state,
@@ -173,11 +172,11 @@ export class CRUDReducer<
     }
   }
 
-  handleFindMany = (state: ICRUDState<T>, payload: T[]): ICRUDState<T> => {
+  handleFindMany = (state: CRUDState<T>, payload: T[]): CRUDState<T> => {
     return {
       ...state,
       ids: payload.map(item => item.id),
-      byId: indexBy(payload, 'id' as any),
+      byId: indexBy(payload, 'id' as any),  // eslint-disable-line
       status: {
         ...state.status,
         findMany: this.getSuccessStatus(),
@@ -185,7 +184,7 @@ export class CRUDReducer<
     }
   }
 
-  handleCreate = (state: ICRUDState<T>, payload: Partial<T>): ICRUDState<T> => {
+  handleCreate = (state: CRUDState<T>, payload: Partial<T>): CRUDState<T> => {
     return {
       ...state,
       form: {
@@ -199,7 +198,7 @@ export class CRUDReducer<
     }
   }
 
-  handleEdit = (state: ICRUDState<T>, id: number): ICRUDState<T> => {
+  handleEdit = (state: CRUDState<T>, id: number): CRUDState<T> => {
     return {
       ...state,
       form: {
@@ -216,11 +215,11 @@ export class CRUDReducer<
     }
   }
 
-  handleChange = (state: ICRUDState<T>, payload: {
-    id?: number,
-    key: keyof T,
-    value: string,
-  }): ICRUDState<T> => {
+  handleChange = (state: CRUDState<T>, payload: {
+    id?: number
+    key: keyof T
+    value: string
+  }): CRUDState<T> => {
     const {id, key, value} = payload
 
     if (!id) {
@@ -252,9 +251,9 @@ export class CRUDReducer<
   }
 
     reduce = (
-    state: ICRUDState<T> | undefined,
-    action: TCRUDAction<T, ActionType>,
-  ): ICRUDState<T> => {
+    state: CRUDState<T> | undefined,
+    action: CRUDAction<T, ActionType>,
+  ): CRUDState<T> => {
     const {defaultState} = this
     state = state || defaultState
 
@@ -293,6 +292,7 @@ export class CRUDReducer<
           case 'findMany':
             return this.handleFindMany(state, action.payload)
         }
+        return state
       default:
         return state
     }

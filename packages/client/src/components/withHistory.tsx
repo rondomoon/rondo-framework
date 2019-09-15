@@ -2,7 +2,7 @@ import {History, Location} from 'history'
 import {withRouter, match as Match} from 'react-router'
 import React from 'react'
 
-export interface IWithHistoryProps {
+export interface WithHistoryProps {
   history: History
   location: Location
   match: Match
@@ -11,9 +11,9 @@ export interface IWithHistoryProps {
 export function withHistory<T extends {history: History}>(
   Component: React.ComponentType<T>,
 ) {
-  class HistoryProvider extends React.PureComponent<IWithHistoryProps & T> {
+  class HistoryProvider extends React.PureComponent<WithHistoryProps & T> {
     render() {
-      const {history, location, match, children, ...props} = this.props
+      const {history, children} = this.props
       return (
         <Component history={history} {...this.props}>
           {children}

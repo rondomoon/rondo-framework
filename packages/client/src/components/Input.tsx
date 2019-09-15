@@ -2,7 +2,7 @@ import React from 'react'
 import {Control, Field, Input as I, Heading} from 'bloomer'
 import {IconType} from 'react-icons'
 
-export interface IInputProps {
+export interface InputProps {
   name: string
   type: 'text' | 'password' | 'hidden' | 'submit' | 'email'
   value?: string
@@ -14,7 +14,7 @@ export interface IInputProps {
   required?: boolean
 }
 
-export class Input extends React.PureComponent<IInputProps> {
+export class Input extends React.PureComponent<InputProps> {
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (this.props.onChange) {
       this.props.onChange(this.props.name, e.target.value)

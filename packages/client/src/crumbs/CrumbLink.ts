@@ -1,4 +1,4 @@
-export interface ICrumbLink {
+export interface CrumbLink {
   name: string
   to: string
 }

@@ -1,17 +1,18 @@
-import {TGetAction, TAsyncAction, IAction, PendingAction} from '@rondo.dev/redux'
-import {IAPIDef, ICredentials, INewUser, IUser} from '@rondo.dev/common'
-import {IHTTPClient} from '@rondo.dev/http-client'
+import { APIDef, Credentials, NewUser, UserProfile } from '@rondo.dev/common'
+import { HTTPClient } from '@rondo.dev/http-client'
+import { Action, AsyncAction, createPendingAction, TGetAction } from '@rondo.dev/redux'
 
 export type TLoginAction =
-  TAsyncAction<IUser, 'LOGIN'>
-  | TAsyncAction<unknown, 'LOGIN_LOGOUT'>
-  | TAsyncAction<IUser, 'LOGIN_REGISTER'>
-  | IAction<{redirectTo: string}, 'LOGIN_REDIRECT_SET'>
+  AsyncAction<UserProfile, 'LOGIN'>
+  | AsyncAction<unknown, 'LOGIN_LOGOUT'>
+  | AsyncAction<UserProfile, 'LOGIN_REGISTER'>
+  | Action<{redirectTo: string}, 'LOGIN_REDIRECT_SET'>
 
 type TAction<T extends string> = TGetAction<TLoginAction, T>
 
-export const setRedirectTo = (redirectTo: string)
-: TAction<'LOGIN_REDIRECT_SET'> => {
+export const setRedirectTo = (
+  redirectTo: string,
+): Action<{redirectTo: string}, 'LOGIN_REDIRECT_SET'> => {
   return {
     payload: {redirectTo},
     type: 'LOGIN_REDIRECT_SET',
@@ -19,24 +20,24 @@ export const setRedirectTo = (redirectTo: string)
 }
 
 export class LoginActions {
-  constructor(protected readonly http: IHTTPClient<IAPIDef>) {}
+  constructor(protected readonly http: HTTPClient<APIDef>) {}
 
-  logIn = (credentials: ICredentials) => {
-    return new PendingAction(
+  logIn = (credentials: Credentials) => {
+    return createPendingAction(
       this.http.post('/auth/login', credentials),
       'LOGIN',
     )
   }
 
   logOut = () => {
-    return new PendingAction(
+    return createPendingAction(
       this.http.get('/auth/logout'),
       'LOGIN_LOGOUT',
     )
   }
 
-  register = (profile: INewUser) => {
-    return new PendingAction(
+  register = (profile: NewUser) => {
+    return createPendingAction(
       this.http.post('/auth/register', profile),
       'LOGIN_REGISTER',
     )

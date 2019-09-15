@@ -1,13 +1,12 @@
-import { ICredentials } from '@rondo.dev/common'
-import { TStateSelector, pack } from '@rondo.dev/redux'
+import { Credentials } from '@rondo.dev/common'
+import { pack, TStateSelector } from '@rondo.dev/redux'
 import { bindActionCreators } from 'redux'
-import { Connector } from '../redux/Connector'
 import { LoginActions } from './LoginActions'
 import { LoginForm } from './LoginForm'
 import { ILoginState } from './LoginReducer'
 import { withForm } from './withForm'
 
-const defaultCredentials: ICredentials = {
+const defaultCredentials: Credentials = {
   username: '',
   password: '',
 }

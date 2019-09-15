@@ -1,22 +1,22 @@
 import React from 'react'
 import {FaUser, FaLock} from 'react-icons/fa'
-import {ICredentials, IUser} from '@rondo.dev/common'
+import {Credentials, UserProfile} from '@rondo.dev/common'
 import {Input} from '../components/Input'
 import {Link} from 'react-router-dom'
 import {Redirect} from '../components/Redirect'
 
-export interface ILoginFormProps {
+export interface LoginFormProps {
   error?: string
   onSubmit: () => void
   onChange: (name: string, value: string) => void
-  data: ICredentials
-  user?: IUser
+  data: Credentials
+  user?: UserProfile
   redirectTo: string
 }
 
 // TODO maybe replace this with Formik, which is recommended in React docs
 // https://jaredpalmer.com/formik/docs/overview
-export class LoginForm extends React.PureComponent<ILoginFormProps> {
+export class LoginForm extends React.PureComponent<LoginFormProps> {
   render() {
     if (this.props.user) {
       return <Redirect to={this.props.redirectTo} />

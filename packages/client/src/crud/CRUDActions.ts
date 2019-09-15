@@ -1,35 +1,45 @@
-import { TFilter, TOnlyDefined } from '@rondo.dev/common'
-import { IHTTPClient } from '@rondo.dev/http-client'
-import { IRoutes } from '@rondo.dev/http-types'
-import { TCRUDAction, TCRUDChangeAction, TCRUDCreateAction, TCRUDEditAction } from './TCRUDAction'
-import { TCRUDMethod } from './TCRUDMethod'
+import { Filter, OnlyDefined } from '@rondo.dev/common'
+import { HTTPClient } from '@rondo.dev/http-client'
+import { Routes } from '@rondo.dev/http-types'
+import { CRUDAction, CRUDChangeAction, CRUDCreateAction, CRUDEditAction } from './CRUDAction'
+import { CRUDMethod } from './CRUDMethod'
 
-type TAction <T, ActionType extends string, Method extends TCRUDMethod> =
-  TFilter<TCRUDAction<T, ActionType> , {method: Method, status: 'pending'}>
+type Action <T, ActionType extends string, Method extends CRUDMethod> =
+  Filter<CRUDAction<T, ActionType> , {method: Method, status: 'pending'}>
 
-export interface ICRUDChangeParams<T> {
+interface PostParams<Body = unknown, Params = unknown> {
+  body: Body
+  params: Params
+}
+
+interface GetParams<Query = unknown, Params = unknown> {
+  query: Query
+  params: Params
+}
+
+export interface CRUDChangeParams<T> {
   id?: number
   key: keyof T & string
   value: string
 }
 
 export class SaveActionCreator<
-  T extends IRoutes,
+  T extends Routes,
   Route extends keyof T & string,
   ActionType extends string,
 > {
 
   constructor(
-    readonly http: IHTTPClient<T>,
+    readonly http: HTTPClient<T>,
     readonly route: Route,
     readonly type: ActionType,
   ) {}
 
-  save = (params: TOnlyDefined<{
-    body: T[Route]['post']['body'],
-    params: T[Route]['post']['params'],
-  }>): TAction<T[Route]['post']['response'], ActionType, 'save'> => {
-    const p = params as any
+  save = (params: OnlyDefined<{
+    body: T[Route]['post']['body']
+    params: T[Route]['post']['params']
+  }>): Action<T[Route]['post']['response'], ActionType, 'save'> => {
+    const p = params as PostParams
     return {
       payload: this.http.post(this.route, p.body, p.params),
       type: this.type,
@@ -40,22 +50,22 @@ export class SaveActionCreator<
 }
 
 export class FindOneActionCreator<
-  T extends IRoutes,
+  T extends Routes,
   Route extends keyof T & string,
   ActionType extends string,
 > {
 
   constructor(
-    readonly http: IHTTPClient<T>,
+    readonly http: HTTPClient<T>,
     readonly route: Route,
     readonly type: ActionType,
   ) {}
 
-  findOne = (params: TOnlyDefined<{
-    query: T[Route]['get']['query'],
-    params: T[Route]['get']['params'],
-  }>): TAction<T[Route]['get']['response'], ActionType, 'findOne'> => {
-    const p = params as any
+  findOne = (params: OnlyDefined<{
+    query: T[Route]['get']['query']
+    params: T[Route]['get']['params']
+  }>): Action<T[Route]['get']['response'], ActionType, 'findOne'> => {
+    const p = params as {query: unknown, params: unknown}
     return {
       payload: this.http.get(this.route, p.query, p.params),
       type: this.type,
@@ -67,22 +77,22 @@ export class FindOneActionCreator<
 }
 
 export class UpdateActionCreator<
-  T extends IRoutes,
+  T extends Routes,
   Route extends keyof T & string,
   ActionType extends string
 > {
 
   constructor(
-    readonly http: IHTTPClient<T>,
+    readonly http: HTTPClient<T>,
     readonly route: Route,
     readonly type: ActionType,
   ) {}
 
-  update = (params: TOnlyDefined<{
-    body: T[Route]['put']['body'],
-    params: T[Route]['put']['params'],
-  }>): TAction<T[Route]['put']['response'], ActionType, 'update'> => {
-    const p = params as any
+  update = (params: OnlyDefined<{
+    body: T[Route]['put']['body']
+    params: T[Route]['put']['params']
+  }>): Action<T[Route]['put']['response'], ActionType, 'update'> => {
+    const p = params as PostParams
     return {
       payload: this.http.put(this.route, p.body, p.params),
       type: this.type,
@@ -94,22 +104,22 @@ export class UpdateActionCreator<
 }
 
 export class RemoveActionCreator<
-  T extends IRoutes,
+  T extends Routes,
   Route extends keyof T & string,
   ActionType extends string,
 > {
 
   constructor(
-    readonly http: IHTTPClient<T>,
+    readonly http: HTTPClient<T>,
     readonly route: Route,
     readonly type: ActionType,
   ) {}
 
-  remove = (params: TOnlyDefined<{
-    body: T[Route]['delete']['body'],
-    params: T[Route]['delete']['params'],
-  }>): TAction<T[Route]['delete']['response'], ActionType, 'remove'> => {
-    const p = params as any
+  remove = (params: OnlyDefined<{
+    body: T[Route]['delete']['body']
+    params: T[Route]['delete']['params']
+  }>): Action<T[Route]['delete']['response'], ActionType, 'remove'> => {
+    const p = params as PostParams
     return {
       payload: this.http.delete(this.route, p.body, p.params),
       type: this.type,
@@ -120,27 +130,27 @@ export class RemoveActionCreator<
 }
 
 export class FindManyActionCreator<
-  T extends IRoutes,
+  T extends Routes,
   Route extends keyof T & string,
   ActionType extends string,
 > {
 
   constructor(
-    readonly http: IHTTPClient<T>,
+    readonly http: HTTPClient<T>,
     readonly route: Route,
     readonly type: ActionType,
   ) {}
 
-  findMany = (params: TOnlyDefined<{
-    query: T[Route]['get']['query'],
-    params: T[Route]['get']['params'],
+  findMany = (params: OnlyDefined<{
+    query: T[Route]['get']['query']
+    params: T[Route]['get']['params']
   }>): {
     payload: Promise<T[Route]['get']['response']>
     type: ActionType
-    status: 'pending',
-    method: 'findMany',
+    status: 'pending'
+    method: 'findMany'
   } => {
-    const p = params as any
+    const p = params as GetParams
     return {
       payload: this.http.get(this.route, p.query, p.params),
       type: this.type,
@@ -154,7 +164,7 @@ export class FindManyActionCreator<
 export class FormActionCreator<T, ActionType extends string> {
   constructor(readonly actionType: ActionType) {}
 
-  create = (item: Partial<T>): TCRUDCreateAction<T, ActionType> => {
+  create = (item: Partial<T>): CRUDCreateAction<T, ActionType> => {
     return {
       payload: item,
       type: this.actionType,
@@ -162,7 +172,7 @@ export class FormActionCreator<T, ActionType extends string> {
     }
   }
 
-  edit = (params: {id: number}): TCRUDEditAction<ActionType> => {
+  edit = (params: {id: number}): CRUDEditAction<ActionType> => {
     return {
       payload: {id: params.id},
       type: this.actionType,
@@ -170,8 +180,9 @@ export class FormActionCreator<T, ActionType extends string> {
     }
   }
 
-  change = (params: ICRUDChangeParams<T>)
-  : TCRUDChangeAction<T, ActionType> => {
+  change = (
+    params: CRUDChangeParams<T>,
+  ): CRUDChangeAction<T, ActionType> => {
     return {
       payload: params,
       type: this.actionType,
@@ -181,12 +192,12 @@ export class FormActionCreator<T, ActionType extends string> {
 }
 
 export function createCRUDActions<
-  T extends IRoutes,
+  T extends Routes,
   EntityRoute extends keyof T & string,
   ListRoute extends keyof T & string,
   ActionType extends string,
 >(
-  http: IHTTPClient<T>,
+  http: HTTPClient<T>,
   entityRoute: EntityRoute,
   listRoute: ListRoute,
   actionType: ActionType,

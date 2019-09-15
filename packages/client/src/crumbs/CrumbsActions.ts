@@ -1,18 +1,15 @@
-import {TGetAction, IAction} from '@rondo.dev/redux'
-import {ICrumbLink} from './ICrumbLink'
+import {GetAllActions, Action} from '@rondo.dev/redux'
+import {CrumbLink} from './CrumbLink'
 
-export interface ICrumbs {
-  links: ICrumbLink[]
+export interface Crumbs {
+  links: CrumbLink[]
   current: string
 }
 
-export type TCrumbsAction =
-  IAction<ICrumbs, 'BREADCRUMBS_SET'>
-
-type Action<T extends string> = TGetAction<TCrumbsAction, T>
+export type CrumbsAction = GetAllActions<CrumbsActions>
 
 export class CrumbsActions {
-  setCrumbs(breadcrumbs: ICrumbs): Action<'BREADCRUMBS_SET'> {
+  setCrumbs(breadcrumbs: Crumbs): Action<Crumbs, 'BREADCRUMBS_SET'> {
     return {
       payload: breadcrumbs,
       type: 'BREADCRUMBS_SET',

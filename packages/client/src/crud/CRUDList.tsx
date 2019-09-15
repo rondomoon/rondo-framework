@@ -3,7 +3,7 @@ import {Button, Panel, PanelHeading, PanelBlock} from 'bloomer'
 import {FaPlus, FaEdit, FaTimes} from 'react-icons/fa'
 import {Link} from '../components'
 
-export interface ICRUDListProps<T> {
+export interface CRUDListProps<T> {
   nameKey: keyof T
   editLink?: (item: T) => string
   itemIds: ReadonlyArray<number>
@@ -11,37 +11,37 @@ export interface ICRUDListProps<T> {
   newLink?: string
   onRemove?: (t: T) => void
   title: string
-  Info?: React.ComponentType<ICRUDItemInfoProps<T>>
-  RowButtons?: React.ComponentType<ICRUDRowButtons<T>>
+  Info?: React.ComponentType<CRUDItemInfoProps<T>>
+  RowButtons?: React.ComponentType<CRUDRowButtons<T>>
 }
 
-export interface ICRUDRowButtons<T> {
+export interface CRUDRowButtons<T> {
   item: T
 }
 
-export interface ICRUDItemRowProps<T> {
-  Info?: React.ComponentType<ICRUDItemInfoProps<T>>
-  RowButtons?: React.ComponentType<ICRUDRowButtons<T>>
+export interface CRUDItemRowProps<T> {
+  Info?: React.ComponentType<CRUDItemInfoProps<T>>
+  RowButtons?: React.ComponentType<CRUDRowButtons<T>>
   nameKey: keyof T
   editLink?: string
   item: T
   onRemove?: (t: T) => void
 }
 
-export interface ICRUDItemInfoProps<T> {
+export interface CRUDItemInfoProps<T> {
   item: T
   nameKey: keyof T
 }
 
 export class CRUDItemInfo<T>
-extends React.PureComponent<ICRUDItemInfoProps<T>> {
+extends React.PureComponent<CRUDItemInfoProps<T>> {
   render() {
     const {item, nameKey} = this.props
     return <span>{item[nameKey]}</span>
   }
 }
 
-export class CRUDItemRow<T> extends React.PureComponent<ICRUDItemRowProps<T>> {
+export class CRUDItemRow<T> extends React.PureComponent<CRUDItemRowProps<T>> {
   handleRemove = () => {
     const {onRemove, item} = this.props
     if (onRemove) {
@@ -88,7 +88,7 @@ export class CRUDItemRow<T> extends React.PureComponent<ICRUDItemRowProps<T>> {
   }
 }
 
-export class CRUDList<T> extends React.PureComponent<ICRUDListProps<T>> {
+export class CRUDList<T> extends React.PureComponent<CRUDListProps<T>> {
   render() {
     const {nameKey, editLink, itemIds, itemsById, newLink, title} = this.props
 

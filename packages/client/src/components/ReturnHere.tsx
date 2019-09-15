@@ -1,22 +1,18 @@
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import {Dispatch, bindActionCreators} from 'redux'
-import {IWithRouterProps} from './IWithRouterProps'
+import {WithRouterProps} from './WithRouterProps'
 import {connect} from 'react-redux'
 import {setRedirectTo} from '../login/LoginActions'
 import {withRouter} from 'react-router'
 
-export interface IReturnToProps extends IWithRouterProps {
+export interface ReturnToProps extends WithRouterProps {
   setRedirectTo: typeof setRedirectTo
 }
 
-function FReturnHere(props: IReturnToProps) {
+function FReturnHere(props: ReturnToProps) {
   const {
-    // tslint:disable-next-line
     setRedirectTo,
-    history,
-    location,
     match,
-    ...otherProps
   } = props
 
   useEffect(() => {

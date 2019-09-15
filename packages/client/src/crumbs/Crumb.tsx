@@ -1,14 +1,14 @@
 import React from 'react'
 import {Breadcrumb, BreadcrumbItem} from 'bloomer'
 import {Link} from 'react-router-dom'
-import {ICrumbLink} from './ICrumbLink'
+import {CrumbLink} from './CrumbLink'
 
-export interface ICrumbProps {
-  links: ICrumbLink[]
+export interface CrumbProps {
+  links: CrumbLink[]
   current: string
 }
 
-export class Crumb extends React.PureComponent<ICrumbProps> {
+export class Crumb extends React.PureComponent<CrumbProps> {
   render() {
     return (
       <Breadcrumb>

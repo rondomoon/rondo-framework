@@ -15,7 +15,7 @@ export class Redirect extends React.PureComponent<RedirectProps> {
     return (
       <span>
         You are being redirected.
-        Click <a href={href}>here</a> to 'continue'
+        Click <a href={href}>here</a> to {'continue'}
       </span>
     )
   }

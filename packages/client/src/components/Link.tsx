@@ -1,24 +1,21 @@
+import { URLFormatter } from '@rondo.dev/http-client'
 import React from 'react'
-import {History, Location} from 'history'
-import {IWithRouterProps} from './IWithRouterProps'
-import {Link as RouterLink, LinkProps} from 'react-router-dom'
-import {URLFormatter} from '@rondo.dev/http-client'
-import {withRouter} from 'react-router'
+import { withRouter } from 'react-router'
+import { Link as RouterLink } from 'react-router-dom'
+import { WithRouterProps } from './WithRouterProps'
 
-export interface ILinkProps
-extends IWithRouterProps<Record<string, string>> {
+export interface LinkProps
+extends WithRouterProps<Record<string, string>> {
   readonly className?: string
   readonly to: string
 }
 
-class ContextLink extends React.PureComponent<ILinkProps> {
+class ContextLink extends React.PureComponent<LinkProps> {
   protected readonly urlFormatter = new URLFormatter()
 
   render() {
     const {
       className,
-      history,
-      location,
       match,
       to,
       children,
