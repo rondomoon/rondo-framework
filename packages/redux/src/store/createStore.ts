@@ -1,14 +1,7 @@
-import {ReduxLogger, PromiseMiddleware, WaitMiddleware} from '../middleware'
-import {
-  applyMiddleware,
-  createStore as create,
-  Middleware,
-  Action,
-  DeepPartial,
-  Reducer,
-} from 'redux'
+import { Action, applyMiddleware, createStore as create, DeepPartial, Middleware, Reducer } from 'redux'
+import { PromiseMiddleware, ReduxLogger } from '../middleware'
 
-export interface ICreateStoreParams<State, A extends Action> {
+export interface CreateStoreParams<State, A extends Action> {
   reducer: Reducer<State, A>
   state?: Partial<State>
   middleware?: Middleware[]
@@ -19,7 +12,7 @@ export interface ICreateStoreParams<State, A extends Action> {
  * Create a Redux store.
  */
 export function createStore<State, A extends Action>(
-  params: ICreateStoreParams<State, A>,
+  params: CreateStoreParams<State, A>,
 ) {
   const middleware = params.middleware || [
     new ReduxLogger(

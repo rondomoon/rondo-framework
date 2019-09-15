@@ -7,19 +7,19 @@ import { pack, TStateSelector } from './pack'
 
 describe('pack', () => {
 
-  interface IChangeAction {
-    payload: {a: number, b: string},
+  interface ChangeAction {
+    payload: {a: number, b: string}
     type: 'CHANGE'
   }
 
-  interface IProps {
+  interface Props {
     a: number
     b: string
-    update(a: number, b: string): IChangeAction
+    update(a: number, b: string): ChangeAction
     c: string[]
   }
 
-  class PureComponent extends React.PureComponent<IProps> {
+  class PureComponent extends React.PureComponent<Props> {
     update = () => {
       this.props.update(1, 'one')
     }
@@ -34,7 +34,7 @@ describe('pack', () => {
     }
   }
 
-  function FunctionalComponent(props: IProps) {
+  function FunctionalComponent(props: Props) {
     const update = useCallback(() => props.update(1, 'one'), [])
 
     return (
@@ -44,15 +44,15 @@ describe('pack', () => {
     )
   }
 
-  type LocalState = Omit<IProps, 'c' | 'update'>
-  interface IState {
+  type LocalState = Omit<Props, 'c' | 'update'>
+  interface State {
     localState: LocalState
   }
 
   function reduce(
-    state: IState = {localState: {a: 0, b: ''}},
+    state: State = {localState: {a: 0, b: ''}},
     action: any,
-  ): IState {
+  ): State {
     switch (action.type) {
       case 'CHANGE':
         return {
@@ -73,7 +73,7 @@ describe('pack', () => {
       getLocalState,
       (localState: LocalState) => localState,
       {
-        update(a: number, b: string): IChangeAction {
+        update(a: number, b: string): ChangeAction {
           return {
             payload: {a, b},
             type: 'CHANGE',
@@ -91,7 +91,7 @@ describe('pack', () => {
       getLocalState,
       (localState: LocalState) => localState,
       {
-        update(a: number, b: string): IChangeAction {
+        update(a: number, b: string): ChangeAction {
           return {
             payload: {a, b},
             type: 'CHANGE',
@@ -102,10 +102,10 @@ describe('pack', () => {
     )
   }
 
-  const PackedPureComponent = configurePureComponent<IState>(
+  const PackedPureComponent = configurePureComponent<State>(
     state => state.localState)
 
-  const PackedFunctionalComponent = configureFunctionalComponent<IState>(
+  const PackedFunctionalComponent = configureFunctionalComponent<State>(
     state => state.localState)
 
   it('creates a connected component', () => {

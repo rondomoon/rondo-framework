@@ -59,6 +59,7 @@
     "common-shakeify": "^0.6.0",
     "cookie-parser": "^1.4.4",
     "deep-object-diff": "^1.1.0",
+    "eslint-plugin-react": "^7.14.3",
     "esmify": "git+https://github.com/jeremija/esmify.git",
     "formik": "^1.5.8",
     "history": "^4.9.0",

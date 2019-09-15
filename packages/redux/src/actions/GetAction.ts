@@ -1,6 +1,6 @@
-import {IAction} from './IAction'
+import {Action} from './Action'
 
 export type TGetAction<ActionTypes, T extends string> =
-  ActionTypes extends IAction<infer U, T>
+  ActionTypes extends Action<infer U, T>
   ? ActionTypes
   : never

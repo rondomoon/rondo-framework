@@ -1,9 +1,6 @@
-import {IPendingAction} from './IPendingAction'
+import {Action} from './Action'
 
-export class PendingAction<T, ActionType extends string> {
-  readonly status = 'pending'
-  constructor(
-    readonly payload: T,
-    readonly type: ActionType,
-  ) {}
+export interface PendingAction<T, ActionType extends string> extends
+  Action<Promise<T>, ActionType> {
+  status: 'pending'
 }

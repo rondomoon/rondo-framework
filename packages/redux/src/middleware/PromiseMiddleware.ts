@@ -1,9 +1,8 @@
-import assert from 'assert'
 import {AnyAction, Middleware} from 'redux'
 
-function isPromise(value: any): value is Promise<any> {
+function isPromise(value: unknown): value is Promise<unknown> {
   return value && typeof value === 'object' &&
-    typeof (value as any).then === 'function'
+    typeof (value as Promise<unknown>).then === 'function'
 }
 
 /**
@@ -21,7 +20,7 @@ function isPromise(value: any): value is Promise<any> {
  */
 export class PromiseMiddleware {
   handle: Middleware = store => next => (action: AnyAction) => {
-    const {payload, type} = action
+    const {payload} = action
     if (!isPromise(payload)) {
       return next(action)
     }

@@ -1,14 +1,12 @@
-import {WaitMiddleware} from './WaitMiddleware'
-import {
-  IAction, IPendingAction, IResolvedAction, IRejectedAction,
-} from '../actions'
-import {applyMiddleware, createStore, AnyAction} from 'redux'
 import { getError } from '@rondo.dev/test-utils'
+import { applyMiddleware, createStore } from 'redux'
+import { Action } from '../actions'
+import { WaitMiddleware } from './WaitMiddleware'
 
 describe('WaitMiddleware', () => {
 
   const getStore = (wm: WaitMiddleware) => createStore(
-    (state: string[] = [], action: IAction<any, string>) => {
+    (state: string[] = [], action: Action<any, string>) => {
       return [...state, action.type]
     },
     [],

@@ -1,15 +1,15 @@
-import {TAsyncAction} from '../actions/TAsyncAction'
+import {AsyncAction} from '../actions/AsyncAction'
 import {AnyAction, Middleware} from 'redux'
 
 export class WaitMiddleware {
-  protected notify?: (action: TAsyncAction<any, string>) => void
+  protected notify?: (action: AsyncAction<unknown, string>) => void
   protected recorders: Recorder[] = []
 
-  handle: Middleware = store => next => (action: AnyAction) => {
+  handle: Middleware = () => next => (action: AnyAction) => {
     next(action)
     this.recorders.forEach(recorder => recorder.record(action))
     if (this.notify && 'status' in action) {
-      this.notify(action as TAsyncAction<any, string>)
+      this.notify(action as AsyncAction<unknown, string>)
     }
   }
 
@@ -66,7 +66,7 @@ export class WaitMiddleware {
         this.notify = undefined
       }, timeout)
 
-      this.notify = (action: TAsyncAction<any, string>) => {
+      this.notify = (action: AsyncAction<unknown, string>) => {
         if (!actionsByName[action.type]) {
           return
         }
@@ -77,11 +77,13 @@ export class WaitMiddleware {
             actionsByName[action.type]--
             count--
             if (count === 0) {
+              clearTimeout(t)
               resolve()
               this.notify = undefined
             }
             return
           case 'rejected':
+            clearTimeout(t)
             reject(action.payload)
             this.notify = undefined
             return

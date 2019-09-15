@@ -1,6 +1,4 @@
-import { ComponentType, PureComponent } from 'react'
-import { connect, Omit, MapDispatchToPropsParam, Matching, GetProps, ResolveThunks } from 'react-redux'
-import { Dispatch } from 'redux'
+import { connect, GetProps, MapDispatchToPropsParam, Matching, ResolveThunks } from 'react-redux'
 
 /*
  * Select and return a part of the state
