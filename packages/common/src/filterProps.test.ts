@@ -1,25 +1,25 @@
 import {createFilterProps} from './filterProps'
 
-interface IEntity {
+interface Entity {
   readonly id: number
 }
 
-interface IPerson {
+interface Person {
   readonly firstName: string
   readonly lastName: string
 }
 
-interface IPersonEntity extends IEntity, IPerson {}
+interface PersonEntity extends Entity, Person {}
 
 describe('filterProps', () => {
 
-  const p: IPersonEntity = {
+  const p: PersonEntity = {
     id: 1,
     firstName: 'John',
     lastName: 'Smith',
   }
 
-  const filterProps = createFilterProps<IPerson>({
+  const filterProps = createFilterProps<Person>({
     firstName: true,
     lastName: true,
   })

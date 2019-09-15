@@ -1,4 +1,4 @@
-export interface IUserInTeam {
+export interface UserInTeam {
   teamId: number
   userId: number
   displayName: string

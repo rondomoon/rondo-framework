@@ -1,1 +1,1 @@
-export * from './ICredentials'
+export * from './Credentials'

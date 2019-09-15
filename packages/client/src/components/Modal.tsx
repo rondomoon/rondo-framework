@@ -1,11 +1,11 @@
 import {Modal as M, ModalBackground, ModalContent, ModalClose} from 'bloomer'
 import React from 'react'
 
-export interface IModalProps {
+export interface ModalProps {
   isActive?: boolean
 }
 
-export class Modal extends React.PureComponent<IModalProps> {
+export class Modal extends React.PureComponent<ModalProps> {
   render() {
     return (
       <M isActive={this.props.isActive}>

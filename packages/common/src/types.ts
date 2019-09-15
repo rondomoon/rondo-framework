@@ -1,25 +1,25 @@
 /**
  * transform unknown into undefined
  */
-export type TOptional<T> = T extends {} ? T : undefined
+export type Optional<T> = T extends {} ? T : undefined
 
-export type TNonUndefinedPropertyNames<T> = {
+export type NonUndefinedPropertyNames<T> = {
   [K in keyof T]: T[K] extends undefined ? never: K
 }[keyof T]
 
-export type TOnlyRequired<T> = Pick<T, TNonUndefinedPropertyNames<T>>
+export type OnlyRequired<T> = Pick<T, NonUndefinedPropertyNames<T>>
 
-export type TNonUnknownPropertyNames<T> = {
+export type NonUnknownPropertyNames<T> = {
   [K in keyof T]: T[K] extends {} ? K : never
 }[keyof T]
 
-export type TOnlyDefined<T> = Pick<T, TNonUnknownPropertyNames<T>>
+export type OnlyDefined<T> = Pick<T, NonUnknownPropertyNames<T>>
 
 /**
  * Remove types from T that are not assignable to U
  * https://www.typescriptlang.org/docs/handbook/advanced-types.html
  */
-export type TFilter<T, U> = T extends U ? T : never
+export type Filter<T, U> = T extends U ? T : never
 
-export type TReadonlyRecord<K extends string | number | symbol, V> =
+export type ReadonlyRecord<K extends string | number | symbol, V> =
   Readonly<Record<K, V>>

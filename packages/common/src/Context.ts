@@ -1,4 +1,4 @@
-export interface IContext {
+export interface Context {
   user?: {
     id: number
   }

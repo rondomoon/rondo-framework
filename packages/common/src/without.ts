@@ -7,7 +7,7 @@ export function without<T, R extends Record<string, T>, K extends keyof R>(
     if (key == k) {
       return obj
     }
-    (obj as any)[k] = items[k]
+    (obj as any)[k] = items[k] // eslint-disable-line
     return obj
   }, {} as Pick<R, Exclude<keyof R, K>>)
 }

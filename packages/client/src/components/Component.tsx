@@ -1,17 +1,17 @@
 import React from 'react'
 import {connect} from 'react-redux'
 
-interface IComponentProps {
+interface ComponentProps {
   value: string
 }
 
-interface IStateProps {
+interface StateProps {
   value: string
 }
 
 export class Component
-extends React.PureComponent<IComponentProps, IStateProps> {
-  constructor(props: IComponentProps) {
+extends React.PureComponent<ComponentProps, StateProps> {
+  constructor(props: ComponentProps) {
     super(props)
     this.state = {
       value: props.value,
@@ -37,7 +37,7 @@ extends React.PureComponent<IComponentProps, IStateProps> {
   }
 }
 
-function mapStateToProps(state: any) {
+function mapStateToProps(state: {value: string}) {
   return {
     value: state.value,
   }

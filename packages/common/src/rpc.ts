@@ -1,8 +1,7 @@
-import {IContext} from './IContext'
-import {ITeamService} from './team'
-import {IUserService} from './user'
+import {TeamService} from './team'
+import {UserService} from './user'
 
-export interface IRPCServices {
-  userService: IUserService
-  teamService: ITeamService
+export interface RPCServices {
+  userService: UserService
+  teamService: TeamService
 }

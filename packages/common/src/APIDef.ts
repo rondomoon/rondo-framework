@@ -1,17 +1,17 @@
-import { IUser, INewUser } from './user'
-import { ICredentials } from './auth'
+import { UserProfile, NewUser } from './user'
+import { Credentials } from './auth'
 
-export interface IAPIDef {
+export interface APIDef {
   '/auth/register': {
     'post': {
-      body: INewUser
-      response: IUser
+      body: NewUser
+      response: UserProfile
     }
   }
   '/auth/login': {
     'post': {
-      body: ICredentials
-      response: IUser
+      body: Credentials
+      response: UserProfile
     }
   }
   '/auth/logout': {

@@ -1,10 +1,10 @@
 import React from 'react'
 
-export interface IButtonProps {
-  type: string
+export interface ButtonProps {
+  // type: string
 }
 
-export class Button extends React.PureComponent {
+export class Button extends React.PureComponent<ButtonProps> {
   render() {
     return (
       <button>{this.props.children}</button>
