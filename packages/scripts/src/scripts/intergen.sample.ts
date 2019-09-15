@@ -17,18 +17,18 @@ export class Name {
   lastName!: string
 }
 
-export interface IYear {
+export interface Year {
   year: number
 }
 
-export interface ITyped<T> {
+export interface TypedValue<T> {
   value: T
 }
 
 type AorB = 'A' | 'B'
-interface IB { a: number }
+interface B { a: number }
 /* tslint:disable-next-line */
-type Param<T> = {t: T, b: IB}
+type Param<T> = {t: T, b: B}
 
 export class Person {
   readonly name!: Name
@@ -40,7 +40,7 @@ export class Person {
     b: string
   }
   age?: number
-  birthyear: IYear | null = null
+  birthyear: Year | null = null
   stringAndNumberTuple!: [string, number]
 }
 
@@ -53,9 +53,9 @@ export class Company {
 }
 
 export class Typed<A, B extends 'singleVal', C = 'defVal'> {
-  a!: ITyped<A>
-  b!: ITyped<B>
-  c!: ITyped<C>
-  d!: ITyped<A> | ITyped<B>
+  a!: TypedValue<A>
+  b!: TypedValue<B>
+  c!: TypedValue<C>
+  d!: TypedValue<A> | TypedValue<B>
   e!: Param<Company>
 }

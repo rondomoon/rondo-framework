@@ -4,18 +4,18 @@ import cp from 'child_process'
 import {argparse, arg} from '@rondo.dev/argparse'
 import {info} from '../log'
 
-export interface IOutdated {
+export interface Outdated {
   wanted: string
   latest: string
   location: string
 }
 
-export interface IPackage {
+export interface Package {
   dependencies?: Record<string, string>
   devDependencies?: Record<string, string>
 }
 
-function findOutdated(cwd: string): Record<string, IOutdated> {
+function findOutdated(cwd: string): Record<string, Outdated> {
   try {
     const result = cp.execFileSync('npm', ['outdated', '--json'], {
       cwd,
@@ -25,6 +25,27 @@ function findOutdated(cwd: string): Record<string, IOutdated> {
   } catch (err) {
     // npm outdated will exit with code 1 if there are outdated dependencies
     return JSON.parse(err.stdout)
+  }
+}
+
+function updateDependency(
+  pkg: Package,
+  key: 'dependencies' | 'devDependencies',
+  name: string,
+  prefix: string,
+  version: Outdated,
+): Package {
+  const deps = pkg[key]
+  if (!deps || !deps[name] || version.wanted === version.latest) {
+    return pkg
+  }
+  info('  [%s] %s %s ==> %s', key, name, version.wanted, version.latest)
+  return {
+    ...pkg,
+    [key]: {
+      ...deps,
+      [name]: prefix + version.latest,
+    },
   }
 }
 
@@ -41,8 +62,8 @@ export async function update(...argv: string[]) {
     const outdatedByName = findOutdated(dir)
 
     const pkgFile = path.join(dir, 'package.json')
-    const pkg: IPackage = JSON.parse(fs.readFileSync(pkgFile, 'utf8'))
-    let pkgUpdate: IPackage = pkg
+    const pkg: Package = JSON.parse(fs.readFileSync(pkgFile, 'utf8'))
+    let pkgUpdate: Package = pkg
 
     // tslint:disable-next-line
     for (const name in outdatedByName) {
@@ -62,26 +83,5 @@ export async function update(...argv: string[]) {
 
   if (updates) {
     info('Done! Do not forget to run npm install!')
-  }
-}
-
-function updateDependency(
-  pkg: IPackage,
-  key: 'dependencies' | 'devDependencies',
-  name: string,
-  prefix: string,
-  version: IOutdated,
-): IPackage {
-  const deps = pkg[key]
-  if (!deps || !deps[name] || version.wanted === version.latest) {
-    return pkg
-  }
-  info('  [%s] %s %s ==> %s', key, name, version.wanted, version.latest)
-  return {
-    ...pkg,
-    [key]: {
-      ...deps,
-      [name]: prefix + version.latest,
-    },
   }
 }

@@ -18,9 +18,6 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "plugins": [{
-      "name": "typescript-tslint-plugin",
-      "suppressWhileTypeErrorsPresent": true
-    }, {
       "transform": "ts-transformer-keys/transformer"
     }]
   }

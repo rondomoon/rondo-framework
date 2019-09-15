@@ -5,19 +5,19 @@ import {argparse, arg} from '@rondo.dev/argparse'
 import {resolve} from './resolve'
 
 async function run(
-  args: any, commands: object, exit: (code: number) => void,
+  commandName: string,
+  commandArgs: string[],
+  commands: Record<string, TCommand>,
+  exit: (code: number) => void,
 ) {
-  const p = './scripts'
-  const module = await import(p)
-  const commandName = args.command
   if (!(commandName in commands)) {
     log.info(
       'Invalid command! Use the --help argument to see a list of commands')
     exit(1)
     return
   }
-  const command = (commands as any)[commandName] as TCommand
-  await command(args.command, ...args.args)
+  const command = commands[commandName]
+  await command(commandName, ...commandArgs)
 }
 
 async function start(
@@ -42,7 +42,7 @@ async function start(
   let args: ReturnType<typeof parse> | null = null
   try {
     args = parse(argv)
-    await run(args, commands, exit)
+    await run(args.command, args.args, commands, exit)
   } catch (err) {
     log.error((args && args.debug ? err.stack : err.message))
     exit(1)

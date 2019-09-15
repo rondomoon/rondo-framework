@@ -1,9 +1,9 @@
-import {IValidationMessage} from './IValidationMessage'
+import {ValidationMessage} from './ValidationMessage'
 
 export class ValidationError extends Error {
   readonly name: string
   constructor(
-    readonly errors: IValidationMessage[],
+    readonly errors: ValidationMessage[],
     message?: string,
     readonly status: number = 400,
   ) {
@@ -16,9 +16,11 @@ export class ValidationError extends Error {
     Error.captureStackTrace(this)
   }
 
-  static isInstanceOf(err: any): err is ValidationError {
-    return typeof err.status === 'number'
-      && typeof err.message === 'string'
-      && Array.isArray(err.errors)
+  static isInstanceOf(err: unknown): err is ValidationError {
+    const err2 = err as ValidationError
+    return err2
+      && typeof err2.status === 'number'
+      && typeof err2.message === 'string'
+      && Array.isArray(err2.errors)
   }
 }

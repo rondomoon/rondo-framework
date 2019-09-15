@@ -1,19 +1,18 @@
-import cp from 'child_process'
+import { Executor } from './Executor'
+import { Request, Response } from './Task'
 import { LinkedList } from './LinkedList'
-import { IExecutor } from './Executor'
-import { IRequest, TResponse } from './ITask'
 
-export interface IWorker<T> {
+export interface Worker<T> {
   start(): Promise<void>
 }
 
-export type ICallback<R> = (result: TResponse<R>) => void
+export type Callback<R> = (result: Response<R>) => void
 
-export class Worker<T, R> implements IWorker<T> {
+export class QueuedWorker<T, R> implements Worker<T> {
   constructor(
-    protected executor: IExecutor<T, R>,
-    protected taskQueue: LinkedList<IRequest<T>>,
-    protected callback: ICallback<R>,
+    protected executor: Executor<T, R>,
+    protected taskQueue: LinkedList<Request<T>>,
+    protected callback: Callback<R>,
   ) {
   }
 

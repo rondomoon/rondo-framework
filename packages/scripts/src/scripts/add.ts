@@ -2,7 +2,20 @@ import * as fs from 'fs'
 import * as log from '../log'
 import * as path from 'path'
 import {argparse, arg} from '@rondo.dev/argparse'
-import {run} from '../run'
+
+async function walk(
+  file: string,
+  files: string[] = [],
+): Promise<string[]> {
+  files.push(file)
+  const stat = fs.statSync(file)
+  if (stat.isDirectory()) {
+    for (const f of fs.readdirSync(file)) {
+      walk(path.join(file, f), files)
+    }
+  }
+  return files
+}
 
 export async function add(...argv: string[]) {
   const {parse} = argparse({
@@ -45,22 +58,8 @@ export async function add(...argv: string[]) {
 
   log.info('Update main package.json')
   const pkgFile = path.join(process.cwd(), 'package.json')
-  const pkg = require(pkgFile)
+  const pkg = require(pkgFile)  // eslint-disable-line
   pkg.dependencies = pkg.dependencies || {}
   pkg.dependencies[libraryName] = `file:packages/${args.name}`
   fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, '  '))
-}
-
-export async function walk(
-  file: string,
-  files: string[] = [],
-): Promise<string[]> {
-  files.push(file)
-  const stat = fs.statSync(file)
-  if (stat.isDirectory()) {
-    for (const f of fs.readdirSync(file)) {
-      walk(path.join(file, f), files)
-    }
-  }
-  return files
 }

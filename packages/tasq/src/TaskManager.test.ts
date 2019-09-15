@@ -1,4 +1,4 @@
-import {TaskManager} from './TaskManager'
+import {QueuedTaskManager} from './TaskManager'
 import { PromiseExecutor } from './Executor'
 import { getError } from '@rondo.dev/test-utils'
 
@@ -11,7 +11,7 @@ describe('TaskManager', () => {
   describe('post', () => {
     it('posts new tasks and executes asynchronously', async () => {
       const results: number[] = []
-      const te = new TaskManager<number, void>(
+      const te = new QueuedTaskManager<number, void>(
         1,
         () => new PromiseExecutor(async task => {
           await delay(task.params)
@@ -26,7 +26,7 @@ describe('TaskManager', () => {
     })
     it('executes tasks in different order', async () => {
       const results: number[] = []
-      const te = new TaskManager<number, void>(
+      const te = new QueuedTaskManager<number, void>(
         2,
         () => new PromiseExecutor(async task => {
           await delay(task.params)
@@ -43,7 +43,7 @@ describe('TaskManager', () => {
 
     it('returns promises when job posted', async () => {
       const results: number[] = []
-      const te = new TaskManager<number, void>(
+      const te = new QueuedTaskManager<number, void>(
         2,
         () => new PromiseExecutor(async task => {
           await delay(task.params)
@@ -60,12 +60,12 @@ describe('TaskManager', () => {
     })
 
     it('can return values from promises', async () => {
-      interface IParams {
-        a: number,
-        b: number,
+      interface Params {
+        a: number
+        b: number
         delay: number
       }
-      const te = new TaskManager<IParams, number>(
+      const te = new QueuedTaskManager<Params, number>(
         2,
         () => new PromiseExecutor(async task => {
           const {params} = task
@@ -73,13 +73,19 @@ describe('TaskManager', () => {
           return params.a + params.b
         }),
       )
+      const result = await te.post({
+        a: 1,
+        b: 2,
+        delay: 1,
+      })
+      expect(result).toBe(3)
     })
 
   })
 
   describe('error handling', () => {
     it('does not fail on error', async () => {
-      const tm = new TaskManager<number, void>(2,
+      const tm = new QueuedTaskManager<number, void>(2,
         () => new PromiseExecutor(async task => {
           await delay(task.params)
           if (task.params % 2 === 0) {

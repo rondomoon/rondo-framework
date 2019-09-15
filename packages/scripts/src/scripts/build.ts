@@ -1,5 +1,4 @@
 import * as fs from 'fs'
-import * as log from '../log'
 import * as p from 'path'
 import {argparse, arg} from '@rondo.dev/argparse'
 import {findNodeModules} from '../modules'
@@ -100,7 +99,7 @@ function findTsConfig(file: string): string {
   return ''
 }
 
-async function browserify(path: string = '.') {
+async function browserify(path = '.') {
   // mkdirSync(join(path, 'build'), {recursive: true})
   await run('browserify', [
     join(path, 'esm', 'index.js'),
@@ -112,7 +111,7 @@ async function browserify(path: string = '.') {
   ])
 }
 
-async function uglify(path: string = '.') {
+async function uglify(path = '.') {
   await run('uglifyjs', [
     '--compress',
     '--mangle',
@@ -205,5 +204,5 @@ export async function frontend(...argv: string[]) {
     watchJs(path),
     watchCss(path),
   ]
-  return Promise.all(promises)
+  await Promise.all(promises)
 }

@@ -1,9 +1,9 @@
-import {IValidationMessage} from './IValidationMessage'
+import {ValidationMessage} from './ValidationMessage'
 import {ValidationError} from './ValidationError'
 
 export class Validator<T> {
 
-  readonly errors: IValidationMessage[] = []
+  readonly errors: ValidationMessage[] = []
   readonly entity: T
 
   constructor(entity: T | undefined) {
@@ -13,7 +13,7 @@ export class Validator<T> {
     this.entity = entity
   }
 
-  ensure(property: keyof T, value?: any): this {
+  ensure(property: keyof T, value?: unknown): this {
     if (arguments.length === 1) {
       if (!this.entity[property]) {
         this.addError(property, `The property "${property}" is invalid`)

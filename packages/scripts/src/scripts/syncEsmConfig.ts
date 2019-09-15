@@ -5,9 +5,8 @@ import {info} from '../log'
 
 const TSCONFIG_FILENAME = 'tsconfig.json'
 const TSCONFIG_ESM_FILENAME = 'tsconfig.esm.json'
-const PKG_DIRNAME = 'packages'
 
-interface IRef {
+interface Ref {
   path: string
 }
 
@@ -20,7 +19,7 @@ export async function syncEsmConfig(...argv: string[]) {
 
   const pkgDir = args.packages
 
-  const projects = fs.readdirSync(pkgDir)
+  fs.readdirSync(pkgDir)
   .filter(file => {
     const stat = fs.lstatSync(path.join(pkgDir, file))
     return stat.isDirectory()
@@ -29,7 +28,7 @@ export async function syncEsmConfig(...argv: string[]) {
   .filter(file => fs.existsSync(file))
   .forEach(file => {
     const tsconfig = JSON.parse(fs.readFileSync(file, 'utf8'))
-    const references = ((tsconfig.references || []) as IRef[])
+    const references = ((tsconfig.references || []) as Ref[])
     .map(ref => ({
       ...ref,
       path: path.join(ref.path, TSCONFIG_ESM_FILENAME),

@@ -4,7 +4,7 @@ jest.mock('../log')
 
 import cp from 'child_process'
 import * as fs from 'fs'
-import {update, IOutdated} from './update'
+import {update, Outdated} from './update'
 
 describe('update', () => {
 
@@ -15,7 +15,7 @@ describe('update', () => {
   const writeMock = fs.writeFileSync as jest.Mock<typeof fs.writeFileSync>
   const cpMock = cp.execFileSync as unknown as jest.Mock<typeof cp.execFileSync>
 
-  let outdated: Record<string, IOutdated> = {}
+  let outdated: Record<string, Outdated> = {}
   beforeEach(() => {
     outdated = {}
 

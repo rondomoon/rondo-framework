@@ -1,24 +1,23 @@
-import {EventEmitter} from 'events'
-import {LinkedList} from './LinkedList'
-import {Deferred} from './Deferred'
-import { Worker } from './Worker'
+import { DeferredPromise } from './Deferred'
 import { ExecutorFactory } from './Executor'
-import { IRequest } from './ITask'
+import { Request } from './Task'
+import { LinkedList } from './LinkedList'
+import { QueuedWorker } from './Worker'
 
-interface ITaskEventHandler {
+interface TaskEventHandler {
   success: () => void
   failure: (err: Error) => void
 }
 
-export interface ITaskManager<T> {
+export interface TaskManager<T> {
   post(task: T): void
   wait(): Promise<void>
 }
 
-export class TaskManager<T, R> implements ITaskManager<T> {
-  protected taskQueue = new LinkedList<IRequest<T>>()
+export class QueuedTaskManager<T, R> implements TaskManager<T> {
+  protected taskQueue = new LinkedList<Request<T>>()
   protected workers: Set<Promise<void>> = new Set()
-  protected deferredTasks = new Map<number, Deferred<R>>()
+  protected deferredTasks = new Map<number, DeferredPromise<R>>()
 
   protected taskCount = 0
 
@@ -35,12 +34,12 @@ export class TaskManager<T, R> implements ITaskManager<T> {
       params,
     })
 
-    const deferred = new Deferred<R>()
+    const deferred = new DeferredPromise<R>()
     this.deferredTasks.set(id, deferred)
 
     if (this.workers.size < this.n) {
       // deliberately do not use promise here
-      const worker = this.startWorker()
+      this.startWorker()
     }
 
     return deferred.promise
@@ -52,7 +51,7 @@ export class TaskManager<T, R> implements ITaskManager<T> {
   }
 
   protected async startWorker() {
-    const promise = new Worker(
+    const promise = new QueuedWorker(
       this.createExecutor(),
       this.taskQueue,
       response => {

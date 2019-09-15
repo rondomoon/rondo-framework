@@ -1,9 +1,9 @@
 import { Messenger } from '../Messenger'
-import { IExecutor } from '../Executor'
-import { IRequest } from '../ITask'
+import { Executor } from '../Executor'
+import { Request } from '../Task'
 
-const executor = new (class implements IExecutor<[number, number], number> {
-  async execute(task: IRequest<[number, number]>) {
+const executor = new (class implements Executor<[number, number], number> {
+  async execute(task: Request<[number, number]>) {
     await new Promise(resolve => {
       setTimeout(resolve, 1)
     })

@@ -1,22 +1,22 @@
-export interface IQueue<T> {
+export interface Queue<T> {
   push(...t: T[]): void
   shift(): T | undefined
   peek(): T | undefined
   toArray(): T[]
 }
 
-interface INode<T> {
+interface Node<T> {
   value: T
-  next?: INode<T>
+  next?: Node<T>
 }
 
-export interface IIterator<T> {
+export interface Iterator<T> {
   hasNext(): boolean
   next(): T | undefined
 }
 
-export class LinkedListIterator<T> implements IIterator<T> {
-  constructor(protected node: INode<T> | undefined) {
+export class LinkedListIterator<T> implements Iterator<T> {
+  constructor(protected node: Node<T> | undefined) {
   }
   hasNext() {
     return this.node !== undefined
@@ -32,15 +32,15 @@ export class LinkedListIterator<T> implements IIterator<T> {
   }
 }
 
-export class LinkedList<T> implements IQueue<T> {
+export class LinkedList<T> implements Queue<T> {
   length = 0
 
-  protected head: INode<T> | undefined
-  protected tail: INode<T> | undefined
+  protected head: Node<T> | undefined
+  protected tail: Node<T> | undefined
 
   push(...t: T[]) {
     t.forEach(value => {
-      const node: INode<T> = {value}
+      const node: Node<T> = {value}
       if (!this.length) {
         this.head = this.tail = node
         this.length = 1

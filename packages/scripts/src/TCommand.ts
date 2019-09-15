@@ -1,1 +1,1 @@
-export type TCommand = (...argv: string[]) => Promise<void>
+export type TCommand = (...argv: string[]) => unknown

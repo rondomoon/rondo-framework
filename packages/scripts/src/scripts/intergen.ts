@@ -21,7 +21,7 @@ function filterInvisibleProperties(type: ts.Symbol): boolean {
   return !(flags & ts.ModifierFlags.NonPublicAccessibilityModifier)
 }
 
-interface IClassProperty {
+interface ClassProperty {
   name: string
   type: ts.Type
   relevantTypes: ts.Type[]
@@ -29,13 +29,13 @@ interface IClassProperty {
   optional: boolean
 }
 
-interface IClassDefinition {
+interface ClassDefinition {
   name: string
   type: ts.Type
   typeParameters: ts.TypeParameter[]
   relevantTypeParameters: ts.Type[]
   allRelevantTypes: ts.Type[]
-  properties: IClassProperty[]
+  properties: ClassProperty[]
 }
 
 /*
@@ -64,7 +64,7 @@ export function intergen(...argv: string[]): string {
     output: arg('string', {alias: 'o', default: '-'}),
   }).parse(argv)
 
-  function debug(m: string, ...meta: any[]) {
+  function debug(m: string, ...meta: Array<unknown>) {
     if (args.debug) {
       error(m, ...meta)
     }
@@ -81,7 +81,7 @@ export function intergen(...argv: string[]): string {
     // Get the checker, we will use it to find more about classes
     const checker = program.getTypeChecker()
 
-    const classDefs: IClassDefinition[] = []
+    const classDefs: ClassDefinition[] = []
 
     function typeToString(type: ts.Type): string {
       return checker.typeToString(type)
@@ -195,7 +195,7 @@ export function intergen(...argv: string[]): string {
      */
     function isNodeExported(node: ts.Node): boolean {
       return (
-        (ts.getCombinedModifierFlags(node as any) &
+        (ts.getCombinedModifierFlags(node as ts.Declaration) &
           ts.ModifierFlags.Export) !== 0
         // (!!node.parent && node.parent.kind === ts.SyntaxKind.SourceFile)
       )
@@ -215,7 +215,7 @@ export function intergen(...argv: string[]): string {
       handleType(type)
     }
 
-    const typeDefinitions: Map<ts.Type, IClassDefinition> = new Map()
+    const typeDefinitions: Map<ts.Type, ClassDefinition> = new Map()
     function handleType(type: ts.Type) {
       if (typeDefinitions.has(type)) {
         return
@@ -255,7 +255,7 @@ export function intergen(...argv: string[]): string {
       const filterClassTypeParameters =
         (t: ts.Type) => typeParameters.every(tp => tp !== t)
 
-      const classProperties: IClassProperty[] = properties
+      const classProperties: ClassProperty[] = properties
       .filter(filterInvisibleProperties)
       .map(p => {
         const vd = p.valueDeclaration
@@ -289,7 +289,7 @@ export function intergen(...argv: string[]): string {
 
       allRelevantTypes.push(...relevantTypeParameters)
 
-      const classDef: IClassDefinition = {
+      const classDef: ClassDefinition = {
         name: typeToString(type),
         type,
         // name: symbol.getName(),
@@ -345,11 +345,11 @@ export function intergen(...argv: string[]): string {
     for (const classDef of classDefs) {
       setTypeName(classDef.type, nameMappings)
       for (const t of classDef.allRelevantTypes) {
-        setTypeName(classDef.type, nameMappings)
+        setTypeName(t, nameMappings)
       }
     }
 
-    function createInterface(classDef: IClassDefinition): string {
+    function createInterface(classDef: ClassDefinition): string {
       const name = nameMappings.get(classDef.type)!
       const start = `export interface ${name} {`
       const properties = classDef.properties.map(p => {

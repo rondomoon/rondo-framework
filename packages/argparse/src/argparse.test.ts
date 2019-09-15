@@ -1,4 +1,4 @@
-import {argparse, arg, IArgsConfig} from './argparse'
+import { arg, argparse } from './argparse'
 
 describe('argparse', () => {
 
@@ -418,7 +418,7 @@ Positional arguments:
     expect(() => argparse({
       a: {
         type: 'test',
-      } as any,
+      } as any,  // eslint-disable-line
     }).parse([CMD, '-a'])).toThrowError(/Unknown type: test/)
   })
 

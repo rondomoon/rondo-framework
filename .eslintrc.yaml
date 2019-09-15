@@ -1,0 +1,32 @@
+extends:
+ - eslint:recommended
+ - plugin:@typescript-eslint/eslint-recommended
+ - plugin:@typescript-eslint/recommended
+rules:
+  max-len:
+    - warn
+    - code: 80
+      ignorePattern: '^import .* from '
+  # semi:
+  #   - warn
+  #   - never
+  # interface-name-prefix:
+  '@typescript-eslint/member-delimiter-style':
+    - error
+    - multiline:
+        delimiter: none
+      singleline:
+        delimiter: comma
+  '@typescript-eslint/explicit-function-return-type': off
+  '@typescript-eslint/no-non-null-assertion': off
+  '@typescript-eslint/no-use-before-define': off
+overrides:
+  - files:
+    - '*.test.ts'
+    - '*.test.tsx'
+    rules:
+      '@typescript-eslint/no-explicit-any': off
+  - files:
+    - '*.js'
+    env:
+      node: true
