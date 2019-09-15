@@ -1,9 +1,9 @@
 import { LogLevel } from './LogLevel'
 
-export interface IMessage {
+export interface Message {
   loggerName: string
   level: LogLevel
   timestamp: Date
   message: string
-  params: any[]
+  params: unknown[]
 }

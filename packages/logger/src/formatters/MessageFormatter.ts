@@ -1,5 +1,5 @@
-import { IFormatter } from './IFormatter'
-import { IMessage } from '../IMessage'
+import { Formatter } from './Formatter'
+import { Message } from '../Message'
 import { LogLevel } from '../LogLevel'
 import { format } from 'util'
 
@@ -13,8 +13,8 @@ function padleft(str: string, len: number) {
   return str
 }
 
-export class MessageFormatter implements IFormatter {
-  format(message: IMessage) {
+export class MessageFormatter implements Formatter {
+  format(message: Message) {
     message.message = format(
       '%s %s %s',
       message.loggerName,

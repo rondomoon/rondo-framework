@@ -1,11 +1,12 @@
 import stdMocks from 'std-mocks'
-import loggerFactory, { LoggerFactory } from './'
+import loggerFactory from './'
+import { SimpleLoggerFactory } from './SimpleLoggerFactory'
 
-describe('LoggerFactory', () => {
+describe('SimpleLoggerFactory', () => {
 
-  let getLogger: typeof LoggerFactory.prototype.getLogger
+  let getLogger: typeof SimpleLoggerFactory.prototype.getLogger
   beforeEach(() => {
-    getLogger = LoggerFactory.init({
+    getLogger = SimpleLoggerFactory.init({
       logs: 'test1:verbose,-test3,t4,logtest5',
     })
     .getLogger
@@ -73,10 +74,10 @@ describe('LoggerFactory', () => {
 
   describe('create', () => {
     it('creates a logger with defaults', () => {
-      LoggerFactory.init()
+      SimpleLoggerFactory.init()
     })
     it('logs all', () => {
-      const l = LoggerFactory.init({ logs: '*' }).getLogger('test')
+      const l = SimpleLoggerFactory.init({ logs: '*' }).getLogger('test')
       l.info('test info')
       l.debug('test debug')
       expect((global.console.debug as any).mock.calls).toEqual([])

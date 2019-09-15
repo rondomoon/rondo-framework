@@ -8,5 +8,6 @@ export enum LogLevel {
 }
 
 export function isLogLevel(value: string): value is keyof typeof LogLevel {
-  return LogLevel.hasOwnProperty(value) && isNaN(Number(value))
+  return Object.prototype.hasOwnProperty
+  .call(LogLevel, value) && isNaN(Number(value))
 }

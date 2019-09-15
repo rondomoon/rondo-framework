@@ -1,2 +1,2 @@
-export * from './IFormatter'
+export * from './Formatter'
 export * from './MessageFormatter'

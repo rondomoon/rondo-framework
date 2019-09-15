@@ -1,11 +1,11 @@
-import { ITransport } from './ITransport'
-import { IMessage } from '../IMessage'
+import { Transport } from './Transport'
+import { Message } from '../Message'
 import { LogLevel } from '../LogLevel'
 
-export class ConsoleTransport implements ITransport {
+export class ConsoleTransport implements Transport {
   constructor(readonly level: LogLevel) {}
 
-  write(entry: IMessage) {
+  write(entry: Message) {
     if (entry.level <= this.level) {
       switch (entry.level) {
         case LogLevel.ERROR:
@@ -24,6 +24,7 @@ export class ConsoleTransport implements ITransport {
         case LogLevel.DEBUG:
           // tslint:disable-next-line
           console.debug(entry.message)
+          break
         case LogLevel.OFF:
           // do nothing
       }

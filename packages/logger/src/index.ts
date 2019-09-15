@@ -1,11 +1,11 @@
-export * from './ILoggerFactory'
-export * from './IMessage'
+export * from './LoggerFactory'
+export * from './Message'
 export * from './LogLevel'
 export * from './Logger'
 export * from './LoggerFactory'
 
-import {LoggerFactory} from './LoggerFactory'
-export default LoggerFactory.init()
+import {SimpleLoggerFactory} from './SimpleLoggerFactory'
+export default SimpleLoggerFactory.init()
 
 import * as transports from './transports'
 export {transports}

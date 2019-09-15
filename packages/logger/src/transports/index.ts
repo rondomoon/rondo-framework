@@ -1,2 +1,2 @@
 export * from './ConsoleTransport'
-export * from './ITransport'
+export * from './Transport'
