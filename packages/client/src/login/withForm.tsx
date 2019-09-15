@@ -1,7 +1,7 @@
 import React from 'react'
-import {IPendingAction} from '@rondo.dev/redux'
+import {PendingAction} from '@rondo.dev/redux'
 
-export interface IComponentProps<Data> {
+export interface ComponentProps<Data> {
   onSubmit: () => void
   onChange: (name: string, value: string) => void
   // TODO clear data on successful submission. This is important to prevent
@@ -9,29 +9,29 @@ export interface IComponentProps<Data> {
   data: Data
 }
 
-export interface IFormHOCProps<Data> {
-  onSubmit: (props: Data) => IPendingAction<any, any>
+export interface FormHOCProps<Data> {
+  onSubmit: (props: Data) => PendingAction<unknown, string>
   // TODO figure out what would happen if the underlying child component
   // would have the same required property as the HOC, like onSuccess?
   onSuccess?: () => void
   clearOnSuccess?: boolean
 }
 
-export interface IFormHOCState<Data> {
+export interface FormHOCState<Data> {
   error: string
   data: Data
 }
 
-export function withForm<Data, Props extends IComponentProps<Data>>(
+export function withForm<Data, Props extends ComponentProps<Data>>(
   Component: React.ComponentType<Props>,
   initialState: Data,
 ) {
 
   type OtherProps = Pick<Props,
-    Exclude<keyof Props, keyof IComponentProps<Data>>>
-  type T = IFormHOCProps<Data> & OtherProps
+    Exclude<keyof Props, keyof ComponentProps<Data>>>
+  type T = FormHOCProps<Data> & OtherProps
 
-  return class FormHOC extends React.PureComponent<T, IFormHOCState<Data>> {
+  return class FormHOC extends React.PureComponent<T, FormHOCState<Data>> {
     constructor(props: T) {
       super(props)
       this.state = {
@@ -78,7 +78,9 @@ export function withForm<Data, Props extends IComponentProps<Data>>(
       // https://github.com/Microsoft/TypeScript/issues/28938
       return (
         <Component
-          {...otherProps as any}
+          {
+            ...otherProps as any // eslint-disable-line
+          }
           data={this.state}
           onSubmit={this.handleSubmit}
           onChange={this.handleChange}

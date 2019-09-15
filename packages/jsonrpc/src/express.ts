@@ -2,7 +2,7 @@ import { Logger } from '@rondo.dev/logger'
 import express, { ErrorRequestHandler, Request, Response, Router } from 'express'
 import { createError, ErrorResponse, isRPCError } from './error'
 import { IDEMPOTENT_METHOD_REGEX } from './idempotent'
-import { createRpcService, ERROR_METHOD_NOT_FOUND, ERROR_SERVER, IRequest, SuccessResponse } from './jsonrpc'
+import { createRpcService, ERROR_METHOD_NOT_FOUND, ERROR_SERVER, Request as RPCRequest, SuccessResponse } from './jsonrpc'
 import { FunctionPropertyNames } from './types'
 
 export type TGetContext<Context> = (req: Request) => Promise<Context> | Context
@@ -16,13 +16,13 @@ export interface RPCReturnType {
   router(): Router
 }
 
-export interface InvocationDetails<A extends IRequest, Context> {
+export interface InvocationDetails<A extends RPCRequest, Context> {
   context: Context
   path: string
   request: A
 }
 
-async function defaultHook<A extends IRequest, R, Context>(
+async function defaultHook<A extends RPCRequest, R, Context>(
   details: InvocationDetails<A, Context>,
   invoke: () => Promise<R>,
 ): Promise<R> {
@@ -33,7 +33,7 @@ async function defaultHook<A extends IRequest, R, Context>(
 export function jsonrpc<Context>(
   getContext: TGetContext<Context>,
   logger: Logger,
-  hook: <A extends IRequest, R>(
+  hook: <A extends RPCRequest, R>(
     details: InvocationDetails<A, Context>,
     invoke: (request?: A) => Promise<R>) => Promise<R> = defaultHook,
   idempotentMethodRegex = IDEMPOTENT_METHOD_REGEX,

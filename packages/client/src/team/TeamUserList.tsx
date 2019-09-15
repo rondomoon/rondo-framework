@@ -1,11 +1,11 @@
-import { IUser, IUserInTeam, TReadonlyRecord, TeamActions, UserActions, Team } from '@rondo.dev/common'
+import { User, UserInTeam, ReadonlyRecord, TeamActions, UserActions, Team } from '@rondo.dev/common'
 import { Button, Control, Heading, Help, Input, Panel, PanelBlock, PanelHeading } from 'bloomer'
 import React from 'react'
 import { FaCheck, FaTimes, FaUser } from 'react-icons/fa'
 
 const EMPTY_ARRAY: ReadonlyArray<string> = []
 
-export interface ITeamUsersProps {
+export interface TeamUsersProps {
   // fetchMyTeams: () => void,
   fetchUsersInTeam: TeamActions['findUsers']
   findUserByEmail: UserActions['findUserByEmail']
@@ -14,29 +14,29 @@ export interface ITeamUsersProps {
   onRemoveUser: TeamActions['removeUser']
 
   team: Team
-  userKeysByTeamId: TReadonlyRecord<number, ReadonlyArray<string>>
-  usersByKey: TReadonlyRecord<string, IUserInTeam>
+  userKeysByTeamId: ReadonlyRecord<number, ReadonlyArray<string>>
+  usersByKey: ReadonlyRecord<string, UserInTeam>
 }
 
-export interface ITeamUserProps {
+export interface TeamUserProps {
   onRemoveUser: (
     params: {userId: number, teamId: number, roleId: number}) => void
-  user: IUserInTeam
+  user: UserInTeam
 }
 
-export interface IAddUserProps {
+export interface AddUserProps {
   onAddUser: TeamActions['addUser']
   onSearchUser: UserActions['findUserByEmail']
   teamId: number
 }
 
-export interface IAddUserState {
+export interface AddUserState {
   error: string
   email: string
-  user?: IUser
+  user?: User
 }
 
-export class TeamUser extends React.PureComponent<ITeamUserProps> {
+export class TeamUser extends React.PureComponent<TeamUserProps> {
   handleRemoveUser = async () => {
     const {onRemoveUser, user} = this.props
     await onRemoveUser({...user, roleId: 1})
@@ -65,8 +65,8 @@ export class TeamUser extends React.PureComponent<ITeamUserProps> {
   }
 }
 
-export class AddUser extends React.PureComponent<IAddUserProps, IAddUserState> {
-  constructor(props: IAddUserProps) {
+export class AddUser extends React.PureComponent<AddUserProps, AddUserState> {
+  constructor(props: AddUserProps) {
     super(props)
     this.state = {
       error: '',
@@ -131,10 +131,10 @@ export class AddUser extends React.PureComponent<IAddUserProps, IAddUserState> {
   }
 }
 
-export class TeamUserList extends React.PureComponent<ITeamUsersProps> {
+export class TeamUserList extends React.PureComponent<TeamUsersProps> {
   async componentDidMount() {
     await this.fetchUsersInTeam(this.props.team.id)
-  } async componentWillReceiveProps(nextProps: ITeamUsersProps) {
+  } async componentWillReceiveProps(nextProps: TeamUsersProps) {
     const {team} = nextProps
     if (team.id !== this.props.team.id) {
       this.fetchUsersInTeam(team.id)

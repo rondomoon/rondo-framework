@@ -5,7 +5,7 @@ import {TestUtils} from '../test-utils'
 
 const t = new TestUtils()
 
-describe('CrumbsConnector', () => {
+describe('configrueCrumbs', () => {
 
   const createTestCase = () => t.withProvider({
     reducers: {Crumbs: Feature.Crumbs},
@@ -23,7 +23,7 @@ describe('CrumbsConnector', () => {
       current: 'Three',
     },
   })
-  .withComponent(select => new Feature.CrumbsConnector().connect(select))
+  .withComponent(select => Feature.configureCrumbs(select))
   .withJSX(Component => <MemoryRouter><Component /></MemoryRouter>)
 
   describe('render', () => {

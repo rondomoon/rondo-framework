@@ -1,4 +1,4 @@
-import { ITeamService, ITeamUsers, IUserService, Team, TeamActions, TeamServiceMethods, UserActions, UserServiceMethods } from '@rondo.dev/common'
+import { TeamService, TeamUsers, UserService, Team, TeamActions, TeamServiceMethods, UserActions, UserServiceMethods } from '@rondo.dev/common'
 import { createActions } from '@rondo.dev/jsonrpc'
 import createClientMock from '@rondo.dev/jsonrpc/lib/createClientMock'
 import { getError } from '@rondo.dev/test-utils'
@@ -17,9 +17,9 @@ describe('TeamConnector', () => {
   }
 
   const [teamClient, teamClientMock] =
-    createClientMock<ITeamService>(TeamServiceMethods)
-  const [userClient, userClientMock] =
-    createClientMock<IUserService>(UserServiceMethods)
+    createClientMock<TeamService>(TeamServiceMethods)
+  const [userClient] =
+    createClientMock<UserService>(UserServiceMethods)
   let teamActions!: TeamActions
   let userActions!: UserActions
   beforeEach(() => {
@@ -57,7 +57,7 @@ describe('TeamConnector', () => {
     userTeams: [],
   }]
 
-  const users: ITeamUsers = {
+  const users: TeamUsers = {
     teamId: 123,
     usersInTeam: [{
       teamId: 123,
@@ -111,7 +111,6 @@ describe('TeamConnector', () => {
     })
 
     it('displays an error', async () => {
-      const error = {error: 'An error'}
       teamClientMock.create.mockRejectedValue(new Error('Test Error'))
       const {render} = createTestProvider()
       const {node, waitForActions} = render({

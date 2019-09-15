@@ -1,4 +1,4 @@
-import { IUserInTeam, TReadonlyRecord, TeamActions, UserActions, Team } from '@rondo.dev/common'
+import { UserInTeam, ReadonlyRecord, TeamActions, UserActions, Team } from '@rondo.dev/common'
 import { Panel, PanelBlock, PanelHeading } from 'bloomer'
 import { History, Location } from 'history'
 import React from 'react'
@@ -8,24 +8,24 @@ import { TeamEditor } from './TeamEditor'
 import { TeamList } from './TeamList'
 import { TeamUserList } from './TeamUserList'
 
-export interface ITeamManagerProps {
+export interface TeamManagerProps {
   history: History
   location: Location
-  match: Match<any>
+  match: Match<any> // eslint-disable-line
 
   ListButtons?: React.ComponentType<{team: Team}>
 
   teamActions: TeamActions
   findUserByEmail: UserActions['findUserByEmail']
 
-  teamsById: TReadonlyRecord<number, Team>
+  teamsById: ReadonlyRecord<number, Team>
   teamIds: ReadonlyArray<number>
 
-  userKeysByTeamId: TReadonlyRecord<number, ReadonlyArray<string>>
-  usersByKey: TReadonlyRecord<string, IUserInTeam>
+  userKeysByTeamId: ReadonlyRecord<number, ReadonlyArray<string>>
+  usersByKey: ReadonlyRecord<string, UserInTeam>
 }
 
-export class TeamManager extends React.PureComponent<ITeamManagerProps> {
+export class TeamManager extends React.PureComponent<TeamManagerProps> {
   async componentDidMount() {
     await this.props.teamActions.find()
   }

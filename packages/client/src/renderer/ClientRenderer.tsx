@@ -1,30 +1,27 @@
+import { createBrowserHistory } from 'history'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {Action} from 'redux'
-import {IAPIDef} from '@rondo.dev/common'
-import {IClientConfig} from './IClientConfig'
-import {IHTTPClient, HTTPClient} from '@rondo.dev/http-client'
-import {IRenderer} from './IRenderer'
-import {Provider} from 'react-redux'
-import {Router} from 'react-router-dom'
-import {Store} from 'redux'
-import {createBrowserHistory} from 'history'
+import { Provider } from 'react-redux'
+import { Router } from 'react-router-dom'
+import { Store } from 'redux'
+import { ClientConfig } from './ClientConfig'
+import { Renderer } from './Renderer'
 
-export interface IClientRendererParams<Props> {
+export interface ClientRendererParams<Props> {
   readonly RootComponent: React.ComponentType<Props>
   readonly target?: HTMLElement
   readonly hydrate: boolean // TODO make this better
 }
 
 export class ClientRenderer<Props>
-  implements IRenderer<Props> {
-  constructor(readonly params: IClientRendererParams<Props>) {}
+  implements Renderer<Props> {
+  constructor(readonly params: ClientRendererParams<Props>) {}
 
   render<State>(
     url: string,
     store: Store<State>,
     props: Props,
-    config: IClientConfig,
+    config: ClientConfig,
   ) {
     const {
       RootComponent,

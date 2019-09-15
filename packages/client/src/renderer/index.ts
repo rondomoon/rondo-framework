@@ -1,4 +1,4 @@
 export * from './ClientRenderer'
-export * from './IClientConfig'
-export * from './IRenderer'
+export * from './ClientConfig'
+export * from './Renderer'
 export * from './isClientSide'

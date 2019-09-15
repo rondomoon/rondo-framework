@@ -4,7 +4,7 @@ declare module 'react-ssr-prepass' {
   export type Visitor = (
     element: ReactElement,
     instance?: Component,
-  ) => void | Promise<any>
+  ) => void | Promise<unknown>
 
   function ssrPrepass(node: ReactElement, visitor?: Visitor): Promise<void>
 

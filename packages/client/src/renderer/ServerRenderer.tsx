@@ -8,6 +8,10 @@ import { Store } from 'redux'
 import { IClientConfig } from './IClientConfig'
 import { IRenderer } from './IRenderer'
 
+interface ComponentWithFetchData {
+  fetchData(): Promise<unknown>
+}
+
 export class ServerRenderer<Props> implements IRenderer<Props> {
   constructor(
     readonly RootComponent: React.ComponentType<Props>,
@@ -17,7 +21,7 @@ export class ServerRenderer<Props> implements IRenderer<Props> {
     store: Store<State>,
     props: Props,
     config: IClientConfig,
-    host: string = '',
+    host = '',
     headers: Record<string, string> = {},
   ) {
     const {RootComponent} = this
@@ -39,7 +43,7 @@ export class ServerRenderer<Props> implements IRenderer<Props> {
 
     await ssrPrepass(element, async (el, component) => {
       if (component && 'fetchData' in component) {
-        await (component as any).fetchData()
+        await (component as ComponentWithFetchData).fetchData()
       }
     })
     const stream = renderToNodeStream(element)

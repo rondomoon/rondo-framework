@@ -1,18 +1,18 @@
-import { indexBy, Team as _Team, IUserInTeam, TReadonlyRecord, without, TeamActions } from '@rondo.dev/common'
+import { indexBy, Team as _Team, UserInTeam, ReadonlyRecord, without, TeamActions } from '@rondo.dev/common'
 import { createReducer } from '@rondo.dev/jsonrpc'
 
-export interface ITeamState {
+export interface TeamState {
   readonly loading: number
   readonly error: string
 
   readonly teamIds: ReadonlyArray<number>
-  readonly teamsById: TReadonlyRecord<number, _Team>
+  readonly teamsById: ReadonlyRecord<number, _Team>
 
-  readonly userKeysByTeamId: TReadonlyRecord<number, ReadonlyArray<string>>
-  readonly usersByKey: TReadonlyRecord<string, IUserInTeam>
+  readonly userKeysByTeamId: ReadonlyRecord<number, ReadonlyArray<string>>
+  readonly usersByKey: ReadonlyRecord<string, UserInTeam>
 }
 
-const defaultState: ITeamState = {
+const defaultState: TeamState = {
   loading: 0,
   error: '',
 
@@ -104,7 +104,7 @@ export const Team = createReducer('teamService', defaultState)
     .reduce((obj, userInTeam) => {
       obj[getUserKey(userInTeam)] = userInTeam
       return obj
-    }, {} as Record<string, IUserInTeam>)
+    }, {} as Record<string, UserInTeam>)
 
     return {
       userKeysByTeamId: {

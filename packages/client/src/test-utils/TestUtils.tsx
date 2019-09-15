@@ -1,6 +1,6 @@
+/* eslint @typescript-eslint/no-explicit-any: 0 */
 import React from 'react'
 import ReactDOM from 'react-dom'
-import T from 'react-dom/test-utils'
 import {createStore, TStateSelector, WaitMiddleware} from '@rondo.dev/redux'
 import {Provider} from 'react-redux'
 import {
@@ -10,20 +10,18 @@ import {
   Reducer,
   ReducersMapObject,
   combineReducers,
-  Store as ReduxStore,
-  Unsubscribe,
 } from 'redux'
-import { format } from 'util'
 
-interface IRenderParams<State, LocalState> {
+interface RenderParams<State, LocalState> {
   reducers: ReducersMapObject<State, any>
   select: TStateSelector<State, LocalState>
-  // getComponent: (
-  //   select: TStateSelector<State, LocalState>) => React.ComponentType<Props>,
-  // customJSX?: (
-  //   Component: React.ComponentType<Props>,
-  //   props: Props,
-  // ) => JSX.Element
+}
+
+export class TestContainer extends React.Component<{}> {
+  ref = React.createRef<HTMLDivElement>()
+  render() {
+    return <div ref={this.ref}>{this.props.children}</div>
+  }
 }
 
 export class TestUtils {
@@ -34,9 +32,10 @@ export class TestUtils {
 
   render(jsx: JSX.Element) {
     const $div = document.createElement('div')
+    ReactDOM.render(<TestContainer>{jsx}</TestContainer>, $div)
     const component = ReactDOM.render(
-      <div>{jsx}</div>, $div) as unknown as React.Component<any>
-    const node = (ReactDOM.findDOMNode(component) as Element).children[0]
+      <div>{jsx}</div>, $div) as unknown as TestContainer
+    const node = component.ref.current!
     return {
       component,
       node,
@@ -55,7 +54,7 @@ export class TestUtils {
    * method to render the connected component with a `Provider`.
    */
   withProvider<State, LocalState, A extends Action<any> = AnyAction>(
-    params: IRenderParams<State, LocalState>,
+    params: RenderParams<State, LocalState>,
   ) {
     const {reducers, select} = params
 
@@ -102,7 +101,7 @@ export class TestUtils {
         return {
           ...result,
           async waitForActions(timeout = 2000) {
-            await waitMiddleware.waitForRecorded(recorder)
+            await waitMiddleware.waitForRecorded(recorder, timeout)
           },
         }
       }
@@ -112,7 +111,7 @@ export class TestUtils {
         return self
       }
 
-      const self: ISelf<
+      const self: Self<
         Props, typeof store, typeof Component, CreateJSX
       > = {
         render,
@@ -128,14 +127,14 @@ export class TestUtils {
   }
 }
 
-interface ISelf<Props, Store, Component, CreateJSX> {
+interface Self<Props, Store, Component, CreateJSX> {
   render: (props: Props) => {
-    component: React.Component<any>
+    component: TestContainer
     node: Element
     waitForActions(timeout?: number): Promise<void>
   }
   store: Store
   Component: Component
   withJSX: (localCreateJSX: CreateJSX)
-  => ISelf<Props, Store, Component, CreateJSX>
+  => Self<Props, Store, Component, CreateJSX>
 }

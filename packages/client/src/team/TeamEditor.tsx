@@ -3,23 +3,27 @@ import React from 'react'
 import { FaCheck, FaEdit, FaPlusSquare } from 'react-icons/fa'
 import { TeamActions, Team } from '@rondo.dev/common'
 
-export type TTeamEditorProps = {
+interface AddTeamProps {
   type: 'add'
   onAddTeam: TeamActions['create']
-} | {
+}
+
+interface UpdateTeamProps {
   type: 'update'
   onUpdateTeam: TeamActions['update']
   team: Team
 }
 
-export interface ITeamEditorState {
+export type TTeamEditorProps = AddTeamProps | UpdateTeamProps
+
+export interface TeamEditorState {
   // TODO use redux state for errors!
   error: string
   name: string
 }
 
 export class TeamEditor
-extends React.PureComponent<TTeamEditorProps, ITeamEditorState> {
+extends React.PureComponent<TTeamEditorProps, TeamEditorState> {
   constructor(props: TTeamEditorProps) {
     super(props)
     this.state = {
@@ -33,7 +37,7 @@ extends React.PureComponent<TTeamEditorProps, ITeamEditorState> {
   componentWillReceiveProps(nextProps: TTeamEditorProps) {
     if (nextProps.type === 'update') {
       const {team} = nextProps
-      if (team !== (this.props as any).team) {
+      if (team !== (this.props as UpdateTeamProps).team) {
         this.setState({
           name: this.getName(team),
         })

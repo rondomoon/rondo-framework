@@ -1,24 +1,24 @@
-import { TReadonlyRecord, Team, TeamActions } from '@rondo.dev/common'
+import { ReadonlyRecord, Team, TeamActions } from '@rondo.dev/common'
 import { Button, Panel, PanelBlock, PanelHeading } from 'bloomer'
 import React from 'react'
 import { FaEdit, FaPlus, FaTimes } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 
-export interface ITeamListProps {
+export interface TeamListProps {
   ListButtons?: React.ComponentType<{team: Team}>
-  teamsById: TReadonlyRecord<number, Team>
+  teamsById: ReadonlyRecord<number, Team>
   teamIds: ReadonlyArray<number>
   onAddTeam: TeamActions['create']
   onRemoveTeam: TeamActions['remove']
 }
 
-export interface ITeamProps {
+export interface TeamProps {
   ListButtons?: React.ComponentType<{team: Team}>
   team: Team
   onRemoveTeam: TeamActions['remove']
 }
 
-export class TeamRow extends React.PureComponent<ITeamProps> {
+export class TeamRow extends React.PureComponent<TeamProps> {
   handleRemove = async () => {
     const {onRemoveTeam, team: {id}} = this.props
     await onRemoveTeam({id}).payload
@@ -53,7 +53,7 @@ export class TeamRow extends React.PureComponent<ITeamProps> {
   }
 }
 
-export class TeamList extends React.PureComponent<ITeamListProps> {
+export class TeamList extends React.PureComponent<TeamListProps> {
   render() {
     const {teamIds, teamsById} = this.props
 
