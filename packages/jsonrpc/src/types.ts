@@ -1,4 +1,4 @@
-import {IPendingAction, IResolvedAction, IRejectedAction} from '@rondo.dev/redux'
+import {PendingAction, ResolvedAction, RejectedAction} from '@rondo.dev/redux'
 
 export type ArgumentTypes<T> =
   T extends (...args: infer U) => infer R ? U : never
@@ -38,64 +38,64 @@ export type RPCClient<T> = {
   [K in keyof T]: PromisifyReturnType<T[K]>
 }
 
-export interface IRPCActions<ActionType extends string> {
-  [key: string]: (...a: any[]) => IRPCPendingAction<any, ActionType, typeof key>
+export interface RPCActionsRecord<ActionType extends string> {
+  [key: string]: (...a: any[]) => RPCPendingAction<any, ActionType, typeof key>
 }
 
 export type RPCActions<T, ActionType extends string> = {
   [K in keyof T]: (...a: ArgumentTypes<T[K]>) =>
-    IRPCPendingAction<UnwrapPromise<RetType<T[K]>>, ActionType, K>
+    RPCPendingAction<UnwrapPromise<RetType<T[K]>>, ActionType, K>
 }
 
 export type RPCReduxHandlers<T, State> = {
   [K in keyof T]: (
     state: State,
-    action: TResolved<TPending<RetType<T[K]>>>,
+    action: GetResolvedAction<GetPendingAction<RetType<T[K]>>>,
   ) => Partial<State>
 }
 
-export interface IRPCPendingAction<
+export interface RPCPendingAction<
   T, ActionType extends string, Method extends string | number | symbol
-> extends IPendingAction<T, ActionType> {
+> extends PendingAction<T, ActionType> {
   method: Method
 }
 
-export interface IRPCResolvedAction<
+export interface RPCResolvedAction<
   T, ActionType extends string, Method extends string | symbol | number
-> extends IResolvedAction<T, ActionType> {
+> extends ResolvedAction<T, ActionType> {
   method: Method
 }
 
-export interface IRPCRejectedAction<
+export interface RPCRejectedAction<
   ActionType extends string, Method extends string | symbol | number
-> extends IRejectedAction<ActionType> {
+> extends RejectedAction<ActionType> {
   method: Method
 }
 
 export type TRPCAction<
   T, ActionType extends string, Method extends string | number | symbol
 > =
-  IRPCPendingAction<T, ActionType, Method>
-  | IRPCResolvedAction<T, ActionType, Method>
-  | IRPCRejectedAction<ActionType, Method>
+  RPCPendingAction<T, ActionType, Method>
+  | RPCResolvedAction<T, ActionType, Method>
+  | RPCRejectedAction<ActionType, Method>
 
-export type TResolved<A> =
-  A extends IRPCPendingAction<infer T, infer ActionType, infer Method>
-  ? IRPCResolvedAction<T, ActionType, Method>
+export type GetResolvedAction<A> =
+  A extends RPCPendingAction<infer T, infer ActionType, infer Method>
+  ? RPCResolvedAction<T, ActionType, Method>
   : never
 
-export type TRejected<A> =
-  A extends IRPCPendingAction<infer T, infer ActionType, infer Method>
-  ? IRPCRejectedAction<ActionType, Method>
+export type GetRejectedAction<A> =
+  A extends RPCPendingAction<infer T, infer ActionType, infer Method>
+  ? RPCRejectedAction<ActionType, Method>
   : never
 
-export type TPending<A> =
-  A extends IRPCPendingAction<infer T, infer ActionType, infer Method>
-  ? IRPCPendingAction<T, ActionType, Method>
+export type GetPendingAction<A> =
+  A extends RPCPendingAction<infer T, infer ActionType, infer Method>
+  ? RPCPendingAction<T, ActionType, Method>
   : never
 
 type Values<T> = T[keyof T]
-export type TPendingActions<T> = TPending<RetType<Values<T>>>
-export type TResolvedActions<T> = TResolved<TPendingActions<T>>
+export type TPendingActions<T> = GetPendingAction<RetType<Values<T>>>
+export type TResolvedActions<T> = GetResolvedAction<TPendingActions<T>>
 export type TAllActions<T> = TPendingActions<T>
-  | TResolvedActions<T> | TRejected<TPendingActions<T>>
+  | TResolvedActions<T> | GetRejectedAction<TPendingActions<T>>

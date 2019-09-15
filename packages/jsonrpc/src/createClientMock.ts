@@ -1,6 +1,6 @@
 import { FunctionPropertyNames, RPCClient } from './types'
 
-export type TMocked<T> = {
+export type RPCClientMock<T> = {
   [K in keyof T]:
     T[K] extends (...args: infer A) => infer R
     ? jest.Mock<R, A>
@@ -20,7 +20,7 @@ export type TMocked<T> = {
  */
 export default function createClientMock<T extends object>(
   methods: Array<FunctionPropertyNames<T>>,
-): [RPCClient<T>, TMocked<RPCClient<T>>] {
+): [RPCClient<T>, RPCClientMock<RPCClient<T>>] {
   const client = methods
   .reduce((obj, prop) => {
     obj[prop] = jest.fn()
@@ -29,6 +29,6 @@ export default function createClientMock<T extends object>(
 
   return [
     client as RPCClient<T>,
-    client as TMocked<RPCClient<T>>,
+    client as RPCClientMock<RPCClient<T>>,
   ]
 }

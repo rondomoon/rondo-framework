@@ -1,7 +1,7 @@
 export type TId = number | string
 import {ArgumentTypes, FunctionPropertyNames, RetType} from './types'
 import {isPromise} from './isPromise'
-import {createError, IErrorResponse, IErrorWithData} from './error'
+import {createError, ErrorResponse} from './error'
 import {getValidatorsForMethod, getValidatorsForInstance} from './ensure'
 import {Validate} from './ensure'
 
@@ -35,8 +35,8 @@ export const ERROR_SERVER = {
   message: 'Server error',
 }
 
-export function pick<T, K extends FunctionPropertyNames<T>>(t: T, keys: K[])
-  : Pick<T, K> {
+export function pick<T, K extends FunctionPropertyNames<T>>(
+  t: T, keys: K[]): Pick<T, K> {
   return keys.reduce((obj, key) => {
     // tslint:disable-next-line
     const fn = t[key] as unknown as Function
@@ -48,8 +48,8 @@ export function pick<T, K extends FunctionPropertyNames<T>>(t: T, keys: K[])
 export function getAllMethods<T>(obj: T): Array<FunctionPropertyNames<T>> {
   const props = new Set<string>()
   do {
-    const l = Object.getOwnPropertyNames(obj)
-    .filter((p, i, arr) => {
+    Object.getOwnPropertyNames(obj)
+    .filter(p => {
       return typeof (obj as any)[p] === 'function' &&
         p.startsWith('_') === false &&
         p !== 'constructor'
@@ -61,24 +61,25 @@ export function getAllMethods<T>(obj: T): Array<FunctionPropertyNames<T>> {
   return Array.from(props) as unknown as Array<FunctionPropertyNames<T>>
 }
 
-export interface IRequest<M extends string = any, A = any[]> {
+export interface Request<M extends string = any, A = any[]> {
   jsonrpc: '2.0'
   id: TId | null
   method: M
   params: A
 }
 
-export interface ISuccessResponse<T> {
+export interface SuccessResponse<T> {
   jsonrpc: '2.0'
   id: TId
   result: T
   error: null
 }
 
-export type IResponse<T = any> = ISuccessResponse<T> | IErrorResponse<T>
+export type Response<T = any> = SuccessResponse<T> | ErrorResponse<T>
 
-export function createSuccessResponse<T>(id: number | string, result: T)
-  : ISuccessResponse<T> {
+export function createSuccessResponse<T>(
+  id: number | string, result: T
+): SuccessResponse<T> {
   return {
     jsonrpc: '2.0',
     id,
@@ -125,9 +126,9 @@ export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
     pick(service, getAllMethods(service))
   return {
     async invoke<Context>(
-      req: IRequest<M, ArgumentTypes<T[M]>>,
+      req: Request<M, ArgumentTypes<T[M]>>,
       context: Context,
-    ): Promise<ISuccessResponse<RetType<T[M]>> | null> {
+    ): Promise<SuccessResponse<RetType<T[M]>> | null> {
       const {id, method, params} = req
 
       if (
@@ -145,7 +146,7 @@ export const createRpcService = <T, M extends FunctionPropertyNames<T>>(
       const isNotification = req.id === null || req.id === undefined
 
       if (
-        !rpcService.hasOwnProperty(method) ||
+        !Object.prototype.hasOwnProperty.call(rpcService, method) ||
         typeof rpcService[method] !== 'function'
       ) {
         throw createError(ERROR_METHOD_NOT_FOUND, {

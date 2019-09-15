@@ -7,15 +7,15 @@ import {
 
 describe('ensure', () => {
 
-  interface IContext {
+  interface Context {
     userId: number
   }
 
-  const validate: Validate<IContext> = c => c.userId > 0
+  const validate: Validate<Context> = c => c.userId > 0
 
   it('decorates class methods', () => {
     class Service {
-      @ensure<IContext>(validate)
+      @ensure<Context>(validate)
       fetchData() {
         return 1
       }
@@ -32,7 +32,7 @@ describe('ensure', () => {
 
   it('works with properties/instance method definitions', () => {
     class Service {
-      @ensure<IContext>(validate)
+      @ensure<Context>(validate)
       fetchData = () => 1
     }
     const s = new Service()

@@ -2,22 +2,22 @@
  * @jest-environment node
  */
 
+import { createStore } from '@rondo.dev/redux'
 import bodyParser from 'body-parser'
 import express from 'express'
-import {AddressInfo} from 'net'
-import {Server} from 'http'
-import {WithContext, TPendingActions, TAllActions} from './types'
-import {combineReducers} from 'redux'
-import {createActions, createReducer} from './redux'
-import {createRemoteClient} from './remote'
-import {createStore} from '@rondo.dev/redux'
-import {jsonrpc} from './express'
-import {keys} from 'ts-transformer-keys'
-import {noopLogger} from './test-utils'
+import { Server } from 'http'
+import { AddressInfo } from 'net'
+import { combineReducers } from 'redux'
+import { keys } from 'ts-transformer-keys'
+import { jsonrpc } from './express'
+import { createActions, createReducer } from './redux'
+import { createRemoteClient } from './remote'
+import { noopLogger } from './test-utils'
+import { WithContext } from './types'
 
 describe('createActions', () => {
 
-  interface IService {
+  interface Service {
     add(a: number, b: number): number
     addAsync(a: number, b: number): Promise<number>
     addStringsAsync(a: string, b: string): Promise<string>
@@ -26,25 +26,25 @@ describe('createActions', () => {
     throwError(bool: boolean): boolean
   }
 
-  interface IContext {
+  interface Context {
     userId: number
   }
 
-  class Service implements WithContext<IService, IContext> {
-    add(cx: IContext, a: number, b: number) {
+  class MyService implements WithContext<Service, Context> {
+    add(cx: Context, a: number, b: number) {
       return a + b
     }
-    addAsync(cx: IContext, a: number, b: number) {
+    addAsync(cx: Context, a: number, b: number) {
       return new Promise<number>(resolve => resolve(a + b))
     }
-    addStringsAsync(cx: IContext, a: string, b: string) {
+    addStringsAsync(cx: Context, a: string, b: string) {
       return new Promise<string>(resolve => resolve(a + b))
     }
-    addWithContext = (cx: IContext, a: number, b: number) =>
+    addWithContext = (cx: Context, a: number, b: number) =>
       a + b + cx.userId
-    addAsyncWithContext = (cx: IContext, a: number, b: number) =>
+    addAsyncWithContext = (cx: Context, a: number, b: number) =>
       new Promise<number>(resolve => resolve(a + b + cx.userId))
-    throwError(cx: IContext, bool: boolean) {
+    throwError(cx: Context, bool: boolean) {
       if (bool) {
         throw new Error('test')
       }
@@ -57,7 +57,7 @@ describe('createActions', () => {
   app.use(
     '/',
     jsonrpc(() => ({userId: 1000}), noopLogger)
-    .addService('/service', new Service(), keys<IService>())
+    .addService('/service', new MyService(), keys<Service>())
     .router(),
   )
 
@@ -78,8 +78,8 @@ describe('createActions', () => {
   })
 
   function getClient() {
-    const remoteClient = createRemoteClient<IService>(
-      baseUrl + '/service', keys<IService>())
+    const remoteClient = createRemoteClient<Service>(
+      baseUrl + '/service', keys<Service>())
     const client = createActions(remoteClient, 'myService')
 
     const defaultState = {
@@ -96,16 +96,14 @@ describe('createActions', () => {
         case 'addAsync':
         case 'addWithContext':
         case 'addAsyncWithContext':
-          const r1: number = action.payload
           return {
             ...state,
-            add: r1,
+            add: action.payload,
           }
         case 'addStringsAsync':
-          const r2: string = action.payload
           return {
             ...state,
-            addStringsAsync: r2,
+            addStringsAsync: action.payload,
           }
         default:
           return state
@@ -139,7 +137,7 @@ describe('createActions', () => {
           add: action.payload,
         }
       },
-      throwError(state, action) {
+      throwError(state) {
         return state
       },
     })

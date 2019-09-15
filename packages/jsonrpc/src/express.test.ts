@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser'
 import express from 'express'
 import request from 'supertest'
-import {IRequest} from './jsonrpc'
+import {Request} from './jsonrpc'
 import {createClient} from './supertest'
 import {ensure} from './ensure'
 import {jsonrpc} from './express'
@@ -10,11 +10,11 @@ import {WithContext} from './types'
 
 describe('jsonrpc', () => {
 
-  interface IContext {
+  interface Context {
     userId: number
   }
 
-  interface IService {
+  interface Service {
     add(a: number, b: number): number
     delay(): Promise<void>
     syncError(message: string): void
@@ -25,11 +25,11 @@ describe('jsonrpc', () => {
     addWithContext2(a: number, b: number): Promise<number>
   }
 
-  const ensureLoggedIn = ensure<IContext>(c => !!c.userId)
+  const ensureLoggedIn = ensure<Context>(c => !!c.userId)
 
-  class Service implements WithContext<IService, IContext> {
+  class MyService implements WithContext<Service, Context> {
     constructor(readonly time: number) {}
-    add(context: IContext, a: number, b: number) {
+    add(context: Context, a: number, b: number) {
       return a + b
     }
     multiply(...numbers: number[]) {
@@ -40,13 +40,13 @@ describe('jsonrpc', () => {
         setTimeout(resolve, this.time)
       })
     }
-    syncError(context: IContext, message: string) {
+    syncError(context: Context, message: string) {
       throw new Error(message)
     }
-    async asyncError(context: IContext, message: string) {
+    async asyncError(context: Context, message: string) {
       throw new Error(message)
     }
-    async httpError(context: IContext, statusCode: number, message: string) {
+    async httpError(context: Context, statusCode: number, message: string) {
       const err: any = new Error(message)
       err.statusCode = statusCode
       err.errors = [{
@@ -54,14 +54,14 @@ describe('jsonrpc', () => {
       }]
       throw err
     }
-    addWithContext = (ctx: IContext, a: number, b: number) => {
+    addWithContext = (ctx: Context, a: number, b: number) => {
       return a + b + ctx.userId
     }
     _private = () => {
       return 1
     }
     @ensureLoggedIn
-    addWithContext2(ctx: IContext, a: number, b: number) {
+    addWithContext2(ctx: Context, a: number, b: number) {
       return Promise.resolve(a + b + ctx!.userId)
     }
   }
@@ -72,8 +72,8 @@ describe('jsonrpc', () => {
     const app = express()
     app.use(bodyParser.json())
     app.use('/',
-      jsonrpc(req => ({userId}), noopLogger)
-      .addService('/myService', new Service(5), [
+      jsonrpc(() => ({userId}), noopLogger)
+      .addService('/myService', new MyService(5), [
         'add',
         'delay',
         'syncError',
@@ -87,7 +87,7 @@ describe('jsonrpc', () => {
     return app
   }
 
-  const client = createClient<IService>(createApp(), '/myService')
+  const client = createClient<Service>(createApp(), '/myService')
 
   async function getError(promise: Promise<unknown>) {
     let error
@@ -260,7 +260,7 @@ describe('jsonrpc', () => {
 
     describe('hook', () => {
 
-      let requests: IRequest[] = []
+      let requests: Request[] = []
       let results: any[] = []
       function create() {
         requests = []
@@ -268,12 +268,12 @@ describe('jsonrpc', () => {
 
         userId = 1000
         const app = express()
-        const myService = new Service(5)
+        const myService = new MyService(5)
         // console.log('service', myService, Object.
         app.use(bodyParser.json())
         app.use('/',
           jsonrpc(
-            req => Promise.resolve({userId}),
+            () => Promise.resolve({userId}),
             noopLogger,
             async (details, makeRequest) => {
               requests.push(details.request)

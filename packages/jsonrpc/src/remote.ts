@@ -21,7 +21,7 @@ export function createRemoteClient<T>(
     method: string,
     params: any[],
   ) {
-    const reqMethod = IDEMPOTENT_METHOD_REGEX.test(method) ? 'GET' : 'POST'
+    const reqMethod = idempotentMethodRegex.test(method) ? 'GET' : 'POST'
     const payloadKey = reqMethod === 'POST' ? 'data' : 'params'
 
     const response = await axios({

@@ -14,24 +14,25 @@ import {WithContext} from './types'
 
 describe('remote', () => {
 
-  interface IService {
+  interface Service {
     add(a: number, b: number): number
-    fetchItem(obj1: {a: number}, obj2: {b: number})
-      : Promise<{a: number, b: number}>
+    fetchItem(
+      obj1: {a: number}, obj2: {b: number}): Promise<{a: number, b: number}>
   }
-  const IServiceKeys = keys<IService>()
+  const IServiceKeys = keys<Service>()
 
-  class Service implements WithContext<IService, {}> {
+  class MyService implements WithContext<Service, {}> {
     add(ctx: {}, a: number, b: number) {
       return a + b
     }
-    async fetchItem(ctx: {}, obj1: {a: number}, obj2: {b: number})
-      : Promise<{a: number, b: number}> {
+    async fetchItem(
+      ctx: {}, obj1: {a: number}, obj2: {b: number}
+    ): Promise<{a: number, b: number}> {
       return Promise.resolve({...obj1, ...obj2})
     }
   }
 
-  const service = new Service()
+  const service = new MyService()
 
   function createApp() {
     const a = express()
@@ -65,7 +66,7 @@ describe('remote', () => {
 
   describe('idempotent method invocation (GET)', () => {
     it('creates a proxy for remote service', async () => {
-      const rpc = createRemoteClient<IService>(
+      const rpc = createRemoteClient<Service>(
         baseUrl + '/myService', IServiceKeys)
       const result = await rpc.fetchItem({a: 10}, {b: 20})
       expect(result).toEqual({a: 10, b: 20})
@@ -74,7 +75,7 @@ describe('remote', () => {
 
   describe('method invocation (POST)', () => {
     it('creates a proxy for remote service', async () => {
-      const rpc = createRemoteClient<IService>(
+      const rpc = createRemoteClient<Service>(
         baseUrl + '/myService', IServiceKeys)
       const result = await rpc.add(3, 7)
       expect(result).toBe(3 + 7)

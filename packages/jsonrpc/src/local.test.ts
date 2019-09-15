@@ -1,29 +1,27 @@
-import {createLocalClient} from './local'
-import {keys} from 'ts-transformer-keys'
-import {WithContext, WithoutContext, RPCClient} from './types'
+import { createLocalClient } from './local'
+import { WithContext } from './types'
 
 describe('local', () => {
 
-  interface IService {
+  interface Service {
     add(a: number, b: number): number
     addWithContext(a: number, b: number): number
   }
-  const IServiceKeys = keys<IService>()
 
-  interface IContext {
+  interface Context {
     userId: 1000
   }
 
-  class Service implements WithContext<IService, IContext> {
-    add(cx: IContext, a: number, b: number) {
+  class MyService implements WithContext<Service, Context> {
+    add(cx: Context, a: number, b: number) {
       return a + b
     }
-    addWithContext = (cx: IContext, a: number, b: number) => {
+    addWithContext = (cx: Context, a: number, b: number) => {
       return a + b + cx.userId
     }
   }
 
-  const service = new Service()
+  const service = new MyService()
 
   const proxy = createLocalClient(service, {userId: 1000})
 

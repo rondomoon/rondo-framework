@@ -1,7 +1,5 @@
-import {RPCClient, WithContext, WithoutContext} from './types'
-import {Request} from 'express'
-import {TGetContext} from './express'
-import {getAllMethods} from './jsonrpc'
+import { getAllMethods } from './jsonrpc'
+import { RPCClient, WithoutContext } from './types'
 
 export type LocalClient<T> = RPCClient<WithoutContext<T>>
 

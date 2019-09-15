@@ -1,44 +1,44 @@
-export interface IError {
+export interface ErrorWithCode {
   code: number
   message: string
 }
 
-export interface IErrorWithData<T> extends IError {
+export interface ErrorWithData<T> extends ErrorWithCode {
   data: T
 }
 
-export interface IErrorResponse<T> {
+export interface ErrorResponse<T> {
   jsonrpc: '2.0'
   id: string | number | null
   result: null
-  error: IErrorWithData<T>
+  error: ErrorWithData<T>
 }
 
-export interface IJSONRPCError<T> extends Error {
+export interface RPCError<T> extends Error {
   code: number
   statusCode: number
-  response: IErrorResponse<T>
+  response: ErrorResponse<T>
 }
 
-export function isJSONRPCError(err: any): err is IJSONRPCError<unknown> {
-  return err.name === 'IJSONRPCError' &&
+export function isRPCError(err: any): err is RPCError<unknown> {
+  return err.name === 'RPCError' &&
     typeof err.message === 'string' &&
-    err.hasOwnProperty('code') &&
-    err.hasOwnProperty('response')
+    Object.prototype.hasOwnProperty.call(err, 'code') &&
+    Object.prototype.hasOwnProperty.call(err, 'response')
 }
 
 export function createError<T = null>(
-  error: IError,
+  error: ErrorWithCode,
   info: {
     id: number | string | null
     data: T
     statusCode: number
   },
-): IJSONRPCError<T> {
+): RPCError<T> {
 
-  const err = new Error(error.message) as IJSONRPCError<T>
+  const err = new Error(error.message) as RPCError<T>
 
-  err.name = 'IJSONRPCError'
+  err.name = 'RPCError'
   err.code = error.code
   err.statusCode = info.statusCode
   err.response = {

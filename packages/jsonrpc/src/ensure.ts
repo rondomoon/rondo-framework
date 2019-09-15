@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-unused-vars: 0 */
 import 'reflect-metadata'
 
 export const ensureKey = Symbol('ensure')
@@ -7,10 +8,11 @@ export type Validate<Context> = (context: Context) => boolean | Promise<boolean>
 
 export function ensure<Context>(
   validate: Validate<Context>,
-  message: string = 'Validation failed',
+  message = 'Validation failed',
 ) {
   return function ensureImpl(
-    target: any, key?: string, descriptor?: PropertyDescriptor) {
+    target: any, key?: string, descriptor?: PropertyDescriptor,
+  ) {
     switch (arguments.length) {
       case 1:
         return ensureClass(validate, message).apply(null, arguments as any)
@@ -25,7 +27,7 @@ export function ensure<Context>(
 
 function ensureClass<Context>(
   validate: Validate<Context>,
-  message: string = 'Validation failed',
+  message =  'Validation failed',
 ) {
   // tslint:disable-next-line
   return (target: any) => {
@@ -40,7 +42,7 @@ function ensureClass<Context>(
 
 function ensureMethod<Context>(
   validate: Validate<Context>,
-  message: string = 'Validation failed',
+  message = 'Validation failed',
 ) {
   return (
     target: any,

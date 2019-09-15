@@ -1,4 +1,5 @@
-import {IJSONRPCReturnType} from './express'
+/* eslint @typescript-eslint/no-explicit-any: off */
+import {RPCReturnType} from './express'
 import {WithContext, RPCClient, RPCActions} from './types'
 import {createActions} from './redux'
 import {createLocalClient, LocalClient} from './local'
@@ -39,7 +40,7 @@ export function bulkCreateActions<T extends Record<string, RPCClient<any>>>(
 }
 
 export function bulkjsonrpc<T>(
-  jsonrpc: IJSONRPCReturnType,
+  jsonrpc: RPCReturnType,
   services: T,
 ) {
   keys(services).forEach(key => {

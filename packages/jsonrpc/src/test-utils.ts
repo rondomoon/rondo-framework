@@ -1,8 +1,8 @@
-import {ILogger} from '@rondo.dev/logger'
+import {Logger} from '@rondo.dev/logger'
 
 const noop = () => undefined
 
-export const noopLogger: ILogger = {
+export const noopLogger: Logger = {
   error: noop,
   warn: noop,
   info: noop,

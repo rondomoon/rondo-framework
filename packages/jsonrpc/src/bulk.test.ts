@@ -8,30 +8,30 @@ import {json} from 'body-parser'
 
 describe('util', () => {
 
-  interface IS1 {
+  interface S1 {
     add(a: number, b: number): number
   }
 
-  interface IS2 {
+  interface S2 {
     mul(a: number, b: number): number
     concat(...str: string[]): string
   }
 
-  interface IContext {
+  interface Context {
     userId: number
   }
 
-  class Service1 implements WithContext<IS1, IContext> {
-    add(cx: IContext, a: number, b: number) {
+  class Service1 implements WithContext<S1, Context> {
+    add(cx: Context, a: number, b: number) {
       return a + b + cx.userId
     }
   }
 
-  class Service2 implements WithContext<IS2, IContext> {
-    mul(cx: IContext, a: number, b: number) {
+  class Service2 implements WithContext<S2, Context> {
+    mul(cx: Context, a: number, b: number) {
       return a * b + cx.userId
     }
-    concat(cx: IContext, ...str: string[]) {
+    concat(cx: Context, ...str: string[]) {
       return str.join('') + cx.userId
     }
   }
@@ -98,7 +98,7 @@ describe('util', () => {
         services,
       )
       const app = createApp(router)
-      const client = createClient<IS1>(app, '/rpc/s1')
+      const client = createClient<S1>(app, '/rpc/s1')
       const result: number = await client.add(1, 3)
       expect(result).toBe(14)
     })

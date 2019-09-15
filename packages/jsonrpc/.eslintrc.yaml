@@ -1,0 +1,8 @@
+extends:
+  - ../../.eslintrc.yaml
+rules:
+  # due to the nature of this project, writing code becomes much easier
+  # when any can be used in some places
+  '@typescript-eslint/no-explicit-any': off
+  prefer-rest-params: off
+  prefer-spread: off

@@ -1,10 +1,10 @@
 import {
-  IRPCActions,
-  RPCClient,
   RPCActions,
+  RPCClient,
   TResolvedActions,
   TAllActions,
   RPCReduxHandlers,
+  RPCActionsRecord,
 } from './types'
 
 export function createActions<T, ActionType extends string>(
@@ -27,18 +27,19 @@ export function createActions<T, ActionType extends string>(
   return service as RPCActions<T, ActionType>
 }
 
-export interface IState {
+export interface TestState {
   loading: number
   error: string
 }
 
-export function createReducer<ActionType extends string, State extends IState>(
+export function createReducer<
+  ActionType extends string, State extends TestState>(
   actionType: ActionType,
   defaultState: State,
 ) {
 
   const self = {
-    withHandler<R extends IRPCActions<ActionType>>(
+    withHandler<R extends RPCActionsRecord<ActionType>>(
       handleAction: (state: State, action: TResolvedActions<R>) => State,
     ): (state: State | undefined, action: TAllActions<R>) => State {
       return (state: State = defaultState, action: TAllActions<R>): State => {
@@ -66,7 +67,7 @@ export function createReducer<ActionType extends string, State extends IState>(
         }, action)
       }
     },
-    withMapping<R extends IRPCActions<ActionType>>(
+    withMapping<R extends RPCActionsRecord<ActionType>>(
       handlers: RPCReduxHandlers<R, State>,
     ) {
       return self.withHandler<R>((state, action) => {

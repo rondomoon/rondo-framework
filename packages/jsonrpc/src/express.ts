@@ -1,35 +1,29 @@
-import express, {ErrorRequestHandler} from 'express'
-import {FunctionPropertyNames} from './types'
-import {IDEMPOTENT_METHOD_REGEX} from './idempotent'
-import {IErrorResponse} from './error'
-import {ILogger} from '@rondo.dev/logger'
-import {ISuccessResponse} from './jsonrpc'
-import {NextFunction, Request, Response, Router} from 'express'
-import {createError, isJSONRPCError, IJSONRPCError, IError} from './error'
-import {
-  createRpcService, ERROR_SERVER, ERROR_INVALID_PARAMS, ERROR_METHOD_NOT_FOUND,
-  IRequest,
-} from './jsonrpc'
+import { Logger } from '@rondo.dev/logger'
+import express, { ErrorRequestHandler, Request, Response, Router } from 'express'
+import { createError, ErrorResponse, isRPCError } from './error'
+import { IDEMPOTENT_METHOD_REGEX } from './idempotent'
+import { createRpcService, ERROR_METHOD_NOT_FOUND, ERROR_SERVER, IRequest, SuccessResponse } from './jsonrpc'
+import { FunctionPropertyNames } from './types'
 
 export type TGetContext<Context> = (req: Request) => Promise<Context> | Context
 
-export interface IJSONRPCReturnType {
+export interface RPCReturnType {
   addService<T, F extends FunctionPropertyNames<T>>(
     path: string,
     service: T,
     methods?: F[],
-  ): IJSONRPCReturnType,
+  ): RPCReturnType
   router(): Router
 }
 
-export interface IInvocationDetails<A extends IRequest, Context> {
+export interface InvocationDetails<A extends IRequest, Context> {
   context: Context
   path: string
   request: A
 }
 
 async function defaultHook<A extends IRequest, R, Context>(
-  details: IInvocationDetails<A, Context>,
+  details: InvocationDetails<A, Context>,
   invoke: () => Promise<R>,
 ): Promise<R> {
   const result = await invoke()
@@ -38,17 +32,18 @@ async function defaultHook<A extends IRequest, R, Context>(
 
 export function jsonrpc<Context>(
   getContext: TGetContext<Context>,
-  logger: ILogger,
+  logger: Logger,
   hook: <A extends IRequest, R>(
-    details: IInvocationDetails<A, Context>,
+    details: InvocationDetails<A, Context>,
     invoke: (request?: A) => Promise<R>) => Promise<R> = defaultHook,
   idempotentMethodRegex = IDEMPOTENT_METHOD_REGEX,
-): IJSONRPCReturnType {
+): RPCReturnType {
 
+  /* eslint @typescript-eslint/no-unused-vars: 0 */
   const handleError: ErrorRequestHandler = (err, req, res, next) => {
     logger.error('JSON-RPC Error: %s', err.stack)
 
-    if (isJSONRPCError(err)) {
+    if (isRPCError(err)) {
       res.status(err.statusCode)
       res.json(err.response)
       return
@@ -56,7 +51,7 @@ export function jsonrpc<Context>(
 
     const id = getRequestId(req)
     const statusCode: number = err.statusCode || 500
-    const errorResponse: IErrorResponse<unknown> = {
+    const errorResponse: ErrorResponse<unknown> = {
       jsonrpc: '2.0',
       id,
       result: null,
@@ -85,7 +80,7 @@ export function jsonrpc<Context>(
       const rpcService = createRpcService(service, methods)
 
       function handleResponse(
-        response: ISuccessResponse<unknown> | null,
+        response: SuccessResponse<unknown> | null,
         res: Response,
       ) {
         if (response === null) {
