@@ -1,3 +1,3 @@
-export interface IRequestParams {
+export interface RequestQuery {
   [key: string]: string | number
 }

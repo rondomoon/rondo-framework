@@ -1,11 +1,11 @@
+import loggerFactory, { Logger } from '@rondo.dev/logger'
 import { readFileSync } from 'fs'
 import YAML from 'js-yaml'
 import { join } from 'path'
 import { Config } from './Config'
 import { findPackageRoot } from './findPackageRoot'
-import loggerFactory, {ILogger} from '@rondo.dev/logger'
 
-const isObject = (value: any) => value !== null && typeof value === 'object'
+const isObject = (value: unknown) => value !== null && typeof value === 'object'
 
 export class ConfigReader {
   protected readonly config: any = {}
@@ -16,7 +16,7 @@ export class ConfigReader {
     readonly path: string,
     readonly cwd: string | undefined = process.cwd(),
     readonly environment = 'CONFIG',
-    readonly logger: ILogger = loggerFactory.getLogger('config'),
+    readonly logger: Logger = loggerFactory.getLogger('config'),
   ) {
     const packageRoot = path && findPackageRoot(path)
     this.locations = packageRoot ? [packageRoot] : []
@@ -93,7 +93,8 @@ export class ConfigReader {
         // }
         const value = src[key]
         if (isObject(value) && !Array.isArray(value)) {
-          if (!dest.hasOwnProperty(key) ||
+          if (
+            !Object.prototype.hasOwnProperty.call(dest, key) ||
             Array.isArray(dest[key]) ||
             !isObject(dest[key])
           ) {

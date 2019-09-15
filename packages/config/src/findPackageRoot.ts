@@ -1,5 +1,5 @@
-import {resolve, join} from 'path'
-import {statSync, Stats} from 'fs'
+import { Stats, statSync } from 'fs'
+import { join, resolve } from 'path'
 
 function findNearestDirectory(
   dir: string, filename: string,

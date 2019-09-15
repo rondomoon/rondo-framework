@@ -1,10 +1,9 @@
-
 function attachErrorListener(
   reader: FileReader,
   file: File,
   reject: (err: Error) => void,
 ) {
-  reader.onerror = ev => reject(new Error('Error reading file: ' +
+  reader.onerror = () => reject(new Error('Error reading file: ' +
     (reader.error ? reader.error.message : file.name)))
 }
 

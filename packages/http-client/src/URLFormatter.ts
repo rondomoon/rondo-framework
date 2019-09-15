@@ -1,27 +1,27 @@
-import {IRequestParams} from './IRequestParams'
-import {IRequestQuery} from './IRequestQuery'
+import {RequestParams} from './RequestParams'
+import {RequestQuery} from './RequestQuery'
 
-export interface IURLFormatterOptions {
+export interface URLFormatterOptions {
   readonly baseURL: string
   readonly regex: RegExp
 }
 
 export class URLFormatter {
-  constructor(readonly params: IURLFormatterOptions = {
+  constructor(readonly params: URLFormatterOptions = {
     baseURL: '',
     regex: /:[a-zA-Z0-9-]+/g,
   }) {}
 
   format(
     url: string,
-    params?: IRequestParams,
-    query?: IRequestQuery,
+    params?: RequestParams,
+    query?: RequestQuery,
   ) {
     let formattedUrl = url
     if (params) {
       formattedUrl = url.replace(this.params.regex, match => {
         const key = match.substring(1)
-        if (!params.hasOwnProperty(key)) {
+        if (!Object.prototype.hasOwnProperty.call(params, key)) {
           throw new Error('Undefined URL paramter: ' + key)
         }
         return String(params![key])

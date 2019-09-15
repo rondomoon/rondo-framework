@@ -1,4 +1,4 @@
-interface IWorkerParam {
+interface WorkerParam {
   sourceWidth: number
   sourceHeight: number
   width: number
@@ -6,21 +6,22 @@ interface IWorkerParam {
   source: ArrayBuffer
 }
 
-interface IWorkerParamMessage {
-  data: IWorkerParam
+interface WorkerParamMessage {
+  data: WorkerParam
 }
 
-interface IWorkerResult {
+interface WorkerResult {
   target: Uint8ClampedArray
 }
 
-interface IWorkerResultMessage {
-  data: IWorkerResult
+interface WorkerResultMessage {
+  data: WorkerResult
 }
 
-function createResizeWorker(root: any = {})
-  : {onmessage: (event: IWorkerParamMessage) => void} {
-  root.onmessage = (event: IWorkerParamMessage) => {
+function createResizeWorker(
+  root: any = {},  // eslint-disable-line
+): {onmessage: (event: WorkerParamMessage) => void} {
+  root.onmessage = (event: WorkerParamMessage) => {
     const sourceWidth = event.data.sourceWidth
     const sourceHeight = event.data.sourceHeight
     const width = event.data.width
@@ -32,7 +33,7 @@ function createResizeWorker(root: any = {})
     const ratioHalfH = Math.ceil(ratioH / 2)
 
     const source = new Uint8ClampedArray(event.data.source)
-    const sourceH = source.length / sourceWidth / 4
+    // const sourceH = source.length / sourceWidth / 4
     const targetSize = width * height * 4
     const targetMemory = new ArrayBuffer(targetSize)
     const target = new Uint8ClampedArray(targetMemory, 0, targetSize)
@@ -92,10 +93,10 @@ function createResizeWorker(root: any = {})
       }
     }
 
-    const objData: IWorkerResult = {
+    const objData: WorkerResult = {
       target,
     }
-    postMessage(objData, [target.buffer] as any)
+    postMessage(objData, [target.buffer] as any)  // eslint-disable-line
   }
   return root
 }
@@ -156,7 +157,7 @@ export class Resizer {
       const worker = new Worker(this.workerBlobURL)
       activeWorkers += 1
       workers[c] = worker
-      worker.onmessage = (event: IWorkerResultMessage) => {
+      worker.onmessage = (event: WorkerResultMessage) => {
         worker.terminate()
         delete workers[c]
         activeWorkers -= 1
@@ -174,7 +175,7 @@ export class Resizer {
         reject(new Error('Error resizing: ' + err.message))
       }
 
-      const message: IWorkerParam = {
+      const message: WorkerParam = {
         sourceWidth,
         sourceHeight: partition.height,
         width,

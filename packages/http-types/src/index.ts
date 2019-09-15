@@ -1,4 +1,6 @@
-export type TMethod = 'get'
+/* eslint @typescript-eslint/no-explicit-any: 0 */
+
+export type Method = 'get'
  | 'post'
  | 'put'
  | 'delete'
@@ -6,14 +8,14 @@ export type TMethod = 'get'
  | 'head'
  | 'options'
 
-export interface IRoutes {
+export interface Routes {
   // has to be any because otherwise TypeScript will start
   // throwing error and interfaces without an index signature
   // would not be usable
   [route: string]: any
 }
 
-export interface IRoute {
+export interface Route {
   params: any
   query: any
   body: any

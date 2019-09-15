@@ -1,32 +1,32 @@
-import {HTTPClient} from './HTTPClient'
-import {IRequest} from './IRequest'
-import {IResponse} from './IResponse'
-import {IRoutes, TMethod} from '@rondo.dev/http-types'
-import {ITypedRequestParams} from './ITypedRequestParams'
+import {SimpleHTTPClient} from './SimpleHTTPClient'
+import {Request} from './Request'
+import {Response} from './Response'
+import {Routes, Method} from '@rondo.dev/http-types'
+import {TypedRequestParams} from './TypedRequestParams'
 
-interface IReqRes {
-  req: IRequest
-  res: IResponse
+interface ReqRes {
+  req: Request
+  res: Response
 }
 
 export class HTTPClientError extends Error {
-  constructor(readonly request: IRequest, readonly response: IResponse) {
+  constructor(readonly request: Request, readonly response: Response) {
     super('HTTP Status: ' + response.status)
     Error.captureStackTrace(this)
   }
 }
 
-export interface IRequestStatus {
-  request: IRequest
+export interface RequestStatus {
+  request: Request
   finished: boolean
 }
 
-export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
-  mocks: {[key: string]: IResponse} = {}
-  requests: IRequestStatus[] = []
+export class HTTPClientMock<T extends Routes> extends SimpleHTTPClient<T> {
+  mocks: {[key: string]: Response} = {}
+  requests: RequestStatus[] = []
 
   protected waitPromise?: {
-    resolve: (r: IReqRes) => void
+    resolve: (r: ReqRes) => void
     reject: (err: Error) => void
   }
 
@@ -39,15 +39,15 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
    */
   createRequestor() {
     return {
-      request: (req: IRequest): Promise<IResponse> => {
-        const currentRequest: IRequestStatus = {
+      request: (req: Request): Promise<Response> => {
+        const currentRequest: RequestStatus = {
           request: req,
           finished: false,
         }
         this.requests.push(currentRequest)
         return new Promise((resolve, reject) => {
           const key = this.serialize(req)
-          if (!this.mocks.hasOwnProperty(key)) {
+          if (!Object.prototype.hasOwnProperty.call(this.mocks, key)) {
             setImmediate(() => {
               const err = new Error(
                 'No mock for request: ' + key + '\nAvailable mocks: ' +
@@ -76,7 +76,7 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
     }
   }
 
-  protected serialize(req: IRequest) {
+  protected serialize(req: Request) {
     return JSON.stringify({
       method: req.method,
       url: req.url,
@@ -90,7 +90,7 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
    * replaced. The signature is calculated using the `serialize()` method,
    * which just does a `JSON.stringify(req)`.
    */
-  mockAdd(req: IRequest, data: any, status = 200): this {
+  mockAdd(req: Request, data: any, status = 200): this {
     this.mocks[this.serialize(req)] = {data, status}
     return this
   }
@@ -98,8 +98,8 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
   /**
    * Adds a new mock with predefined type
    */
-  mockAddTyped<P extends keyof T & string, M extends TMethod>(
-    params: ITypedRequestParams<T, P, M>,
+  mockAddTyped<P extends keyof T & string, M extends Method>(
+    params: TypedRequestParams<T, P, M>,
     response: T[P][M]['response'],
   ): this {
     const url = this.formatter.format(params.path, params.params)
@@ -120,7 +120,7 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
     return this
   }
 
-  protected notify(r: IReqRes | Error) {
+  protected notify(r: ReqRes | Error) {
     if (!this.waitPromise) {
       return
     }
@@ -147,12 +147,12 @@ export class HTTPClientMock<T extends IRoutes> extends HTTPClient<T> {
    *     const {req, res} = await httpMock.wait()
    *     expect(req).toEqual({method:'get', url:'/auth/post', data: {...}})
    */
-  async wait(): Promise<IReqRes> {
+  async wait(): Promise<ReqRes> {
     if (this.requests.every(r => r.finished)) {
       throw new Error('No requests to wait for')
     }
     expect(this.waitPromise).toBe(undefined)
-    const result: IReqRes = await new Promise((resolve, reject) => {
+    const result: ReqRes = await new Promise((resolve, reject) => {
       this.waitPromise = {resolve, reject}
     })
     // TODO think of a better way to do this.

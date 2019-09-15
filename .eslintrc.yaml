@@ -13,14 +13,18 @@ rules:
       ignorePattern: '^import .* from '
   comma-dangle:
     - warn
-    - always-multiline
+    - arrays: always-multiline
+      objects: always-multiline
+      imports: always-multiline
+      exports: always-multiline
+      functions: always-multiline
 
   # semi:
   #   - warn
   #   - never
   # interface-name-prefix:
   '@typescript-eslint/member-delimiter-style':
-    - error
+    - warn
     - multiline:
         delimiter: none
       singleline:

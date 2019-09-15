@@ -1,5 +1,6 @@
-export async function createImageFromDataURL(dataURL: string)
-  : Promise<HTMLImageElement> {
+export async function createImageFromDataURL(
+  dataURL: string,
+): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const image = new Image()
     image.onload = () => resolve(image)
@@ -8,8 +9,9 @@ export async function createImageFromDataURL(dataURL: string)
   })
 }
 
-export async function drawCanvasFromDataURL(dataURL: string)
-  : Promise<HTMLCanvasElement> {
+export async function drawCanvasFromDataURL(
+  dataURL: string,
+): Promise<HTMLCanvasElement> {
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')!
   const image = await createImageFromDataURL(dataURL)
@@ -24,7 +26,7 @@ export async function getCanvasFromArrayBuffer(
   width: number,
   height: number,
 ) {
-  return new Promise((resolve, reject) => {
+  return new Promise(() => {
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')!
     const imageData = new ImageData(

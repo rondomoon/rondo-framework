@@ -1,6 +1,6 @@
-import {ConfigReader} from './ConfigReader'
-import {join} from 'path'
-import {writeFileSync} from 'fs'
+import { writeFileSync } from 'fs'
+import { join } from 'path'
+import { ConfigReader } from './ConfigReader'
 
 describe('ConfigReader', () => {
 

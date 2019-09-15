@@ -3,34 +3,33 @@ import {Resizer} from './Resizer'
 import {readAsDataURL} from './Files'
 import {drawCanvasFromDataURL} from './Image'
 
-export interface IImage {
+export interface Image {
   dataURL: string
 }
 
-export interface IImageUploadProps {
-  onChange: (images: IImage[]) => void
+export interface ImageUploadProps {
+  onChange: (images: Image[]) => void
   multiple: boolean
 }
 
-export class ImageUpload extends React.PureComponent<IImageUploadProps> {
+export class ImageUpload extends React.PureComponent<ImageUploadProps> {
   fileInput: React.RefObject<HTMLInputElement>
-  constructor(props: IImageUploadProps) {
+  constructor(props: ImageUploadProps) {
     super(props)
     this.fileInput = React.createRef()
   }
 
-  safeHandleChange = async (event: React.SyntheticEvent<HTMLInputElement>) => {
+  safeHandleChange = async () => {
     try {
-      await this.handleChange(event)
+      await this.handleChange()
     } catch (err) {
       // console.log('Error in handleChange', err)
     }
   }
-  handleChange = async (event: React.SyntheticEvent<HTMLInputElement>) => {
-    const self = this
+  handleChange = async () => {
     const files = Array.from(this.fileInput.current!.files!)
 
-    const resized: IImage[] = []
+    const resized: Image[] = []
     for (const file of files) {
       const dataURL = await readAsDataURL(file)
       const resizedDataURL = await this.resize(dataURL)
@@ -44,7 +43,7 @@ export class ImageUpload extends React.PureComponent<IImageUploadProps> {
       this.fileInput.current!.parentElement!.appendChild(img)
     }
 
-    (window as any).resized = resized
+    // (window as any).resized = resized
     this.props.onChange(resized)
   }
 
