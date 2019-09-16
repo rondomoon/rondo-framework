@@ -1,24 +1,24 @@
 import ExpressSession from 'express-session'
-import {THandler} from './THandler'
-import {IMiddleware} from './IMiddleware'
-import {ISession} from '../session/ISession'
-import {ITransactionManager} from '../database/ITransactionManager'
-import {Session as SessionEntity} from '../entities/Session'
-import {SessionStore} from '../session/SessionStore'
-import {UrlWithStringQuery} from 'url'
-import {apiLogger} from '../logger'
+import { UrlWithStringQuery } from 'url'
+import { TransactionManager } from '../database'
+import { Session as SessionEntity } from '../entities/Session'
+import { apiLogger } from '../logger'
+import { SessionStore } from '../session/SessionStore'
+import { Handler } from './Handler'
+import { Middleware } from './Middleware'
+import { DefaultSession } from '../session'
 
-export interface ISessionOptions {
-  transactionManager: ITransactionManager,
-  baseUrl: UrlWithStringQuery,
-  sessionName: string,
-  sessionSecret: string | string[],
+export interface SessionMiddlewareParams {
+  transactionManager: TransactionManager
+  baseUrl: UrlWithStringQuery
+  sessionName: string
+  sessionSecret: string | string[]
 }
 
-export class SessionMiddleware implements IMiddleware {
-  readonly handle: THandler
+export class SessionMiddleware implements Middleware {
+  readonly handle: Handler
 
-  constructor(readonly params: ISessionOptions) {
+  constructor(readonly params: SessionMiddlewareParams) {
     this.handle = ExpressSession({
       saveUninitialized: false,
       secret: params.sessionSecret,
@@ -42,8 +42,10 @@ export class SessionMiddleware implements IMiddleware {
     })
   }
 
-  protected buildSession = (sessionData: Express.SessionData, sess: ISession)
-  : SessionEntity => {
+  protected buildSession = (
+    sessionData: Express.SessionData,
+    sess: DefaultSession,
+  ): SessionEntity => {
     return {...sess, userId: sessionData.userId }
   }
 

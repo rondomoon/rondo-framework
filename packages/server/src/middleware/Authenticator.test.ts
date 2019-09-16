@@ -1,10 +1,9 @@
-import express, {Application} from 'express'
+import { AuthService, Credentials } from '@rondo.dev/common'
+import { urlencoded } from 'body-parser'
+import express, { Application } from 'express'
 import request from 'supertest'
-import {Authenticator} from './Authenticator'
-import {ICredentials} from '@rondo.dev/common'
-import {IAuthService} from '../services'
-import {handlePromise} from './handlePromise'
-import {urlencoded} from 'body-parser'
+import { Authenticator } from './Authenticator'
+import { handlePromise } from './handlePromise'
 
 describe('Authenticator', () => {
 
@@ -18,7 +17,7 @@ describe('Authenticator', () => {
       firstName: 'test',
       lastName: 'test',
     }
-    const authService = new (class implements IAuthService {
+    const authService = new (class implements AuthService {
       async createUser() {
         return {id: 1, ...userInfo}
       }
@@ -26,7 +25,7 @@ describe('Authenticator', () => {
       async findOne(id: number) {
         return {id, ...userInfo}
       }
-      async validateCredentials({username, password}: ICredentials) {
+      async validateCredentials({username, password}: Credentials) {
         if (username === 'test' && password === 'pass') {
           return {id: 1, ...userInfo}
           return

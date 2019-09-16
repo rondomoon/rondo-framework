@@ -1,58 +1,15 @@
-import {IDatabase} from './IDatabase'
-import {Namespace} from 'cls-hooked'
-import {TransactionManager} from './TransactionManager'
-import {
-  createConnection,
-  Connection,
-  ConnectionOptions,
-  Logger,
-  EntitySchema,
-  ObjectType,
-  Repository,
-} from 'typeorm'
+import { Namespace } from 'cls-hooked'
+import { Connection, EntityManager, EntitySchema, ObjectType, Repository } from 'typeorm'
+import { TransactionManager } from './TransactionManager'
 
-export class Database implements IDatabase {
-  protected connection?: Connection
+export interface Database {
+  namespace: Namespace
   transactionManager: TransactionManager
-
-  constructor(
-    readonly namespace: Namespace,
-    protected readonly logger: Logger,
-    protected readonly options: ConnectionOptions,
-  ) {
-    this.transactionManager = new TransactionManager(
-      namespace,
-      this.getConnection,
-    )
-  }
-
-  async connect(): Promise<Connection> {
-    this.connection = await createConnection({
-      ...this.options,
-      logger: this.logger,
-    })
-    return this.connection
-  }
-
-  getConnection = (): Connection => {
-    if (!this.connection) {
-      throw new Error('Not connected! Did you call connect?')
-    }
-    return this.connection
-  }
-
-  async close() {
-    await this.getConnection().close()
-  }
-
-  getEntityManager() {
-    return this.transactionManager.getEntityManager()
-  }
-
+  connect(): Promise<Connection>
+  getConnection(): Connection
+  getEntityManager(): EntityManager
   getRepository<Entity>(
     target: ObjectType<Entity> | EntitySchema<Entity> | string,
-  ): Repository<Entity> {
-    return this.transactionManager.getRepository(target)
-  }
-
+  ): Repository<Entity>
+  close(): Promise<void>
 }

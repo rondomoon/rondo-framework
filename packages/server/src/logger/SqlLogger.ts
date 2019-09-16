@@ -1,12 +1,12 @@
-import {ILogger} from '@rondo.dev/logger'
-import {Logger, QueryRunner} from 'typeorm'
-import {Namespace} from 'cls-hooked'
-import {CORRELATION_ID} from '../middleware/Transaction'
+import { Logger } from '@rondo.dev/logger'
+import { Namespace } from 'cls-hooked'
+import { Logger as TypeORMLogger, QueryRunner } from 'typeorm'
 import { TRANSACTION_ID } from '../database'
+import { CORRELATION_ID } from '../middleware/TransactionMiddleware'
 
-export class SqlLogger implements Logger {
+export class SQLLogger implements TypeORMLogger {
   constructor(
-    protected readonly logger: ILogger,
+    protected readonly logger: Logger,
     protected readonly ns: Namespace,
   ) {}
 

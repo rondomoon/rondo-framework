@@ -1,7 +1,7 @@
 import {UrlWithStringQuery} from 'url'
 import {ConnectionOptions} from 'typeorm'
 
-export interface IConfig {
+export interface Config {
   readonly app: {
     readonly name: string
     readonly baseUrl: UrlWithStringQuery

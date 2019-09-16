@@ -1,12 +1,12 @@
 import ConfigReader from '@rondo.dev/config'
-import {IConfig} from './application'
+import {Config} from './application'
 import URL from 'url'
 
 const cfg = new ConfigReader(__dirname).read()
 
 const baseUrl =  URL.parse(cfg.get('app.baseUrl'))
 
-export const config: IConfig = {
+export const config: Config = {
   app: {
     name: cfg.get('app.name'),
     assets: cfg.get('app.assets'),

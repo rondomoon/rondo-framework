@@ -1,8 +1,8 @@
-import {config} from './config'
-import {Bootstrap} from './application/Bootstrap'
-import {configureServer} from './application/configureServer'
+import { CLIBootstrap } from './application'
+import { configureServer } from './application/configureServer'
+import { config } from './config'
 
-export default new Bootstrap({
+export default new CLIBootstrap({
   config,
   configureServer,
 })

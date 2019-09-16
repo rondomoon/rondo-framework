@@ -1,17 +1,17 @@
 import Csurf from 'csurf'
-import {THandler} from './THandler'
-import {IMiddleware} from './IMiddleware'
-import {UrlWithStringQuery} from 'url'
+import { UrlWithStringQuery } from 'url'
+import { Middleware } from './Middleware'
+import { Handler } from './Handler'
 
-export interface ICSRFParams {
+export interface CSRFMiddlewareParams {
   baseUrl: UrlWithStringQuery
   cookieName: string
 }
 
-export class CSRFMiddleware implements IMiddleware {
-  readonly handle: THandler
+export class CSRFMiddleware implements Middleware {
+  readonly handle: Handler
 
-  constructor(readonly params: ICSRFParams) {
+  constructor(readonly params: CSRFMiddlewareParams) {
     this.handle = Csurf({
       cookie: {
         signed: true,

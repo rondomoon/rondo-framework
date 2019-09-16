@@ -4,32 +4,32 @@ import {AsyncRouter} from './AsyncRouter'
 
 describe('AsyncRouter', () => {
 
-  interface IResponse {
+  interface Response {
     value: string
   }
 
-  interface IParam {
+  interface Param {
     param: string
   }
 
-  interface IHandler {
-    params: IParam,
-    response: IResponse,
+  interface Handler {
+    params: Param
+    response: Response
   }
 
-  interface IMyApi {
+  interface MyApi {
     '/test/:param': {
-      get: IHandler
-      post: IHandler
-      put: IHandler
-      delete: IHandler
-      options: IHandler
-      patch: IHandler
-      head: {},
+      get: Handler
+      post: Handler
+      put: Handler
+      delete: Handler
+      options: Handler
+      patch: Handler
+      head: {}
     }
     '/middleware': {
       get: {
-        response: IResponse
+        response: Response
       }
     }
   }
@@ -37,7 +37,7 @@ describe('AsyncRouter', () => {
   const app = express()
   const router = express.Router()
   app.use(router)
-  const asyncRouter = new AsyncRouter<IMyApi>(router)
+  const asyncRouter = new AsyncRouter<MyApi>(router)
 
   asyncRouter.get('/test/:param', async req => {
     return {value: req.params.param}
@@ -72,7 +72,7 @@ describe('AsyncRouter', () => {
   })
 
   it('creates its own router when not provided', () => {
-    const r = new AsyncRouter<IMyApi>()
+    const r = new AsyncRouter<MyApi>()
     expect(r.router).toBeTruthy()
   })
 

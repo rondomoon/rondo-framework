@@ -1,4 +1,4 @@
 import {Request, Response, NextFunction} from 'express'
 
-export type TErrorHandler =
+export type ErrorHandler =
   (err: Error, req: Request, res: Response, next: NextFunction) => any

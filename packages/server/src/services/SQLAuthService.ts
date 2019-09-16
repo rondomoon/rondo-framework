@@ -1,20 +1,19 @@
-import { ICredentials, INewUser, IUser, trim } from '@rondo.dev/common'
+import { AuthService, Credentials, NewUser, UserProfile, trim } from '@rondo.dev/common'
 import Validator from '@rondo.dev/validator'
 import { compare, hash } from 'bcrypt'
 import { validate as validateEmail } from 'email-validator'
 import createError from 'http-errors'
-import { IDatabase } from '../database/IDatabase'
+import { Database } from '../database/Database'
 import { User } from '../entities/User'
 import { UserEmail } from '../entities/UserEmail'
-import { IAuthService } from './IAuthService'
 
 const SALT_ROUNDS = 10
 const MIN_PASSWORD_LENGTH = 10
 
-export class AuthService implements IAuthService {
-  constructor(protected readonly db: IDatabase) {}
+export class SQLAuthService implements AuthService {
+  constructor(protected readonly db: Database) {}
 
-  async createUser(payload: INewUser): Promise<IUser> {
+  async createUser(payload: NewUser): Promise<UserProfile> {
     const newUser = {
       username: trim(payload.username),
       firstName: trim(payload.firstName),
@@ -88,9 +87,9 @@ export class AuthService implements IAuthService {
   }
 
   async changePassword(params: {
-    userId: number,
-    oldPassword: string,
-    newPassword: string,
+    userId: number
+    oldPassword: string
+    newPassword: string
   }) {
     const {userId, oldPassword, newPassword} = params
     const userRepository = this.db.getRepository(User)
@@ -109,7 +108,7 @@ export class AuthService implements IAuthService {
     .update(userId, { password })
   }
 
-  async validateCredentials(credentials: ICredentials) {
+  async validateCredentials(credentials: Credentials) {
     const {username, password} = credentials
     const user = await this.db.getRepository(User)
     .createQueryBuilder('user')

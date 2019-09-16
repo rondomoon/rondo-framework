@@ -1,8 +1,8 @@
-import {BaseEntity} from './BaseEntity'
-import {Column, Entity, OneToMany} from 'typeorm'
-import {Session} from './Session'
-import {UserTeam} from './UserTeam'
-import {UserEmail} from './UserEmail'
+import { Column, Entity, OneToMany } from 'typeorm'
+import { BaseEntity } from './BaseEntity'
+import { Session } from './Session'
+import { UserEmail } from './UserEmail'
+import { UserTeam } from './UserTeam'
 
 @Entity()
 export class User extends BaseEntity {

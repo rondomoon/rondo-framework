@@ -1,8 +1,4 @@
-import {
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm'
+import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 
 const transformer = {
   from: (value: Date) => !isNaN(value.getTime()) ? value.toISOString() : value,

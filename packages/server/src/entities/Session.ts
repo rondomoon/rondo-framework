@@ -1,9 +1,9 @@
-import {ISession} from '../session/ISession'
-import {Column, Entity, PrimaryColumn, Index, ManyToOne} from 'typeorm'
-import {User} from './User'
+import { Column, Entity, Index, ManyToOne, PrimaryColumn } from 'typeorm'
+import { DefaultSession } from '../session/DefaultSession'
+import { User } from './User'
 
 @Entity()
-export class Session implements ISession {
+export class Session implements DefaultSession {
   @PrimaryColumn()
   id!: string
 

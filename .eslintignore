@@ -1,3 +1,4 @@
 packages/*/lib
 packages/*/esm
 build/
+packages/*/src/migrations

@@ -1,6 +1,6 @@
-import {BaseEntity} from './BaseEntity'
-import {Column, Entity, PrimaryGeneratedColumn, ManyToOne} from 'typeorm'
-import {User} from './User'
+import { Column, Entity, ManyToOne } from 'typeorm'
+import { BaseEntity } from './BaseEntity'
+import { User } from './User'
 
 @Entity()
 export class UserEmail extends BaseEntity {

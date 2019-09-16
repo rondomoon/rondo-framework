@@ -1,16 +1,16 @@
+import { Method, Routes } from '@rondo.dev/http-types'
 import express from 'express'
-import {AsyncRouter} from './AsyncRouter'
-import {IRoutes, TMethod} from '@rondo.dev/http-types'
-import {ITransactionManager} from '../database/ITransactionManager'
-import {TTypedHandler} from './TTypedHandler'
+import { TransactionManager } from '../database/TransactionManager'
+import { AsyncRouter } from './AsyncRouter'
+import { TypedHandler } from './TypedHandler'
 
-export class TransactionalRouter<R extends IRoutes> extends AsyncRouter<R> {
-  constructor(readonly transactionManager: ITransactionManager) {
+export class TransactionalRouter<R extends Routes> extends AsyncRouter<R> {
+  constructor(readonly transactionManager: TransactionManager) {
     super()
   }
 
-  protected wrapHandler<M extends TMethod, P extends keyof R & string>(
-    handler: TTypedHandler<R, P, M>,
+  protected wrapHandler<M extends Method, P extends keyof R & string>(
+    handler: TypedHandler<R, P, M>,
   ): express.RequestHandler {
     return async (req, res, next) => {
       await this.transactionManager

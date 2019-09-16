@@ -1,4 +1,4 @@
-import {valueOrError} from './'
+import { valueOrError } from './'
 
 describe('valueOrError', () => {
 

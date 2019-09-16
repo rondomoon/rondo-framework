@@ -1,16 +1,13 @@
-import express, {Application} from 'express'
-import request from 'supertest'
-import {SessionStore} from './SessionStore'
-import {ISession} from './ISession'
-import ExpressSession from 'express-session'
 import loggerFactory from '@rondo.dev/logger'
-import {
-  createConnection, Column, Connection, Entity, Index, PrimaryColumn,
-  Repository,
-} from 'typeorm'
+import express, { Application } from 'express'
+import ExpressSession from 'express-session'
+import request from 'supertest'
+import { Column, Connection, createConnection, Entity, Index, PrimaryColumn, Repository } from 'typeorm'
+import { DefaultSession } from './DefaultSession'
+import { SessionStore } from './SessionStore'
 
 @Entity()
-class Session implements ISession {
+class SessionEntity implements DefaultSession {
   @PrimaryColumn()
   id!: string
 
@@ -28,15 +25,15 @@ class Session implements ISession {
 describe('SessionStore', () => {
 
   let connection!: Connection
-  let repository!: Repository<Session>
+  let repository!: Repository<SessionEntity>
   beforeEach(async () => {
     connection = await createConnection({
       type: 'sqlite',
       database: ':memory:',
-      entities: [Session],
+      entities: [SessionEntity],
       synchronize: true,
     })
-    repository = connection.getRepository(Session)
+    repository = connection.getRepository(SessionEntity)
   })
 
   afterEach(() => connection!.close())
@@ -88,7 +85,7 @@ describe('SessionStore', () => {
     .expect(200)
   }
 
-  function getSession(app: Application, cookie: string = '') {
+  function getSession(app: Application, cookie = '') {
     return request(app)
     .get('/session')
     .set('cookie', cookie)

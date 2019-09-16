@@ -1,15 +1,16 @@
-import {Database, ENTITY_MANAGER} from './'
+import { createNamespace } from 'cls-hooked'
+import express, { NextFunction, Request, Response } from 'express'
 import request from 'supertest'
-import express, {Request, Response, NextFunction} from 'express'
-import {createNamespace} from 'cls-hooked'
-import {CORRELATION_ID, Transaction} from '../middleware'
-import {config} from '../config'
-import {SqlLogger, loggerFactory} from '../logger'
+import { config } from '../config'
+import { loggerFactory, SQLLogger } from '../logger'
+import { CORRELATION_ID, TransactionMiddleware } from '../middleware'
+import { ENTITY_MANAGER } from './'
+import { SQLDatabase } from './SQLDatabase'
 
 const ns = createNamespace('clsify-test')
-const database = new Database(
+const database = new SQLDatabase(
   ns,
-  new SqlLogger(loggerFactory.getLogger('sql'), ns),
+  new SQLLogger(loggerFactory.getLogger('sql'), ns),
   config.app.db,
 )
 
@@ -25,7 +26,7 @@ describe('middleware/Transaction', () => {
     setImmediate(next)
   }
 
-  app.use(new Transaction(ns).handle)
+  app.use(new TransactionMiddleware(ns).handle)
   app.use('/:id', handler)
   app.use('/:id', handler)
   app.use('/:id', handler)
@@ -61,7 +62,7 @@ describe('doInTransaction', () => {
 
   let entityManager: any
   const app = express()
-  app.use(new Transaction(ns).handle)
+  app.use(new TransactionMiddleware(ns).handle)
   app.use('/', (req, res, next) => {
     if (entityManager) {
       ns.set(ENTITY_MANAGER, entityManager)

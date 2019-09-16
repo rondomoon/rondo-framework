@@ -1,10 +1,10 @@
+import { UserPermissions } from '@rondo.dev/common'
 import createError from 'http-errors'
-import {IDatabase} from '../database/IDatabase'
-import {UserTeam} from '../entities/UserTeam'
-import {IUserPermissions} from './IUserPermissions'
+import { Database } from '../database/Database'
+import { UserTeam } from '../entities/UserTeam'
 
-export class UserPermissions implements IUserPermissions {
-  constructor(protected readonly db: IDatabase) {}
+export class SQLUserPermissions implements UserPermissions {
+  constructor(protected readonly db: Database) {}
 
   async belongsToTeam(params: {userId: number, teamId: number}) {
     const {userId, teamId} = params

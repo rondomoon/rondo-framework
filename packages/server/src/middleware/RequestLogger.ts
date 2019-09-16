@@ -1,12 +1,12 @@
-import {THandler} from './THandler'
-import {ILogger} from '@rondo.dev/logger'
-import {IMiddleware} from './IMiddleware'
+import { Logger } from '@rondo.dev/logger'
 import shortid from 'shortid'
+import { Handler } from './Handler'
+import { Middleware } from './Middleware'
 
-export class RequestLogger implements IMiddleware {
-  constructor(protected readonly logger: ILogger) {}
+export class RequestLogger implements Middleware {
+  constructor(protected readonly logger: Logger) {}
 
-  handle: THandler = (req, res, next) => {
+  handle: Handler = (req, res, next) => {
     const start = Date.now()
     req.correlationId = shortid.generate()
     res.on('finish', () => {

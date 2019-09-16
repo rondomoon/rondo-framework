@@ -1,8 +1,6 @@
-import {ensureLoggedInApi, ensureLoggedInSite} from './ensureLoggedIn'
-import express, {
-  Application, Request, Response, NextFunction as Next,
-} from 'express'
+import express, { Application, NextFunction as Next, Request, Response } from 'express'
 import request from 'supertest'
+import { ensureLoggedInApi, ensureLoggedInSite } from './ensureLoggedIn'
 
 function createMockUserMiddleware() {
   const context: {user?: any} = {}

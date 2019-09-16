@@ -1,54 +1,52 @@
-import { IContext } from '@rondo.dev/common'
-import { IRoutes } from '@rondo.dev/http-types'
 import { bulkjsonrpc, jsonrpc } from '@rondo.dev/jsonrpc'
 import { json } from 'body-parser'
 import cookieParser from 'cookie-parser'
-import { IDatabase } from '../database'
+import { Database } from '../database'
 import { loggerFactory } from '../logger'
 import * as Middleware from '../middleware'
 import { TransactionalRouter } from '../router'
 import * as routes from '../routes'
-import * as rpc from '../rpc'
-import * as Services from '../services'
-import { IConfig } from './IConfig'
-import { IServerConfig } from './IServerConfig'
-import { IServices } from './IServices'
+import { SQLTeamService, SQLUserService, Context } from '../rpc'
+import { SQLAuthService, SQLUserPermissions } from '../services'
+import { Config } from './Config'
+import { ServerConfig } from './ServerConfig'
+import { Services } from './Services'
+import { Routes } from '@rondo.dev/http-types'
+import { configureAuthRoutes } from '../routes/configureAuthRoutes'
+import { TransactionMiddleware, CSRFMiddleware, RequestLogger } from '../middleware'
 
 export type ServerConfigurator<
-  T extends IServerConfig = IServerConfig
+  T extends ServerConfig = ServerConfig
 > = (
-  config: IConfig,
-  database: IDatabase,
+  config: Config,
+  database: Database,
 ) => T
 
 export const configureServer: ServerConfigurator = (config, database) => {
 
   const logger = loggerFactory.getLogger('api')
 
-  const services: IServices = {
-    authService: new Services.AuthService(database),
-    userPermissions: new Services.UserPermissions(database),
+  const services: Services = {
+    authService: new SQLAuthService(database),
+    userPermissions: new SQLUserPermissions(database),
   }
 
   const rpcServices = {
-    userService: new rpc.UserService(database),
-    teamService: new rpc.TeamService(database, services.userPermissions),
+    userService: new SQLUserService(database),
+    teamService: new SQLTeamService(database, services.userPermissions),
   }
 
-  const getContext = (req: Express.Request): IContext => ({user: req.user})
+  const getContext = (req: Express.Request): Context => ({user: req.user})
 
   const rpcMiddleware = jsonrpc(
     req => getContext(req),
     logger,
-    // (details, invoke) => database
-    // .transactionManager
-    // .doInNewTransaction(() => invoke()),
   )
 
   const authenticator = new Middleware.Authenticator(services.authService)
   const transactionManager = database.transactionManager
 
-  const createTransactionalRouter = <T extends IRoutes>() =>
+  const createTransactionalRouter = <T extends Routes>() =>
     new TransactionalRouter<T>(transactionManager)
 
   const globalErrorHandler = new Middleware.ErrorPageHandler(logger).handle
@@ -69,14 +67,14 @@ export const configureServer: ServerConfigurator = (config, database) => {
             sessionName: config.app.session.name,
             sessionSecret: config.app.session.secret,
           }).handle,
-          new Middleware.RequestLogger(logger).handle,
+          new RequestLogger(logger).handle,
           json(),
           cookieParser(config.app.session.secret),
-          new Middleware.CSRFMiddleware({
+          new CSRFMiddleware({
             baseUrl: config.app.baseUrl,
             cookieName: config.app.session.name + '_csrf',
           }).handle,
-          new Middleware.Transaction(database.namespace).handle,
+          new TransactionMiddleware(database.namespace).handle,
           authenticator.handle,
         ],
       },
@@ -87,11 +85,11 @@ export const configureServer: ServerConfigurator = (config, database) => {
       api: {
         path: '/api',
         handle: [
-          new routes.AuthRoutes(
+          configureAuthRoutes(
             services.authService,
             authenticator,
             createTransactionalRouter(),
-          ).handle,
+          ),
         ],
         error: new Middleware.ErrorApiHandler(logger).handle,
       },

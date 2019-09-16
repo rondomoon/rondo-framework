@@ -1,7 +1,7 @@
-import {THandler} from './THandler'
-import {TPromiseHandler} from './TPromiseHandler'
+import { Handler } from './Handler'
+import { PromiseHandler } from './PromiseHandler'
 
-export function handlePromise<T>(endpoint: TPromiseHandler<T>): THandler {
+export function handlePromise<T>(endpoint: PromiseHandler<T>): Handler {
   return (req, res, next) => {
     const promise = endpoint(req, res, next)
     promise

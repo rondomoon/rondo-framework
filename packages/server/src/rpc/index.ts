@@ -1,3 +1,3 @@
 export * from './RPC'
-export * from './TeamService'
-export * from './UserService'
+export * from './SQLTeamService'
+export * from './SQLUserService'

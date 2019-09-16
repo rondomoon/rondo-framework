@@ -1,8 +1,8 @@
+import { Method, Routes } from '@rondo.dev/http-types'
 import express from 'express'
-import {IRoutes, TMethod} from '@rondo.dev/http-types'
-import {TTypedHandler, TTypedMiddleware} from './TTypedHandler'
+import { TypedHandler, TypedMiddleware } from './TypedHandler'
 
-export class AsyncRouter<R extends IRoutes> {
+export class AsyncRouter<R extends Routes> {
   readonly router: express.Router
   readonly use: express.IRouterHandler<void> & express.IRouterMatcher<void>
 
@@ -11,12 +11,12 @@ export class AsyncRouter<R extends IRoutes> {
     this.use = this.router.use.bind(this.router) as any
   }
 
-  protected addRoute<M extends TMethod, P extends keyof R & string>(
+  protected addRoute<M extends Method, P extends keyof R & string>(
     method: M,
     path: P,
-    ...handlers: [TTypedHandler<R, P, M>] | [
-      Array<TTypedMiddleware<R, P, M>>,
-      TTypedHandler<R, P, M>,
+    ...handlers: [TypedHandler<R, P, M>] | [
+      Array<TypedMiddleware<R, P, M>>,
+      TypedHandler<R, P, M>,
     ]
   ) {
     const addRoute = this.router[method].bind(this.router as any)
@@ -31,8 +31,8 @@ export class AsyncRouter<R extends IRoutes> {
 
   }
 
-  protected wrapHandler<M extends TMethod, P extends keyof R & string>(
-    handler: TTypedHandler<R, P, M>,
+  protected wrapHandler<M extends Method, P extends keyof R & string>(
+    handler: TypedHandler<R, P, M>,
   ): express.RequestHandler {
     return (req, res, next) => {
       handler(req, res, next)
@@ -45,9 +45,9 @@ export class AsyncRouter<R extends IRoutes> {
 
   get<P extends keyof R & string>(
     path: P,
-    ...handlers: [TTypedHandler<R, P, 'get'>] | [
-      Array<TTypedMiddleware<R, P, 'get'>>,
-      TTypedHandler<R, P, 'get'>,
+    ...handlers: [TypedHandler<R, P, 'get'>] | [
+      Array<TypedMiddleware<R, P, 'get'>>,
+      TypedHandler<R, P, 'get'>,
     ]
   ): void {
     this.addRoute('get', path, ...handlers)
@@ -55,9 +55,9 @@ export class AsyncRouter<R extends IRoutes> {
 
   post<P extends keyof R & string>(
     path: P,
-    ...handlers: [TTypedHandler<R, P, 'post'>] | [
-      Array<TTypedMiddleware<R, P, 'post'>>,
-      TTypedHandler<R, P, 'post'>,
+    ...handlers: [TypedHandler<R, P, 'post'>] | [
+      Array<TypedMiddleware<R, P, 'post'>>,
+      TypedHandler<R, P, 'post'>,
     ]
   ) {
     this.addRoute('post', path, ...handlers)
@@ -65,9 +65,9 @@ export class AsyncRouter<R extends IRoutes> {
 
   put<P extends keyof R & string>(
     path: P,
-    ...handlers: [TTypedHandler<R, P, 'put'>] | [
-      Array<TTypedMiddleware<R, P, 'put'>>,
-      TTypedHandler<R, P, 'put'>,
+    ...handlers: [TypedHandler<R, P, 'put'>] | [
+      Array<TypedMiddleware<R, P, 'put'>>,
+      TypedHandler<R, P, 'put'>,
     ]
   ) {
     this.addRoute('put', path, ...handlers)
@@ -75,9 +75,9 @@ export class AsyncRouter<R extends IRoutes> {
 
   delete<P extends keyof R & string>(
     path: P,
-    ...handlers: [TTypedHandler<R, P, 'delete'>] | [
-      Array<TTypedMiddleware<R, P, 'delete'>>,
-      TTypedHandler<R, P, 'delete'>,
+    ...handlers: [TypedHandler<R, P, 'delete'>] | [
+      Array<TypedMiddleware<R, P, 'delete'>>,
+      TypedHandler<R, P, 'delete'>,
     ]
   ) {
     this.addRoute('delete', path, ...handlers)
@@ -85,9 +85,9 @@ export class AsyncRouter<R extends IRoutes> {
 
   head<P extends keyof R & string>(
     path: P,
-    ...handlers: [TTypedHandler<R, P, 'head'>] | [
-      Array<TTypedMiddleware<R, P, 'head'>>,
-      TTypedHandler<R, P, 'head'>,
+    ...handlers: [TypedHandler<R, P, 'head'>] | [
+      Array<TypedMiddleware<R, P, 'head'>>,
+      TypedHandler<R, P, 'head'>,
     ]
   ) {
     this.addRoute('head', path, ...handlers)
@@ -95,9 +95,9 @@ export class AsyncRouter<R extends IRoutes> {
 
   options<P extends keyof R & string>(
     path: P,
-    ...handlers: [TTypedHandler<R, P, 'options'>] | [
-      Array<TTypedMiddleware<R, P, 'options'>>,
-      TTypedHandler<R, P, 'options'>,
+    ...handlers: [TypedHandler<R, P, 'options'>] | [
+      Array<TypedMiddleware<R, P, 'options'>>,
+      TypedHandler<R, P, 'options'>,
     ]
   ) {
     this.addRoute('options', path, ...handlers)
@@ -105,9 +105,9 @@ export class AsyncRouter<R extends IRoutes> {
 
   patch<P extends keyof R & string>(
     path: P,
-    ...handlers: [TTypedHandler<R, P, 'patch'>] | [
-      Array<TTypedMiddleware<R, P, 'patch'>>,
-      TTypedHandler<R, P, 'patch'>,
+    ...handlers: [TypedHandler<R, P, 'patch'>] | [
+      Array<TypedMiddleware<R, P, 'patch'>>,
+      TypedHandler<R, P, 'patch'>,
     ]
   ) {
     this.addRoute('patch', path, ...handlers)

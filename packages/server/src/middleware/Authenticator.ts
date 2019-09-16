@@ -1,15 +1,15 @@
-import {Authenticator as A, Passport} from 'passport'
-import {IAuthService} from '../services'
-import {Strategy as LocalStrategy} from 'passport-local'
-import {THandler} from './THandler'
-import {IMiddleware} from './IMiddleware'
+import { Authenticator as A, Passport } from 'passport'
+import { Strategy as LocalStrategy } from 'passport-local'
+import { Middleware } from './Middleware'
+import { Handler } from './Handler'
+import { AuthService } from '@rondo.dev/common'
 
-export class Authenticator implements IMiddleware {
+export class Authenticator implements Middleware {
 
   protected readonly passport: A
-  readonly handle: THandler[]
+  readonly handle: Handler[]
 
-  constructor(protected readonly authService: IAuthService) {
+  constructor(protected readonly authService: AuthService) {
     this.passport = new Passport() as any
 
     this.configurePassport()
@@ -22,7 +22,7 @@ export class Authenticator implements IMiddleware {
     ]
   }
 
-  withLogInPromise: THandler = (req, res, next) => {
+  withLogInPromise: Handler = (req, res, next) => {
     req.logInPromise = (user) => {
       return new Promise((resolve, reject) => {
         req.logIn(user, err => {
@@ -72,7 +72,7 @@ export class Authenticator implements IMiddleware {
     .catch(done)
   }
 
-  authenticate(strategy: string | string[]): THandler {
+  authenticate(strategy: string | string[]): Handler {
     return (req, res, next) => {
       return new Promise((resolve, reject) => {
         this.passport.authenticate(strategy, (err: Error, user, info) => {

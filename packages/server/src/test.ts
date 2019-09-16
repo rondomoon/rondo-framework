@@ -1,13 +1,13 @@
-import {Bootstrap} from './application/Bootstrap'
-import {configureServer} from './application/configureServer'
-import {IAPIDef} from '@rondo.dev/common'
-import {TestUtils} from './test-utils'
-import {config} from './config'
-import {createNamespace} from 'cls-hooked'
+import { APIDef } from '@rondo.dev/common'
+import { createNamespace } from 'cls-hooked'
+import { CLIBootstrap } from './application'
+import { configureServer } from './application/configureServer'
+import { config } from './config'
+import { TestUtils } from './test-utils'
 
 export const exit = jest.fn()
 
-export const bootstrap = new Bootstrap({
+export const bootstrap = new CLIBootstrap({
   config,
   configureServer,
   namespace: createNamespace('test'),
@@ -15,5 +15,5 @@ export const bootstrap = new Bootstrap({
 })
 
 // TODO separate IAPIDef between projects
-export const test = new TestUtils<IAPIDef>(bootstrap)
+export const test = new TestUtils<APIDef>(bootstrap)
 export const {request} = test

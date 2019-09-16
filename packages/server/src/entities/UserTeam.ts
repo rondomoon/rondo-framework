@@ -1,8 +1,8 @@
-import {BaseEntity} from './BaseEntity'
-import {Column, Entity, ManyToOne} from 'typeorm'
-import {Role} from './Role'
-import {Team} from './Team'
-import {User} from './User'
+import { Column, Entity, ManyToOne } from 'typeorm'
+import { BaseEntity } from './BaseEntity'
+import { Role } from './Role'
+import { Team } from './Team'
+import { User } from './User'
 
 @Entity()
 export class UserTeam extends BaseEntity {

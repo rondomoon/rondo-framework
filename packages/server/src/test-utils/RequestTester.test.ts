@@ -3,11 +3,11 @@ import {RequestTester} from './RequestTester'
 
 describe('RequestTest', () => {
 
-  interface IAPI {
+  interface API {
     '/test': {
       'get': {
-        response: {id: number},
-      },
+        response: {id: number}
+      }
     }
   }
 
@@ -18,14 +18,14 @@ describe('RequestTest', () => {
 
   describe('constructor', () => {
     it('creates a blank baseUrl', () => {
-      const t = new RequestTester<IAPI>(app)
+      const t = new RequestTester<API>(app)
       expect(t.baseUrl).toEqual('')
     })
   })
 
   describe('RequestTester.request', () => {
     it('creates a response', async () => {
-      const t = new RequestTester<IAPI>(app, '/api')
+      const t = new RequestTester<API>(app, '/api')
       const result = await t.request('get', '/test')
       expect(result.body.id).toBe(1)
     })

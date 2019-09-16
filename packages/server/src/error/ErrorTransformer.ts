@@ -1,4 +1,4 @@
-import {TransformedError} from './TransformedError'
+import { TransformedError } from './TransformedError'
 
 export class ErrorTransformer {
   constructor(

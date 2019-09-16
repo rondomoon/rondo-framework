@@ -1,6 +1,6 @@
 import { Server } from 'http'
 
-export interface IAppServer {
+export interface AppServer {
   listen(callback?: () => void): Server
   listen(callback?: () => void): Server
   listen(portOrPath: number | string, callback?: () => void): Server

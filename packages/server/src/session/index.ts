@@ -1,2 +1,2 @@
-export * from './ISession'
+export * from './DefaultSession'
 export * from './SessionStore'

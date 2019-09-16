@@ -1,7 +1,7 @@
-import {BaseEntity} from './BaseEntity'
-import {Column, Entity, OneToMany, ManyToOne, Index} from 'typeorm'
-import {UserTeam} from './UserTeam'
-import {User} from './User'
+import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm'
+import { BaseEntity } from './BaseEntity'
+import { User } from './User'
+import { UserTeam } from './UserTeam'
 
 @Entity()
 export class Team extends BaseEntity {

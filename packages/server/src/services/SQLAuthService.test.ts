@@ -1,14 +1,14 @@
-import {test} from '../test'
-import {AuthService} from './AuthService'
+import { test } from '../test'
+import { SQLAuthService } from './SQLAuthService'
 
-describe('AuthService', () => {
+describe('SQLAuthService', () => {
 
   test.withDatabase()
 
   const username = test.username
   const password = '1234567890'
 
-  const authService = new AuthService(test.bootstrap.database)
+  const authService = new SQLAuthService(test.bootstrap.database)
 
   async function createUser(u = username, p = password) {
     return authService.createUser({

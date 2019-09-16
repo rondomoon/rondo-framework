@@ -1,19 +1,18 @@
-import { IUserService } from '@rondo.dev/common'
-import { compare, hash } from 'bcrypt'
-import createError from 'http-errors'
-import { IDatabase } from '../database/IDatabase'
+import { UserService } from '@rondo.dev/common'
+import { hash } from 'bcrypt'
+import { Database } from '../database/Database'
 import { User } from '../entities/User'
 import { UserEmail } from '../entities/UserEmail'
-import { ensureLoggedIn, IContext, RPC } from './RPC'
+import { Context, ensureLoggedIn, RPC } from './RPC'
 
 const SALT_ROUNDS = 10
-const MIN_PASSWORD_LENGTH = 10
+// const MIN_PASSWORD_LENGTH = 10
 
 @ensureLoggedIn
-export class UserService implements RPC<IUserService> {
-  constructor(protected readonly db: IDatabase) {}
+export class SQLUserService implements RPC<UserService> {
+  constructor(protected readonly db: Database) {}
 
-  async getProfile(context: IContext) {
+  async getProfile(context: Context) {
     const userId = context.user!.id
 
     // current user should always exist in the database
@@ -29,7 +28,7 @@ export class UserService implements RPC<IUserService> {
     }
   }
 
-  async findUserByEmail(context: IContext, email: string) {
+  async findUserByEmail(context: Context, email: string) {
     const userEmail = await this.db.getRepository(UserEmail)
     .findOne({ email }, {
       relations: ['user'],

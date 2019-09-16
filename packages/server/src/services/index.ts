@@ -1,4 +1,2 @@
-export * from './IAuthService'
-export * from './AuthService'
-export * from './IUserPermissions'
-export * from './UserPermissions'
+export * from './SQLAuthService'
+export * from './SQLUserPermissions'

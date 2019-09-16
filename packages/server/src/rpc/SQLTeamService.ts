@@ -1,20 +1,19 @@
-import { ITeamAddUserParams, ITeamCreateParams, ITeamRemoveParams, ITeamService, ITeamUpdateParams, trim } from '@rondo.dev/common'
-import { IUserInTeam } from '@rondo.dev/common/lib/team/IUserInTeam'
+import { TeamAddUserParams, TeamCreateParams, TeamRemoveParams, TeamService, TeamUpdateParams, trim, UserPermissions } from '@rondo.dev/common'
+import { UserInTeam } from '@rondo.dev/common/lib/team/UserInTeam'
 import Validator from '@rondo.dev/validator'
-import { IDatabase } from '../database/IDatabase'
+import { Database } from '../database/Database'
 import { Team } from '../entities/Team'
 import { UserTeam } from '../entities/UserTeam'
-import { IUserPermissions } from '../services/IUserPermissions'
-import { ensureLoggedIn, IContext, RPC } from './RPC'
+import { ensureLoggedIn, Context, RPC } from './RPC'
 
 @ensureLoggedIn
-export class TeamService implements RPC<ITeamService> {
+export class SQLTeamService implements RPC<TeamService> {
   constructor(
-    protected readonly db: IDatabase,
-    protected readonly permissions: IUserPermissions,
+    protected readonly db: Database,
+    protected readonly permissions: UserPermissions,
   ) {}
 
-  async create(context: IContext, params: ITeamCreateParams) {
+  async create(context: Context, params: TeamCreateParams) {
     const userId = context.user!.id
     const name = trim(params.name)
 
@@ -38,7 +37,7 @@ export class TeamService implements RPC<ITeamService> {
     return (await this.findOne(context, team.id))!
   }
 
-  async remove(context: IContext, {id}: ITeamRemoveParams) {
+  async remove(context: Context, {id}: TeamRemoveParams) {
     const userId = context.user!.id
 
     await this.permissions.belongsToTeam({
@@ -55,7 +54,7 @@ export class TeamService implements RPC<ITeamService> {
     return {id}
   }
 
-  async update(context: IContext, {id, name}: ITeamUpdateParams) {
+  async update(context: Context, {id, name}: TeamUpdateParams) {
     const userId = context.user!.id
 
     await this.permissions.belongsToTeam({
@@ -73,7 +72,7 @@ export class TeamService implements RPC<ITeamService> {
     return (await this.findOne(context, id))!
   }
 
-  async addUser(context: IContext, params: ITeamAddUserParams) {
+  async addUser(context: Context, params: TeamAddUserParams) {
     const {userId, teamId, roleId} = params
     await this.db.getRepository(UserTeam)
     .save({userId, teamId, roleId})
@@ -89,7 +88,7 @@ export class TeamService implements RPC<ITeamService> {
     return this._mapUserInTeam(userTeam!)
   }
 
-  async removeUser(context: IContext, params: ITeamAddUserParams) {
+  async removeUser(context: Context, params: TeamAddUserParams) {
     const {teamId, userId, roleId} = params
 
     await this.permissions.belongsToTeam({
@@ -104,11 +103,11 @@ export class TeamService implements RPC<ITeamService> {
     return {teamId, userId, roleId}
   }
 
-  async findOne(context: IContext, id: number) {
+  async findOne(context: Context, id: number) {
     return this.db.getRepository(Team).findOne(id)
   }
 
-  async find(context: IContext) {
+  async find(context: Context) {
     const userId = context.user!.id
 
     return this.db.getRepository(Team)
@@ -119,7 +118,7 @@ export class TeamService implements RPC<ITeamService> {
     .getMany()
   }
 
-  async findUsers(context: IContext, teamId: number) {
+  async findUsers(context: Context, teamId: number) {
     const userId = context.user!.id
 
     await this.permissions.belongsToTeam({
@@ -139,7 +138,7 @@ export class TeamService implements RPC<ITeamService> {
     }
   }
 
-  protected _mapUserInTeam(ut: UserTeam): IUserInTeam {
+  protected _mapUserInTeam(ut: UserTeam): UserInTeam {
     return {
       teamId: ut.teamId,
       userId: ut.userId,

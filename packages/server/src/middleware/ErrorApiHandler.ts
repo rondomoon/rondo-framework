@@ -1,12 +1,12 @@
-import {TErrorHandler} from './TErrorHandler'
-import {ILogger} from '@rondo.dev/logger'
-import {IMiddleware} from './IMiddleware'
-import {ValidationError} from '@rondo.dev/validator'
+import { Logger } from '@rondo.dev/logger'
+import { ValidationError } from '@rondo.dev/validator'
+import { ErrorHandler } from './ErrorHandler'
+import { Middleware } from './Middleware'
 
-export class ErrorApiHandler implements IMiddleware {
-  constructor(readonly logger: ILogger) {}
+export class ErrorApiHandler implements Middleware {
+  constructor(readonly logger: Logger) {}
 
-  handle: TErrorHandler = (err, req, res, next) => {
+  handle: ErrorHandler = (err, req, res, next) => {
     this.logger.error('%s An API error occurred: %s',
       req.correlationId, err.stack)
     const statusCode = this.getStatus(err)

@@ -1,4 +1,4 @@
-import {Namespace} from 'cls-hooked'
+import { Namespace } from 'cls-hooked'
 
 export class NamespaceMock implements Namespace {
   readonly context: {[key: string]: any} = {}

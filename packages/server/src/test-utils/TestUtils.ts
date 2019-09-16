@@ -1,29 +1,26 @@
-import express from 'express'
-import supertest from 'supertest'
-import {Connection, QueryRunner} from 'typeorm'
-import {
-  ENTITY_MANAGER, ITransactionManager, TRANSACTION_ID,
-} from '../database/ITransactionManager'
-import {IRoutes} from '@rondo.dev/http-types'
-import {IBootstrap} from '../application/IBootstrap'
-import {RequestTester} from './RequestTester'
-import {Role} from '../entities/Role'
-import {CORRELATION_ID} from '../middleware'
-import shortid from 'shortid'
-import { AddressInfo } from 'net'
+/* eslint @typescript-eslint/no-explicit-any: 0 */
+import { Routes } from '@rondo.dev/http-types'
 import { createRemoteClient, FunctionPropertyNames, RPCClient } from '@rondo.dev/jsonrpc'
-import {Server} from 'http'
-import { IAppServer } from '../application/IAppServer'
+import { Server } from 'http'
+import { AddressInfo } from 'net'
+import shortid from 'shortid'
+import supertest from 'supertest'
+import { Connection, QueryRunner } from 'typeorm'
+import { AppServer } from '../application/AppServer'
+import { Bootstrap } from '../application/Bootstrap'
+import { ENTITY_MANAGER, TransactionManager, TRANSACTION_ID } from '../database/TransactionManager'
+import { Role } from '../entities/Role'
+import { RequestTester } from './RequestTester'
 
-export class TestUtils<T extends IRoutes> {
+export class TestUtils<T extends Routes> {
   readonly username = this.createTestUsername()
   readonly password = 'Password10'
 
-  readonly app: IAppServer
+  readonly app: AppServer
   readonly context: string
-  readonly transactionManager: ITransactionManager
+  readonly transactionManager: TransactionManager
 
-  constructor(readonly bootstrap: IBootstrap) {
+  constructor(readonly bootstrap: Bootstrap) {
     this.app = bootstrap.application.server
     this.context = this.bootstrap.getConfig().app.context
     this.transactionManager = this.bootstrap.database.transactionManager
@@ -82,7 +79,7 @@ export class TestUtils<T extends IRoutes> {
     .save({name})
   }
 
-  async getError(promise: Promise<any>): Promise<Error> {
+  async getError(promise: Promise<unknown>): Promise<Error> {
     let error!: Error
     try {
       await promise

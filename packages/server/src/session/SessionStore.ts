@@ -1,31 +1,31 @@
-import {Store} from 'express-session'
-import {ISession} from './ISession'
-import {Repository, LessThan} from 'typeorm'
-import {debounce} from '@rondo.dev/tasq'
-import { ILogger } from '@rondo.dev/logger'
+import { Logger } from '@rondo.dev/logger'
+import { debounce } from '@rondo.dev/tasq'
+import { Store } from 'express-session'
+import { LessThan, Repository } from 'typeorm'
+import { DefaultSession } from './DefaultSession'
 
 type SessionData = Express.SessionData
 type Callback = (err?: any, session?: SessionData) => void
 type CallbackErr = (err?: any) => void
 
-export interface ISessionStoreOptions<S extends ISession> {
+export interface SessionStoreOptions<S extends DefaultSession> {
   readonly ttl: number
   readonly cleanupDelay: number
-  readonly getRepository: TRepositoryFactory<S>
-  readonly logger: ILogger,
-  buildSession(sessionData: SessionData, session: ISession): S
+  readonly getRepository: RepositoryFactory<S>
+  readonly logger: Logger
+  buildSession(sessionData: SessionData, session: DefaultSession): S
 }
 
-export type TRepositoryFactory<T> = () => Repository<T>
+export type RepositoryFactory<T> = () => Repository<T>
 
 // TODO casting as any because TypeScript complains. Looks like this is a
 // bug in TypeScript 3.2.2
 //
 // https://github.com/typeorm/typeorm/issues/1544
 // https://github.com/Microsoft/TypeScript/issues/21592
-export class SessionStore<S extends ISession> extends Store {
+export class SessionStore<S extends DefaultSession> extends Store {
 
-  protected readonly getRepository: TRepositoryFactory<S>
+  protected readonly getRepository: RepositoryFactory<S>
 
   readonly cleanup = debounce(async () => {
     try {
@@ -43,7 +43,7 @@ export class SessionStore<S extends ISession> extends Store {
   }, 1000)
 
   constructor(
-    protected readonly options: ISessionStoreOptions<S>,
+    protected readonly options: SessionStoreOptions<S>,
   ) {
     super()
     this.getRepository = options.getRepository
