@@ -32,10 +32,9 @@ export class TestUtils {
 
   render(jsx: JSX.Element) {
     const $div = document.createElement('div')
-    ReactDOM.render(<TestContainer>{jsx}</TestContainer>, $div)
     const component = ReactDOM.render(
-      <div>{jsx}</div>, $div) as unknown as TestContainer
-    const node = component.ref.current!
+      <TestContainer>{jsx}</TestContainer>, $div) as unknown as TestContainer
+    const node = component.ref.current!.children[0]
     return {
       component,
       node,
