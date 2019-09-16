@@ -26,7 +26,7 @@ describe('remote', () => {
       return a + b
     }
     async fetchItem(
-      ctx: {}, obj1: {a: number}, obj2: {b: number}
+      ctx: {}, obj1: {a: number}, obj2: {b: number},
     ): Promise<{a: number, b: number}> {
       return Promise.resolve({...obj1, ...obj2})
     }

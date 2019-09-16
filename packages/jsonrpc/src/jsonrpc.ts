@@ -1,9 +1,8 @@
 export type Id = number | string
-import {ArgumentTypes, FunctionPropertyNames, RetType} from './types'
-import {isPromise} from './isPromise'
-import {createError, ErrorResponse} from './error'
-import {getValidatorsForMethod, getValidatorsForInstance} from './ensure'
-import {Validate} from './ensure'
+import { getValidatorsForInstance, getValidatorsForMethod, Validate } from './ensure'
+import { createError, ErrorResponse } from './error'
+import { isPromise } from './isPromise'
+import { ArgumentTypes, FunctionPropertyNames, RetType } from './types'
 
 export const ERROR_PARSE = {
   code: -32700,
@@ -78,7 +77,8 @@ export interface SuccessResponse<T> {
 export type Response<T = any> = SuccessResponse<T> | ErrorResponse<T>
 
 export function createSuccessResponse<T>(
-  id: number | string, result: T
+  id: number | string,
+  result: T,
 ): SuccessResponse<T> {
   return {
     jsonrpc: '2.0',
