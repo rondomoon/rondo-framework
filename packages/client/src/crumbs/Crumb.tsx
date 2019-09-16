@@ -1,7 +1,7 @@
+import { Breadcrumb, BreadcrumbItem } from 'bloomer'
 import React from 'react'
-import {Breadcrumb, BreadcrumbItem} from 'bloomer'
-import {Link} from 'react-router-dom'
-import {CrumbLink} from './CrumbLink'
+import { Link } from 'react-router-dom'
+import { CrumbLink } from './CrumbLink'
 
 export interface CrumbProps {
   links: CrumbLink[]

@@ -1,5 +1,5 @@
-import {getPathVariable, getPathSeparator, findNodeModules} from './modules'
-import {platform} from 'os'
+import { platform } from 'os'
+import { findNodeModules, getPathSeparator, getPathVariable } from './modules'
 
 describe('modules', () => {
 

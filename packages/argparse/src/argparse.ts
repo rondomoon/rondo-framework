@@ -1,7 +1,7 @@
 import {relative} from 'path'
 
-export type TArgTypeName = 'string' | 'string[]' | 'number' | 'boolean'
-export type TArgType<T extends TArgTypeName> =
+export type ArgTypeName = 'string' | 'string[]' | 'number' | 'boolean'
+export type ArgType<T extends ArgTypeName> =
   T extends 'string'
   ? string
   : T extends 'string[]'
@@ -16,29 +16,29 @@ export const N_ONE_OR_MORE = '+'
 export const N_ZERO_OR_MORE = '*'
 export const N_DEFAULT_VALUE = 1
 
-export type TNumberOfArgs = number | '+' | '*'
+export type NumberOfArgs = number | '+' | '*'
 
-export interface ArgParam<T extends TArgTypeName> {
+export interface ArgParam<T extends ArgTypeName> {
   alias?: string
   description?: string
-  default?: TArgType<T>
-  choices?: Array<TArgType<T>>
+  default?: ArgType<T>
+  choices?: Array<ArgType<T>>
   required?: boolean
   positional?: boolean
-  n?: TNumberOfArgs
+  n?: NumberOfArgs
 }
 
-export interface Argument<T extends TArgTypeName> extends ArgParam<T> {
+export interface Argument<T extends ArgTypeName> extends ArgParam<T> {
   type: T
 }
 
 export interface ArgsConfig {
-  [arg: string]: Argument<TArgTypeName>
+  [arg: string]: Argument<ArgTypeName>
 }
 
-export type TArgs<T extends ArgsConfig> = {
+export type Args<T extends ArgsConfig> = {
   [k in keyof T]: T[k] extends Argument<infer A> ?
-    TArgType<A> : never
+    ArgType<A> : never
 }
 
 interface Iterator<T> {
@@ -72,7 +72,7 @@ function assert(cond: boolean, message: string) {
   }
 }
 
-function getDefaultValue(type: TArgTypeName) {
+function getDefaultValue(type: ArgTypeName) {
   switch (type) {
     case 'number':
       return NaN
@@ -133,7 +133,7 @@ function extractArray(
   it: Iterator<string>,
   argument: string,
   isPositional: boolean,
-  n: TNumberOfArgs = N_DEFAULT_VALUE,
+  n: NumberOfArgs = N_DEFAULT_VALUE,
 ): string[] {
   function getLimit() {
     const l = typeof n === 'number' ? n : Infinity
@@ -173,7 +173,7 @@ function help(command: string, config: ArgsConfig, desc = '') {
   function getArrayHelp(
     k: string,
     required?: boolean,
-    n: TNumberOfArgs = N_DEFAULT_VALUE,
+    n: NumberOfArgs = N_DEFAULT_VALUE,
   ) {
     k = k.toUpperCase()
     if (n === N_ZERO_OR_MORE) {
@@ -194,7 +194,7 @@ function help(command: string, config: ArgsConfig, desc = '') {
     return required ? array.join(' ') : `[${array.join(' ')}]`
   }
 
-  function getDescription(argConfig: Argument<TArgTypeName>): string {
+  function getDescription(argConfig: Argument<ArgTypeName>): string {
     const samples = []
     if (argConfig.required) {
       samples.push('required')
@@ -218,7 +218,7 @@ function help(command: string, config: ArgsConfig, desc = '') {
   }
 
   function getArgType(
-    type: TArgTypeName, argument: string, required?: boolean, n?: TNumberOfArgs,
+    type: ArgTypeName, argument: string, required?: boolean, n?: NumberOfArgs,
   ): string {
     return type === 'string[]'
       ? getArrayHelp(argument, required, n)
@@ -272,7 +272,7 @@ function help(command: string, config: ArgsConfig, desc = '') {
   .join('\n\n')
 }
 
-export function arg<T extends TArgTypeName>(
+export function arg<T extends ArgTypeName>(
   type: T,
   config: ArgParam<T> = {},
 ): Argument<T> {
@@ -290,7 +290,7 @@ export function argparse<T extends ArgsConfig>(
   log: (message: string) => void = console.log.bind(console),
 ) {
   return {
-    parse(args: string[]): TArgs<T> {
+    parse(args: string[]): Args<T> {
       const command = args[0]
       args = args.slice(1)
       const result: any = {}  // eslint-disable-line

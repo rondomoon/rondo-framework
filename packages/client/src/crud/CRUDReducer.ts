@@ -15,10 +15,10 @@ export interface CRUDState<T extends CRUDEntity> {
   readonly ids: ReadonlyArray<number>
   readonly byId: Record<number, T>
   readonly status: CRUDStatus
-  readonly form: CRUDForm<T>
+  readonly form: CRUDFormState<T>
 }
 
-export interface CRUDForm<T extends CRUDEntity> {
+export interface CRUDFormState<T extends CRUDEntity> {
   readonly createItem: Pick<T, Exclude<keyof T, 'id'>>
   readonly createErrors: Partial<Record<keyof T, string>>
 

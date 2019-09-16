@@ -1,7 +1,7 @@
 import React from 'react'
-import {Crumb} from './Crumb'
-import {TestUtils} from '../test-utils'
-import {MemoryRouter} from 'react-router-dom'
+import { MemoryRouter } from 'react-router-dom'
+import { TestUtils } from '../test-utils'
+import { Crumb } from './Crumb'
 
 const t = new TestUtils()
 

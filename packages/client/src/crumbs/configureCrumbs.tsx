@@ -1,9 +1,9 @@
-import { pack, TStateSelector } from '@rondo.dev/redux'
+import { pack, SelectState } from '@rondo.dev/redux'
 import { Crumb } from './Crumb'
-import { ICrumbsState } from './CrumbsReducer'
+import { CrumbsState } from './CrumbsState'
 
 export function configureCrumbs<State>(
-  getLocalState: TStateSelector<State, ICrumbsState>,
+  getLocalState: SelectState<State, CrumbsState>,
 ) {
   return pack(
     getLocalState,

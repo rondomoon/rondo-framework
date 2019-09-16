@@ -1,11 +1,11 @@
+import { join } from 'path'
+import { Command } from './Command'
 import * as commands from './scripts'
-import {join} from 'path'
-import { TCommand } from './TCommand'
 
-export type AvailableCommands = typeof commands & Record<string, TCommand>
+export type AvailableCommands = typeof commands & Record<string, Command>
 
 export async function resolve(cwd = process.cwd()): Promise<AvailableCommands> {
-  let extraScripts: Record<string, TCommand> = {}
+  let extraScripts: Record<string, Command> = {}
   try {
     extraScripts = await import(join(cwd, './src/scripts'))
   } catch (err) {

@@ -1,5 +1,4 @@
-import {StdioOptions} from './Subprocess'
-import {Subprocess} from './Subprocess'
+import { StdioOptions, Subprocess } from './Subprocess'
 
 describe('Subprocess', () => {
 

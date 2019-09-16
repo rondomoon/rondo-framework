@@ -14,7 +14,7 @@ interface UpdateTeamProps {
   team: Team
 }
 
-export type TTeamEditorProps = AddTeamProps | UpdateTeamProps
+export type TeamEditorProps = AddTeamProps | UpdateTeamProps
 
 export interface TeamEditorState {
   // TODO use redux state for errors!
@@ -23,8 +23,8 @@ export interface TeamEditorState {
 }
 
 export class TeamEditor
-extends React.PureComponent<TTeamEditorProps, TeamEditorState> {
-  constructor(props: TTeamEditorProps) {
+extends React.PureComponent<TeamEditorProps, TeamEditorState> {
+  constructor(props: TeamEditorProps) {
     super(props)
     this.state = {
       error: '',
@@ -34,7 +34,7 @@ extends React.PureComponent<TTeamEditorProps, TeamEditorState> {
   getName(team?: Team) {
     return team ? team.name : ''
   }
-  componentWillReceiveProps(nextProps: TTeamEditorProps) {
+  componentWillReceiveProps(nextProps: TeamEditorProps) {
     if (nextProps.type === 'update') {
       const {team} = nextProps
       if (team !== (this.props as UpdateTeamProps).team) {

@@ -1,13 +1,13 @@
 #!/usr/bin/env node
+import { arg, argparse } from '@rondo.dev/argparse'
+import { Command } from './Command'
 import * as log from './log'
-import {TCommand} from './TCommand'
-import {argparse, arg} from '@rondo.dev/argparse'
-import {resolve} from './resolve'
+import { resolve } from './resolve'
 
 async function run(
   commandName: string,
   commandArgs: string[],
-  commands: Record<string, TCommand>,
+  commands: Record<string, Command>,
   exit: (code: number) => void,
 ) {
   if (!(commandName in commands)) {

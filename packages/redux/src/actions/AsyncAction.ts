@@ -2,7 +2,7 @@ import {PendingAction} from './PendingAction'
 import {ResolvedAction} from './ResolvedAction'
 import {RejectedAction} from './RejectedAction'
 
-export type TAsyncStatus = 'pending' | 'resolved' | 'rejected'
+export type AsyncStatus = 'pending' | 'resolved' | 'rejected'
 
 export type AsyncAction<T, ActionType extends string> =
   PendingAction<T, ActionType>

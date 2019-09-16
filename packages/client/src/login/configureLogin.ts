@@ -1,9 +1,9 @@
 import { Credentials } from '@rondo.dev/common'
-import { pack, TStateSelector } from '@rondo.dev/redux'
+import { pack, SelectState } from '@rondo.dev/redux'
 import { bindActionCreators } from 'redux'
 import { LoginActions } from './LoginActions'
 import { LoginForm } from './LoginForm'
-import { ILoginState } from './LoginReducer'
+import { LoginState } from './LoginReducer'
 import { withForm } from './withForm'
 
 const defaultCredentials: Credentials = {
@@ -12,7 +12,7 @@ const defaultCredentials: Credentials = {
 }
 
 export function configureLogin<State>(
-  getLocalState: TStateSelector<State, ILoginState>,
+  getLocalState: SelectState<State, LoginState>,
   loginActions: LoginActions,
 ) {
   return pack(

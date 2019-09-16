@@ -1,5 +1,5 @@
 import {UserProfile} from '@rondo.dev/common'
-import {TLoginAction} from './LoginActions'
+import {LoginAction} from './LoginActions'
 
 export interface LoginState {
   readonly error: string
@@ -17,7 +17,7 @@ const defaultState: LoginState = {
 
 export function Login(
   state = defaultState,
-  action: TLoginAction,
+  action: LoginAction,
 ): LoginState {
   switch (action.type) {
     // sync actions

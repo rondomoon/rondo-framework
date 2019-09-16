@@ -1,12 +1,12 @@
-import { INewUser } from '@rondo.dev/common'
-import { pack, TStateSelector } from '@rondo.dev/redux'
+import { NewUser } from '@rondo.dev/common'
+import { pack, SelectState } from '@rondo.dev/redux'
 import { bindActionCreators } from 'redux'
 import { LoginActions } from './LoginActions'
-import { ILoginState } from './LoginReducer'
+import { LoginState } from './LoginReducer'
 import { RegisterForm } from './RegisterForm'
 import { withForm } from './withForm'
 
-const defaultCredentials: INewUser = {
+const defaultCredentials: NewUser = {
   username: '',
   password: '',
   firstName: '',
@@ -14,7 +14,7 @@ const defaultCredentials: INewUser = {
 }
 
 export function configureRegister<State>(
-  getLocalState: TStateSelector<State, ILoginState>,
+  getLocalState: SelectState<State, LoginState>,
   loginActions: LoginActions,
 ) {
   return pack(

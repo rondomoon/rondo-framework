@@ -72,7 +72,7 @@ export interface RPCRejectedAction<
   method: Method
 }
 
-export type TRPCAction<
+export type RPCAction<
   T, ActionType extends string, Method extends string | number | symbol
 > =
   RPCPendingAction<T, ActionType, Method>
@@ -95,7 +95,7 @@ export type GetPendingAction<A> =
   : never
 
 type Values<T> = T[keyof T]
-export type TPendingActions<T> = GetPendingAction<RetType<Values<T>>>
-export type TResolvedActions<T> = GetResolvedAction<TPendingActions<T>>
-export type TAllActions<T> = TPendingActions<T>
-  | TResolvedActions<T> | GetRejectedAction<TPendingActions<T>>
+export type PendingActions<T> = GetPendingAction<RetType<Values<T>>>
+export type ResolvedActions<T> = GetResolvedAction<PendingActions<T>>
+export type AllActions<T> = PendingActions<T>
+  | ResolvedActions<T> | GetRejectedAction<PendingActions<T>>

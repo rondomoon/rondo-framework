@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import TestUtils from 'react-dom/test-utils'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
-import { pack, TStateSelector } from './pack'
+import { pack, SelectState } from './pack'
 
 describe('pack', () => {
 
@@ -67,7 +67,7 @@ describe('pack', () => {
   }
 
   function configurePureComponent<State>(
-    getLocalState: TStateSelector<State, LocalState>,
+    getLocalState: SelectState<State, LocalState>,
   ) {
     return pack(
       getLocalState,
@@ -85,7 +85,7 @@ describe('pack', () => {
   }
 
   function configureFunctionalComponent<State>(
-    getLocalState: TStateSelector<State, LocalState>,
+    getLocalState: SelectState<State, LocalState>,
   ) {
     return pack(
       getLocalState,

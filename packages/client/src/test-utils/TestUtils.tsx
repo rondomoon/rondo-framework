@@ -1,7 +1,7 @@
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {createStore, TStateSelector, WaitMiddleware} from '@rondo.dev/redux'
+import {createStore, SelectState, WaitMiddleware} from '@rondo.dev/redux'
 import {Provider} from 'react-redux'
 import {
   Action,
@@ -14,7 +14,7 @@ import {
 
 interface RenderParams<State, LocalState> {
   reducers: ReducersMapObject<State, any>
-  select: TStateSelector<State, LocalState>
+  select: SelectState<State, LocalState>
 }
 
 export class TestContainer extends React.Component<{}> {
@@ -74,7 +74,7 @@ export class TestUtils {
     }
 
     const withComponent = <Props extends {}>(
-      getComponent: (select: TStateSelector<State, LocalState>) =>
+      getComponent: (select: SelectState<State, LocalState>) =>
         React.ComponentType<Props>,
     ) => {
       const Component = getComponent(select)

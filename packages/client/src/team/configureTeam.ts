@@ -1,10 +1,10 @@
 import { TeamActions, UserActions } from '@rondo.dev/common'
-import { bindActionCreators, pack, TStateSelector } from '@rondo.dev/redux'
+import { bindActionCreators, pack, SelectState } from '@rondo.dev/redux'
 import { TeamManager } from './TeamManager'
-import { ITeamState } from './TeamReducer'
+import { TeamState } from './TeamReducer'
 
 export function configureTeam<State>(
-  getLocalState: TStateSelector<State, ITeamState>,
+  getLocalState: SelectState<State, TeamState>,
   teamActions: TeamActions,
   userActions: UserActions,
 ) {

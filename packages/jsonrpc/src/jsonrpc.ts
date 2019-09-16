@@ -1,4 +1,4 @@
-export type TId = number | string
+export type Id = number | string
 import {ArgumentTypes, FunctionPropertyNames, RetType} from './types'
 import {isPromise} from './isPromise'
 import {createError, ErrorResponse} from './error'
@@ -63,14 +63,14 @@ export function getAllMethods<T>(obj: T): Array<FunctionPropertyNames<T>> {
 
 export interface Request<M extends string = any, A = any[]> {
   jsonrpc: '2.0'
-  id: TId | null
+  id: Id | null
   method: M
   params: A
 }
 
 export interface SuccessResponse<T> {
   jsonrpc: '2.0'
-  id: TId
+  id: Id
   result: T
   error: null
 }

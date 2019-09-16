@@ -3,7 +3,7 @@ import { connect, GetProps, MapDispatchToPropsParam, Matching, ResolveThunks } f
 /*
  * Select and return a part of the state
  */
-export type TStateSelector<GlobalState, StateSlice>
+export type SelectState<GlobalState, StateSlice>
   = (state: GlobalState) => StateSlice
 
 /**
@@ -37,7 +37,7 @@ export function pack<
     C extends React.ComponentType<
       Matching<StateProps & ResolveThunks<DispatchProps>, GetProps<C>>>
 >(
-  getLocalState: TStateSelector<State, LocalState>,
+  getLocalState: SelectState<State, LocalState>,
   mapStateToProps: (state: LocalState) => StateProps,
   mapDispatchToProps: MapDispatchToPropsParam<DispatchProps, Props>,
   Component: C,

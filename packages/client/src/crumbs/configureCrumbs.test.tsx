@@ -1,7 +1,7 @@
-import * as Feature from './'
 import React from 'react'
-import {MemoryRouter} from 'react-router-dom'
-import {TestUtils} from '../test-utils'
+import { MemoryRouter } from 'react-router-dom'
+import { TestUtils } from '../test-utils'
+import * as Feature from './'
 
 const t = new TestUtils()
 

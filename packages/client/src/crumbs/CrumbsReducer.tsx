@@ -1,7 +1,5 @@
-import {Crumbs, CrumbsAction} from './CrumbsActions'
-
-export interface CrumbsState extends Crumbs {
-}
+import { CrumbsAction } from './CrumbsActions'
+import { CrumbsState } from './CrumbsState'
 
 const defaultState: CrumbsState = {
   links: [],

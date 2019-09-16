@@ -2,7 +2,7 @@ import React from 'react'
 import {Control, Field, Heading, Icon, Input} from 'bloomer'
 import {CRUDChangeParams} from './CRUDActions'
 
-export type TCRUDFieldType = 'text' | 'password' | 'number' | 'email' | 'tel'
+export type CRUDFieldType = 'text' | 'password' | 'number' | 'email' | 'tel'
 
 export interface CRUDFieldProps<T> {
   id?: number
@@ -12,22 +12,22 @@ export interface CRUDFieldProps<T> {
   label: string
   placeholder?: string
   name: keyof T & string
-  type: TCRUDFieldType
+  type: CRUDFieldType
   value: string
 }
 
-export type TCRUDErrors<T> = Partial<Record<keyof T & string, string>>
+export type CRUDErrors<T> = Partial<Record<keyof T & string, string>>
 
 export interface CRUDField<T> {
   Icon?: React.ComponentType
   label: string
   placeholder?: string
   name: keyof T & string
-  type: TCRUDFieldType
+  type: CRUDFieldType
 }
 
 export interface CRUDFormProps<T> {
-  errors: TCRUDErrors<T>
+  errors: CRUDErrors<T>
   id?: number
   item?: T
   error: string

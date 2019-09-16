@@ -5,14 +5,14 @@ import { StaticRouterContext } from 'react-router'
 import { StaticRouter } from 'react-router-dom'
 import ssrPrepass from 'react-ssr-prepass'
 import { Store } from 'redux'
-import { IClientConfig } from './IClientConfig'
-import { IRenderer } from './IRenderer'
+import { ClientConfig } from './ClientConfig'
+import { Renderer } from './Renderer'
 
 interface ComponentWithFetchData {
   fetchData(): Promise<unknown>
 }
 
-export class ServerRenderer<Props> implements IRenderer<Props> {
+export class ServerRenderer<Props> implements Renderer<Props> {
   constructor(
     readonly RootComponent: React.ComponentType<Props>,
   ) {}
@@ -20,7 +20,7 @@ export class ServerRenderer<Props> implements IRenderer<Props> {
     url: string,
     store: Store<State>,
     props: Props,
-    config: IClientConfig,
+    config: ClientConfig,
     host = '',
     headers: Record<string, string> = {},
   ) {

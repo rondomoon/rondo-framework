@@ -5,7 +5,7 @@ import { IDEMPOTENT_METHOD_REGEX } from './idempotent'
 import { createRpcService, ERROR_METHOD_NOT_FOUND, ERROR_SERVER, Request as RPCRequest, SuccessResponse } from './jsonrpc'
 import { FunctionPropertyNames } from './types'
 
-export type TGetContext<Context> = (req: Request) => Promise<Context> | Context
+export type GetContext<Context> = (req: Request) => Promise<Context> | Context
 
 export interface RPCReturnType {
   addService<T, F extends FunctionPropertyNames<T>>(
@@ -31,7 +31,7 @@ async function defaultHook<A extends RPCRequest, R, Context>(
 }
 
 export function jsonrpc<Context>(
-  getContext: TGetContext<Context>,
+  getContext: GetContext<Context>,
   logger: Logger,
   hook: <A extends RPCRequest, R>(
     details: InvocationDetails<A, Context>,

@@ -1,6 +1,6 @@
 import * as fs from 'fs'
+import { platform } from 'os'
 import * as path from 'path'
-import {platform} from 'os'
 
 export function getPathSeparator(platformValue: string) {
   return platformValue === 'win32' ? ';' : ':'

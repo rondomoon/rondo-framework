@@ -1,11 +1,4 @@
-import {
-  RPCActions,
-  RPCClient,
-  TResolvedActions,
-  TAllActions,
-  RPCReduxHandlers,
-  RPCActionsRecord,
-} from './types'
+import { AllActions, ResolvedActions, RPCActions, RPCActionsRecord, RPCClient, RPCReduxHandlers } from './types'
 
 export function createActions<T, ActionType extends string>(
   client: RPCClient<T>,
@@ -40,9 +33,9 @@ export function createReducer<
 
   const self = {
     withHandler<R extends RPCActionsRecord<ActionType>>(
-      handleAction: (state: State, action: TResolvedActions<R>) => State,
-    ): (state: State | undefined, action: TAllActions<R>) => State {
-      return (state: State = defaultState, action: TAllActions<R>): State => {
+      handleAction: (state: State, action: ResolvedActions<R>) => State,
+    ): (state: State | undefined, action: AllActions<R>) => State {
+      return (state: State = defaultState, action: AllActions<R>): State => {
         if (action.type !== actionType) {
           return state
         }
