@@ -3,6 +3,8 @@ extends:
   - plugin:react/recommended
   - plugin:@typescript-eslint/eslint-recommended
   - plugin:@typescript-eslint/recommended
+plugins:
+  - import
 settings:
   react:
     version: 'detect'
@@ -23,6 +25,7 @@ rules:
   #   - warn
   #   - never
   # interface-name-prefix:
+  'import/no-extraneous-dependencies': off
   '@typescript-eslint/member-delimiter-style':
     - warn
     - multiline:

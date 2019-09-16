@@ -17,12 +17,11 @@
     "@rondo.dev/server": "file:packages/server",
     "@rondo.dev/tasq": "file:packages/tasq",
     "@rondo.dev/test-utils": "file:packages/test-utils",
-    "@rondo.dev/validator": "file:packages/validator",
-    "@typescript-eslint/eslint-plugin": "^2.2.0",
-    "@typescript-eslint/parser": "^2.2.0",
-    "eslint": "^6.4.0"
+    "@rondo.dev/validator": "file:packages/validator"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.2.0",
+    "@typescript-eslint/parser": "^2.2.0",
     "@types/bcrypt": "^3.0.0",
     "@types/body-parser": "^1.17.0",
     "@types/cls-hooked": "^4.2.1",
@@ -59,6 +58,8 @@
     "common-shakeify": "^0.6.0",
     "cookie-parser": "^1.4.4",
     "deep-object-diff": "^1.1.0",
+    "eslint": "^6.4.0",
+    "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-react": "^7.14.3",
     "esmify": "git+https://github.com/jeremija/esmify.git",
     "formik": "^1.5.8",
