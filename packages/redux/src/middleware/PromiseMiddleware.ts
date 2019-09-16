@@ -24,21 +24,26 @@ export class PromiseMiddleware {
     if (!isPromise(payload)) {
       return next(action)
     }
-    const pendingAction = {
-      ...action,
-      status: 'pending',
-    }
-    // Propagate this action. Only attach listeners to the promise.
-    next(pendingAction)
 
-    payload
+    const promise = payload
     .then(result => {
       store.dispatch({
         ...action,
         payload: result,
         status: 'resolved',
       })
+      return result
     })
+
+    const pendingAction = {
+      ...action,
+      payload: promise,
+      status: 'pending',
+    }
+    // Propagate this action. Only attach listeners to the promise.
+    next(pendingAction)
+
+    promise
     .catch(err => {
       store.dispatch({
         ...action,

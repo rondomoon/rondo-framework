@@ -225,6 +225,7 @@ describe('createActions', () => {
           error = err
         }
         expect(error!).toBeTruthy()
+        expect(store.getState().mapping.error).toMatch(/status code 500/)
         expect(store.getState().handler.error).toMatch(/status code 500/)
       })
     })
