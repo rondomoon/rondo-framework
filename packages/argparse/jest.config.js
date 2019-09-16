@@ -1,18 +1,18 @@
 module.exports = {
   roots: [
-    '<rootDir>/src'
+    '<rootDir>/src',
   ],
   transform: {
-    '^.+\\.tsx?$': 'ts-jest'
+    '^.+\\.tsx?$': 'ts-jest',
   },
   testRegex: '(/__tests__/.*|\\.(test|spec))\\.tsx?$',
   moduleFileExtensions: [
     'ts',
     'tsx',
     'js',
-    'jsx'
+    'jsx',
   ],
   setupFiles: ['<rootDir>/jest.setup.js'],
   maxConcurrency: 1,
-  verbose: false
+  verbose: false,
 }

@@ -28,7 +28,7 @@ function getDependencies(root) {
       if (dep.startsWith('@rondo.dev/')) {
         return {
           file: require.resolve(dep),
-          isDep: false
+          isDep: false,
         }
       }
       return {

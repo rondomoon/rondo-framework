@@ -1,5 +1,5 @@
 module.exports = {
   projects: [
-    "<rootDir>/packages/*/src"
-  ]
+    "<rootDir>/packages/*/src",
+  ],
 }
