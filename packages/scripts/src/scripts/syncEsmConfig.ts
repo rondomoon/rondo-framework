@@ -2,6 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import {argparse, arg} from '@rondo.dev/argparse'
 import {info} from '../log'
+import { getFolders } from '../getFolders'
 
 const TSCONFIG_FILENAME = 'tsconfig.json'
 const TSCONFIG_ESM_FILENAME = 'tsconfig.esm.json'
@@ -19,11 +20,7 @@ export async function syncEsmConfig(...argv: string[]) {
 
   const pkgDir = args.packages
 
-  fs.readdirSync(pkgDir)
-  .filter(file => {
-    const stat = fs.lstatSync(path.join(pkgDir, file))
-    return stat.isDirectory()
-  })
+  getFolders(pkgDir)
   .map(file => path.join(pkgDir, file, TSCONFIG_FILENAME))
   .filter(file => fs.existsSync(file))
   .forEach(file => {
