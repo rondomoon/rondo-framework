@@ -365,12 +365,12 @@ export function argparse<T extends ArgsConfig>(
           continue
         }
         const isPositional = argument.substring(0, 1) !== '-' || onlyPositionals
-        if (isPositional) {
-          onlyPositionals = true
-        }
         const argName = !isPositional
           ? processFlags(argument)
           : getNextPositional(argument)
+        if (isPositional && positional.length) {
+          onlyPositionals = true
+        }
         const argConfig = config[argName]
         if (!isPositional && argName === 'help') {
           log(help(command, config, description))
