@@ -21,7 +21,7 @@ export async function syncEsmConfig(...argv: string[]) {
   const pkgDir = args.packages
 
   getFolders(pkgDir)
-  .map(file => path.join(pkgDir, file, TSCONFIG_FILENAME))
+  .map(folder => path.join(folder, TSCONFIG_FILENAME))
   .filter(file => fs.existsSync(file))
   .forEach(file => {
     const tsconfig = JSON.parse(fs.readFileSync(file, 'utf8'))

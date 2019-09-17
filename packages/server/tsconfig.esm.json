@@ -8,6 +8,9 @@
       "path": "../common/tsconfig.esm.json"
     },
     {
+      "path": "../argparse/tsconfig.esm.json"
+    },
+    {
       "path": "../client/tsconfig.esm.json"
     },
     {

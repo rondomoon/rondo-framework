@@ -10,7 +10,7 @@ import { Config } from './Config'
 import { ServerConfigurator } from './configureServer'
 import { createServer } from './createServer'
 
-export interface CLIBootstrapParams {
+export interface ServerBootstrapParams {
   readonly config: Config
   readonly configureServer: ServerConfigurator
   readonly namespace?: Namespace
@@ -26,7 +26,7 @@ function getFunctions(obj: object): Function[] {
   .filter(f => typeof f === 'function')
 }
 
-export class CLIBootstrap implements Bootstrap {
+export class ServerBootstrap implements Bootstrap {
   protected config: Config
   protected configureServer: ServerConfigurator
   protected namespace: Namespace
@@ -37,7 +37,7 @@ export class CLIBootstrap implements Bootstrap {
   readonly application: Application
   readonly database: Database
 
-  constructor(params: CLIBootstrapParams) {
+  constructor(params: ServerBootstrapParams) {
     this.config = {
       ...params.config,
       app: {
@@ -76,22 +76,6 @@ export class CLIBootstrap implements Bootstrap {
     return createServer(configureServer(this.getConfig(), database))
   }
 
-  async exec(command = 'listen') {
-    switch (command) {
-      case 'listen':
-        await this.listen()
-        return
-      case 'migrate':
-        await this.migrate()
-        return
-      case 'migrate-undo':
-        await this.migrateUndo()
-        return
-      default:
-        throw new Error('Unknown command: ' + command)
-    }
-  }
-
   async listen(
     port: number | string | undefined = process.env.PORT || 3000,
     hostname: string | undefined= process.env.BIND_HOST,
@@ -104,18 +88,6 @@ export class CLIBootstrap implements Bootstrap {
       this.exit(1)
       throw err
     }
-  }
-
-  async migrate() {
-    const connection = await this.database.connect()
-    await connection.runMigrations()
-    await connection.close()
-  }
-
-  async migrateUndo() {
-    const connection = await this.database.connect()
-    await connection.undoLastMigration()
-    await connection.close()
   }
 
   protected async start(
@@ -140,11 +112,12 @@ export class CLIBootstrap implements Bootstrap {
     })
 
     const apiLogger = loggerFactory.getLogger('api')
+    const address = this.getAddress()
 
-    if (hostname) {
-      apiLogger.info('Listening on %s %s', port, hostname)
+    if (typeof address === 'string') {
+      apiLogger.info('Listening on %s', address)
     } else {
-      apiLogger.info('Listening on %s', port)
+      apiLogger.info('Listening on %s %s', address.address, address.port)
     }
   }
 
@@ -157,7 +130,7 @@ export class CLIBootstrap implements Bootstrap {
   }
 
   async close(): Promise<void> {
-    return new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
       this.server!.close(err => {
         if (!err) {
           return resolve()

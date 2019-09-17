@@ -4,6 +4,7 @@ if (require.main === module) {
   }
 }
 export * from './application'
+export * from './cli'
 export * from './database'
 export * from './entities'
 export * from './error'
@@ -18,7 +19,8 @@ import * as rpc from './rpc'
 export {rpc}
 
 import bootstrap from './bootstrap'
+import { CLI } from './cli'
 
 if (require.main === module) {
-  bootstrap.exec(process.argv[2])
+  new CLI(bootstrap).execute(process.argv.slice(1))
 }

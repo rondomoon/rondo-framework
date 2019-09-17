@@ -6,6 +6,7 @@
   },
   "references": [
     {"path": "../common"},
+    {"path": "../argparse"},
     {"path": "../client"},
     {"path": "../jsonrpc"},
     {"path": "../logger"},

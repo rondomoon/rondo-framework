@@ -1,4 +1,4 @@
-export * from './CLIBootstrap'
+export * from './ServerBootstrap'
 export * from './Bootstrap'
 export * from './Application'
 export * from './Config'
