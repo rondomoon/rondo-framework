@@ -19,8 +19,8 @@ import * as rpc from './rpc'
 export {rpc}
 
 import bootstrap from './bootstrap'
-import { CLI } from './cli'
+import {run} from './cli'
 
 if (require.main === module) {
-  new CLI(bootstrap).execute(process.argv.slice(1))
+  run(bootstrap, process.argv.slice(1))
 }

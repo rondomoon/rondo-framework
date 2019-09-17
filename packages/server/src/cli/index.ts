@@ -1,1 +1,1 @@
-export * from './CLI'
+export * from './run'

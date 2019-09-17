@@ -1,31 +1,25 @@
 import { Bootstrap } from "../application";
 import { argparse, arg } from "@rondo.dev/argparse";
 
-export class CLI {
-  constructor(readonly bootstrap: Bootstrap) {
-  }
-
-  execute(argv: string[]) {
-    const choices: Array<keyof typeof commands> = ['start', 'migrate']
-    const {parse} = argparse({
-      command: arg('string', {
-        default: 'start',
-        choices,
-        positional: true,
-        description: 'Command to run',
-      }),
-      args: arg('string[]', {
-        n: '*',
-        positional: true,
-        description: 'Command arguments',
-      }),
-      help: arg('boolean', {alias: 'h'}),
-    })
-    const args = parse(argv)
-    const command = args.command as keyof typeof commands
-    commands[command](this.bootstrap, [args.command, ...args.args])
-  }
-
+export function run(bootstrap: Bootstrap, argv: string[]) {
+  const choices: Array<keyof typeof commands> = ['start', 'migrate']
+  const {parse} = argparse({
+    command: arg('string', {
+      default: 'start',
+      choices,
+      positional: true,
+      description: 'Command to run',
+    }),
+    args: arg('string[]', {
+      n: '*',
+      positional: true,
+      description: 'Command arguments',
+    }),
+    help: arg('boolean', {alias: 'h'}),
+  })
+  const args = parse(argv)
+  const command = args.command as keyof typeof commands
+  commands[command](bootstrap, [args.command, ...args.args])
 }
 
 const commands = {
@@ -39,6 +33,7 @@ const commands = {
         description: 'Socket to listen on',
       }),
       port: arg('number', {
+        default: 3000,
         alias: 'p',
         description: 'Port to listen on',
       }),
