@@ -20,10 +20,10 @@ export interface ServerBootstrapParams {
 }
 
 // tslint:disable-next-line
-function getFunctions(obj: object): Function[] {
+function objToArray(obj: object): Function[] {
   return Object.keys(obj)
+  .filter(k => !k.startsWith('_'))
   .map(k => (obj as any)[k])
-  .filter(f => typeof f === 'function')
 }
 
 export class ServerBootstrap implements Bootstrap {
@@ -45,10 +45,10 @@ export class ServerBootstrap implements Bootstrap {
         db: {
           ...params.config.app.db,
           entities: params.entities
-            ? getFunctions(params.entities)
+            ? objToArray(params.entities)
             : params.config.app.db.entities,
           migrations: params.migrations
-            ? getFunctions(params.migrations)
+            ? objToArray(params.migrations)
             : params.config.app.db.migrations,
         },
       },

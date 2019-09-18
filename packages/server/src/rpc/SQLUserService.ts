@@ -1,9 +1,8 @@
 import { UserService } from '@rondo.dev/common'
 import { TypeORMDatabase } from '@rondo.dev/db-typeorm'
 import { hash } from 'bcrypt'
-import { User } from '../entities/User'
-import { UserEmail } from '../entities/UserEmail'
 import { Context, ensureLoggedIn, RPC } from './RPC'
+import { UserEntity, UserEmailEntity } from '../entity-schemas'
 
 const SALT_ROUNDS = 10
 // const MIN_PASSWORD_LENGTH = 10
@@ -16,7 +15,7 @@ export class SQLUserService implements RPC<UserService> {
     const userId = context.user!.id
 
     // current user should always exist in the database
-    const user = (await this.db.getRepository(User).findOne(userId, {
+    const user = (await this.db.getRepository(UserEntity).findOne(userId, {
       relations: ['emails'],
     }))!
 
@@ -29,7 +28,7 @@ export class SQLUserService implements RPC<UserService> {
   }
 
   async findUserByEmail(context: Context, email: string) {
-    const userEmail = await this.db.getRepository(UserEmail)
+    const userEmail = await this.db.getRepository(UserEmailEntity)
     .findOne({ email }, {
       relations: ['user'],
     })

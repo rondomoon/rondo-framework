@@ -5,7 +5,7 @@ if (require.main === module) {
 }
 export * from './application'
 export * from './cli'
-export * from './entities'
+export * from './entity-schemas'
 export * from './error'
 export * from './logger'
 export * from './middleware'

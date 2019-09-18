@@ -8,7 +8,6 @@ import supertest from 'supertest'
 import { Connection, QueryRunner } from 'typeorm'
 import { AppServer } from '../application/AppServer'
 import { Bootstrap } from '../application/Bootstrap'
-import { Role } from '../entities/Role'
 import { RequestTester } from './RequestTester'
 import { TypeORMTransactionManager } from '@rondo.dev/db-typeorm'
 import { TRANSACTION_ID, TRANSACTION } from '@rondo.dev/db'
@@ -72,12 +71,6 @@ export class TestUtils<T extends Routes> {
     afterAll(async () => {
       await database.close()
     })
-  }
-
-  async createRole(name: string) {
-    return this.transactionManager
-    .getRepository(Role)
-    .save({name})
   }
 
   async getError(promise: Promise<unknown>): Promise<Error> {

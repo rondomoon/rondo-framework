@@ -4,8 +4,7 @@ import Validator from '@rondo.dev/validator'
 import { compare, hash } from 'bcrypt'
 import { validate as validateEmail } from 'email-validator'
 import createError from 'http-errors'
-import { User } from '../entities/User'
-import { UserEmail } from '../entities/UserEmail'
+import { UserEntity, UserEmailEntity } from '../entity-schemas'
 
 const SALT_ROUNDS = 10
 const MIN_PASSWORD_LENGTH = 10
@@ -35,11 +34,11 @@ export class SQLAuthService implements AuthService {
     .throw()
 
     const password = await this.hash(payload.password)
-    const user = await this.db.getRepository(User).save({
+    const user = await this.db.getRepository(UserEntity).save({
       ...newUser,
       password,
     })
-    await this.db.getRepository(UserEmail).save({
+    await this.db.getRepository(UserEmailEntity).save({
       email: newUser.username,
       userId: user.id,
     })
@@ -50,7 +49,7 @@ export class SQLAuthService implements AuthService {
   }
 
   async findOne(id: number) {
-    const user = await this.db.getRepository(User).findOne(id, {
+    const user = await this.db.getRepository(UserEntity).findOne(id, {
       relations: ['emails'],
     })
 
@@ -67,7 +66,7 @@ export class SQLAuthService implements AuthService {
   }
 
   async findUserByEmail(email: string) {
-    const userEmail = await this.db.getRepository(UserEmail)
+    const userEmail = await this.db.getRepository(UserEmailEntity)
     .findOne({ email }, {
       relations: ['user'],
     })
@@ -92,7 +91,7 @@ export class SQLAuthService implements AuthService {
     newPassword: string
   }) {
     const {userId, oldPassword, newPassword} = params
-    const userRepository = this.db.getRepository(User)
+    const userRepository = this.db.getRepository(UserEntity)
     const user = await userRepository
     .createQueryBuilder('user')
     .select('user')
@@ -110,7 +109,7 @@ export class SQLAuthService implements AuthService {
 
   async validateCredentials(credentials: Credentials) {
     const {username, password} = credentials
-    const user = await this.db.getRepository(User)
+    const user = await this.db.getRepository(UserEntity)
     .createQueryBuilder('user')
     .select('user')
     .addSelect('user.password')
@@ -132,7 +131,7 @@ export class SQLAuthService implements AuthService {
   }
 
   async findUserEmails(userId: number) {
-    return this.db.getRepository(UserEmail).find({ userId })
+    return this.db.getRepository(UserEmailEntity).find({ userId })
   }
 
   protected async hash(password: string): Promise<string> {

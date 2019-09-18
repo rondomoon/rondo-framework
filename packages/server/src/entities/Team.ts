@@ -1,20 +1,20 @@
-import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm'
-import { BaseEntity } from './BaseEntity'
-import { User } from './User'
-import { UserTeam } from './UserTeam'
+// import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm'
+// import { BaseEntity } from './BaseEntity'
+// import { User } from './User'
+// import { UserTeam } from './UserTeam'
 
-@Entity()
-export class Team extends BaseEntity {
-  @Column()
-  name!: string
+// @Entity()
+// export class Team extends BaseEntity {
+//   @Column()
+//   name!: string
 
-  @Column()
-  @Index()
-  userId!: number
+//   @Column()
+//   @Index()
+//   userId!: number
 
-  @ManyToOne(type => User)
-  user?: User
+//   @ManyToOne(type => User)
+//   user?: User
 
-  @OneToMany(type => UserTeam, userTeam => userTeam.team)
-  userTeams!: UserTeam[]
-}
+//   @OneToMany(type => UserTeam, userTeam => userTeam.team)
+//   userTeams!: UserTeam[]
+// }

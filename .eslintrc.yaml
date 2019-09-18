@@ -21,9 +21,13 @@ rules:
       exports: always-multiline
       functions: always-multiline
 
-  # semi:
-  #   - warn
-  #   - never
+  semi:
+    - warn
+    - never
+  quotes:
+    - warn
+    - single
+    - allowTemplateLiterals: true
   # interface-name-prefix:
   'import/no-extraneous-dependencies': off
   '@typescript-eslint/member-delimiter-style':

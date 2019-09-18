@@ -69,7 +69,7 @@ export async function exec(...argv: string[]) {
 export async function createMigration(...argv: string[]) {
   const args = argparse({
     name: arg('string', {required: true, positional: true}),
-    project: arg('string', {default: '.'}),
+    project: arg('string', {alias: 'p', default: '.'}),
     help: arg('boolean', {alias: 'h'}),
   })
   .parse(argv)
@@ -82,7 +82,7 @@ export async function createMigration(...argv: string[]) {
   if (!typeorm) {
     throw new Error('typeorm not found')
   }
-  await run('ts-node', [typeorm, 'migration:create', '--name', name], project)
+  await run('ts-node', [typeorm, 'migration:generate', '--name', name], project)
 }
 
 function findTsConfig(file: string): string {

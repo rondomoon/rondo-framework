@@ -1,10 +1,9 @@
-import { TeamAddUserParams, TeamCreateParams, TeamRemoveParams, TeamService, TeamUpdateParams, trim, UserPermissions } from '@rondo.dev/common'
+import { TeamAddUserParams, TeamCreateParams, TeamRemoveParams, TeamService, TeamUpdateParams, trim, UserPermissions, UserTeam } from '@rondo.dev/common'
 import { UserInTeam } from '@rondo.dev/common/lib/team/UserInTeam'
 import Validator from '@rondo.dev/validator'
-import { Team } from '../entities/Team'
-import { UserTeam } from '../entities/UserTeam'
 import { ensureLoggedIn, Context, RPC } from './RPC'
 import { TypeORMDatabase } from '@rondo.dev/db-typeorm'
+import { TeamEntity, UserTeamEntity } from '../entity-schemas'
 
 @ensureLoggedIn
 export class SQLTeamService implements RPC<TeamService> {
@@ -22,7 +21,7 @@ export class SQLTeamService implements RPC<TeamService> {
     .ensure('userId')
     .throw()
 
-    const team = await this.db.getRepository(Team).save({
+    const team = await this.db.getRepository(TeamEntity).save({
       name,
       userId,
     })
@@ -45,10 +44,10 @@ export class SQLTeamService implements RPC<TeamService> {
       userId,
     })
 
-    await this.db.getRepository(UserTeam)
+    await this.db.getRepository(UserTeamEntity)
     .delete({teamId: id, userId})
 
-    await this.db.getRepository(Team)
+    await this.db.getRepository(TeamEntity)
     .delete(id)
 
     return {id}
@@ -62,7 +61,7 @@ export class SQLTeamService implements RPC<TeamService> {
       userId,
     })
 
-    await this.db.getRepository(Team)
+    await this.db.getRepository(TeamEntity)
     .update({
       id,
     }, {
@@ -74,7 +73,7 @@ export class SQLTeamService implements RPC<TeamService> {
 
   async addUser(context: Context, params: TeamAddUserParams) {
     const {userId, teamId, roleId} = params
-    await this.db.getRepository(UserTeam)
+    await this.db.getRepository(UserTeamEntity)
     .save({userId, teamId, roleId})
 
     const userTeam = await this._createFindUserInTeamQuery()
@@ -97,20 +96,20 @@ export class SQLTeamService implements RPC<TeamService> {
     })
 
     // TODO check if this is the last admin team member
-    await this.db.getRepository(UserTeam)
+    await this.db.getRepository(UserTeamEntity)
     .delete({userId, teamId, roleId})
 
     return {teamId, userId, roleId}
   }
 
   async findOne(context: Context, id: number) {
-    return this.db.getRepository(Team).findOne(id)
+    return this.db.getRepository(TeamEntity).findOne(id)
   }
 
   async find(context: Context) {
     const userId = context.user!.id
 
-    return this.db.getRepository(Team)
+    return this.db.getRepository(TeamEntity)
     .createQueryBuilder('team')
     .select('team')
     .innerJoin('team.userTeams', 'ut')
@@ -149,7 +148,7 @@ export class SQLTeamService implements RPC<TeamService> {
   }
 
   protected _createFindUserInTeamQuery() {
-    return this.db.getRepository(UserTeam)
+    return this.db.getRepository(UserTeamEntity)
     .createQueryBuilder('ut')
     .select('ut')
     .innerJoinAndSelect('ut.user', 'user')

@@ -1,12 +1,13 @@
+import { Session } from '@rondo.dev/common'
+import { TypeORMTransactionManager } from '@rondo.dev/db-typeorm'
 import ExpressSession from 'express-session'
 import { UrlWithStringQuery } from 'url'
-import { Session as SessionEntity } from '../entities/Session'
+import { SessionEntity } from '../entity-schemas'
 import { apiLogger } from '../logger'
+import { DefaultSession } from '../session'
 import { SessionStore } from '../session/SessionStore'
 import { Handler } from './Handler'
 import { Middleware } from './Middleware'
-import { DefaultSession } from '../session'
-import { TypeORMTransactionManager } from '@rondo.dev/db-typeorm'
 
 export interface SessionMiddlewareParams {
   transactionManager: TypeORMTransactionManager
@@ -45,7 +46,7 @@ export class SessionMiddleware implements Middleware {
   protected buildSession = (
     sessionData: Express.SessionData,
     sess: DefaultSession,
-  ): SessionEntity => {
+  ): Session => {
     return {...sess, userId: sessionData.userId }
   }
 
