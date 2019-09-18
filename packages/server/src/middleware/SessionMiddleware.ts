@@ -1,15 +1,15 @@
 import ExpressSession from 'express-session'
 import { UrlWithStringQuery } from 'url'
-import { TransactionManager } from '../database'
 import { Session as SessionEntity } from '../entities/Session'
 import { apiLogger } from '../logger'
 import { SessionStore } from '../session/SessionStore'
 import { Handler } from './Handler'
 import { Middleware } from './Middleware'
 import { DefaultSession } from '../session'
+import { TypeORMTransactionManager } from '@rondo.dev/db-typeorm'
 
 export interface SessionMiddlewareParams {
-  transactionManager: TransactionManager
+  transactionManager: TypeORMTransactionManager
   baseUrl: UrlWithStringQuery
   sessionName: string
   sessionSecret: string | string[]

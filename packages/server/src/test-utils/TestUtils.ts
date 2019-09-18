@@ -8,9 +8,10 @@ import supertest from 'supertest'
 import { Connection, QueryRunner } from 'typeorm'
 import { AppServer } from '../application/AppServer'
 import { Bootstrap } from '../application/Bootstrap'
-import { ENTITY_MANAGER, TransactionManager, TRANSACTION_ID } from '../database/TransactionManager'
 import { Role } from '../entities/Role'
 import { RequestTester } from './RequestTester'
+import { TypeORMTransactionManager } from '@rondo.dev/db-typeorm'
+import { TRANSACTION_ID, TRANSACTION } from '@rondo.dev/db'
 
 export class TestUtils<T extends Routes> {
   readonly username = this.createTestUsername()
@@ -18,7 +19,7 @@ export class TestUtils<T extends Routes> {
 
   readonly app: AppServer
   readonly context: string
-  readonly transactionManager: TransactionManager
+  readonly transactionManager: TypeORMTransactionManager
 
   constructor(readonly bootstrap: Bootstrap) {
     this.app = bootstrap.application.server
@@ -54,7 +55,7 @@ export class TestUtils<T extends Routes> {
       await queryRunner.connect()
       namespace.set(TRANSACTION_ID, shortid())
       await queryRunner.startTransaction()
-      namespace.set(ENTITY_MANAGER, queryRunner.manager)
+      namespace.set(TRANSACTION, queryRunner.manager)
     })
 
     afterEach(async () => {
@@ -64,7 +65,7 @@ export class TestUtils<T extends Routes> {
       }
       await queryRunner.release()
       namespace.set(TRANSACTION_ID, undefined)
-      namespace.set(ENTITY_MANAGER, undefined);
+      namespace.set(TRANSACTION, undefined);
       (namespace as any).exit(context)
     })
 

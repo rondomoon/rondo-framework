@@ -1,8 +1,8 @@
-import { Config } from './Config'
-import { Database } from '../database'
+import { TypeORMDatabase } from '@rondo.dev/db-typeorm'
 import { Logger } from '@rondo.dev/logger'
+import { ErrorRequestHandler, RequestHandlerParams } from 'express-serve-static-core'
+import { Config } from './Config'
 import { Services } from './Services'
-import { RequestHandlerParams, ErrorRequestHandler } from 'express-serve-static-core'
 
 export interface ServerMiddleware {
   path: string
@@ -12,7 +12,7 @@ export interface ServerMiddleware {
 
 export interface ServerConfig {
   readonly config: Config
-  readonly database: Database
+  readonly database: TypeORMDatabase
   readonly logger: Logger
   readonly services: Services
   readonly globalErrorHandler: ErrorRequestHandler

@@ -1,15 +1,15 @@
 import { TeamAddUserParams, TeamCreateParams, TeamRemoveParams, TeamService, TeamUpdateParams, trim, UserPermissions } from '@rondo.dev/common'
 import { UserInTeam } from '@rondo.dev/common/lib/team/UserInTeam'
 import Validator from '@rondo.dev/validator'
-import { Database } from '../database/Database'
 import { Team } from '../entities/Team'
 import { UserTeam } from '../entities/UserTeam'
 import { ensureLoggedIn, Context, RPC } from './RPC'
+import { TypeORMDatabase } from '@rondo.dev/db-typeorm'
 
 @ensureLoggedIn
 export class SQLTeamService implements RPC<TeamService> {
   constructor(
-    protected readonly db: Database,
+    protected readonly db: TypeORMDatabase,
     protected readonly permissions: UserPermissions,
   ) {}
 

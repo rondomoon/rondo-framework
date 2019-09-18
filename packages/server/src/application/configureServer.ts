@@ -1,25 +1,25 @@
+import { TypeORMDatabase } from '@rondo.dev/db-typeorm'
+import { Routes } from '@rondo.dev/http-types'
 import { bulkjsonrpc, jsonrpc } from '@rondo.dev/jsonrpc'
 import { json } from 'body-parser'
 import cookieParser from 'cookie-parser'
-import { Database } from '../database'
 import { loggerFactory } from '../logger'
 import * as Middleware from '../middleware'
+import { CSRFMiddleware, RequestLogger, TransactionMiddleware } from '../middleware'
 import { TransactionalRouter } from '../router'
 import * as routes from '../routes'
-import { SQLTeamService, SQLUserService, Context } from '../rpc'
+import { configureAuthRoutes } from '../routes/configureAuthRoutes'
+import { Context, SQLTeamService, SQLUserService } from '../rpc'
 import { SQLAuthService, SQLUserPermissions } from '../services'
 import { Config } from './Config'
 import { ServerConfig } from './ServerConfig'
 import { Services } from './Services'
-import { Routes } from '@rondo.dev/http-types'
-import { configureAuthRoutes } from '../routes/configureAuthRoutes'
-import { TransactionMiddleware, CSRFMiddleware, RequestLogger } from '../middleware'
 
 export type ServerConfigurator<
   T extends ServerConfig = ServerConfig
 > = (
   config: Config,
-  database: Database,
+  database: TypeORMDatabase,
 ) => T
 
 export const configureServer: ServerConfigurator = (config, database) => {

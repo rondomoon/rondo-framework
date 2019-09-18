@@ -1,9 +1,9 @@
-import { AuthService, Credentials, NewUser, UserProfile, trim } from '@rondo.dev/common'
+import { AuthService, Credentials, NewUser, trim, UserProfile } from '@rondo.dev/common'
+import { TypeORMDatabase } from '@rondo.dev/db-typeorm'
 import Validator from '@rondo.dev/validator'
 import { compare, hash } from 'bcrypt'
 import { validate as validateEmail } from 'email-validator'
 import createError from 'http-errors'
-import { Database } from '../database/Database'
 import { User } from '../entities/User'
 import { UserEmail } from '../entities/UserEmail'
 
@@ -11,7 +11,7 @@ const SALT_ROUNDS = 10
 const MIN_PASSWORD_LENGTH = 10
 
 export class SQLAuthService implements AuthService {
-  constructor(protected readonly db: Database) {}
+  constructor(protected readonly db: TypeORMDatabase) {}
 
   async createUser(payload: NewUser): Promise<UserProfile> {
     const newUser = {

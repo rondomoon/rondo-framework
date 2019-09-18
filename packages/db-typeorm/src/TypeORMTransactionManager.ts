@@ -1,21 +1,22 @@
+import { TRANSACTION, TransactionManager, TRANSACTION_ID } from '@rondo.dev/db'
 import loggerFactory from '@rondo.dev/logger'
 import { Namespace } from 'cls-hooked'
 import shortid from 'shortid'
 import { Connection, EntityManager, EntitySchema, ObjectType, Repository } from 'typeorm'
-import { ENTITY_MANAGER, TransactionManager, TRANSACTION_ID } from './TransactionManager'
 
 const log = loggerFactory.getLogger('db')
 
 export type GetConnection = () => Connection
 
-export class SQLTransactionManager implements TransactionManager {
+export class TypeORMTransactionManager
+implements TransactionManager<EntityManager> {
   constructor(
     readonly ns: Namespace,
     readonly getConnection: GetConnection,
   ) {}
 
   getEntityManager = (): EntityManager => {
-    const entityManager = this.ns.get(ENTITY_MANAGER) as EntityManager
+    const entityManager = this.ns.get(TRANSACTION) as EntityManager
     if (entityManager) {
       return entityManager
     }
@@ -29,7 +30,7 @@ export class SQLTransactionManager implements TransactionManager {
   }
 
   isInTransaction = (): boolean => {
-    return !!this.ns.get(ENTITY_MANAGER)
+    return !!this.ns.get(TRANSACTION)
   }
 
   async doInTransaction<T>(fn: (em: EntityManager) => Promise<T>) {
@@ -67,6 +68,6 @@ export class SQLTransactionManager implements TransactionManager {
   }
 
   protected setEntityManager(entityManager: EntityManager | undefined) {
-    this.ns.set(ENTITY_MANAGER, entityManager)
+    this.ns.set(TRANSACTION, entityManager)
   }
 }

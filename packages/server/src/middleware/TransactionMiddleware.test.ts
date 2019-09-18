@@ -1,16 +1,16 @@
+import { TRANSACTION } from '@rondo.dev/db'
+import { TypeORMDatabase, TypeORMLogger } from '@rondo.dev/db-typeorm'
 import { createNamespace } from 'cls-hooked'
 import express, { NextFunction, Request, Response } from 'express'
 import request from 'supertest'
 import { config } from '../config'
-import { loggerFactory, SQLLogger } from '../logger'
+import { loggerFactory  } from '../logger'
 import { CORRELATION_ID, TransactionMiddleware } from '../middleware'
-import { ENTITY_MANAGER } from './'
-import { SQLDatabase } from './SQLDatabase'
 
 const ns = createNamespace('clsify-test')
-const database = new SQLDatabase(
+const database = new TypeORMDatabase(
   ns,
-  new SQLLogger(loggerFactory.getLogger('sql'), ns),
+  new TypeORMLogger(loggerFactory.getLogger('sql'), ns),
   config.app.db,
 )
 
@@ -65,7 +65,7 @@ describe('doInTransaction', () => {
   app.use(new TransactionMiddleware(ns).handle)
   app.use('/', (req, res, next) => {
     if (entityManager) {
-      ns.set(ENTITY_MANAGER, entityManager)
+      ns.set(TRANSACTION, entityManager)
     }
     next()
   })

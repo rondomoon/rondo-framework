@@ -19,9 +19,9 @@ app:
     migrationsRun: false
     logging: true
     entities:
-      - src/entities/*.ts
+      - src/entities/index.ts
     migrations:
-      - src/migrations/*.ts
+      - src/migrations/index.ts
     cli:
       migrationsDir: src/migrations
       entitiesDir: src/entities

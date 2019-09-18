@@ -1,0 +1,4 @@
+export const CORRELATION_ID = 'CORRELATION_ID'
+export const TRANSACTION_ID = 'TRANSACTION_ID'
+export const TRANSACTION = 'TRANSACTION'
+

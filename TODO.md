@@ -10,13 +10,15 @@
 - [ ] Add React error boundaries
 - [ ] Use strings as ids for big decimals
 - [ ] Integrate Google (and other social fb/twitter) logins
-- [ ] Framewor development
+- [ ] Framework development
   - [ ] Improve comments
   - [ ] Generate docs using using `typedoc`
   - [ ] Generate framework website using Docusaurus
   - [ ] Split framework projects and actual projects
 - [ ] Experiment with styled components
-- [ ] Replace tslint with eslint:
+- [ ] Use JSON schema instead of @Entity decorators
+- [x] Extract database into a separate module
+- [x] Replace tslint with eslint:
   https://github.com/typescript-eslint/typescript-eslint
 
 # JSONRPC

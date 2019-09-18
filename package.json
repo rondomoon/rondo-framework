@@ -17,7 +17,9 @@
     "@rondo.dev/server": "file:packages/server",
     "@rondo.dev/tasq": "file:packages/tasq",
     "@rondo.dev/test-utils": "file:packages/test-utils",
-    "@rondo.dev/validator": "file:packages/validator"
+    "@rondo.dev/validator": "file:packages/validator",
+    "@rondo.dev/db": "file:packages/db",
+    "@rondo.dev/db-typeorm": "file:packages/db-typeorm"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.2.0",

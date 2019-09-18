@@ -1,6 +1,6 @@
 import { UserService } from '@rondo.dev/common'
+import { TypeORMDatabase } from '@rondo.dev/db-typeorm'
 import { hash } from 'bcrypt'
-import { Database } from '../database/Database'
 import { User } from '../entities/User'
 import { UserEmail } from '../entities/UserEmail'
 import { Context, ensureLoggedIn, RPC } from './RPC'
@@ -10,7 +10,7 @@ const SALT_ROUNDS = 10
 
 @ensureLoggedIn
 export class SQLUserService implements RPC<UserService> {
-  constructor(protected readonly db: Database) {}
+  constructor(protected readonly db: TypeORMDatabase) {}
 
   async getProfile(context: Context) {
     const userId = context.user!.id

@@ -1,6 +1,6 @@
+import { TransactionManager } from '@rondo.dev/db'
 import { Method, Routes } from '@rondo.dev/http-types'
 import express from 'express'
-import { TransactionManager } from '../database/TransactionManager'
 import { AsyncRouter } from './AsyncRouter'
 import { TypedHandler } from './TypedHandler'
 

@@ -1,16 +1,15 @@
+import { CORRELATION_ID, TRANSACTION_ID } from '@rondo.dev/db'
 import { Logger } from '@rondo.dev/logger'
 import { Namespace } from 'cls-hooked'
-import { Logger as TypeORMLogger, QueryRunner } from 'typeorm'
-import { TRANSACTION_ID } from '../database'
-import { CORRELATION_ID } from '../middleware/TransactionMiddleware'
+import { Logger as TLogger, QueryRunner } from 'typeorm'
 
-export class SQLLogger implements TypeORMLogger {
+export class TypeORMLogger implements TLogger {
   constructor(
     protected readonly logger: Logger,
     protected readonly ns: Namespace,
   ) {}
 
-  logQuery(query: string, parameters?: any[], queryRunner?: QueryRunner): any {
+  logQuery(query: string, parameters?: unknown[], queryRunner?: QueryRunner) {
     const correlationId = this.getCorrelationId()
     if (parameters) {
       this.logger.info('%s %s -- %s', correlationId, query, parameters)
@@ -24,7 +23,7 @@ export class SQLLogger implements TypeORMLogger {
   logQueryError(
     error: string,
     query: string,
-    parameters?: any[],
+    parameters?: unknown[],
     queryRunner?: QueryRunner,
   ) {
     const correlationId = this.getCorrelationId()
@@ -40,7 +39,7 @@ export class SQLLogger implements TypeORMLogger {
    */
   logQuerySlow(
     time: number, query: string,
-    parameters?: any[],
+    parameters?: unknown[],
     queryRunner?: QueryRunner,
   ) {
     const correlationId = this.getCorrelationId()
@@ -70,7 +69,7 @@ export class SQLLogger implements TypeORMLogger {
    */
   log(
     level: 'log' | 'info' | 'warn',
-    message: any,
+    message: unknown,
     queryRunner?: QueryRunner,
   ) {
     const correlationId = this.getCorrelationId()

@@ -14,6 +14,8 @@
     {"path": "../tasq"},
     {"path": "../http-client"},
     {"path": "../http-types"},
-    {"path": "../validator"}
+    {"path": "../validator"},
+    {"path": "../db"},
+    {"path": "../db-typeorm"}
   ]
 }

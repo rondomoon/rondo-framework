@@ -2,13 +2,13 @@ import assert from 'assert'
 import { createNamespace, Namespace } from 'cls-hooked'
 import { Server } from 'http'
 import { AddressInfo } from 'net'
-import { Database, SQLDatabase } from '../database'
-import { loggerFactory, SQLLogger } from '../logger'
+import { loggerFactory } from '../logger'
 import { Application } from './Application'
 import { Bootstrap } from './Bootstrap'
 import { Config } from './Config'
 import { ServerConfigurator } from './configureServer'
 import { createServer } from './createServer'
+import { TypeORMDatabase, TypeORMLogger } from '@rondo.dev/db-typeorm'
 
 export interface ServerBootstrapParams {
   readonly config: Config
@@ -35,7 +35,7 @@ export class ServerBootstrap implements Bootstrap {
   protected server?: Server
   protected inUse = false
   readonly application: Application
-  readonly database: Database
+  readonly database: TypeORMDatabase
 
   constructor(params: ServerBootstrapParams) {
     this.config = {
@@ -65,13 +65,14 @@ export class ServerBootstrap implements Bootstrap {
     return this.config
   }
 
-  protected createDatabase(): Database {
+  protected createDatabase(): TypeORMDatabase {
     const {namespace} = this
-    const sqlLogger = new SQLLogger(loggerFactory.getLogger('sql'), namespace)
-    return new SQLDatabase(namespace, sqlLogger, this.getConfig().app.db)
+    const sqlLogger = new TypeORMLogger(
+      loggerFactory.getLogger('sql'), namespace)
+    return new TypeORMDatabase(namespace, sqlLogger, this.getConfig().app.db)
   }
 
-  protected createApplication(database: Database): Application {
+  protected createApplication(database: TypeORMDatabase): Application {
     const {configureServer} = this
     return createServer(configureServer(this.getConfig(), database))
   }

@@ -33,6 +33,12 @@
     },
     {
       "path": "../validator/tsconfig.esm.json"
+    },
+    {
+      "path": "../db/tsconfig.esm.json"
+    },
+    {
+      "path": "../db-typeorm/tsconfig.esm.json"
     }
   ]
 }

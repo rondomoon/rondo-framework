@@ -1,19 +1,20 @@
+import { Database } from '@rondo.dev/db'
 import { Namespace } from 'cls-hooked'
-import { Connection, ConnectionOptions, createConnection, EntitySchema, Logger, ObjectType, Repository } from 'typeorm'
-import { Database } from './Database'
-import { SQLTransactionManager } from './SQLTransactionManager'
-import { TransactionManager } from './TransactionManager'
+import { Connection, ConnectionOptions, createConnection, EntityManager, EntitySchema, Logger, ObjectType, Repository } from 'typeorm'
+import { TypeORMTransactionManager } from './TypeORMTransactionManager'
 
-export class SQLDatabase implements Database {
+export class TypeORMDatabase implements Database<
+  Connection, EntityManager, TypeORMTransactionManager>
+{
   protected connection?: Connection
-  transactionManager: TransactionManager
+  transactionManager: TypeORMTransactionManager
 
   constructor(
     readonly namespace: Namespace,
     protected readonly logger: Logger,
     protected readonly options: ConnectionOptions,
   ) {
-    this.transactionManager = new SQLTransactionManager(
+    this.transactionManager = new TypeORMTransactionManager(
       namespace,
       this.getConnection,
     )
@@ -49,3 +50,4 @@ export class SQLDatabase implements Database {
   }
 
 }
+

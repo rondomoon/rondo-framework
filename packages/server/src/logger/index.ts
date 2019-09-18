@@ -1,4 +1,3 @@
-export * from './SQLLogger'
 import loggerFactory from '@rondo.dev/logger'
 
 export { loggerFactory }
