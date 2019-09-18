@@ -21,6 +21,7 @@ export const TeamEntity = new EntitySchema<Team>({
     userTeams: {
       type: 'one-to-many',
       target: 'user_team',
+      inverseSide: 'team',
     },
   },
   indices: [{

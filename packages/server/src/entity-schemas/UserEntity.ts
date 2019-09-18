@@ -23,14 +23,17 @@ export const UserEntity = new EntitySchema<User>({
     emails: {
       type: 'one-to-many',
       target: 'user_email',
+      inverseSide: 'user',
     },
     sessions: {
       type: 'one-to-many',
       target: 'session',
+      inverseSide: 'user',
     },
     userTeams: {
       type: 'one-to-many',
       target: 'team',
+      inverseSide: 'user',
     },
   },
 })
