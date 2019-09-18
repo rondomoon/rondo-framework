@@ -3,7 +3,7 @@ import { UserInTeam } from '@rondo.dev/common/lib/team/UserInTeam'
 import Validator from '@rondo.dev/validator'
 import { ensureLoggedIn, Context, RPC } from './RPC'
 import { TypeORMDatabase } from '@rondo.dev/db-typeorm'
-import { TeamEntity, UserTeamEntity } from '../entity-schemas'
+import { TeamEntity, UserTeamEntity } from '../entities'
 
 @ensureLoggedIn
 export class SQLTeamService implements RPC<TeamService> {

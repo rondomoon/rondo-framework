@@ -4,7 +4,7 @@ import Validator from '@rondo.dev/validator'
 import { compare, hash } from 'bcrypt'
 import { validate as validateEmail } from 'email-validator'
 import createError from 'http-errors'
-import { UserEntity, UserEmailEntity } from '../entity-schemas'
+import { UserEntity, UserEmailEntity } from '../entities'
 
 const SALT_ROUNDS = 10
 const MIN_PASSWORD_LENGTH = 10

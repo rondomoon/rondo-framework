@@ -19,7 +19,7 @@ app:
     migrationsRun: false
     logging: true
     entities:
-      - src/entity-schemas/*Entity.ts
+      - src/entities/*Entity.ts
     migrations:
       - src/migrations/index.ts
     cli:

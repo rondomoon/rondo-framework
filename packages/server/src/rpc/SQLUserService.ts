@@ -2,7 +2,7 @@ import { UserService } from '@rondo.dev/common'
 import { TypeORMDatabase } from '@rondo.dev/db-typeorm'
 import { hash } from 'bcrypt'
 import { Context, ensureLoggedIn, RPC } from './RPC'
-import { UserEntity, UserEmailEntity } from '../entity-schemas'
+import { UserEntity, UserEmailEntity } from '../entities'
 
 const SALT_ROUNDS = 10
 // const MIN_PASSWORD_LENGTH = 10

@@ -1,7 +1,7 @@
 import { UserPermissions } from '@rondo.dev/common'
 import createError from 'http-errors'
 import { TypeORMDatabase } from '@rondo.dev/db-typeorm'
-import { UserTeamEntity } from '../entity-schemas'
+import { UserTeamEntity } from '../entities'
 
 export class SQLUserPermissions implements UserPermissions {
   constructor(protected readonly db: TypeORMDatabase) {}
