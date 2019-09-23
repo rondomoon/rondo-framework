@@ -9,7 +9,7 @@ export const SessionEntity = new EntitySchema<Session>({
       primary: true,
     },
     expiredAt: {
-      type: Number,
+      type: 'bigint',
       // default: () => Date.now(),
     },
     userId: {

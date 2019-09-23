@@ -5,20 +5,23 @@ const transformer = {
   to: (value: undefined | null | string) => value ? new Date(value) : value,
 }
 
-export const BaseEntitySchemaPart: Record<
-  'id' | 'createDate' | 'updateDate', EntitySchemaColumnOptions> = {
+export const BaseEntitySchemaPart: {
+  id: EntitySchemaColumnOptions
+  createDate: EntitySchemaColumnOptions
+  updateDate: EntitySchemaColumnOptions
+} = {
   id: {
-    type: 'integer',
+    type: Number,
     primary: true,
     generated: true,
   },
   createDate: {
-    type: 'datetime',
+    type: Date,
     createDate: true,
     transformer,
   },
   updateDate: {
-    type: 'datetime',
+    type: Date,
     updateDate: true,
     transformer,
   },
