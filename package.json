@@ -19,7 +19,8 @@
     "@rondo.dev/test-utils": "file:packages/test-utils",
     "@rondo.dev/validator": "file:packages/validator",
     "@rondo.dev/db": "file:packages/db",
-    "@rondo.dev/db-typeorm": "file:packages/db-typeorm"
+    "@rondo.dev/db-typeorm": "file:packages/db-typeorm",
+    "@rondo.dev/middleware": "file:packages/middleware"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
