@@ -1,5 +1,5 @@
 import { Logger } from '@rondo.dev/logger'
-import express, { ErrorRequestHandler, Request, Response, Router } from 'express'
+import express, { ErrorRequestHandler, Request, Response, NextFunction, RequestHandler } from 'express'
 import { createError, ErrorResponse, isRPCError } from './error'
 import { IDEMPOTENT_METHOD_REGEX } from './idempotent'
 import { createRpcService, ERROR_METHOD_NOT_FOUND, ERROR_SERVER, Request as RPCRequest, SuccessResponse } from './jsonrpc'
@@ -13,7 +13,7 @@ export interface RPCReturnType {
     service: T,
     methods?: F[],
   ): RPCReturnType
-  router(): Router
+  router(): Array<RequestHandler | ErrorRequestHandler>
 }
 
 export interface InvocationDetails<A extends RPCRequest, Context> {
@@ -39,33 +39,7 @@ export function jsonrpc<Context>(
   idempotentMethodRegex = IDEMPOTENT_METHOD_REGEX,
 ): RPCReturnType {
 
-  /* eslint @typescript-eslint/no-unused-vars: 0 */
-  const handleError: ErrorRequestHandler = (err, req, res, next) => {
-    logger.error('JSON-RPC Error: %s', err.stack)
-
-    if (isRPCError(err)) {
-      res.status(err.statusCode)
-      res.json(err.response)
-      return
-    }
-
-    const id = getRequestId(req)
-    const statusCode: number = err.statusCode || 500
-    const errorResponse: ErrorResponse<unknown> = {
-      jsonrpc: '2.0',
-      id,
-      result: null,
-      error: {
-        code: ERROR_SERVER.code,
-        message: statusCode >= 500 ? ERROR_SERVER.message : err.message,
-        data: 'errors' in err ? err.errors : null,
-      },
-    }
-    res.status(statusCode)
-    res.json(errorResponse)
-  }
-
-  const router = Router()
+  const router: Array<RequestHandler | ErrorRequestHandler> = []
 
   const self = {
    /**
@@ -79,6 +53,36 @@ export function jsonrpc<Context>(
     ) {
       const rpcService = createRpcService(service, methods)
 
+      const handleError: ErrorRequestHandler = (err, req, res, next) => {
+        if (req.path !== path) {
+          next(err)
+          return
+        }
+
+        logger.error('JSON-RPC Error: %s', err.stack)
+
+        if (isRPCError(err)) {
+          res.status(err.statusCode)
+          res.json(err.response)
+          return
+        }
+
+        const id = getRequestId(req)
+        const statusCode: number = err.statusCode || 500
+        const errorResponse: ErrorResponse<unknown> = {
+          jsonrpc: '2.0',
+          id,
+          result: null,
+          error: {
+            code: ERROR_SERVER.code,
+            message: statusCode >= 500 ? ERROR_SERVER.message : err.message,
+            data: 'errors' in err ? err.errors : null,
+          },
+        }
+        res.status(statusCode)
+        res.json(errorResponse)
+      }
+
       function handleResponse(
         response: SuccessResponse<unknown> | null,
         res: Response,
@@ -91,7 +95,25 @@ export function jsonrpc<Context>(
         }
       }
 
-      router.get(path, (req, res, next) => {
+      function handle(req: Request, res: Response, next: NextFunction) {
+        if (req.path !== path) {
+          next()
+          return
+        }
+
+        switch(req.method) {
+          case 'GET':
+            handleGet(req, res, next)
+            break
+          case 'POST':
+            handlePost(req, res, next)
+            break
+          default:
+            next()
+        }
+      }
+
+      const handleGet: RequestHandler = (req, res, next) => {
         if (!idempotentMethodRegex.test(req.query.method)) {
           // TODO fix status code and error type
           const err = createError(ERROR_METHOD_NOT_FOUND, {
@@ -114,9 +136,9 @@ export function jsonrpc<Context>(
             (body = request) => rpcService.invoke(body, context)))
         .then(response => handleResponse(response, res))
         .catch(next)
-      })
+      }
 
-      router.post(path, (req, res, next) => {
+      const handlePost: RequestHandler = (req, res, next) => {
         Promise.resolve(getContext(req))
         .then(context =>
           hook(
@@ -124,9 +146,10 @@ export function jsonrpc<Context>(
             (body = req.body) => rpcService.invoke(body, context)))
         .then(response => handleResponse(response, res))
         .catch(next)
-      })
+      }
 
-      router.use(path, handleError)
+      router.push(handle)
+      router.push(handleError)
       return self
     },
     router() {

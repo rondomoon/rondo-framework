@@ -1,10 +1,11 @@
-import * as util from './bulk'
+import { json } from 'body-parser'
 import express from 'express'
-import {WithContext} from './types'
-import {jsonrpc} from './express'
-import {noopLogger} from './test-utils'
-import {createClient} from './supertest'
-import {json} from 'body-parser'
+import { RequestHandlerParams } from 'express-serve-static-core'
+import * as util from './bulk'
+import { jsonrpc } from './express'
+import { createClient } from './supertest'
+import { noopLogger } from './test-utils'
+import { WithContext } from './types'
 
 describe('util', () => {
 
@@ -85,7 +86,7 @@ describe('util', () => {
 
   describe('bulkJSONRPC', () => {
     const getContext = () => ({userId: 10})
-    function createApp(router: express.Router) {
+    function createApp(router: RequestHandlerParams) {
       const app = express()
       app.use(json())
       app.use('/rpc', router)

@@ -27,6 +27,7 @@ describe('jsonrpc', () => {
 
   const ensureLoggedIn = ensure<Context>(c => !!c.userId)
 
+  @ensureLoggedIn
   class MyService implements WithContext<Service, Context> {
     constructor(readonly time: number) {}
     add(context: Context, a: number, b: number) {
@@ -73,7 +74,7 @@ describe('jsonrpc', () => {
     app.use(bodyParser.json())
     app.use('/',
       jsonrpc(() => ({userId}), noopLogger)
-      .addService('/myService', new MyService(5), [
+      .addService('/app/myService', new MyService(5), [
         'add',
         'delay',
         'syncError',
@@ -87,7 +88,7 @@ describe('jsonrpc', () => {
     return app
   }
 
-  const client = createClient<Service>(createApp(), '/myService')
+  const client = createClient<Service>(createApp(), '/app/myService')
 
   async function getError(promise: Promise<unknown>) {
     let error
@@ -103,7 +104,7 @@ describe('jsonrpc', () => {
   describe('errors', () => {
     it('handles sync errors', async () => {
       const response = await request(createApp())
-      .post('/myService')
+      .post('/app/myService')
       .send({
         id: 1,
         jsonrpc: '2.0',
@@ -129,14 +130,14 @@ describe('jsonrpc', () => {
     })
     it('returns an error when message is not readable', async () => {
       const result = await request(createApp())
-      .post('/myService')
+      .post('/app/myService')
       .send('a=1')
       .expect(400)
       expect(result.body.error.message).toEqual('Invalid request')
     })
     it('returns an error when message is not valid', async () => {
       const result = await request(createApp())
-      .post('/myService')
+      .post('/app/myService')
       .send({})
       .expect(400)
       expect(result.body.error.message).toEqual('Invalid request')
@@ -171,7 +172,7 @@ describe('jsonrpc', () => {
     })
     it('handles synchronous notifications', async () => {
       await request(createApp())
-      .post('/myService')
+      .post('/app/myService')
       .send({
         jsonrpc: '2.0',
         method: 'add',
@@ -181,7 +182,7 @@ describe('jsonrpc', () => {
       .expect('')
 
       await request(createApp())
-      .post('/myService')
+      .post('/app/myService')
       .send({
         jsonrpc: '2.0',
         id: null,
@@ -193,10 +194,110 @@ describe('jsonrpc', () => {
     })
   })
 
+  describe('invalid requests', () => {
+    it('returns 404 when invalid request method used', async () => {
+      await request(createApp())
+      .put('/app/myService')
+      .send({
+        id: 123,
+        jsonrpc: '2.0',
+        method: 'toString',
+        params: [],
+      })
+      .expect(404)
+    })
+
+    it('returns 404 when service url is invalid', async () => {
+      await request(createApp())
+      .post('/app/nonExistingService')
+      .send({
+        id: 123,
+        jsonrpc: '2.0',
+        method: 'toString',
+        params: [],
+      })
+      .expect(404)
+    })
+  })
+
+  describe('multiple services', () => {
+    interface S1 {
+      add(a: number, b: number): number
+    }
+    class Test1 implements WithContext<S1, Context> {
+      add(c: Context, a: number, b: number) {
+        return a + b
+      }
+    }
+    class Test2 implements WithContext<S1, Context> {
+      add(c: Context, a: number, b: number): number {
+        throw new Error('Not implemented')
+      }
+    }
+    const app = express()
+    app.use(bodyParser.json())
+    app.get('/app/s3', (req, res) => {
+      throw new Error('test s3')
+    })
+    app.use('/app',
+      jsonrpc(() => ({userId: 1}), noopLogger)
+      .addService('/s1', new Test1(), ['add'])
+      .addService('/s2', new Test2(), ['add'])
+      .router(),
+    )
+
+    it('invokes the first service', async () => {
+      await request(app)
+      .post('/app/s1')
+      .send({
+        id: 123,
+        jsonrpc: '2.0',
+        method: 'add',
+        params: [1, 2],
+      })
+      .expect(200)
+      .expect({
+        jsonrpc: '2.0',
+        id: 123,
+        result: 3,
+        error: null,
+      })
+    })
+
+    it('invokes the second service', async () => {
+      await request(app)
+      .post('/app/s2')
+      .send({
+        id: 123,
+        jsonrpc: '2.0',
+        method: 'add',
+        params: [1, 2],
+      })
+      .expect(500)
+      .expect({
+        jsonrpc: '2.0',
+        id: 123,
+        result: null,
+        error: {
+          code: -32000,
+          message: 'Server error',
+          data: null,
+        },
+      })
+    })
+
+    it('invokes the second service', async () => {
+      await request(app)
+      .get('/app/s3')
+      .expect(500)
+      .expect(/Error: test s3/)
+    })
+  })
+
   describe('security', () => {
     it('cannot call toString method', async () => {
       await request(createApp())
-      .post('/myService')
+      .post('/app/myService')
       .send({
         id: 123,
         jsonrpc: '2.0',
@@ -218,7 +319,7 @@ describe('jsonrpc', () => {
 
     it('cannot call private _-prefixed methods', async () => {
       await request(createApp())
-      .post('/myService')
+      .post('/app/myService')
       .send({
         id: 123,
         jsonrpc: '2.0',
@@ -231,7 +332,7 @@ describe('jsonrpc', () => {
 
     it('cannot call any other methods in objects prototype', async () => {
       await request(createApp())
-      .post('/myService')
+      .post('/app/myService')
       .send({
         id: 123,
         jsonrpc: '2.0',
@@ -254,7 +355,7 @@ describe('jsonrpc', () => {
     it('cannot call non-idempotent methods using GET request', async () => {
       const params = encodeURIComponent(JSON.stringify([1, 2]))
       await request(createApp())
-      .get(`/myService?jsonrpc=2.0&id=1&method=add&params=${params}`)
+      .get(`/app/myService?jsonrpc=2.0&id=1&method=add&params=${params}`)
       .expect(405)
     })
 
@@ -269,9 +370,8 @@ describe('jsonrpc', () => {
         userId = 1000
         const app = express()
         const myService = new MyService(5)
-        // console.log('service', myService, Object.
         app.use(bodyParser.json())
-        app.use('/',
+        app.use('/app',
           jsonrpc(
             () => Promise.resolve({userId}),
             noopLogger,
@@ -296,7 +396,7 @@ describe('jsonrpc', () => {
           params: [1, 2],
         }
         const response = await request(create())
-        .post('/myService')
+        .post('/app/myService')
         .send(req)
 
         expect(response.body.result).toEqual(3)
