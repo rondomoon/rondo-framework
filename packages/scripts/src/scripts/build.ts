@@ -99,15 +99,15 @@ function findTsConfig(file: string): string {
   return ''
 }
 
-async function browserify(path = '.') {
+async function browserify(path = '.', ...extraArgs: string[]) {
   // mkdirSync(join(path, 'build'), {recursive: true})
   await run('browserify', [
     join(path, 'esm', 'index.js'),
-    '--full-paths', // TODO this might be unneccessary
     '-g', '[', 'loose-envify', 'purge', '--NODE_ENV', 'production', ']',
     '-p', '[', 'esmify', ']',
     '-p', '[', 'common-shakeify', '-v', ']',
     '-v', '-o', join(path, 'build', 'client.prod.js'),
+    ...extraArgs,
   ])
 }
 
@@ -140,7 +140,7 @@ async function buildJs(path: string) {
   await uglify(path)
 }
 
-async function watchJs(path: string) {
+async function watchJs(path: string, ...extraArgs: string[]) {
   await run('watchify', [
     join(path, 'esm', 'index.js'),
     // '-p', '[', 'tsify', '--project', path, ']',
@@ -149,6 +149,7 @@ async function watchJs(path: string) {
     '--debug',
     '-o',
     join(path, 'build', 'client.js'),
+    ...extraArgs,
   ])
 }
 
@@ -194,14 +195,19 @@ async function watchCss(path = '.') {
 export async function frontend(...argv: string[]) {
   const args = argparse({
     path: arg('string', {positional: true, default: '.'}),
+    'full-paths': arg('boolean'),
     help: arg('boolean', {alias: 'h'}),
   })
   .parse(argv)
   const {path} = args
+  const watchArgs = []
+  if (args['full-paths']) {
+    watchArgs.push('--full-paths')
+  }
   await build(...['-p', path, '--esm'])
   const promises = [
     build(...['-p', path, '--watch', '--esm']),
-    watchJs(path),
+    watchJs(path, ...watchArgs),
     watchCss(path),
   ]
   await Promise.all(promises)
