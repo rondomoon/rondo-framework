@@ -204,9 +204,9 @@ export async function frontend(...argv: string[]) {
   if (args['full-paths']) {
     watchArgs.push('--full-paths')
   }
-  await build(...['-p', path, '--esm'])
+  await build(...['-p', path])
   const promises = [
-    build(...['-p', path, '--watch', '--esm']),
+    build(...['-p', path, '--watch']),
     watchJs(path, ...watchArgs),
     watchCss(path),
   ]
