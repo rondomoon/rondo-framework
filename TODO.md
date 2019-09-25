@@ -16,10 +16,11 @@
   - [ ] Generate framework website using Docusaurus
   - [ ] Split framework projects and actual projects
 - [ ] Experiment with styled components
-- [ ] Use JSON schema instead of @Entity decorators
+- [x] Use JSON schema instead of @Entity decorators
 - [x] Extract database into a separate module
 - [x] Replace tslint with eslint:
   https://github.com/typescript-eslint/typescript-eslint
+- [ ] Do not import express when importing jsonrpc
 
 # JSONRPC
 
