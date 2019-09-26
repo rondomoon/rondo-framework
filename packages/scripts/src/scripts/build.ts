@@ -102,7 +102,7 @@ function findTsConfig(file: string): string {
 async function browserify(path = '.', ...extraArgs: string[]) {
   // mkdirSync(join(path, 'build'), {recursive: true})
   await run('browserify', [
-    join(path, 'esm', 'index.js'),
+    join(path, 'esm', 'entrypoint.js'),
     '-g', '[', 'loose-envify', 'purge', '--NODE_ENV', 'production', ']',
     '-p', '[', 'esmify', ']',
     '-p', '[', 'common-shakeify', '-v', ']',
@@ -142,7 +142,7 @@ async function buildJs(path: string) {
 
 async function watchJs(path: string, ...extraArgs: string[]) {
   await run('watchify', [
-    join(path, 'esm', 'index.js'),
+    join(path, 'esm', 'entrypoint.js'),
     // '-p', '[', 'tsify', '--project', path, ']',
     '-g', '[', 'loose-envify', 'purge', '--NODE_ENV', 'development', ']',
     '-v',

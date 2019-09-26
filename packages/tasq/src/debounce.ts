@@ -1,5 +1,5 @@
 export function debounce<A, R>(fn: (...args: A[]) => R, delay: number) {
-  let timeout: NodeJS.Timeout | null = null
+  let timeout: number | null = null
 
   const cancel = () => {
     if (timeout) {

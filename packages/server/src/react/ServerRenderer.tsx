@@ -1,3 +1,4 @@
+import { ClientConfig, Renderer } from '@rondo.dev/client'
 import React from 'react'
 import { renderToNodeStream } from 'react-dom/server'
 import { Provider } from 'react-redux'
@@ -6,8 +7,6 @@ import { StaticRouter } from 'react-router-dom'
 import ssrPrepass from 'react-ssr-prepass'
 import { Store } from 'redux'
 import { ServerStyleSheet } from 'styled-components'
-import { ClientConfig } from './ClientConfig'
-import { Renderer } from './Renderer'
 
 interface ComponentWithFetchData {
   fetchData(): Promise<unknown>
@@ -17,6 +16,7 @@ export class ServerRenderer<Props> implements Renderer<Props> {
   constructor(
     readonly RootComponent: React.ComponentType<Props>,
   ) {}
+
   async render<State>(
     url: string,
     store: Store<State>,
@@ -50,4 +50,5 @@ export class ServerRenderer<Props> implements Renderer<Props> {
     const stream = sheet.interleaveWithNodeStream(renderToNodeStream(element))
     return stream
   }
+
 }
