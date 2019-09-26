@@ -5,6 +5,7 @@ import { StaticRouterContext } from 'react-router'
 import { StaticRouter } from 'react-router-dom'
 import ssrPrepass from 'react-ssr-prepass'
 import { Store } from 'redux'
+import { ServerStyleSheet } from 'styled-components'
 import { ClientConfig } from './ClientConfig'
 import { Renderer } from './Renderer'
 
@@ -21,15 +22,15 @@ export class ServerRenderer<Props> implements Renderer<Props> {
     store: Store<State>,
     props: Props,
     config: ClientConfig,
-    host = '',
-    headers: Record<string, string> = {},
   ) {
     const {RootComponent} = this
     // TODO set cookie in headers here...
 
     const context: StaticRouterContext = {}
 
-    const element = (
+    const sheet = new ServerStyleSheet()
+
+    const element = sheet.collectStyles(
       <Provider store={store}>
         <StaticRouter
           basename={config.baseUrl}
@@ -38,15 +39,15 @@ export class ServerRenderer<Props> implements Renderer<Props> {
         >
           <RootComponent {...props} />
         </StaticRouter>
-      </Provider>
-    )
+      </Provider>,
+      )
 
     await ssrPrepass(element, async (el, component) => {
       if (component && 'fetchData' in component) {
         await (component as ComponentWithFetchData).fetchData()
       }
     })
-    const stream = renderToNodeStream(element)
+    const stream = sheet.interleaveWithNodeStream(renderToNodeStream(element))
     return stream
   }
 }

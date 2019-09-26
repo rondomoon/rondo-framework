@@ -48,6 +48,7 @@
     "@types/sanitize-html": "^1.18.3",
     "@types/shortid": "0.0.29",
     "@types/std-mocks": "^1.0.0",
+    "@types/styled-components": "^4.1.19",
     "@types/supertest": "^2.0.7",
     "@types/uuid": "^3.4.4",
     "@typescript-eslint/eslint-plugin": "^2.2.0",
