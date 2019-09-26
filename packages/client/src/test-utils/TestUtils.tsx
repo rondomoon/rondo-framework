@@ -62,12 +62,13 @@ export class TestUtils {
     let store = this.createStore({
       reducer: this.combineReducers(reducers),
       extraMiddleware: [waitMiddleware.handle],
-    })()
+    })
 
-    const withState = (state: DeepPartial<State>) => {
+    const withState = (state: Partial<State>) => {
       store = this.createStore({
         reducer: this.combineReducers(reducers),
-      })(state)
+        state,
+      })
 
       return {withComponent}
     }

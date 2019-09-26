@@ -143,7 +143,7 @@ describe('createActions', () => {
     })
 
     const reducer = combineReducers({handler, mapping})
-    const store = createStore({reducer})()
+    const store = createStore({reducer})
 
     return {client, store}
   }

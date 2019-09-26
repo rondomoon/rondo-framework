@@ -74,7 +74,7 @@ describe('CRUD', () => {
     },
   })
   function getStore() {
-    return test.createStore({reducer})()
+    return test.createStore({reducer})
   }
 
   type Store = ReturnType<typeof getStore>
