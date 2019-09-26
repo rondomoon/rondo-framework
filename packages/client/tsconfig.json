@@ -7,5 +7,12 @@
   "references": [
     {"path": "../redux"},
     {"path": "../common"}
-  ]
+  ],
+  "plugins": [{
+    "transform": "typescript-plugin-styled-components",
+    "type": "config",
+    "displayName": true,
+    "minify": false,
+    "ssr": true
+  }]
 }
