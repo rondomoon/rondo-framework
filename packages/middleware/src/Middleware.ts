@@ -1,3 +1,3 @@
 import { Context } from './Context'
 
-export type Middleware = <C extends Context>(ctx: C) => unknown
+export type Middleware = (ctx: Context) => unknown

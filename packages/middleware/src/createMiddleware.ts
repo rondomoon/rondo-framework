@@ -1,7 +1,7 @@
+import { Middleware } from './Middleware'
 import { Context } from './Context'
 
-export const createMiddleware =
-  <C extends Context = Context>(fn: (ctx: C) => unknown) => async (ctx: C) => {
+export const createMiddleware = (fn: Middleware) => async (ctx: Context) => {
     await fn(ctx)
     return undefined
   }
