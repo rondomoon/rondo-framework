@@ -26,24 +26,46 @@ describe('expressify', () => {
         expressify(
           createMiddleware(ctx => (ctx.req as any).id = 'test')))
       app.get('/test', expressify(ctx => (ctx.req as any).id))
-      request(app)
+      await request(app)
       .get('/test')
       .expect(200)
       .expect('"test"')
     })
 
-    it('can send a response using a custom fn', () => {
+    it('can send a response using a custom fn', async () => {
       const app = express()
       app.use(
         expressify(
           createMiddleware(ctx => (ctx.req as any).id = 'test')))
       app.get('/test',
         expressify(ctx => (ctx.req as any).id, (res, value) => res.send(value)))
-      request(app)
+      await request(app)
       .get('/test')
       .expect(200)
       .expect('test')
     })
+
+    it('handles errors', async () => {
+      const app = express()
+      app.use(
+        expressify(
+          createMiddleware(ctx => { throw new Error('test') })))
+      await request(app)
+      .get('/test')
+      .expect(500)
+    })
+
+    it('does not crash nor hang when middleware sends a response', async () => {
+      const app = express()
+      app.use(
+        expressify(
+          createMiddleware(ctx => ctx.res.end('test'))))
+      await request(app)
+      .get('/test')
+      .expect(200)
+      .expect('test')
+    })
+
   })
 
 })

@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express'
-import { IncomingMessage, ServerResponse } from 'http'
 import { Middleware } from './Middleware'
 
 export const expressify = (
@@ -13,9 +12,7 @@ export const expressify = (
 ) => {
   let result: unknown
   try {
-    const r: IncomingMessage = req
-    const rr: ServerResponse = res
-    result = await handleMiddleware({req: r, res: rr})
+    result = await handleMiddleware({req, res})
   } catch (err) {
     next(err)
     return
@@ -24,5 +21,7 @@ export const expressify = (
     next()
     return
   }
-  sendResponse(res, result)
+  if (res.writable) {
+    sendResponse(res, result)
+  }
 }
