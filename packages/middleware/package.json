@@ -8,8 +8,13 @@
     "compile": "tsc",
     "clean": "rm -rf lib/"
   },
-  "dependencies": {},
+  "dependencies": {
+    "express": "^4.17.1"
+  },
   "main": "lib/index.js",
   "module": "esm/index.js",
-  "types": "lib/index.d.ts"
+  "types": "lib/index.d.ts",
+  "devDependencies": {
+    "supertest": "^4.0.2"
+  }
 }

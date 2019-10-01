@@ -8,8 +8,11 @@
     "compile": "tsc",
     "clean": "rm -rf lib/"
   },
-  "dependencies": {},
+  "dependencies": {
+    "cls-hooked": "^4.2.2"
+  },
   "main": "lib/index.js",
   "module": "esm/index.js",
-  "types": "lib/index.d.ts"
+  "types": "lib/index.d.ts",
+  "devDependencies": {}
 }

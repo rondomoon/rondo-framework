@@ -4,5 +4,10 @@
   "private": true,
   "main": "lib/index.js",
   "module": "esm/index.js",
-  "types": "lib/index.d.ts"
+  "types": "lib/index.d.ts",
+  "dependencies": {
+    "@rondo.dev/jsonrpc": "0.0.1",
+    "ts-transformer-keys": "^0.3.5"
+  },
+  "devDependencies": {}
 }

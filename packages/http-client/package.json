@@ -9,9 +9,13 @@
     "clean": "rm -rf lib/"
   },
   "dependencies": {
+    "@rondo.dev/http-types": "0.0.1",
     "axios": "^0.19.0"
   },
   "main": "lib/index.js",
   "module": "esm/index.js",
-  "types": "lib/index.d.ts"
+  "types": "lib/index.d.ts",
+  "devDependencies": {
+    "@rondo.dev/test-utils": "0.0.1"
+  }
 }

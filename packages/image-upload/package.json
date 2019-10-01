@@ -8,5 +8,7 @@
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "module": "esm/index.js"
+  "module": "esm/index.js",
+  "dependencies": {},
+  "devDependencies": {}
 }

@@ -8,8 +8,17 @@
     "compile": "tsc",
     "clean": "rm -rf lib/"
   },
-  "dependencies": {},
+  "dependencies": {
+    "redux": "^4.0.1",
+    "deep-object-diff": "^1.1.0",
+    "react-redux": "^7.1.1"
+  },
   "main": "lib/index.js",
   "module": "esm/index.js",
-  "types": "lib/index.d.ts"
+  "types": "lib/index.d.ts",
+  "devDependencies": {
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "@rondo.dev/test-utils": "0.0.1"
+  }
 }

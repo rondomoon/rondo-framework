@@ -2,7 +2,7 @@ import * as ts from 'typescript'
 import {argparse, arg} from '@rondo.dev/argparse'
 import {info, error} from '../log'
 import { getFolders } from '../getFolders'
-import {readFileSync} from 'fs'
+import {readFileSync, writeFileSync} from 'fs'
 import {join} from 'path'
 
 interface Package {
@@ -208,9 +208,9 @@ export function imports(...argv: string[]) {
     return {filename: packageFile, json: targetPackage}
   })
   .forEach(pkg => {
-    // TODO write package.json
-    // const value = JSON.stringify(pkg.json, null, '  ')
-    // fs.writeFileSync(pkg.filename, value)
+    info('Writing %s', pkg.filename)
+    const value = JSON.stringify(pkg.json, null, '  ')
+    writeFileSync(pkg.filename, value)
   })
 
   return result

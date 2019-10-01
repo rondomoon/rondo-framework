@@ -11,7 +11,12 @@
   "bin": {
     "rondo": "./lib/index.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@rondo.dev/argparse": "0.0.1",
+    "rimraf": "^3.0.0",
+    "typescript": "^3.6.3",
+    "browser-unpack": "^1.4.2"
+  },
   "types": "lib/index.d.ts",
   "devDependencies": {},
   "module": "esm/index.js",

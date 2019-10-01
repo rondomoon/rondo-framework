@@ -8,8 +8,15 @@
     "compile": "tsc",
     "clean": "rm -rf lib/"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@rondo.dev/db": "0.0.1",
+    "@rondo.dev/logger": "0.0.1",
+    "cls-hooked": "^4.2.2",
+    "shortid": "^2.2.15",
+    "typeorm": "^0.2.19"
+  },
   "main": "lib/index.js",
   "module": "esm/index.js",
-  "types": "lib/index.d.ts"
+  "types": "lib/index.d.ts",
+  "devDependencies": {}
 }

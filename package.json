@@ -73,6 +73,7 @@
     "eslint-plugin-react": "^7.14.3",
     "esmify": "git+https://github.com/jeremija/esmify.git",
     "express": "^4.17.1",
+    "express-serve-static-core": "^0.1.1",
     "express-session": "^1.16.2",
     "formik": "^1.5.8",
     "history": "^4.9.0",

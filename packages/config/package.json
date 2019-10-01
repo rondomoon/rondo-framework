@@ -9,9 +9,11 @@
     "clean": "rm -rf lib/"
   },
   "dependencies": {
-    "js-yaml": "^3.12.1"
+    "@rondo.dev/logger": "0.0.1",
+    "js-yaml": "^3.13.1"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "module": "esm/index.js"
+  "module": "esm/index.js",
+  "devDependencies": {}
 }

@@ -10,7 +10,9 @@
   },
   "dependencies": {},
   "types": "lib/index.d.ts",
-  "devDependencies": {},
+  "devDependencies": {
+    "@rondo.dev/test-utils": "0.0.1"
+  },
   "module": "esm/index.js",
   "main": "lib/index.js"
 }
