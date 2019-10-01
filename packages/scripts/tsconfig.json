@@ -11,6 +11,8 @@
     "esm"
   ],
   "references": [
-    {"path": "../argparse"}
+    {
+      "path": "../argparse"
+    }
   ]
 }

@@ -5,17 +5,44 @@
     "rootDir": "src"
   },
   "references": [
-    {"path": "../common"},
-    {"path": "../argparse"},
-    {"path": "../client"},
-    {"path": "../jsonrpc"},
-    {"path": "../logger"},
-    {"path": "../config"},
-    {"path": "../tasq"},
-    {"path": "../http-client"},
-    {"path": "../http-types"},
-    {"path": "../validator"},
-    {"path": "../db"},
-    {"path": "../db-typeorm"}
+    {
+      "path": "../argparse"
+    },
+    {
+      "path": "../client"
+    },
+    {
+      "path": "../common"
+    },
+    {
+      "path": "../common"
+    },
+    {
+      "path": "../config"
+    },
+    {
+      "path": "../db"
+    },
+    {
+      "path": "../db-typeorm"
+    },
+    {
+      "path": "../http-client"
+    },
+    {
+      "path": "../http-types"
+    },
+    {
+      "path": "../jsonrpc"
+    },
+    {
+      "path": "../logger"
+    },
+    {
+      "path": "../tasq"
+    },
+    {
+      "path": "../validator"
+    }
   ]
 }

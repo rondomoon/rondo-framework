@@ -5,7 +5,11 @@
     "rootDir": "src"
   },
   "references": [
-    {"path": "../test-utils"},
-    {"path": "../http-types"}
+    {
+      "path": "../http-types"
+    },
+    {
+      "path": "../test-utils"
+    }
   ]
 }

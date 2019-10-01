@@ -6,7 +6,11 @@
     "rootDir": "src"
   },
   "references": [
-    {"path": "../logger"},
-    {"path": "../redux"}
+    {
+      "path": "../logger"
+    },
+    {
+      "path": "../redux"
+    }
   ]
 }

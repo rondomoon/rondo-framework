@@ -5,7 +5,11 @@
     "rootDir": "src"
   },
   "references": [
-    {"path": "../db"},
-    {"path": "../logger"}
+    {
+      "path": "../db"
+    },
+    {
+      "path": "../logger"
+    }
   ]
 }

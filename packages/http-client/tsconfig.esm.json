@@ -5,10 +5,10 @@
   },
   "references": [
     {
-      "path": "../test-utils/tsconfig.esm.json"
+      "path": "../http-types/tsconfig.esm.json"
     },
     {
-      "path": "../http-types/tsconfig.esm.json"
+      "path": "../test-utils/tsconfig.esm.json"
     }
   ]
 }

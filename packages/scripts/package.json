@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "@rondo.dev/argparse": "0.0.1",
+    "browser-unpack": "^1.4.2",
     "rimraf": "^3.0.0",
-    "typescript": "^3.6.3",
-    "browser-unpack": "^1.4.2"
+    "typescript": "^3.6.3"
   },
   "types": "lib/index.d.ts",
   "devDependencies": {},

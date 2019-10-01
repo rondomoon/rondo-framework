@@ -5,14 +5,35 @@
     "rootDir": "src"
   },
   "references": [
-    {"path": "../redux"},
-    {"path": "../common"}
+    {
+      "path": "../common"
+    },
+    {
+      "path": "../http-client"
+    },
+    {
+      "path": "../http-types"
+    },
+    {
+      "path": "../jsonrpc"
+    },
+    {
+      "path": "../redux"
+    },
+    {
+      "path": "../jsonrpc"
+    },
+    {
+      "path": "../test-utils"
+    }
   ],
-  "plugins": [{
-    "transform": "typescript-plugin-styled-components",
-    "type": "config",
-    "displayName": true,
-    "minify": false,
-    "ssr": true
-  }]
+  "plugins": [
+    {
+      "transform": "typescript-plugin-styled-components",
+      "type": "config",
+      "displayName": true,
+      "minify": false,
+      "ssr": true
+    }
+  ]
 }

@@ -5,6 +5,8 @@
     "rootDir": "src"
   },
   "references": [
-    {"path": "../test-utils"}
+    {
+      "path": "../test-utils"
+    }
   ]
 }

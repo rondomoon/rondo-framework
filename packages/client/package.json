@@ -13,21 +13,21 @@
   "types": "lib/index.d.ts",
   "module": "esm/index.js",
   "dependencies": {
+    "@rondo.dev/common": "0.0.1",
+    "@rondo.dev/http-client": "0.0.1",
+    "@rondo.dev/http-types": "0.0.1",
+    "@rondo.dev/jsonrpc": "0.0.1",
+    "@rondo.dev/redux": "0.0.1",
     "bloomer": "^0.6.5",
+    "history": "^4.9.0",
     "react-icons": "^3.5.0",
     "react-router": "^5.0.1",
-    "history": "^4.9.0",
-    "@rondo.dev/http-client": "0.0.1",
     "react-router-dom": "^5.0.1",
-    "@rondo.dev/common": "0.0.1",
-    "@rondo.dev/redux": "0.0.1",
-    "timeago.js": "^4.0.0-beta.2",
-    "@rondo.dev/http-types": "0.0.1",
-    "@rondo.dev/jsonrpc": "0.0.1"
+    "timeago.js": "^4.0.0-beta.2"
   },
   "devDependencies": {
-    "react-dom": "^16.8.6",
+    "@rondo.dev/jsonrpc": "0.0.1",
     "@rondo.dev/test-utils": "0.0.1",
-    "@rondo.dev/jsonrpc": "0.0.1"
+    "react-dom": "^16.8.6"
   }
 }
