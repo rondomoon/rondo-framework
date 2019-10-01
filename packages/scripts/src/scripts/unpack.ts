@@ -1,13 +1,14 @@
-import * as fs from 'fs'
+import { arg, argparse } from '@rondo.dev/argparse'
 import _unpack from 'browser-unpack'
+import * as fs from 'fs'
 import * as path from 'path'
-import { argparse, arg } from '@rondo.dev/argparse'
+import { padLeft } from '../util'
 
 export async function unpack(...argv: string[]) {
   const args = argparse({
     filename: arg('string', {positional: true, required: true}),
     help: arg('boolean'),
-  }).parse(argv)
+  }, unpack.help).parse(argv)
 
   const file = fs.readFileSync(args.filename, 'utf8')
   const result = _unpack(file)
@@ -38,13 +39,6 @@ export async function unpack(...argv: string[]) {
     return text
   }
 
-  function padLeft(text: string, size: number) {
-    while (text.length < size) {
-      text = ' ' + text
-    }
-    return text
-  }
-
   sizes
   .forEach(item => {
     console.log(
@@ -58,12 +52,13 @@ export async function unpack(...argv: string[]) {
     padLeft((totalSize / 1024).toFixed(3) + ' kb', maxSizeLength),
   )
 }
+unpack.help = 'Show name and size of each module in browserify bundle'
 
 export async function unpackInverseDeps(...argv: string[]) {
   const args = argparse({
     filename: arg('string', {positional: true, required: true}),
     help: arg('boolean'),
-  }).parse(argv)
+  }, unpackInverseDeps.help).parse(argv)
 
   const file = fs.readFileSync(args.filename, 'utf8')
   const result = _unpack(file)
@@ -90,3 +85,5 @@ export async function unpackInverseDeps(...argv: string[]) {
     console.log('')
   })
 }
+unpackInverseDeps.help =
+  'List inversed dependencies in a browserify bundle'

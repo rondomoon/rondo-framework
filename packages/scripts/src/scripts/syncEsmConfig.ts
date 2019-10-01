@@ -15,7 +15,7 @@ export async function syncEsmConfig(...argv: string[]) {
   const args = argparse({
     packages: arg('string', {default: 'packages/', positional: true}),
     help: arg('boolean', {alias: 'h'}),
-  }, `Synchronizes ${TSCONFIG_ESM_FILENAME} files with ${TSCONFIG_FILENAME}`)
+  }, syncEsmConfig.help)
   .parse(argv)
 
   const pkgDir = args.packages
@@ -53,3 +53,5 @@ export async function syncEsmConfig(...argv: string[]) {
     fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, '  '))
   })
 }
+syncEsmConfig.help =
+  `Synchronizes ${TSCONFIG_ESM_FILENAME} files with ${TSCONFIG_FILENAME}`

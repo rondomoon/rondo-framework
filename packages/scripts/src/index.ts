@@ -3,6 +3,7 @@ import { arg, argparse } from '@rondo.dev/argparse'
 import { Command } from './Command'
 import * as log from './log'
 import { resolve } from './resolve'
+import { getHelp } from './util/getHelp'
 
 async function run(
   commandName: string,
@@ -25,19 +26,27 @@ async function start(
   exit = (code: number) => process.exit(code),
 ) {
   const commands = await resolve()
+  const choices = Object.keys(commands)
+  .filter(c => !c.startsWith('_') && typeof commands[c] === 'function')
+
+  const desc = 'Commands:\n  ' + choices
+  .filter(choice => typeof commands[choice] === 'function')
+  .map(choice => getHelp(commands[choice]))
+  .join('\n  ')
+
   const {parse} = argparse({
     help: arg('boolean', {alias: 'h'}),
     debug: arg('boolean'),
     command: arg('string', {
       required: true,
       positional: true,
-      choices: Object.keys(commands).filter(c => !c.startsWith('_')),
+      choices,
     }),
     args: arg('string[]', {
       n: '*',
       positional: true,
     }),
-  })
+  }, desc)
 
   let args: ReturnType<typeof parse> | null = null
   try {

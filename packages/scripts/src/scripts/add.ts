@@ -31,7 +31,7 @@ export async function add(...argv: string[]) {
       description: 'Print help message',
     }),
     // frontend: arg('boolean', {alias: 'f'}),
-  }, 'Create a new library from template')
+  }, add.help)
   const args = parse(argv)
 
   const destDir = path.join('./packages', args.name)
@@ -63,3 +63,5 @@ export async function add(...argv: string[]) {
   pkg.dependencies[libraryName] = `file:packages/${args.name}`
   fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, '  '))
 }
+add.help = 'Create a new package from template. ' +
+  'Update root package.json with its definition'

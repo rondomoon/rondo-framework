@@ -85,3 +85,4 @@ export async function update(...argv: string[]) {
     info('Done! Do not forget to run npm install!')
   }
 }
+update.help = 'Update all dependencies to the latest versions'

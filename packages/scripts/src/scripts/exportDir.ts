@@ -9,7 +9,7 @@ export async function exportDir(...argv: string[]) {
     dir: arg('string', {default: 'src/migrations'}),
     out: arg('string', {default: 'src/migrations/index.ts'}),
     help: arg('boolean', {alias: 'h'}),
-  })
+  }, exportDir.help)
   .parse(argv)
 
   const dir = join(args.project, args.dir)
@@ -26,3 +26,5 @@ export async function exportDir(...argv: string[]) {
   info('Writing to %s', out)
   fs.writeFileSync(join(dir, 'index.ts'), index)
 }
+exportDir.help = 'Create index.ts and generate import statements for files ' +
+  'in the same directory'

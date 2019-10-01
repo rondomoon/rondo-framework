@@ -15,7 +15,7 @@ export async function clean(...argv: string[]) {
       positional: true,
     }),
     help: arg('boolean', {alias: 'h'}),
-  })
+  }, clean.help)
 
   const args = parse(argv)
 
@@ -30,3 +30,4 @@ export async function clean(...argv: string[]) {
     await rimrafAsync(path)
   }
 }
+clean.help = 'Remove *.tsbuildinfo, lib/ and esm/ folders'

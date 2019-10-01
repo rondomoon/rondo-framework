@@ -40,12 +40,12 @@ export function imports(...argv: string[]): string[] {
       readDirectory: ts.sys.readDirectory,
       useCaseSensitiveFileNames: true,
     }
-    const configFile = ts.readConfigFile(configPath, ts.sys.readFile);
+    const configFile = ts.readConfigFile(configPath, ts.sys.readFile)
     const parsedCommandLine = ts.parseJsonConfigFileContent(
       configFile.config,
       parseConfigHost,
       projectDir,
-    );
+    )
 
     const program = ts.createProgram(
       parsedCommandLine.fileNames,
@@ -116,3 +116,6 @@ export function imports(...argv: string[]): string[] {
 
   return []
 }
+imports.help = 'Find used module in a package, use root package.json to ' +
+  'find dependency versions and update local package.json. Useful when using ' +
+  'hoisting in lerna'

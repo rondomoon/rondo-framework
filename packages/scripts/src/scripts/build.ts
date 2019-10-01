@@ -23,12 +23,13 @@ export async function build(...argv: string[]) {
       description: 'Watch for changes',
     }),
     help: arg('boolean', {alias: 'h'}),
-  })
+  }, build.help)
   const args = parse(argv)
   const path = args.esm ? join(args.project, 'tsconfig.esm.json') : args.project
   const watchArgs = args.watch ? ['--watch', '--preserveWatchOutput'] : []
   await run(tsc, ['--build', path, ...watchArgs])
 }
+build.help = 'Build or watch TypeScript project'
 
 export async function test(...argv: string[]) {
   const {args} = argparse({
@@ -37,10 +38,11 @@ export async function test(...argv: string[]) {
       positional: true,
     }),
     help: arg('boolean', {alias: 'h'}),
-  })
+  }, test.help)
   .parse(argv)
   await run('jest', args)
 }
+test.help = 'Run jest tests'
 
 export async function exec(...argv: string[]) {
   const {parse} = argparse({
@@ -53,7 +55,7 @@ export async function exec(...argv: string[]) {
       positional: true,
     }),
     help: arg('boolean', {alias: 'h'}),
-  })
+  }, exec.help)
   const args = parse(argv)
   const {file} = args
   const command = file.endsWith('.ts') ? 'ts-node' : 'node'
@@ -65,13 +67,14 @@ export async function exec(...argv: string[]) {
     ] : []
   await run(command, [...nodeArgs, file, ...args.args])
 }
+exec.help = 'Execute a js or ts file using node or ts-node'
 
 export async function createMigration(...argv: string[]) {
   const args = argparse({
     name: arg('string', {required: true, positional: true}),
     project: arg('string', {alias: 'p', default: '.'}),
     help: arg('boolean', {alias: 'h'}),
-  })
+  }, createMigration.help)
   .parse(argv)
 
   const {name, project} = args
@@ -84,6 +87,7 @@ export async function createMigration(...argv: string[]) {
   }
   await run('ts-node', [typeorm, 'migration:generate', '--name', name], project)
 }
+createMigration.help = 'Generate a new TypeORM migration'
 
 function findTsConfig(file: string): string {
   let lastPath = ''
@@ -110,6 +114,7 @@ async function browserify(path = '.', ...extraArgs: string[]) {
     ...extraArgs,
   ])
 }
+browserify.help = 'Build a client-side bundle using browserify'
 
 async function uglify(path = '.') {
   await run('uglifyjs', [
@@ -121,18 +126,20 @@ async function uglify(path = '.') {
     join(path, 'build', 'client.prod.js'),
   ])
 }
+uglify.help = 'Uglify bundle'
 
 export async function js(...argv: string[]) {
   const args = argparse({
     path: arg('string', {positional: true, default: '.'}),
     watch: arg('boolean', {alias: 'w'}),
     help: arg('boolean', {alias: 'h'}),
-  })
+  }, js.help)
   .parse(argv)
 
   const {path, watch} = args
   return watch ? watchJs(path) : buildJs(path)
 }
+js.help = 'Build or watch client-side js files'
 
 async function buildJs(path: string) {
   await build(...['-p', path, '--esm'])
@@ -158,7 +165,7 @@ export async function css(...argv: string[]) {
     path: arg('string', {positional: true, default: '.'}),
     watch: arg('boolean', {alias: 'w'}),
     help: arg('boolean', {alias: 'h'}),
-  })
+  }, css.help)
   .parse(argv)
 
   const {path, watch} = args
@@ -173,6 +180,7 @@ export async function css(...argv: string[]) {
     join(path, 'scss'),
   ])
 }
+css.help = 'Build or watch sass files'
 
 async function watchCss(path = '.') {
   await run('node-sass', [
@@ -212,3 +220,4 @@ export async function frontend(...argv: string[]) {
   ]
   await Promise.all(promises)
 }
+frontend.help = 'Build all frontend files'

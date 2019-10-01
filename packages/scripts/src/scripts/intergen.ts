@@ -62,7 +62,7 @@ export function intergen(...argv: string[]): string {
     debug: arg('boolean'),
     help: arg('boolean', {alias: 'h'}),
     output: arg('string', {alias: 'o', default: '-'}),
-  }).parse(argv)
+  }, intergen.help).parse(argv)
 
   function debug(m: string, ...meta: Array<unknown>) {
     if (args.debug) {
@@ -379,3 +379,4 @@ export function intergen(...argv: string[]): string {
   }
   return value
 }
+intergen.help = 'Generate TypeScript interfaces from all found classes'
