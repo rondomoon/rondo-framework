@@ -8,8 +8,9 @@ import {join} from 'path'
 interface Package {
   name: string
   version: string
-  dependencies: Record<string, string>
-  devDependencies: Record<string, string>
+  peerDependencies?: Record<string, string>
+  dependencies?: Record<string, string>
+  devDependencies?: Record<string, string>
 }
 
 interface Dependencies {
@@ -168,8 +169,8 @@ export function imports(...argv: string[]) {
     .map(resolveModuleName)
     .reduce((obj, mod) => {
       const versionString =
-        rootPackage.dependencies[mod] ||
-        rootPackage.devDependencies[mod]
+        (rootPackage.dependencies || {})[mod] ||
+        (rootPackage.devDependencies || {})[mod]
       const resolvedModule = resolveModule(mod, versionString)
       obj[resolvedModule.name] = resolvedModule.version
       return obj
@@ -182,7 +183,25 @@ export function imports(...argv: string[]) {
     const imports = collectImports(pkgDir, 'tsconfig.json')
     const packageFile = join(pkgDir, 'package.json')
     const targetPackage = readPackage(packageFile)
-    targetPackage.dependencies = resolveDependencies(imports.dependencies)
+    const dependencies = resolveDependencies(imports.dependencies)
+    if (targetPackage.peerDependencies) {
+      const peerDependencyNames = new Set(
+        Object.keys(targetPackage.peerDependencies),
+      )
+      const depsWithoutPeers = Object
+      .keys(dependencies)
+      .reduce((obj, dep) => {
+        if (!peerDependencyNames.has(dep)) {
+          obj[dep] = dependencies[dep]
+        } else {
+          error('Skipping peer dependency "%s"', dep)
+        }
+        return obj
+      }, {} as Record<string, string>)
+      targetPackage.dependencies = depsWithoutPeers
+    } else {
+      targetPackage.dependencies = dependencies
+    }
     targetPackage.devDependencies = resolveDependencies(imports.devDependencies)
     debug('dependencies: %o', targetPackage.dependencies)
     debug('devDependencies: %o', targetPackage.devDependencies)
