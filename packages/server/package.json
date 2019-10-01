@@ -43,7 +43,6 @@
     "@rondo.dev/db": "0.0.1",
     "bcrypt": "^3.0.6",
     "email-validator": "^2.0.4",
-    "express-serve-static-core": "^0.1.1",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.4",
     "@rondo.dev/config": "0.0.1",

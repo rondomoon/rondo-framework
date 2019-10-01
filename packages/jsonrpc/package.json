@@ -18,7 +18,6 @@
   },
   "devDependencies": {
     "body-parser": "^1.19.0",
-    "express-serve-static-core": "^0.1.1",
     "redux": "^4.0.1",
     "ts-transformer-keys": "^0.3.5"
   },
