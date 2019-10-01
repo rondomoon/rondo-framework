@@ -1,5 +1,6 @@
 {
   "name": "@rondo.dev/client",
+  "version": "0.0.1",
   "private": true,
   "peerDependencies": {
     "axios": "^0.18.0",

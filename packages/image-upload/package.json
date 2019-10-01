@@ -1,5 +1,6 @@
 {
   "name": "@rondo.dev/image-upload",
+  "version": "0.0.1",
   "private": true,
   "peerDependencies": {
     "react": "^16.7.0",
