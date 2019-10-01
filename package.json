@@ -57,6 +57,7 @@
     "bloomer": "^0.6.5",
     "browser-unpack": "^1.4.2",
     "browserify": "^16.2.3",
+    "browserify-hmr": "^0.4.0",
     "buildfile": "^1.2.22",
     "bulma": "^0.7.4",
     "common-shakeify": "^0.6.0",
