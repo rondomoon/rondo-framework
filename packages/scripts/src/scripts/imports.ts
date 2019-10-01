@@ -2,15 +2,33 @@ import * as ts from 'typescript'
 import {argparse, arg} from '@rondo.dev/argparse'
 import {info, error} from '../log'
 import { getFolders } from '../getFolders'
+import {readFileSync} from 'fs'
+import {join} from 'path'
 
-export function imports(...argv: string[]): string[] {
+interface Package {
+  name: string
+  version: string
+  dependencies: Record<string, string>
+  devDependencies: Record<string, string>
+}
+
+interface Dependencies {
+  dependencies: string[]
+  devDependencies: string[]
+}
+
+export function imports(...argv: string[]) {
   const args = argparse({
     packages: arg('string', {default: 'packages/', positional: true}),
-    root: arg('string', {default: 'package.json'}),
+    root: arg('string', {default: './package.json'}),
+    dryRun: arg('boolean'),
+    testFileRegex: arg('string', {default: '\\.test\\.(t|j)sx?$'}),
     debug: arg('boolean'),
     help: arg('boolean', {alias: 'h'}),
     output: arg('string', {alias: 'o', default: '-'}),
   }).parse(argv)
+
+  const testFileRegex = new RegExp(args.testFileRegex)
 
   function debug(m: string, ...meta: Array<unknown>) {
     if (args.debug) {
@@ -22,7 +40,7 @@ export function imports(...argv: string[]): string[] {
   function collectImports(
     projectDir: string,
     tsconfigFileName: string,
-  ): string[] {
+  ): Dependencies {
     // Build a program using the set of root file names in fileNames
     // const program = ts.createProgram(fileNames, options)
     const configPath = ts.findConfigFile(
@@ -52,7 +70,8 @@ export function imports(...argv: string[]): string[] {
       parsedCommandLine.options,
     )
 
-    const modules = new Set<string>()
+    // key is dependency name, list contains source files
+    const filenamesByRequiredModule: Record<string, string[]> = {}
 
     // Get the checker, we will use it to find more about classes
     // const checker = program.getTypeChecker()
@@ -82,11 +101,9 @@ export function imports(...argv: string[]): string[] {
             return
           }
 
-          if (!modules.has(name)) {
-            debug(name)
-            modules.add(name)
-          }
-
+          const filenames = filenamesByRequiredModule[name] =
+            filenamesByRequiredModule[name] || []
+          filenames.push(sourceFile.fileName)
         }
 
         ts.forEachChild(node, visit.bind(null, sourceFile))
@@ -99,22 +116,85 @@ export function imports(...argv: string[]): string[] {
       }
     }
 
-    return Array.from(modules)
+    const result: Dependencies = {
+      dependencies: [],
+      devDependencies: [],
+    }
+    Object.keys(filenamesByRequiredModule).forEach(moduleName => {
+      const filenames = filenamesByRequiredModule[moduleName]
+      if (filenames.every(filename => testFileRegex.test(filename))) {
+        result.devDependencies.push(moduleName)
+      } else {
+        result.dependencies.push(moduleName)
+      }
+    })
+
+    return result
   }
 
-  getFolders(args.packages)
-  .forEach(pkgDir => {
+  function readPackage(path: string): Package {
+    return JSON.parse(readFileSync(path, 'utf8'))
+  }
+
+  // eslint-disable-next-line
+  const rootPackage = readPackage(args.root)
+
+  function resolveModule(name: string, version?: string) {
+    if (!version) {
+      throw new Error(`Module "${name}" not found in root package.json`)
+    }
+    if (version.startsWith('file:')) {
+      const pkg = readPackage(join(version.slice(5), 'package.json'))
+      if (!pkg.version) {
+        throw new Error(`Package.json of referenced module "${name}" ` +
+          'does not have version field')
+      }
+      return {name, version: pkg.version}
+    }
+    name = name.split('/')[0]
+    return {name: name, version}
+  }
+
+  function resolveModuleName(name: string) {
+    const folders = name.split('/')
+    if (folders[0].startsWith('@')) {
+      return folders.slice(0, 2).join('/')
+    }
+    return folders[0]
+  }
+
+  function resolveDependencies(dependencies: string[]) {
+    return dependencies
+    .map(resolveModuleName)
+    .reduce((obj, mod) => {
+      const versionString =
+        rootPackage.dependencies[mod] ||
+        rootPackage.devDependencies[mod]
+      const resolvedModule = resolveModule(mod, versionString)
+      obj[resolvedModule.name] = resolvedModule.version
+      return obj
+    }, {} as Record<string, string>)
+  }
+
+  const result = getFolders(args.packages)
+  .map(pkgDir => {
     error('Entering: %s', pkgDir)
-    const modules = collectImports(pkgDir, 'tsconfig.json')
+    const imports = collectImports(pkgDir, 'tsconfig.json')
+    const packageFile = join(pkgDir, 'package.json')
+    const targetPackage = readPackage(packageFile)
+    targetPackage.dependencies = resolveDependencies(imports.dependencies)
+    targetPackage.devDependencies = resolveDependencies(imports.devDependencies)
+    debug('dependencies: %o', targetPackage.dependencies)
+    debug('devDependencies: %o', targetPackage.devDependencies)
+    return {filename: packageFile, json: targetPackage}
+  })
+  .forEach(pkg => {
+    // TODO write package.json
+    // const value = JSON.stringify(pkg.json, null, '  ')
+    // fs.writeFileSync(pkg.filename, value)
   })
 
-  if (args.output === '-') {
-    // info(value)
-  } else {
-    // fs.writeFileSync(args.output, value)
-  }
-
-  return []
+  return result
 }
 imports.help = 'Find used module in a package, use root package.json to ' +
   'find dependency versions and update local package.json. Useful when using ' +
