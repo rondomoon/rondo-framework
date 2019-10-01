@@ -3,7 +3,8 @@ import {argparse, arg} from '@rondo.dev/argparse'
 import {info, error} from '../log'
 import { getFolders } from '../getFolders'
 import {readFileSync, writeFileSync} from 'fs'
-import {join} from 'path'
+import {join, resolve, relative} from 'path'
+import { findPackageRoot } from '../modules'
 
 interface Package {
   name: string
@@ -13,14 +14,27 @@ interface Package {
   devDependencies?: Record<string, string>
 }
 
+interface TSConfig {
+  references?: Array<{path: string}>
+}
+
 interface Dependencies {
   dependencies: string[]
   devDependencies: string[]
 }
 
+function readJSON<T>(filename: string): T {
+  return JSON.parse(readFileSync(filename, 'utf8'))
+}
+
+function writeJSON<T>(filename: string, object: T) {
+  info('Writing %s', filename)
+  writeFileSync(filename, JSON.stringify(object, null, '  '))
+}
+
 export function imports(...argv: string[]) {
   const args = argparse({
-    packages: arg('string', {default: 'packages/', positional: true}),
+    packagesDir: arg('string', {default: 'packages/', positional: true}),
     root: arg('string', {default: './package.json'}),
     dryRun: arg('boolean'),
     testFileRegex: arg('string', {default: '\\.test\\.(t|j)sx?$'}),
@@ -130,22 +144,21 @@ export function imports(...argv: string[]) {
       }
     })
 
+    result.dependencies.sort()
+    result.devDependencies.sort()
+
     return result
   }
 
-  function readPackage(path: string): Package {
-    return JSON.parse(readFileSync(path, 'utf8'))
-  }
-
   // eslint-disable-next-line
-  const rootPackage = readPackage(args.root)
+  const rootPackage = readJSON<Package>(args.root)
 
   function resolveModule(name: string, version?: string) {
     if (!version) {
       throw new Error(`Module "${name}" not found in root package.json`)
     }
     if (version.startsWith('file:')) {
-      const pkg = readPackage(join(version.slice(5), 'package.json'))
+      const pkg = readJSON<Package>(join(version.slice(5), 'package.json'))
       if (!pkg.version) {
         throw new Error(`Package.json of referenced module "${name}" ` +
           'does not have version field')
@@ -177,12 +190,12 @@ export function imports(...argv: string[]) {
     }, {} as Record<string, string>)
   }
 
-  const result = getFolders(args.packages)
-  .map(pkgDir => {
-    error('Entering: %s', pkgDir)
-    const imports = collectImports(pkgDir, 'tsconfig.json')
-    const packageFile = join(pkgDir, 'package.json')
-    const targetPackage = readPackage(packageFile)
+  function organizePackageDependencies(
+    imports: Dependencies,
+    packageFile: string,
+  ) {
+    // handle imports
+    const targetPackage = readJSON<Package>(packageFile)
     const dependencies = resolveDependencies(imports.dependencies)
     if (targetPackage.peerDependencies) {
       const peerDependencyNames = new Set(
@@ -206,11 +219,53 @@ export function imports(...argv: string[]) {
     debug('dependencies: %o', targetPackage.dependencies)
     debug('devDependencies: %o', targetPackage.devDependencies)
     return {filename: packageFile, json: targetPackage}
+  }
+
+  function organizeProjectReferences(
+    packagesDir: string,
+    imports: Dependencies,
+    projectDir: string,
+    tsConfigFileName: string,
+  ) {
+    const absolutePackagesDir = resolve(process.cwd(), packagesDir)
+    const filename = join(projectDir, tsConfigFileName)
+    const tsConfig = readJSON<TSConfig>(filename)
+    const allDeps = [
+      ...imports.dependencies,
+      ...imports.devDependencies,
+    ]
+
+    tsConfig.references = allDeps
+    .map(dep => require.resolve(dep))
+    .filter(absoluteDep => absoluteDep.startsWith(absolutePackagesDir))
+    .map(findPackageRoot)
+    .map(pkgRoot => relative(projectDir, pkgRoot))
+    .map(path => ({ path }))
+
+    debug('references: %o', tsConfig.references)
+
+    return {filename, json: tsConfig}
+  }
+
+  const result = getFolders(args.packagesDir)
+  .map(pkgDir => {
+    error('Entering: %s', pkgDir)
+    const tsConfigFileName = 'tsconfig.json'
+    const imports = collectImports(pkgDir, tsConfigFileName)
+    const packageFile = join(pkgDir, 'package.json')
+
+    return [
+      organizePackageDependencies(imports, packageFile),
+      organizeProjectReferences(
+        args.packagesDir, imports, pkgDir, tsConfigFileName),
+    ]
   })
-  .forEach(pkg => {
-    info('Writing %s', pkg.filename)
-    const value = JSON.stringify(pkg.json, null, '  ')
-    writeFileSync(pkg.filename, value)
+  .forEach(files => {
+    if (!args.dryRun) {
+      files.forEach(item => {
+        writeJSON(item.filename, item.json)
+      })
+    }
   })
 
   return result

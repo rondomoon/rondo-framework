@@ -24,6 +24,29 @@ export function findNodeModules(dir: string = process.cwd()): string[] {
   return paths
 }
 
+export function findPackageRoot(dir: string): string {
+  let currentDir = dir
+  let lastDir = dir
+  do {
+    let s: fs.Stats
+    try {
+      s = fs.statSync(path.join(currentDir, 'package.json'))
+    } catch (err) {
+      lastDir = currentDir
+      currentDir = path.resolve(currentDir, '..')
+      continue
+    }
+    if (!s.isFile()) {
+      lastDir = currentDir
+      currentDir = path.resolve(currentDir, '..')
+      continue
+    }
+    return currentDir
+  } while (lastDir !== currentDir)
+
+  throw new Error(`No package.json for directory "${dir}"`)
+}
+
 export function getPathVariable(
   pathsToAdd: string[] = findNodeModules(),
   currentPath = process.env.PATH,
