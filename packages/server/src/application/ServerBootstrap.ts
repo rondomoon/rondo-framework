@@ -1,5 +1,7 @@
+import { TypeORMDatabase, TypeORMLogger } from '@rondo.dev/db-typeorm'
 import assert from 'assert'
 import { createNamespace, Namespace } from 'cls-hooked'
+import cluster from 'cluster'
 import { Server } from 'http'
 import { AddressInfo } from 'net'
 import { loggerFactory } from '../logger'
@@ -8,7 +10,7 @@ import { Bootstrap } from './Bootstrap'
 import { Config } from './Config'
 import { ServerConfigurator } from './configureServer'
 import { createServer } from './createServer'
-import { TypeORMDatabase, TypeORMLogger } from '@rondo.dev/db-typeorm'
+
 
 export interface ServerBootstrapParams {
   readonly config: Config
@@ -79,7 +81,7 @@ export class ServerBootstrap implements Bootstrap {
 
   async listen(
     port: number | string | undefined = process.env.PORT || 3000,
-    hostname: string | undefined= process.env.BIND_HOST,
+    hostname: string | undefined = process.env.BIND_HOST,
   ) {
     const apiLogger = loggerFactory.getLogger('api')
     try {
@@ -90,6 +92,36 @@ export class ServerBootstrap implements Bootstrap {
       throw err
     }
   }
+
+  async startCluster(
+    workers: number,
+    port?: number | string,
+    hostname?: string,
+  ) {
+    const apiLogger = loggerFactory.getLogger('api')
+
+    if (cluster.isMaster) {
+      apiLogger.info('Started master process %d, starting %d workers...',
+        process.pid, workers)
+
+      // Fork workers.
+      for (let i = 0; i < workers; i++) {
+        cluster.fork({
+          WORKER_ID: i + 1,
+        })
+      }
+
+      cluster.on('exit', (worker, code, signal) => {
+        console.log(`worker ${worker.process.pid} died`)
+      })
+    } else {
+      await this.listen(port, hostname)
+      apiLogger.info(
+        'Started worker %d (worker id %s)', process.pid, process.env.WORKER_ID)
+    }
+  }
+
+
 
   protected async start(
     port: number | string | undefined = process.env.PORT,

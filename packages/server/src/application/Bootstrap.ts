@@ -8,6 +8,8 @@ export interface Bootstrap {
   readonly database: TypeORMDatabase
   getConfig(): Config
   listen(port?: number | string, hostname?: string): Promise<void>
+  startCluster(
+    workers: number, port?: number | string, hostname?: string): Promise<void>
   getAddress(): AddressInfo | string
   close(): Promise<void>
 }
