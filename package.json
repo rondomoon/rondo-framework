@@ -104,6 +104,7 @@
     "sanitize-html": "^1.20.0",
     "shortid": "^2.2.15",
     "sourceify": "git+https://github.com/jeremija/sourceify.git#sources-content",
+    "sqlite3": "^4.1.0",
     "std-mocks": "^1.0.1",
     "styled-components": "^4.4.0",
     "supertest": "^4.0.2",
