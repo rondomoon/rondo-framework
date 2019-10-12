@@ -15,6 +15,7 @@
   - [ ] Twitter
   - [ ] Google
   - [ ] Facebook
+
 - [ ] Framework development
   - [ ] Improve comments
   - [ ] Generate docs using using `typedoc`
@@ -33,13 +34,21 @@
 
 - [x] Do not import express when importing jsonrpc
 - [ ] Custom subdomains
-- [ ] Customizable user profile
+
+- [ ] User Profile
+  - [ ] Customize user data
+  - [ ] Reset password
+  - [ ] Delete account
+  - [ ] Add/Remove profile picture
 
 - [ ] Privacy
-  - [ ] User account creation with username/password only
-  - [ ] Preventing fake accounts/spam
-    - [ ] Using moderation techniques described below
+  - [ ] Do not require email for account creation
+  - [ ] Preventing fake accounts/spam using either:
+    - [ ] Moderation techniques described below
     - [ ] Require proof of work during acct creation?
+    - [ ] Open Source machine learning model for posts, if it exists
+    - [ ] svg-captcha from npm. Could prevent blind users from creating an account. Also, new ML models can probably read this format.
+  - [ ] Add privacy policy statement
 
 - [ ] Email
   - [ ] Verification emails
@@ -50,14 +59,17 @@
   - [ ] Replies to parent comment
   - [ ] User references via @-prefix
 
+- [ ] Add ability to cross-reference posts
+
 - [ ] Realtime notifications
   - [ ] Socket.io w/ Redis
-  - [ ] Investigate if web push notifications would eleminate immediate need for socket.io/redis
+  - [ ] Investigate if web push notifications would eliminate immediate need for socket.io/redis
 
 - [ ] Benchmarks
-  - [ ] Test how long would it take to load and sort comments full tree of 100.000 comments
+  - [ ] Test how long would it take to load and sort comments full tree of 100.000 comments, with 500-1000 chars each.
+  - [ ] Test how much would profile images slow down the loading process
   - [ ] Investigate what could be done to keep loading this many comments without hogging the server
-  - [ ] Reduce JS payload size
+  - [ ] Reduce JS payload size. Hard because ReactDOM already uses more than 90kb compressed (I think).
 
 - [ ] Pagination
   - [ ] offset/limit or last id
@@ -78,7 +90,7 @@
   - [ ] Disable access to localhost, local IP addresses, etc
   - [ ] Think about fallback if site is not scanned within 4 seconds
 
-- [ ] Project name
+- [ ] Think of a better project name
 
 - [ ] Comments representation
   - [x] Tree (reddit/hn-style)
@@ -94,19 +106,43 @@
   - [x] Add ability to mark comments as spam
 
 - [ ] Moderation
-  - [ ] Add ability for admins/moderators to approve comments
-  - [ ] Add ability for admins/moderators to ban users
-  - [ ] Add ability for admins/moderators to hide comments by default
+  - [ ] admins/moderators to approve comments
+  - [ ] admins/moderators to ban users
+  - [ ] admins/moderators to hide comments by default
+  - [ ] start requiring approval for users who have been consequtively marked as spam 
 
 - [ ] Monitoring
   - [ ] Prometheus
   - [ ] Server side errors
   - [ ] Client side errors
 
-- [ ] SaaS Payments
+- [ ] Monetization
+  - [ ] License: figure out the best license
+  - [ ] SaaS payments
+  - [ ] Donations
+  - [ ] Consulting
 
-- [ ] License
+- [ ] Meta posts
+  - [ ] Add ability for users to start discussions without a relevant link
+  - [ ] Add option to allow only certain roles to be able to author posts
+  - [ ] This could potentially allow users to write blog posts with comments
 
+- [ ] Aggregation
+  - [ ] Post/story tags
+  - [ ] Show latest posts/similar posts
+      - [ ] From same site
+      - [ ] From other sites
+  - [ ] Pagination
+
+- [ ] Images
+  - [x] Client-side resize before upload
+  - [ ] CDN
+  - [ ] Storage for image uploads
+
+# Possible future direction of development
+
+- [ ] Mastodon
+  - [ ] Allow users from multiple instances to reply to each other's posts. Would have to think about how to make money.
 
 # JSONRPC
 
