@@ -108,6 +108,7 @@
     "std-mocks": "^1.0.1",
     "styled-components": "^4.4.0",
     "supertest": "^4.0.2",
+    "svg-captcha": "^1.4.0",
     "timeago.js": "^4.0.0-beta.2",
     "ts-jest": "^24.0.0",
     "ts-node": "^8.3.0",
