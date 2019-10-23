@@ -20,7 +20,8 @@
     "@rondo.dev/validator": "file:packages/validator",
     "@rondo.dev/db": "file:packages/db",
     "@rondo.dev/db-typeorm": "file:packages/db-typeorm",
-    "@rondo.dev/middleware": "file:packages/middleware"
+    "@rondo.dev/middleware": "file:packages/middleware",
+    "@rondo.dev/captcha": "file:packages/captcha"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
