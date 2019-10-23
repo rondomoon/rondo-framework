@@ -38,7 +38,7 @@ interface ReadableWritable extends ReadableProcess, WritableProcess {
 
 }
 
-export function espeak() {
+function espeak() {
   return run(
     'espeak',
     ['-k', '2', '-s', '90', '--stdin', '--stdout'],
