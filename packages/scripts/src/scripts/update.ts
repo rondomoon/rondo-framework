@@ -15,74 +15,56 @@ export interface Package {
   devDependencies?: Record<string, string>
 }
 
-function findOutdated(cwd: string): Record<string, Outdated> {
-  try {
-    const result = cp.execFileSync('npm', ['outdated', '--json'], {
-      cwd,
-      encoding: 'utf8',
-    })
-    return result === '' ? {} : JSON.parse(result)
-  } catch (err) {
-    // npm outdated will exit with code 1 if there are outdated dependencies
-    return JSON.parse(err.stdout)
-  }
+function readPackage(dir: string): Package {
+  const pkgFile = path.join(dir, 'package.json')
+  return JSON.parse(fs.readFileSync(pkgFile, 'utf8'))
 }
 
-function updateDependency(
-  pkg: Package,
-  key: 'dependencies' | 'devDependencies',
-  name: string,
+function writePackage(dir: string, contents: Package) {
+  const pkgFile = path.join(dir, 'package.json')
+  fs.writeFileSync(pkgFile, JSON.stringify(contents, null, '  '))
+}
+
+function findLatestVersions(
+  deps: Record<string, string>,
   prefix: string,
-  version: Outdated,
-): Package {
-  const deps = pkg[key]
-  if (!deps || !deps[name] || version.wanted === version.latest) {
-    return pkg
-  }
-  info('  [%s] %s %s ==> %s', key, name, version.wanted, version.latest)
-  return {
-    ...pkg,
-    [key]: {
-      ...deps,
-      [name]: prefix + version.latest,
-    },
-  }
+): Record<string, string> {
+  const latestVersions = Object.keys(deps)
+  .filter(depName => !depName.startsWith('@rondo.dev'))
+  .reduce((latestVersions, depName) => {
+    const version = prefix +
+      cp.execFileSync('npm', ['info', depName, 'version']).toString().trim()
+    info('  %s (current: %s, latest: %s)', depName, deps[depName], version)
+    latestVersions[depName] = version
+    return latestVersions
+  }, deps)
+
+  return latestVersions
 }
 
 export async function update(...argv: string[]) {
   const {parse} = argparse({
     dirs: arg('string[]', {positional: true, default: ['.'], n: '+'}),
+    dryRun: arg('boolean', {alias: 'd', default: false}),
     prefix: arg('string', {default: '^'}),
   })
-  const {dirs, prefix} = parse(argv)
+  const {dirs, dryRun, prefix} = parse(argv)
 
-  let updates = 0
   for (const dir of dirs) {
     info(dir)
-    const outdatedByName = findOutdated(dir)
-
-    const pkgFile = path.join(dir, 'package.json')
-    const pkg: Package = JSON.parse(fs.readFileSync(pkgFile, 'utf8'))
-    let pkgUpdate: Package = pkg
-
-    // tslint:disable-next-line
-    for (const name in outdatedByName) {
-      const outdated = outdatedByName[name]
-      pkgUpdate = updateDependency(
-        pkgUpdate, 'dependencies', name, prefix, outdated)
-      pkgUpdate = updateDependency(
-        pkgUpdate, 'devDependencies', name, prefix, outdated)
+    const pkg = readPackage(dir)
+    if (pkg.dependencies) {
+      pkg.dependencies = findLatestVersions(pkg.dependencies, prefix)
     }
-
-    if (pkgUpdate !== pkg) {
-      updates += 1
+    if (pkg.devDependencies) {
+      pkg.devDependencies = findLatestVersions(pkg.devDependencies, prefix)
+    }
+    if (!dryRun) {
       info('Writing updates...')
-      fs.writeFileSync(pkgFile, JSON.stringify(pkgUpdate, null, '  '))
+      writePackage(dir , pkg)
     }
   }
 
-  if (updates) {
-    info('Done! Do not forget to run npm install!')
-  }
+  info('Done! Do not forget to run npm install!')
 }
 update.help = 'Update all dependencies to the latest versions'
