@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
-import { Readable } from 'stream'
-import { run, ReadableProcess, ReadableWritable, Command } from './run'
 import SVGCaptcha from 'svg-captcha'
+import { Command, ReadableProcess, ReadableWritable, run } from './run'
+import { TextStream } from './TextStream'
 
 export interface AudioConfig {
   commands: Command[]
@@ -42,15 +42,6 @@ export async function speak(
   }, createTextStream(text))
 
   return last
-}
-
-class TextStream extends Readable {
-  constructor(text: string) {
-    super()
-    this.push(text)
-    this.push(null)
-  }
-  _read() {/* noop */}
 }
 
 function createTextStream(text: string): ReadableProcess {
