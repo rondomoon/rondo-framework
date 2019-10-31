@@ -4,5 +4,8 @@
     "outDir": "esm"
   },
   "references": [
+    {
+      "path": "../test-utils"
+    }
   ]
 }
