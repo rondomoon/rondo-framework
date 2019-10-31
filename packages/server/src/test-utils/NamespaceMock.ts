@@ -33,6 +33,10 @@ export class NamespaceMock implements Namespace {
   }
 
   createContext(): any {/* do not do anything*/}
+
+  enter(context: any) {/* do not do anything*/}
+
+  exit(context: any) {/* do not do anything*/}
 }
 
 export const namespace = new NamespaceMock()

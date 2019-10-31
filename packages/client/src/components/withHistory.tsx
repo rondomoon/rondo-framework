@@ -22,5 +22,8 @@ export function withHistory<T extends {history: History}>(
     }
   }
 
-  return withRouter(HistoryProvider)
+  // stop TypeScript from complaining that we're using a private variable
+  const HP: React.ComponentType<WithHistoryProps & T> = HistoryProvider
+
+  return withRouter(HP)
 }

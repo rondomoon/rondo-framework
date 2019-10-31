@@ -1,4 +1,4 @@
-import { Action, applyMiddleware, createStore as create, Middleware, Reducer } from 'redux'
+import { Action, applyMiddleware, createStore as create, Middleware, Reducer, DeepPartial } from 'redux'
 import { PromiseMiddleware, ReduxLogger } from '../middleware'
 
 export interface CreateStoreParams<State, A extends Action> {
@@ -6,6 +6,11 @@ export interface CreateStoreParams<State, A extends Action> {
   state?: Partial<State>
   middleware?: Middleware[]
   extraMiddleware?: Middleware[]
+}
+
+interface A {
+  a: number
+  b: string
 }
 
 /**
@@ -25,9 +30,12 @@ export function createStore<State, A extends Action>(
   if (params.extraMiddleware) {
     middleware.push(...params.extraMiddleware)
   }
+
   return create(
     params.reducer,
-    params.state,
+    // stupid warning about how Partial<State> | undefined cannot be used as
+    // DeepPartial<State> | undefined
+    params.state as any,  // eslint-disable-line
     applyMiddleware(...middleware),
   )
 }
