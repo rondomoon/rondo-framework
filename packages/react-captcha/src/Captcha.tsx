@@ -1,8 +1,6 @@
 import React from 'react'
 
 export interface CaptchaProps {
-  onChange: (value: React.ChangeEvent<HTMLInputElement>) => void
-  value: string
   audioUrl?: string
   imageUrl: string
 }
@@ -15,9 +13,12 @@ export interface CaptchaState {
 }
 
 export class Captcha extends React.PureComponent<CaptchaProps, CaptchaState> {
+  static defaultProps = {
+    name: 'captcha',
+  }
   state: CaptchaState = {
     type: 'image',
-    attempt: 0,
+    attempt: 1,
   }
   changeType(type: CaptchaType) {
     this.setState({ type })
@@ -32,7 +33,7 @@ export class Captcha extends React.PureComponent<CaptchaProps, CaptchaState> {
     this.setState({ attempt: this.state.attempt + 1 })
   }
   render() {
-    const { onChange, value, imageUrl, audioUrl } = this.props
+    const { imageUrl, audioUrl } = this.props
     const { attempt, type } = this.state
 
     return (
@@ -40,26 +41,27 @@ export class Captcha extends React.PureComponent<CaptchaProps, CaptchaState> {
         {type === 'image' && (
           <>
             <img key={attempt} src={imageUrl} />
-            <a onClick={this.refresh}>
+            <a className='action-refresh' onClick={this.refresh}>
               Refresh
             </a>
-            <a onClick={this.changeToAudio}>
-              Click here for image version
-            </a>
+            {this.props.audioUrl && (
+              <a className='action-audio' onClick={this.changeToAudio}>
+                Click here for image version
+                </a>
+            )}
           </>
         )}
         {type === 'audio' && (
           <>
             <audio key={attempt} controls src={audioUrl} />
-            <a onClick={this.refresh}>
+            <a className='action-refresh' onClick={this.refresh}>
               Refresh
             </a>
-            <a onClick={this.changeToImage}>
+            <a className='action-image' onClick={this.changeToImage}>
               Click here for audio version
             </a>
           </>
         )}
-        <input key={attempt} value={value} onChange={onChange} />
       </div>
     )
   }
