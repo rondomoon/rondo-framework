@@ -34,16 +34,6 @@ extends React.PureComponent<TeamEditorProps, TeamEditorState> {
   getName(team?: Team) {
     return team ? team.name : ''
   }
-  componentWillReceiveProps(nextProps: TeamEditorProps) {
-    if (nextProps.type === 'update') {
-      const {team} = nextProps
-      if (team !== (this.props as UpdateTeamProps).team) {
-        this.setState({
-          name: this.getName(team),
-        })
-      }
-    }
-  }
   handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const name = event.target.value
     this.setState({name})

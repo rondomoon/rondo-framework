@@ -69,6 +69,7 @@ export class TeamManager extends React.PureComponent<TeamManagerProps> {
                   <PanelHeading>Edit Team: {team && team.name}</PanelHeading>
                   <PanelBlock isDisplay='block'>
                     {team && <TeamEditor
+                      key={team.id}
                       type='update'
                       team={team}
                       onUpdateTeam={this.props.teamActions.update}
