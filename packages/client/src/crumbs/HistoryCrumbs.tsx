@@ -34,7 +34,7 @@ export const HistoryCrumbs = withHistory(
       }
     }
 
-    componentWillMount() {
+    componentDidMount() {
       this.handleChange(this.props.history.location.pathname)
       this.unlisten = this.props.history.listen((location, action) => {
         this.handleChange(this.props.history.location.pathname)
