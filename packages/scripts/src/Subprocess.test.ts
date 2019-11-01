@@ -32,7 +32,8 @@ describe('Subprocess', () => {
     // })
 
     it('resolves on successful invocation', async () => {
-      await new Subprocess('ls', [], {}, StdioOptions.IGNORE).run()
+      await new Subprocess(
+        process.argv[0], ['-e', '1 + 1'], {}, StdioOptions.IGNORE).run()
     })
 
   })
