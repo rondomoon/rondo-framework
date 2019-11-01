@@ -1,3 +1,5 @@
+/// <reference path="../@types/express.d.ts" />
+/// <reference path="../@types/react-ssr-prepass.d.ts" />
 if (require.main === module) {
   if (!process.env.LOG) {
     process.env.LOG = 'api,sql:warn'
