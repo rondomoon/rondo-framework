@@ -11,6 +11,11 @@
 - [x] Use strings as ids for big decimals TODO verify
 - [ ] Regenerate session id after logging in to prevent session hijacking
 
+- [ ] react-test
+  - [ ] Do not use a class
+  - [ ] Call findRenderedComponentWithType after render, do not return
+        intermediary TestContainer
+
 - [ ] Social logins
   - [ ] GitHub
   - [ ] Twitter
