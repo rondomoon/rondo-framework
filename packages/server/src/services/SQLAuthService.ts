@@ -1,4 +1,4 @@
-import { AuthService, Credentials, NewUser, trim, UserProfile } from '@rondo.dev/common'
+import { AuthService, Credentials, NewUser, trim, UserProfile, nullable } from '@rondo.dev/common'
 import { TypeORMDatabase } from '@rondo.dev/db-typeorm'
 import Validator from '@rondo.dev/validator'
 import { compare, hash } from 'bcrypt'
@@ -15,11 +15,13 @@ export class SQLAuthService implements AuthService {
   async createUser(payload: NewUser): Promise<UserProfile> {
     const newUser = {
       username: trim(payload.username),
-      firstName: trim(payload.firstName),
-      lastName: trim(payload.lastName),
+      firstName: nullable(payload.firstName),
+      lastName: nullable(payload.lastName),
     }
 
-    if (!validateEmail(newUser.username)) {
+    const email = nullable(payload.email)
+
+    if (email && !validateEmail(email)) {
       throw createError(400, 'Username is not a valid e-mail')
     }
     if (payload.password.length < MIN_PASSWORD_LENGTH) {
@@ -29,8 +31,6 @@ export class SQLAuthService implements AuthService {
 
     new Validator(newUser)
     .ensure('username')
-    .ensure('firstName')
-    .ensure('lastName')
     .throw()
 
     const password = await this.hash(payload.password)
@@ -38,10 +38,12 @@ export class SQLAuthService implements AuthService {
       ...newUser,
       password,
     })
-    await this.db.getRepository(UserEmailEntity).save({
-      email: newUser.username,
-      userId: user.id,
-    })
+    if (email) {
+      await this.db.getRepository(UserEmailEntity).save({
+        email,
+        userId: user.id,
+      })
+    }
     return {
       id: user.id,
       ...newUser,
@@ -113,17 +115,14 @@ export class SQLAuthService implements AuthService {
     .createQueryBuilder('user')
     .select('user')
     .addSelect('user.password')
-    .addSelect('emails')
-    .innerJoin('user.emails', 'emails', 'emails.email = :email', {
-      email: username,
-    })
+    .where('user.username = :username', { username })
     .getOne()
 
     const isValid = await compare(password, user ? user.password! : '')
     if (user && isValid) {
       return {
         id: user.id,
-        username: user.emails[0].email,
+        username: user.username,
         firstName: user.firstName,
         lastName: user.lastName,
       }

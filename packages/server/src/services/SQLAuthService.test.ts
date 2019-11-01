@@ -14,6 +14,7 @@ describe('SQLAuthService', () => {
     return authService.createUser({
       username: u,
       password: p,
+      email: u,
       firstName: 'test',
       lastName: 'test',
     })
@@ -28,8 +29,12 @@ describe('SQLAuthService', () => {
       expect(user).not.toHaveProperty('password')
     })
 
-    it('throws when username is not an email', async () => {
-      const err = await test.getError(createUser('test', password))
+    it('throws when email is present is not a valid email', async () => {
+      const err = await test.getError(authService.createUser({
+        username,
+        password,
+        email: username.replace('@', '_'),
+      }))
       expect(err.message).toMatch(/not a valid e-mail/)
     })
 

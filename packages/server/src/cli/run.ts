@@ -1,6 +1,8 @@
 import { arg, argparse } from '@rondo.dev/argparse'
 import { cpus } from 'os'
 import { Bootstrap } from '../application'
+import { loggerFactory } from '../logger'
+import { LogLevel } from '@rondo.dev/logger'
 
 const numberOfCPUs = cpus().length
 
@@ -62,6 +64,7 @@ const commands = {
     .startCluster(args.workers, args.port || args.socket, args.host)
   },
   async migrate(bootstrap: Bootstrap, argv: string[]) {
+    loggerFactory.setLoggerLevel('sql', LogLevel.INFO)
     const {parse} = argparse({
       undo: arg('boolean', {
         alias: 'u',

@@ -10,6 +10,7 @@ export function configureAuthRoutes(
   t.post('/auth/register', async (req, res) => {
     const user = await authService.createUser({
       username: req.body.username,
+      email: req.body.email,
       password: req.body.password,
       firstName: req.body.firstName,
       lastName: req.body.lastName,

@@ -122,6 +122,7 @@ export class TestUtils<T extends Routes> {
     .send({
       firstName: 'test',
       lastName: 'test',
+      email: username || this.username,
       ...this.getLoginBody(token, username),
     })
     .expect(200)

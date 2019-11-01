@@ -6,11 +6,17 @@ export const UserEntity = new EntitySchema<User>({
   name: 'user',
   columns: {
     ...BaseEntitySchemaPart,
+    username: {
+      type: String,
+      unique: true,
+    },
     firstName: {
       type: String,
+      nullable: true,
     },
     lastName: {
       type: String,
+      nullable: true,
     },
     password: {
       type: String,

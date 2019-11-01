@@ -43,7 +43,7 @@
   - [ ] Add/Remove profile picture
 
 - [ ] Privacy
-  - [ ] Do not require email for account creation
+  - [x] Do not require email for account creation
   - [ ] Preventing fake accounts/spam using either:
     - [ ] Moderation techniques described below
     - [ ] Require proof of work during acct creation?

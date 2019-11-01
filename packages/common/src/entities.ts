@@ -25,8 +25,9 @@ export interface Team {
 }
 
 export interface User {
-  firstName: string
-  lastName: string
+  username: string
+  firstName: string | null
+  lastName: string | null
   emails: UserEmail[]
   password?: string
   sessions: Session[]

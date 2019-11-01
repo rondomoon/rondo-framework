@@ -41,7 +41,7 @@ export class SQLUserService implements RPC<UserService> {
 
     return {
       id: userEmail.userId!,
-      username: userEmail.email,
+      username: user.username,
       firstName: user.firstName,
       lastName: user.lastName,
     }

@@ -20,3 +20,10 @@ export function trim(str?: string) {
   }
   return str.trim()
 }
+
+export function nullable(str: string | undefined) {
+  if (!str) {
+    return null
+  }
+  return trim(str)
+}
