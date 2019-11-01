@@ -37,7 +37,7 @@ export class Captcha extends React.PureComponent<CaptchaProps, CaptchaState> {
     const { attempt, type } = this.state
 
     return (
-      <div>
+      <div className='captcha'>
         {type === 'image' && (
           <>
             <img key={attempt} src={imageUrl} />
