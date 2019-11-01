@@ -3,13 +3,17 @@ import * as log from '../log'
 import * as path from 'path'
 import {argparse, arg} from '@rondo.dev/argparse'
 
+function isDirectory(filename: string) {
+  const stat = fs.statSync(filename)
+  return stat.isDirectory()
+}
+
 async function walk(
   file: string,
   files: string[] = [],
 ): Promise<string[]> {
   files.push(file)
-  const stat = fs.statSync(file)
-  if (stat.isDirectory()) {
+  if (isDirectory(file)) {
     for (const f of fs.readdirSync(file)) {
       walk(path.join(file, f), files)
     }
@@ -36,9 +40,6 @@ export async function add(...argv: string[]) {
 
   const destDir = path.join('./packages', args.name)
 
-  log.info('mkdir %s', destDir)
-  fs.mkdirSync(destDir)
-
   const libraryName = `${args.namespace}/${args.name}`
 
   const templateDir = args.template
@@ -46,13 +47,18 @@ export async function add(...argv: string[]) {
     const src = file
     const dest = path.join(destDir, path.relative(templateDir, file))
     if (dest === path.join(destDir, 'package.json')) {
-      log.info('Add %s', dest)
+      log.info('add %s', dest)
       const libPkg = JSON.parse(fs.readFileSync(src, 'utf8'))
       libPkg.name = libraryName
       fs.writeFileSync(dest, JSON.stringify(libPkg, null, '  '))
     } else {
-      log.info('Copy %s', src)
-      fs.copyFileSync(src, dest)
+      if (isDirectory(src)) {
+        log.info('mkdir %s', src)
+        fs.mkdirSync(dest)
+      } else {
+        log.info('copy %s', src)
+        fs.copyFileSync(src, dest)
+      }
     }
   }
 
