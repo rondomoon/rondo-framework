@@ -4,6 +4,7 @@ import {argparse, arg} from '@rondo.dev/argparse'
 import {findNodeModules} from '../modules'
 import {join} from 'path'
 import {run} from '../run'
+import { exportDir } from './exportDir'
 
 const tsc = 'ttsc'
 
@@ -69,23 +70,49 @@ export async function exec(...argv: string[]) {
 }
 exec.help = 'Execute a js or ts file using node or ts-node'
 
+function findTypeORM(project: string) {
+  const typeorm = findNodeModules(project)
+  .map(nm => p.join(nm, 'typeorm'))
+  .find(t => fs.existsSync(t))
+
+  if (!typeorm) {
+    throw new Error('typeorm not found')
+  }
+
+  return typeorm
+}
+
+export async function schemaLog(...argv: string[]) {
+  const args = argparse({
+    project: arg('string', {positional: true, default: '.'}),
+  }, schemaLog.help)
+  .parse(argv)
+
+  const { project } = args
+
+  const typeorm = findTypeORM(project)
+  await run('ts-node', [typeorm, 'schema:log'], {
+    cwd: project,
+  })
+}
+schemaLog.help = 'Logs schema changes'
+
 export async function createMigration(...argv: string[]) {
   const args = argparse({
     name: arg('string', {required: true, positional: true}),
     project: arg('string', {alias: 'p', default: '.'}),
     help: arg('boolean', {alias: 'h'}),
+    log: arg('boolean', {description: 'Only log schema'}),
   }, createMigration.help)
   .parse(argv)
 
   const {name, project} = args
 
-  const typeorm = findNodeModules(project)
-  .map(nm => p.join(nm, 'typeorm'))
-  .find(t => fs.existsSync(t))
-  if (!typeorm) {
-    throw new Error('typeorm not found')
-  }
-  await run('ts-node', [typeorm, 'migration:generate', '--name', name], project)
+  const typeorm = findTypeORM(project)
+  await run('ts-node', [typeorm, 'migration:generate', '--name', name], {
+    cwd: project,
+  })
+  await exportDir(argv[0], project)
 }
 createMigration.help = 'Generate a new TypeORM migration'
 
