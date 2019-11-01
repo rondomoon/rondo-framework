@@ -27,7 +27,7 @@ export async function build(...argv: string[]) {
   const args = parse(argv)
   const path = args.esm ? join(args.project, 'tsconfig.esm.json') : args.project
   const watchArgs = args.watch ? ['--watch', '--preserveWatchOutput'] : []
-  await run(tsc, ['--build', path, ...watchArgs])
+  await run(tsc, ['--build', '--pretty', path, ...watchArgs])
 }
 build.help = 'Build or watch TypeScript project'
 
