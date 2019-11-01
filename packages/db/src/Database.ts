@@ -1,5 +1,5 @@
-import { Namespace } from "cls-hooked";
-import { TransactionManager } from "./TransactionManager";
+import { Namespace } from 'cls-hooked'
+import { TransactionManager } from './TransactionManager'
 
 export interface Database<
   Connection,

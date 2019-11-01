@@ -35,7 +35,7 @@ export function createStore<State, A extends Action>(
     params.reducer,
     // stupid warning about how Partial<State> | undefined cannot be used as
     // DeepPartial<State> | undefined
-    params.state as any,  // eslint-disable-line
+    params.state as DeepPartial<State> | undefined,
     applyMiddleware(...middleware),
   )
 }

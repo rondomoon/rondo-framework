@@ -1,4 +1,4 @@
-import { CrumbLink } from "./CrumbLink";
+import { CrumbLink } from './CrumbLink'
 
 export interface CrumbsState {
   links: CrumbLink[]

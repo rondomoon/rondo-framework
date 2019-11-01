@@ -1,6 +1,6 @@
-import { NewUser, UserProfile } from "../user";
-import { ChangePasswordParams } from "./ChangePasswordParams";
-import { Credentials } from "./Credentials";
+import { NewUser, UserProfile } from '../user'
+import { ChangePasswordParams } from './ChangePasswordParams'
+import { Credentials } from './Credentials'
 
 export interface AuthService {
   createUser(credentials: NewUser): Promise<UserProfile>

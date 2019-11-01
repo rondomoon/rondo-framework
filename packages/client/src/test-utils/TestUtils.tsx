@@ -1,16 +1,9 @@
 /* eslint @typescript-eslint/no-explicit-any: 0 */
+import { createStore, SelectState, WaitMiddleware } from '@rondo.dev/redux'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {createStore, SelectState, WaitMiddleware} from '@rondo.dev/redux'
-import {Provider} from 'react-redux'
-import {
-  Action,
-  AnyAction,
-  DeepPartial,
-  Reducer,
-  ReducersMapObject,
-  combineReducers,
-} from 'redux'
+import { Provider } from 'react-redux'
+import { Action, AnyAction, combineReducers, Reducer, ReducersMapObject } from 'redux'
 
 interface RenderParams<State, LocalState> {
   reducers: ReducersMapObject<State, any>

@@ -2,3 +2,4 @@ packages/*/lib
 packages/*/esm
 build/
 packages/*/src/migrations
+node_modules/

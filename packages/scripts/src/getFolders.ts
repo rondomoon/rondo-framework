@@ -1,5 +1,5 @@
-import { readdirSync, lstatSync } from "fs"
-import { join } from "path"
+import { readdirSync, lstatSync } from 'fs'
+import { join } from 'path'
 
 export function getFolders(dir: string): string[] {
   return readdirSync(dir)
