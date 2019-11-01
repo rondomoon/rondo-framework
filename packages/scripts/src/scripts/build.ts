@@ -142,7 +142,7 @@ export async function js(...argv: string[]) {
 js.help = 'Build or watch client-side js files'
 
 async function buildJs(path: string) {
-  await build(...['-p', path, '--esm'])
+  await build(...[path, '--esm'])
   await browserify(path)
   await uglify(path)
 }
@@ -212,9 +212,9 @@ export async function frontend(...argv: string[]) {
   if (args['full-paths']) {
     watchArgs.push('--full-paths')
   }
-  await build(...['-p', path])
+  await build(argv[0], ...['--esm', path])
   const promises = [
-    build(...['-p', path, '--watch']),
+    build(argv[0], ...['--esm', path, '--watch']),
     watchJs(path, ...watchArgs),
     watchCss(path),
   ]

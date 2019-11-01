@@ -21,10 +21,11 @@ export class Subprocess {
   }
 
   async run(cwd?: string) {
-    const {i} = this
+    const {command, i} = this
+    const index = `${i}:${command}`
     return new Promise((resolve, reject) => {
-      process.stderr.write(`[${i}]: ${this.command} ${this.args.join(' ')}\n`)
-      const subprocess = spawn(this.command, this.args, {
+      process.stderr.write(`${index} ${this.args.join(' ')}\n`)
+      const subprocess = spawn(command, this.args, {
         shell: false,
         stdio: this.stdio,
         env: this.environment,
@@ -33,11 +34,11 @@ export class Subprocess {
 
       if (this.stdio === StdioOptions.PIPE) {
         subprocess.stdout!.on('data', data => {
-          process.stdout.write(`${i}> `)
+          process.stdout.write(`${index}> `)
           process.stdout.write(data)
         })
         subprocess.stderr!.on('data', data => {
-          process.stdout.write(`${i}> `)
+          process.stdout.write(`${index}> `)
           process.stderr.write(data)
         })
       }
