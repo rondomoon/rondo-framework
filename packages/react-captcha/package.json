@@ -1,0 +1,15 @@
+{
+  "name": "@rondo.dev/react-captcha",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "test": "jest",
+    "lint": "tslint --project .",
+    "compile": "tsc",
+    "clean": "rm -rf lib/"
+  },
+  "dependencies": {},
+  "main": "lib/index.js",
+  "module": "esm/index.js",
+  "types": "lib/index.d.ts"
+}
