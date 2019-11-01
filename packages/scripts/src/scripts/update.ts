@@ -4,12 +4,6 @@ import cp from 'child_process'
 import {argparse, arg} from '@rondo.dev/argparse'
 import {info} from '../log'
 
-export interface Outdated {
-  wanted: string
-  latest: string
-  location: string
-}
-
 export interface Package {
   dependencies?: Record<string, string>
   devDependencies?: Record<string, string>

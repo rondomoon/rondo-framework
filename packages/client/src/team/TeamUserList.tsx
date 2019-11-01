@@ -134,7 +134,8 @@ export class AddUser extends React.PureComponent<AddUserProps, AddUserState> {
 export class TeamUserList extends React.PureComponent<TeamUsersProps> {
   async componentDidMount() {
     await this.fetchUsersInTeam(this.props.team.id)
-  } async componentWillReceiveProps(nextProps: TeamUsersProps) {
+  }
+  async componentWillReceiveProps(nextProps: TeamUsersProps) {
     const {team} = nextProps
     if (team.id !== this.props.team.id) {
       this.fetchUsersInTeam(team.id)
