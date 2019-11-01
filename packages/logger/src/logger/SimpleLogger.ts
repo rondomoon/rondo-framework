@@ -11,7 +11,7 @@ interface LoggerParams {
 }
 
 export class SimpleLogger implements Logger {
-  constructor(protected readonly config: LoggerParams) {}
+  constructor(readonly config: LoggerParams) {}
 
   protected log(level: LogLevel, message: string, params: unknown[]) {
     const initialMessage: Message = {

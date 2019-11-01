@@ -3,7 +3,7 @@ import { Message } from '../Message'
 import { LogLevel } from '../LogLevel'
 
 export class ConsoleTransport implements Transport {
-  constructor(readonly level: LogLevel) {}
+  constructor(public level: LogLevel) {}
 
   write(entry: Message) {
     if (entry.level <= this.level) {

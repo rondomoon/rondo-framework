@@ -10,7 +10,7 @@ import { ConsoleTransport } from './transports'
 // and disable all sql logs.
 
 export interface EnabledLoggers {
-  readonly [key: string]: LogLevel
+  [key: string]: LogLevel
 }
 
 export interface LoggerOptions {
@@ -47,6 +47,14 @@ export class SimpleLoggerFactory implements LoggerFactory {
       return LogLevel.OFF
     }
     return enabledLoggers[name] || this.defaultLogLevel
+  }
+
+  setLoggerLevel(name: string, level: LogLevel) {
+    this.options.enabledLoggers[name] = level
+    if (this.loggers[name]) {
+      const logger = this.loggers[name] as SimpleLogger
+      logger.config.transports.forEach(t => t.level = level)
+    }
   }
 
   getLogger = (name: string): Logger => {

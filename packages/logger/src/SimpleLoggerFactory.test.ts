@@ -1,15 +1,17 @@
 import stdMocks from 'std-mocks'
 import loggerFactory from './'
 import { SimpleLoggerFactory } from './SimpleLoggerFactory'
+import { LogLevel } from './LogLevel'
 
 describe('SimpleLoggerFactory', () => {
 
   let getLogger: typeof SimpleLoggerFactory.prototype.getLogger
+  let factory: SimpleLoggerFactory
   beforeEach(() => {
-    getLogger = SimpleLoggerFactory.init({
+    factory = SimpleLoggerFactory.init({
       logs: 'test1:verbose,-test3,t4,logtest5',
     })
-    .getLogger
+    getLogger = factory.getLogger
 
     stdMocks.use()
 
@@ -63,6 +65,20 @@ describe('SimpleLoggerFactory', () => {
     ]])
     expect((global.console.error as any).mock.calls).toEqual([[
       'test1 ERROR output: 5',
+    ]])
+  })
+
+  it('can set logger level', () => {
+    loggerFactory.setLoggerLevel('log-level-test', LogLevel.INFO)
+    const logger = loggerFactory.getLogger('log-level-test')
+    logger.info('test1')
+    expect((global.console.log as any).mock.calls).toEqual([[
+      'log-level-test INFO  test1',
+    ]])
+    loggerFactory.setLoggerLevel('log-level-test', LogLevel.OFF)
+    logger.info('test2')
+    expect((global.console.log as any).mock.calls).toEqual([[
+      'log-level-test INFO  test1',
     ]])
   })
 
