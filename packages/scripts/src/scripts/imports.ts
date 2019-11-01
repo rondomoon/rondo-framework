@@ -35,6 +35,7 @@ function writeJSON<T>(filename: string, object: T) {
 export function imports(...argv: string[]) {
   const args = argparse({
     packagesDir: arg('string', {default: 'packages/', positional: true}),
+    'package': arg('string'),
     root: arg('string', {default: './package.json'}),
     dryRun: arg('boolean'),
     testFileRegex: arg('string', {default: '\\.test\\.(t|j)sx?$'}),
@@ -95,14 +96,24 @@ export function imports(...argv: string[]) {
       return !moduleName.startsWith('.')
     }
 
+    function getModule(sourceFile: ts.SourceFile, node: ts.Node) {
+      if (ts.isImportDeclaration(node)) {
+        return node.moduleSpecifier.getText(sourceFile)
+      }
+      if (ts.isExportDeclaration(node) && node.moduleSpecifier) {
+        return node.moduleSpecifier.getText(sourceFile)
+      }
+    }
+
     /**
      * Visit nodes finding exported classes
      */
     function visit(sourceFile: ts.SourceFile, node: ts.Node) {
-      if (ts.isImportDeclaration(node)) {
-        const text = node.moduleSpecifier.getText(sourceFile)
-        const name = text.substring(1, text.length - 1)
+      const moduleWithQuotes = getModule(sourceFile, node)
+      if (moduleWithQuotes) {
+        const name = moduleWithQuotes.substring(1, moduleWithQuotes.length - 1)
         if (isInstalledModule(name)) {
+          debug('  %s', name)
           let resolved: string
           try {
             resolved = require.resolve(name)
@@ -127,6 +138,7 @@ export function imports(...argv: string[]) {
 
     for (const sourceFile of program.getSourceFiles()) {
       if (!sourceFile.isDeclarationFile) {
+        debug(relative(projectDir, sourceFile.fileName))
         ts.forEachChild(sourceFile, visit.bind(null, sourceFile))
       }
     }
@@ -240,6 +252,8 @@ export function imports(...argv: string[]) {
     .filter(absoluteDep => absoluteDep.startsWith(absolutePackagesDir))
     .map(findPackageRoot)
     .map(pkgRoot => relative(projectDir, pkgRoot))
+    // filter out packages in local node_modules
+    .filter(path => !path.startsWith('node_modules'))
     .map(path => ({ path }))
 
     debug('references: %o', tsConfig.references)
@@ -247,7 +261,11 @@ export function imports(...argv: string[]) {
     return {filename, json: tsConfig}
   }
 
-  const result = getFolders(args.packagesDir)
+  const folders = args.package
+    ? [join(args.packagesDir, args.package)]
+    : getFolders(args.packagesDir)
+
+  const result = folders
   .map(pkgDir => {
     error('Entering: %s', pkgDir)
     const tsConfigFileName = 'tsconfig.json'

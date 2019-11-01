@@ -22,7 +22,8 @@
     "@rondo.dev/db-typeorm": "file:packages/db-typeorm",
     "@rondo.dev/middleware": "file:packages/middleware",
     "@rondo.dev/captcha": "file:packages/captcha",
-    "@rondo.dev/react-captcha": "file:packages/react-captcha"
+    "@rondo.dev/react-captcha": "file:packages/react-captcha",
+    "@rondo.dev/react-test": "file:packages/react-test"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",

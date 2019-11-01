@@ -18,6 +18,9 @@
       "path": "../jsonrpc"
     },
     {
+      "path": "../react-test"
+    },
+    {
       "path": "../redux"
     },
     {

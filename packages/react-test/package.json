@@ -1,5 +1,5 @@
 {
-  "name": "@rondo.dev/captcha",
+  "name": "@rondo.dev/react-test",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -9,16 +9,14 @@
     "clean": "rm -rf lib/"
   },
   "dependencies": {
-    "express": "^4.17.1",
-    "svg-captcha": "^1.4.0"
+    "@rondo.dev/redux": "0.0.1",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
+    "react-redux": "^7.1.1",
+    "redux": "^4.0.4"
   },
   "main": "lib/index.js",
   "module": "esm/index.js",
   "types": "lib/index.d.ts",
-  "devDependencies": {
-    "@rondo.dev/test-utils": "0.0.1",
-    "cookie-parser": "^1.4.4",
-    "express-session": "^1.17.0",
-    "supertest": "^4.0.2"
-  }
+  "devDependencies": {}
 }

@@ -17,6 +17,7 @@
     "@rondo.dev/http-client": "0.0.1",
     "@rondo.dev/http-types": "0.0.1",
     "@rondo.dev/jsonrpc": "0.0.1",
+    "@rondo.dev/react-test": "0.0.1",
     "@rondo.dev/redux": "0.0.1",
     "bloomer": "^0.6.5",
     "history": "^4.10.1",

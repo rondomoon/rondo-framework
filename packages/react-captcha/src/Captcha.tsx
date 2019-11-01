@@ -59,8 +59,7 @@ export class Captcha extends React.PureComponent<CaptchaProps, CaptchaState> {
             </a>
           </>
         )}
-        k
-        <input value={value} onChange={onChange} />
+        <input key={attempt} value={value} onChange={onChange} />
       </div>
     )
   }

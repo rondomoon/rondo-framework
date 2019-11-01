@@ -1,1 +1,1 @@
-export * from './TestUtils'
+export * from '@rondo.dev/react-test'
