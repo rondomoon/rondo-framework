@@ -27,6 +27,17 @@ export function configureAuthRoutes(
       return
     }
     await req.logInPromise(user)
+    // TODO regenerate session - prevent session hijacking
+    //
+    // Something like:
+    //     var temp = req.session.passport; // {user: 1}
+    //     req.session.regenerate(function(err){
+    //         //req.session.passport is now undefined
+    //         req.session.passport = temp;
+    //         req.session.save(function(err){
+    //             res.send(200);
+    //         });
+    //     });
     return user
   })
 

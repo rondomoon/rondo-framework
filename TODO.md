@@ -9,6 +9,7 @@
 - [ ] Fix React SSR error handling
 - [ ] Add React error boundaries
 - [x] Use strings as ids for big decimals TODO verify
+- [ ] Regenerate session id after logging in to prevent session hijacking
 
 - [ ] Social logins
   - [ ] GitHub
