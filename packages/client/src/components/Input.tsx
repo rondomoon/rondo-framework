@@ -1,6 +1,6 @@
 import React from 'react'
-import {Control, Field, Input as I, Heading} from 'bloomer'
 import {IconType} from 'react-icons'
+import styled from 'styled-components'
 
 export interface InputProps {
   name: string
@@ -14,6 +14,39 @@ export interface InputProps {
   required?: boolean
 }
 
+const Field = styled.div`
+  margin-bottom: 1em;
+`
+
+const Label = styled('label')`
+  text-transform: uppercase;
+  font-size: 11px;
+`
+
+const Control = styled.div`
+  position: relative;
+`
+
+const I = styled.span`
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2.5rem;
+`
+
+const TextInput = styled.input<{hasIconLeft?: boolean}>`
+  padding: 0.5rem 0.75rem;
+  padding-left: ${props => props.hasIconLeft ? '2.5rem' : '0.75rem'}
+  width: 100%;
+`
+
 export class Input extends React.PureComponent<InputProps> {
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (this.props.onChange) {
@@ -24,10 +57,10 @@ export class Input extends React.PureComponent<InputProps> {
     const {Icon} = this.props
     return (
       <Field>
-        <Heading>{this.props.label}</Heading>
-        <Control hasIcons>
-          <I
-            className='input'
+        <Label>{this.props.label}</Label>
+        <Control>
+          <TextInput
+            hasIconLeft={!!Icon}
             name={this.props.name}
             type={this.props.type}
             value={this.props.value}
@@ -36,9 +69,7 @@ export class Input extends React.PureComponent<InputProps> {
             readOnly={!!this.props.readOnly}
             required={this.props.required}
           />
-          {Icon && <span className='icon is-left is-small'>
-            <Icon />
-          </span>}
+          {Icon && <I><Icon /></I>}
         </Control>
       </Field>
     )
