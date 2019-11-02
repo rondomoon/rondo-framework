@@ -176,7 +176,7 @@ async function buildJs(path: string) {
 
 async function watchJs(path: string, hot = false, ...extraArgs: string[]) {
   const args = [
-    join(path, 'esm', 'entrypoint.js'),
+    join(path, 'lib', 'entrypoint.js'),
   ]
   if (hot) {
     const hotArgs = [
@@ -252,9 +252,9 @@ export async function frontend(...argv: string[]) {
   if (args['full-paths']) {
     watchArgs.push('--full-paths')
   }
-  await build(argv[0], ...['--esm', path])
+  await build(argv[0], ...[path])
   const promises = [
-    build(argv[0], ...['--esm', path, '--watch']),
+    build(argv[0], ...[path, '--watch']),
     watchJs(path, args.hot, ...watchArgs),
     watchCss(path),
   ]
