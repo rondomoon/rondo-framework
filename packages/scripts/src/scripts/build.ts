@@ -174,10 +174,21 @@ async function buildJs(path: string) {
   await uglify(path)
 }
 
-async function watchJs(path: string, ...extraArgs: string[]) {
-  await run('watchify', [
+async function watchJs(path: string, hot = false, ...extraArgs: string[]) {
+  const args = [
     join(path, 'esm', 'entrypoint.js'),
-    // '-p', '[', 'tsify', '--project', path, ']',
+  ]
+  if (hot) {
+    const hotArgs = [
+      '-g', '[', 'aliasify',
+        '--aliases', '[', '--react-dom', '@hot-loader/react-dom', ']',
+        '--verbose',
+      ']',
+      '-p', 'browserify-hmr',
+    ]
+    args.push(...hotArgs)
+  }
+  args.push(...[
     '-g', '[', 'loose-envify', 'purge', '--NODE_ENV', 'development', ']',
     '-v',
     '--debug',
@@ -185,6 +196,7 @@ async function watchJs(path: string, ...extraArgs: string[]) {
     join(path, 'build', 'client.js'),
     ...extraArgs,
   ])
+  await run('watchify', args)
 }
 
 export async function css(...argv: string[]) {
@@ -231,6 +243,7 @@ export async function frontend(...argv: string[]) {
   const args = argparse({
     path: arg('string', {positional: true, default: '.'}),
     'full-paths': arg('boolean'),
+    hot: arg('boolean', {description: 'Use hot reloading'}),
     help: arg('boolean', {alias: 'h'}),
   })
   .parse(argv)
@@ -242,7 +255,7 @@ export async function frontend(...argv: string[]) {
   await build(argv[0], ...['--esm', path])
   const promises = [
     build(argv[0], ...['--esm', path, '--watch']),
-    watchJs(path, ...watchArgs),
+    watchJs(path, args.hot, ...watchArgs),
     watchCss(path),
   ]
   await Promise.all(promises)
