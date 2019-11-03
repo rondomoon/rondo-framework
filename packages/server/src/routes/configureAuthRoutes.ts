@@ -1,13 +1,24 @@
 import { APIDef, AuthService } from '@rondo.dev/common'
 import { Authenticator, ensureLoggedInApi } from '../middleware'
 import { AsyncRouter } from '../router'
+import { espeak, image, audio, validateCaptcha } from '@rondo.dev/captcha'
 
 export function configureAuthRoutes(
   authService: AuthService,
   authenticator: Authenticator,
   t: AsyncRouter<APIDef>,
 ) {
-  t.post('/auth/register', async (req, res) => {
+
+  t.get('/auth/captcha.svg', image({
+    size: 6,
+  }) as any)
+
+  t.get('/auth/captcha.wav', audio({
+    commands: [espeak({})],
+    size: 6,
+  }))
+
+  t.post('/auth/register', [validateCaptcha()], async (req, res) => {
     const user = await authService.createUser({
       username: req.body.username,
       email: req.body.email,

@@ -114,24 +114,37 @@ export class TestUtils<T extends Routes> {
 
   async registerAccount(username?: string) {
     const {context} = this
-    const {cookie, token} = await this.getCsrf()
+    const {cookie: csrfCookie, token} = await this.getCsrf()
+
+    process.env.CAPTCHA = '1234'
+    const captcha = await supertest(this.app)
+    .get(`${context}/api/auth/captcha.svg`)
+    .expect(200)
+
+    const sessionCookie = [
+      csrfCookie,
+      this.getCookies(captcha.header['set-cookie']),
+    ].join('; ')
 
     const response = await supertest(this.app)
     .post(`${context}/api/auth/register`)
-    .set('cookie', cookie)
+    .set('cookie', sessionCookie)
     .send({
       firstName: 'test',
       lastName: 'test',
+      captcha: process.env.CAPTCHA,
       email: username || this.username,
       ...this.getLoginBody(token, username),
     })
     .expect(200)
 
+    console.log('registered?')
+
     const cookies = this.getCookies(response.header['set-cookie'])
 
     return {
       headers: {
-        'cookie': [cookies, cookie].join('; '),
+        'cookie': [cookies, sessionCookie].filter(c => !!c).join('; '),
         'x-csrf-token': token,
       },
       userId: response.body.id,
@@ -197,7 +210,13 @@ export class TestUtils<T extends Routes> {
     return service as RPCClient<S>
   }
 
-  private getCookies(setCookiesString: string[]): string {
+  private getCookies(setCookiesString: string | string[]): string {
+    if (!setCookiesString) {
+      return ''
+    }
+    if (typeof setCookiesString === 'string') {
+      setCookiesString = [setCookiesString]
+    }
     return setCookiesString.map(c => c.split('; ')[0]).join('; ')
   }
 
