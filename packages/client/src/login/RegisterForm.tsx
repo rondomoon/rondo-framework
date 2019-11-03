@@ -4,6 +4,7 @@ import { FaEnvelope, FaLock, FaUser } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { Input } from '../components/Input'
 import { Redirect } from '../components/Redirect'
+import { Button } from '../components'
 
 export interface RegisterFormProps {
   error?: string
@@ -28,12 +29,12 @@ export class RegisterForm extends React.PureComponent<RegisterFormProps> {
         <p className='error has-text-danger'>{this.props.error}</p>
         <Input
           Icon={FaEnvelope}
-          label='Email'
+          label='Username'
           name='username'
-          type='email'
+          type='text'
           onChange={this.props.onChange}
           value={this.props.data.username}
-          placeholder='Email'
+          placeholder='Username'
           required
         />
         <Input
@@ -47,6 +48,15 @@ export class RegisterForm extends React.PureComponent<RegisterFormProps> {
           required
         />
         <Input
+          Icon={FaEnvelope}
+          label='Email'
+          name='email'
+          type='email'
+          onChange={this.props.onChange}
+          value={this.props.data.username}
+          placeholder='Email'
+        />
+        <Input
           Icon={FaUser}
           label='First Name'
           name='firstName'
@@ -54,7 +64,6 @@ export class RegisterForm extends React.PureComponent<RegisterFormProps> {
           onChange={this.props.onChange}
           value={this.props.data.firstName}
           placeholder='First name'
-          required
         />
         <Input
           Icon={FaUser}
@@ -64,15 +73,11 @@ export class RegisterForm extends React.PureComponent<RegisterFormProps> {
           onChange={this.props.onChange}
           value={this.props.data.lastName}
           placeholder='Last name'
-          required
         />
         <div className='text-center'>
-          <input
-            className='button is-primary'
-            name='submit'
-            type='submit'
-            value='Register'
-          />
+          <Button name='submit' type='submit'>
+            Register
+          </Button>
         </div>
         <p className='small center mt-1'>
           Already have an account? <Link to='/auth/login'>Log in!</Link>

@@ -1,13 +1,20 @@
-import React from 'react'
+import styled from 'styled-components'
+import { getColor, ColorSchemeProps, getBorder } from '../theme'
 
-export interface ButtonProps {
-  // type: string
-}
+export const Button = styled.button<ColorSchemeProps>`
+  padding: 0.5rem;
+  background: transparent;
+  color: ${getColor};
+  border: ${getBorder};
+  border-radius: ${props => props.theme.border.radius}px;
+  cursor: pointer;
 
-export class Button extends React.PureComponent<ButtonProps> {
-  render() {
-    return (
-      <button>{this.props.children}</button>
-    )
+  &:hover {
+    background: ${getColor};
+    color: white;
   }
-}
+
+  &:hover:active {
+    box-shadow: 0 0 3px ${getColor};
+  }
+`

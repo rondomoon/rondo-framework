@@ -27,7 +27,7 @@ const Control = styled.div`
   position: relative;
 `
 
-const I = styled.span`
+const Icon = styled.span`
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -39,12 +39,18 @@ const I = styled.span`
   top: 0;
   bottom: 0;
   width: 2.5rem;
+
+  color: ${props => props.theme.grey.light};
 `
 
 const TextInput = styled.input<{hasIconLeft?: boolean}>`
   padding: 0.5rem 0.75rem;
   padding-left: ${props => props.hasIconLeft ? '2.5rem' : '0.75rem'}
   width: 100%;
+
+  &:focus + ${Icon} {
+    color: ${props => props.theme.grey.dark};
+  }
 `
 
 export class Input extends React.PureComponent<InputProps> {
@@ -54,7 +60,6 @@ export class Input extends React.PureComponent<InputProps> {
     }
   }
   render() {
-    const {Icon} = this.props
     return (
       <Field>
         <Label>{this.props.label}</Label>
@@ -69,7 +74,7 @@ export class Input extends React.PureComponent<InputProps> {
             readOnly={!!this.props.readOnly}
             required={this.props.required}
           />
-          {Icon && <I><Icon /></I>}
+          {this.props.Icon && <Icon><this.props.Icon /></Icon>}
         </Control>
       </Field>
     )
