@@ -62,10 +62,12 @@ export class TeamList extends React.PureComponent<TeamListProps> {
           <span className='is-flex is-vcentered'>
             <span>Teams</span>
             <Link
-              className='ml-auto button is-link is-small'
+              className='ml-auto'
               to='/teams/new'
             >
-              <FaPlus />&nbsp; New
+              <Button>
+                <FaPlus />&nbsp; New
+              </Button>
             </Link>
           </span>
         </PanelHeading>

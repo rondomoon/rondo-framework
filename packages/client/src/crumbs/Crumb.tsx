@@ -28,19 +28,17 @@ export class Crumb extends React.PureComponent<CrumbProps> {
   render() {
     return (
       <Breadcrumb>
-        <ul>
-          <BreadcrumbItem>
-            <Link to='/'>Home</Link>
+        <BreadcrumbItem>
+          <Link to='/'>Home</Link>
+        </BreadcrumbItem>
+        {this.props.links.map((link, i) => (
+          <BreadcrumbItem key={i}>
+            <Link to={link.to}>{link.name}</Link>
           </BreadcrumbItem>
-          {this.props.links.map((link, i) => (
-            <BreadcrumbItem key={i}>
-              <Link to={link.to}>{link.name}</Link>
-            </BreadcrumbItem>
-          ))}
-          <BreadcrumbItem>
-            <span>{this.props.current}</span>
-          </BreadcrumbItem>
-        </ul>
+        ))}
+        <BreadcrumbItem>
+          <span>{this.props.current}</span>
+        </BreadcrumbItem>
       </Breadcrumb>
     )
   }

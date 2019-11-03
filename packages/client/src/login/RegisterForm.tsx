@@ -28,7 +28,7 @@ export class RegisterForm extends React.PureComponent<RegisterFormProps> {
       >
         <p className='error has-text-danger'>{this.props.error}</p>
         <Input
-          Icon={FaEnvelope}
+          Icon={FaUser}
           label='Username'
           name='username'
           type='text'

@@ -100,6 +100,7 @@ async function validateServiceContext<
   async function doValidate(validate: Validate<Context>) {
     const success = await validate(context)
     if (!success) {
+      // TODO make this an error like 401
       throw createError(ERROR_INVALID_REQUEST, {
         id,
         data: null,

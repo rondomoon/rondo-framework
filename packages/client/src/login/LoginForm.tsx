@@ -1,9 +1,8 @@
+import { Credentials, UserProfile } from '@rondo.dev/common'
 import React from 'react'
-import {FaUser, FaLock} from 'react-icons/fa'
-import {Credentials, UserProfile} from '@rondo.dev/common'
-import {Input} from '../components/Input'
-import {Link} from 'react-router-dom'
-import {Redirect} from '../components/Redirect'
+import { FaLock, FaUser } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
+import { Button, Input, Redirect } from '../components'
 
 export interface LoginFormProps {
   error?: string
@@ -44,15 +43,12 @@ export class LoginForm extends React.PureComponent<LoginFormProps> {
         />
 
         <div className='center'>
-          <input
-            className='button is-primary'
-            name='submit'
-            type='submit'
-            value='Log In'
-          />
+          <Button type='submit'>
+            Log In
+          </Button>
         </div>
 
-        <p className='small center mt-1'>
+        <p>
           Don&apos;t have an account? <Link to='/auth/register'>Sign up!</Link>
         </p>
       </form>
