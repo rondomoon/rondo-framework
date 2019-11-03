@@ -23,26 +23,45 @@ export const Columns = styled.div`
   align-items: center;
 `
 
+export type GridSize = number
+export const gridSize = 12
+
 export interface ColumnProps {
-  xs?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
-  sm?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
-  md?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
-  lg?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
+  xs?: GridSize
+  sm?: GridSize
+  md?: GridSize
+  lg?: GridSize
+
+  offsetxs?: GridSize
+  offsetsm?: GridSize
+  offsetmd?: GridSize
+  offsetlg?: GridSize
 }
+
+function getPercentage(size: number) {
+  return (size * 100 / gridSize) + '%'
+}
+
+export type OffsetKey = 'offsetxs' | 'offsetsm' | 'offsetmd' | 'offsetlg'
 
 export const Column = styled.div<ColumnProps>`
   padding: 1rem;
 
-  width: ${props => props.xs! * 100 / 12}%;
+  width: ${props => getPercentage(props.xs!)};
 
   ${props => keys(props.theme.screen.min)
     .filter(key => !!props[key])
-    .map(key => `@media(min-width: ${props.theme.screen.min[key]}) {
-      width: ${props[key]! * 100 / 12}%;
-    }`)
+    .map(key => {
+      const offsetKey = 'offset' + key  as OffsetKey
+      const offset = props[offsetKey] || 0
+      return `@media(min-width: ${props.theme.screen.min[key]}) {
+        width: ${getPercentage(props[key]!)};
+        margin-left: ${getPercentage(offset)};
+      }`
+    })
     .join('\n')
   }
 `
 Column.defaultProps = {
-  xs: 12,
+  xs: gridSize,
 }

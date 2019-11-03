@@ -59,7 +59,7 @@ export class TeamList extends React.PureComponent<TeamListProps> {
     return (
       <Panel>
         <PanelHeading>
-          <span className='is-flex is-vcentered'>
+          <span>
             <span>Teams</span>
             <Link
               className='ml-auto'
