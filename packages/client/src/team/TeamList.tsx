@@ -1,5 +1,5 @@
 import { ReadonlyRecord, Team, TeamActions } from '@rondo.dev/common'
-import { Button, Panel, PanelBlock, PanelHeading } from '../components'
+import { Button, Flex, Panel, PanelBlock, PanelHeading } from '../components'
 import React from 'react'
 import { FaEdit, FaPlus, FaTimes } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
@@ -18,6 +18,8 @@ export interface TeamProps {
   onRemoveTeam: TeamActions['remove']
 }
 
+export const marginLeft = {marginLeft: 'auto'}
+
 export class TeamRow extends React.PureComponent<TeamProps> {
   handleRemove = async () => {
     const {onRemoveTeam, team: {id}} = this.props
@@ -30,7 +32,7 @@ export class TeamRow extends React.PureComponent<TeamProps> {
         <div className='team-name'>
           {team.name}
         </div>
-        <div className='ml-auto'>
+        <div style={marginLeft}>
           {!!ListButtons && <ListButtons team={team} />}
           &nbsp;
           <Link to={`/teams/${team.id}/users`}>
@@ -59,8 +61,8 @@ export class TeamList extends React.PureComponent<TeamListProps> {
     return (
       <Panel>
         <PanelHeading>
-          <span>
-            <span>Teams</span>
+          <span>Teams</span>
+            <span style={marginLeft}>
             <Link
               className='ml-auto'
               to='/teams/new'

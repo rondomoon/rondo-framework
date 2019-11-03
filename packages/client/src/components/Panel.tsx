@@ -6,6 +6,9 @@ export const Panel = styled.div`
 `
 
 export const PanelHeading = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: ${props => props.theme.grey.lighter};
   padding: 1rem;
 `
