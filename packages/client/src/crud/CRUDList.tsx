@@ -1,5 +1,5 @@
 import React from 'react'
-import {Button, Panel, PanelHeading, PanelBlock} from 'bloomer'
+import {Button, Panel, PanelHeading, PanelBlock} from '../components'
 import {FaPlus, FaEdit, FaTimes} from 'react-icons/fa'
 import {Link} from '../components'
 
@@ -66,7 +66,7 @@ export class CRUDItemRow<T> extends React.PureComponent<CRUDItemRowProps<T>> {
           &nbsp;
           {!!editLink && (
             <Link to={editLink}>
-              <Button isInverted isColor='link' aria-label='Edit'>
+              <Button colorScheme='primary' aria-label='Edit'>
                 <FaEdit />
               </Button>
             </Link>
@@ -76,8 +76,7 @@ export class CRUDItemRow<T> extends React.PureComponent<CRUDItemRowProps<T>> {
             <Button
               aria-label='Remove'
               onClick={this.handleRemove}
-              isColor='danger'
-              isInverted
+              colorScheme='danger'
             >
               <FaTimes />
             </Button>

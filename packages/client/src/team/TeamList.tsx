@@ -1,5 +1,5 @@
 import { ReadonlyRecord, Team, TeamActions } from '@rondo.dev/common'
-import { Button, Panel, PanelBlock, PanelHeading } from 'bloomer'
+import { Button, Panel, PanelBlock, PanelHeading } from '../components'
 import React from 'react'
 import { FaEdit, FaPlus, FaTimes } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
@@ -34,16 +34,15 @@ export class TeamRow extends React.PureComponent<TeamProps> {
           {!!ListButtons && <ListButtons team={team} />}
           &nbsp;
           <Link to={`/teams/${team.id}/users`}>
-            <Button isInverted isColor='link' aria-label='Edit Team'>
+            <Button colorScheme='primary' aria-label='Edit Team'>
               <FaEdit />
             </Button>
           </Link>
           &nbsp;
           <Button
             aria-label='Remove'
+            colorScheme='danger'
             onClick={this.handleRemove}
-            isColor='danger'
-            isInverted
           >
             <FaTimes />
           </Button>

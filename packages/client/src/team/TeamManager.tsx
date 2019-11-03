@@ -1,9 +1,9 @@
-import { UserInTeam, ReadonlyRecord, TeamActions, UserActions, Team } from '@rondo.dev/common'
-import { Panel, PanelBlock, PanelHeading } from 'bloomer'
+import { ReadonlyRecord, Team, TeamActions, UserActions, UserInTeam } from '@rondo.dev/common'
 import { History, Location } from 'history'
 import React from 'react'
 import { match as Match } from 'react-router'
 import { Route, Switch } from 'react-router-dom'
+import { Panel, PanelBlock, PanelHeading } from '../components'
 import { TeamEditor } from './TeamEditor'
 import { TeamList } from './TeamList'
 import { TeamUserList } from './TeamUserList'
@@ -67,7 +67,7 @@ export class TeamManager extends React.PureComponent<TeamManagerProps> {
               <>
                 <Panel>
                   <PanelHeading>Edit Team: {team && team.name}</PanelHeading>
-                  <PanelBlock isDisplay='block'>
+                  <PanelBlock>
                     {team && <TeamEditor
                       key={team.id}
                       type='update'

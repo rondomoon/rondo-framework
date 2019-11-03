@@ -1,4 +1,4 @@
-import { Button, Control, Heading, Help, Input } from 'bloomer'
+import { Button, Heading, Help, Input } from '../components'
 import React from 'react'
 import { FaCheck, FaEdit, FaPlusSquare } from 'react-icons/fa'
 import { TeamActions, Team } from '@rondo.dev/common'
@@ -34,9 +34,8 @@ extends React.PureComponent<TeamEditorProps, TeamEditorState> {
   getName(team?: Team) {
     return team ? team.name : ''
   }
-  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const name = event.target.value
-    this.setState({name})
+  handleChange = (name: string, value: string) => {
+    this.setState({name: value})
   }
   handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -54,8 +53,6 @@ extends React.PureComponent<TeamEditorProps, TeamEditorState> {
     }
   }
   render() {
-    const {error} = this.state
-
     return (
       <form
         autoComplete='off'
@@ -64,27 +61,19 @@ extends React.PureComponent<TeamEditorProps, TeamEditorState> {
         <Heading>
           {this.props.type === 'update' ? 'Edit team' : 'Add team'}
         </Heading>
-        <Control hasIcons='left'>
-          <Input
-            placeholder='Team Name'
-            type='text'
-            value={this.state.name}
-            onChange={this.handleChange}
-          />
-          <span className='icon is-left'>
-            {this.props.type === 'update' ? <FaEdit /> : <FaPlusSquare />}
-          </span>
-          {error && (
-            <Help isColor='danger'>{error}</Help>
-          )}
-        </Control>
-        <div className='text-right mt-1'>
-          <Button
-            isColor='dark'
-            className='button'
-            type='submit'
-          >
-            <FaCheck className='mr-1' /> Save
+        <Input
+          error={this.state.error}
+          name='name'
+          label='Team Name'
+          placeholder='Team Name'
+          type='text'
+          value={this.state.name}
+          onChange={this.handleChange}
+          Icon={this.props.type === 'update' ? FaEdit : FaPlusSquare}
+        />
+        <div className='text-right'>
+          <Button type='submit'>
+            <FaCheck /> Save
           </Button>
         </div>
       </form>

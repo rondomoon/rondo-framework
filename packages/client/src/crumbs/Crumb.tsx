@@ -1,7 +1,23 @@
-import { Breadcrumb, BreadcrumbItem } from 'bloomer'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { CrumbLink } from './CrumbLink'
+import styled from 'styled-components'
+
+const Breadcrumb = styled.ul`
+  list-style: none;
+  padding: 0;
+`
+
+const BreadcrumbItem = styled.li`
+  display: inline-block;
+  padding: 1rem 0.5rem 1rem 0;
+
+  & + &:before {
+    padding-right: 0.5rem;
+    color: ${props => props.theme.grey.light};
+    content: '»';
+  }
+`
 
 export interface CrumbProps {
   links: CrumbLink[]

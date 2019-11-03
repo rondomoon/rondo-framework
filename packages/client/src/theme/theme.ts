@@ -12,10 +12,11 @@ declare module 'styled-components' {
     grey: {
       dark: string
       light: string
+      lighter: string
     }
     border: {
-      width: 1
-      radius: 3
+      width: string
+      radius: string
     }
   }
 }
@@ -31,10 +32,11 @@ export const theme: DefaultTheme = {
   grey: {
     dark: 'darkgrey',
     light: 'lightgrey',
+    lighter: 'whitesmoke',
   },
   border: {
-    width: 1,
-    radius: 3,
+    width: '1px',
+    radius: '3px',
   },
 }
 

@@ -5,5 +5,5 @@ export function getColor(props: ColorSchemeProps) {
 }
 
 export function getBorder(props: ColorSchemeProps) {
-  return `${props.theme.border.width}px solid ${getColor(props)};`
+  return `${props.theme.border.width} solid ${getColor(props)};`
 }

@@ -1,5 +1,5 @@
 import { User, UserInTeam, ReadonlyRecord, TeamActions, UserActions, Team } from '@rondo.dev/common'
-import { Button, Control, Heading, Help, Input, Panel, PanelBlock, PanelHeading } from 'bloomer'
+import { Button, Input, Panel, PanelBlock, PanelHeading, Heading } from '../components'
 import React from 'react'
 import { FaCheck, FaTimes, FaUser } from 'react-icons/fa'
 
@@ -52,8 +52,7 @@ export class TeamUser extends React.PureComponent<TeamUserProps> {
         <div className='ml-auto'>
           <Button
             aria-label='Remove'
-            isColor='danger'
-            isInverted
+            colorScheme='danger'
             className='team-user-remove'
             onClick={this.handleRemoveUser}
           >
@@ -74,8 +73,7 @@ export class AddUser extends React.PureComponent<AddUserProps, AddUserState> {
       user: undefined,
     }
   }
-  handleChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const email = event.target.value
+  handleChangeEmail = (name: string, email: string) => {
     this.setState({email})
   }
   handleAddUser = async (event: React.FormEvent) => {
@@ -97,33 +95,22 @@ export class AddUser extends React.PureComponent<AddUserProps, AddUserState> {
     this.setState({error: '', email: '', user: undefined})
   }
   render() {
-    const {error} = this.state
-
     return (
       <form autoComplete='off' onSubmit={this.handleAddUser}>
         <Heading>Add User</Heading>
-        <Control hasIcons='left'>
-          <Input
-            isColor={error ? 'danger' : ''}
-            onChange={this.handleChangeEmail}
-            placeholder='Email'
-            type='email'
-            value={this.state.email}
-          />
-          <span className='icon is-left'>
-            <FaUser />
-          </span>
-          {error && (
-            <Help isColor='danger'>{error}</Help>
-          )}
-        </Control>
+        <Input
+          label='Search by email'
+          error={this.state.error}
+          name='email'
+          onChange={this.handleChangeEmail}
+          placeholder='Email'
+          type='email'
+          value={this.state.email}
+          Icon={FaUser}
+        />
         <div className='mt-1 text-right'>
-          <Button
-            isColor='dark'
-            type='submit'
-          >
-            <FaCheck className='mr-1' />
-            Add
+          <Button type='submit'>
+            <FaCheck /> Add
           </Button>
         </div>
       </form>
@@ -166,7 +153,7 @@ export class TeamUserList extends React.PureComponent<TeamUsersProps> {
             )
           })}
 
-        <PanelBlock isDisplay='block'>
+        <PanelBlock>
           <AddUser
             onAddUser={this.props.onAddUser}
             onSearchUser={this.props.findUserByEmail}

@@ -1,9 +1,11 @@
 import React from 'react'
 import {IconType} from 'react-icons'
 import styled from 'styled-components'
+import { Help } from './Help'
 
 export interface InputProps {
   name: string
+  error?: string
   type: 'text' | 'password' | 'hidden' | 'submit' | 'email'
   value?: string
   onChange?: (name: this['name'], value: string) => void
@@ -14,20 +16,20 @@ export interface InputProps {
   required?: boolean
 }
 
-const Field = styled.div`
+export const Field = styled.div`
   margin-bottom: 1em;
 `
 
-const Label = styled('label')`
+export const Label = styled('label')`
   text-transform: uppercase;
-  font-size: 11px;
+  font-size: 0.8rem;
 `
 
-const Control = styled.div`
+export const Control = styled.div`
   position: relative;
 `
 
-const Icon = styled.span`
+export const Icon = styled.span`
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -43,7 +45,11 @@ const Icon = styled.span`
   color: ${props => props.theme.grey.light};
 `
 
-const TextInput = styled.input<{hasIconLeft?: boolean}>`
+export const TextInput = styled.input<{hasIconLeft?: boolean}>`
+  font-size: 1rem;
+  border-radius: ${props => props.theme.border.radius};
+  border: ${props => props.theme.border.width}
+    solid ${props => props.theme.grey.light};
   padding: 0.5rem 0.75rem;
   padding-left: ${props => props.hasIconLeft ? '2.5rem' : '0.75rem'}
   width: 100%;
@@ -75,6 +81,9 @@ export class Input extends React.PureComponent<InputProps> {
             required={this.props.required}
           />
           {this.props.Icon && <Icon><this.props.Icon /></Icon>}
+          {this.props.error && (
+            <Help colorScheme='danger'>{this.props.error}</Help>
+          )}
         </Control>
       </Field>
     )

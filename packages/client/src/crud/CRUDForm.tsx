@@ -1,5 +1,5 @@
 import React from 'react'
-import {Control, Field, Heading, Icon, Input} from 'bloomer'
+import {Control, Field, Heading, Icon, TextInput} from '../components'
 import {CRUDChangeParams} from './CRUDActions'
 
 export type CRUDFieldType = 'text' | 'password' | 'number' | 'email' | 'tel'
@@ -53,15 +53,15 @@ export class CRUDField<T> extends React.PureComponent<CRUDFieldProps<T>> {
     return (
       <Field>
         <Heading>{label}</Heading>
-        <Control hasIcons={!!this.props.Icon}>
-          <Input
+        <Control>
+          <TextInput
             name={name}
             onChange={this.handleChange}
             placeholder={placeholder}
             value={value}
           />
           {!!this.props.Icon && (
-            <Icon isSize='small' isAlign='left'>
+            <Icon>
               <this.props.Icon />
             </Icon>
           )}
