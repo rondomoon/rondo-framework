@@ -67,7 +67,11 @@ describe('audio', () => {
       .set('cookie', cookie)
       .expect(200)
 
-      expect(res2.body.captcha).toEqual(jasmine.any(String))
+      expect(res2.body.captcha).toEqual({
+        value: jasmine.any(String),
+        type: 'audio',
+        timestamp: jasmine.any(Number),
+      })
     })
 
     it('fails with error 500 when unable to generate', async () => {

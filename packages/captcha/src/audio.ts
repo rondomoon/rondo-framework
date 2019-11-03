@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import SVGCaptcha from 'svg-captcha'
 import { Command, ReadableProcess, ReadableWritable, run } from './run'
 import { TextStream } from './TextStream'
+import { createCaptcha } from './Captcha'
 
 export interface AudioConfig {
   commands: Command[]
@@ -14,7 +15,7 @@ export const audio = (config: AudioConfig) => async (
 ) => {
   const { commands, size } = config
   const captcha = SVGCaptcha.randomText(size)
-  req.session!.captcha = captcha
+  req.session!.captcha = createCaptcha(captcha, 'audio')
   let speech: ReadableProcess
   try {
     speech = await speak('test', commands)
