@@ -1,8 +1,11 @@
+import loggerFactory from '@rondo.dev/logger'
 import { Request, Response } from 'express'
 import SVGCaptcha from 'svg-captcha'
 import { Command, ReadableProcess, ReadableWritable, run } from './run'
 import { TextStream } from './TextStream'
 import { createCaptcha } from './Captcha'
+
+const logger = loggerFactory.getLogger('captcha')
 
 export interface AudioConfig {
   commands: Command[]
@@ -18,14 +21,22 @@ export const audio = (config: AudioConfig) => async (
   req.session!.captcha = createCaptcha(captcha, 'audio')
   let speech: ReadableProcess
   try {
-    speech = await speak('test', commands)
+    speech = await speak(captcha, commands)
   } catch (err) {
-    res.status(500)
+    logger.error('Error generating speech: %s', err.stack)
+    res.status(200)
     res.send('Internal server error')
     return
   }
+  res.status(200)
+  res.header('Cache-control', 'no-cache')
   res.type(speech.contentType)
-  speech.stdout.pipe(res)
+  logger.info('piping output')
+  speech.stdout.pipe(res, { end: false })
+  speech.stdout.on('end', () => {
+    logger.info('end')
+    res.end()
+  })
 }
 
 export async function speak(

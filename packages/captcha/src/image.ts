@@ -11,6 +11,7 @@ export const image = (config: ImageConfig) => (req: Request, res: Response) => {
     size: config.size,
   })
   req.session!.captcha = createCaptcha(text, 'image')
+  res.header('Cache-control', 'no-cache')
   res.type('svg')
   res.status(200)
   res.send(data)
