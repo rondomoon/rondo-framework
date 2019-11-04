@@ -46,14 +46,14 @@ describe('configureRegister', () => {
     const onSuccess = jest.fn()
     let node: Element
     let component: TestContainer
-    beforeEach(() => {
+    beforeEach(async () => {
       http.mockAdd({
         method: 'post',
         url: '/auth/register',
         data,
       }, {id: 123})
 
-      const r = createTestProvider().render({onSuccess})
+      const r = await createTestProvider().render({onSuccess})
       node = r.node
       component = r.component
       T.Simulate.change(

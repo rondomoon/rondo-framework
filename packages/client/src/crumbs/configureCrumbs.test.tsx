@@ -27,8 +27,8 @@ describe('configrueCrumbs', () => {
   .withJSX(Component => <MemoryRouter><Component /></MemoryRouter>)
 
   describe('render', () => {
-    it('renders', () => {
-      const {node} = createTestCase().render({})
+    it('renders', async () => {
+      const {node} = await createTestCase().render({})
 
       expect(node.innerHTML).toMatch(/href="\/one"/)
       expect(node.innerHTML).toMatch(/href="\/two"/)
@@ -37,14 +37,14 @@ describe('configrueCrumbs', () => {
   })
 
   describe('BREADCRUMBS_SET', () => {
-    it('updates breadcrumbs', () => {
+    it('updates breadcrumbs', async () => {
       const {render, store} = createTestCase()
       const actions = new Feature.CrumbsActions()
       store.dispatch(actions.setCrumbs({
         links: [],
         current: 'Crumbtest',
       }))
-      const {node} = render({})
+      const {node} = await render({})
       expect(node.innerHTML).toMatch(/Crumbtest/)
     })
   })

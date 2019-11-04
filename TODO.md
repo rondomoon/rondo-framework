@@ -31,7 +31,7 @@
 - [ ] Styled components
   - [x] SSR
   - [ ] Replace bulma/blommer css framework with styled components
-  - [ ] Check if restyped still significantly slows down TS compilation
+  - [ ] Check if reakit still significantly slows down TS compilation
 
 - [x] Use JSON schema instead of @Entity decorators
 - [x] Extract database into a separate module
@@ -55,7 +55,7 @@
     - [ ] Open Source machine learning model for posts, if it exists
     - [x] svg-captcha from npm. Could prevent blind users from creating an account. Also, new ML models can probably read this format.
     - [x] Possible solution: use TTS like say.js to generate audio. Use tasq lib to prevent too much cpu usage if more users arrive.
-    - [ ] FIXME debug why espeak sometimes does not stream responses:w
+    - [x] FIXME debug why espeak sometimes does not stream responses:w
   - [ ] Add privacy policy statement
 
 - [ ] Email

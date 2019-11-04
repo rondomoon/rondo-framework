@@ -1,3 +1,4 @@
+test.todo('Implement and test Modal')
 // import React from 'react'
 // import T from 'react-dom/test-utils'
 // import {Modal} from './Modal'

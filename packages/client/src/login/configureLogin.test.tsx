@@ -40,7 +40,7 @@ describe('configureLogin', () => {
     const onSuccess = jest.fn()
     let node: Element
     let component: TestContainer
-    beforeEach(() => {
+    beforeEach(async () => {
       http.mockAdd({
         method: 'post',
         url: '/auth/login',
@@ -48,7 +48,7 @@ describe('configureLogin', () => {
       }, {id: 123})
 
       const t = createTestProvider()
-      const r = t.render({onSuccess})
+      const r = await t.render({onSuccess})
       node = r.node
       component = r.component
       T.Simulate.change(

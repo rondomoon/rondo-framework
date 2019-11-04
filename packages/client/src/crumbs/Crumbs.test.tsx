@@ -8,8 +8,8 @@ const t = new TestUtils()
 describe('Crumb', () => {
 
   describe('render', () => {
-    it('renders', () => {
-      const {node} = t.render(
+    it('renders', async () => {
+      const {node} = await t.render(
         <MemoryRouter>
           <Crumb
             links={[{

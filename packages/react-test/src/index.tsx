@@ -15,7 +15,11 @@ interface RenderParams<State, LocalState> {
 export class TestContainer extends React.Component<{}> {
   ref = React.createRef<HTMLDivElement>()
   render() {
-    return <div ref={this.ref}>{this.props.children}</div>
+    return (
+      <div className='test-container' ref={this.ref}>
+        {this.props.children}
+      </div>
+    )
   }
 }
 
@@ -28,20 +32,24 @@ export class TestUtils {
   readonly createStore = createStore
   readonly Utils = T
 
-  render(jsx: JSX.Element) {
+  async render(jsx: JSX.Element) {
     const $div = document.createElement('div')
-    const component = ReactDOM.render(
-      <TestContainer>
-        <ThemeProvider theme={TestUtils.defaultTheme}>
-          {jsx}
-        </ThemeProvider>
-      </TestContainer>,
-      $div,
-    ) as unknown as TestContainer
-    const node = component.ref.current!.children[0]
+    const component: TestContainer | null = await new Promise(resolve => {
+      ReactDOM.render(
+        <TestContainer ref={instance => resolve(instance)}>
+          <ThemeProvider theme={TestUtils.defaultTheme}>
+            {jsx}
+          </ThemeProvider>
+        </TestContainer>,
+        $div,
+      )
+    })
+    if (component === null) {
+      throw new Error('TestContainer is null, this should not happen')
+    }
     return {
       component,
-      node,
+      node: $div.children[0].children[0],
     }
   }
 
@@ -90,14 +98,14 @@ export class TestUtils {
 
       let createJSX: CreateJSX | undefined
 
-      const render = (props: Props) => {
+      const render = async (props: Props) => {
         const recorder = waitMiddleware.record()
 
         const jsx = createJSX
           ? createJSX(Component, props)
           : <Component {...props} />
 
-        const result = this.render(
+        const result = await this.render(
           <Provider store={store}>
             {jsx}
           </Provider>,
@@ -132,11 +140,11 @@ export class TestUtils {
 }
 
 interface Self<Props, Store, Component, CreateJSX> {
-  render: (props: Props) => {
+  render: (props: Props) => Promise<{
     component: TestContainer
     node: Element
     waitForActions(timeout?: number): Promise<void>
-  }
+  }>
   store: Store
   Component: Component
   withJSX: (localCreateJSX: CreateJSX)

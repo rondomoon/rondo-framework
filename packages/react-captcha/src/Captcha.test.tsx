@@ -13,8 +13,8 @@ describe('Captcha', () => {
 
   let node: Element
   let component: Captcha
-  function render() {
-    const result = t.render(
+  async function render() {
+    const result = await t.render(
       <Captcha
         audioUrl='/captcha.opus'
         imageUrl='/captcha.svg'

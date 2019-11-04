@@ -69,7 +69,7 @@ describe('TeamConnector', () => {
   }
 
   it('it fetches user teams on render', async () => {
-    const {node, waitForActions} = createTestProvider().render({
+    const {node, waitForActions} = await createTestProvider().render({
       history,
       location: {} as any,
       match: {} as any,
@@ -94,7 +94,7 @@ describe('TeamConnector', () => {
       }
       teamClientMock.create.mockResolvedValue(newTeam)
       const {render, store} = createTestProvider()
-      const {waitForActions, node} = render({
+      const {waitForActions, node} = await render({
         history,
         location: {} as any,
         match: {} as any,
@@ -113,7 +113,7 @@ describe('TeamConnector', () => {
     it('displays an error', async () => {
       teamClientMock.create.mockRejectedValue(new Error('Test Error'))
       const {render} = createTestProvider()
-      const {node, waitForActions} = render({
+      const {node, waitForActions} = await render({
         history,
         location: {} as any,
         match: {} as any,

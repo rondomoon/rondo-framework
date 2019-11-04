@@ -16,8 +16,12 @@ export class WaitMiddleware {
   /**
    * Starts recording actions and returns the recorder.
    */
-  record(shouldRecord: ShouldRecord = defaultShouldRecord): Recorder {
-    const recorder = new Recorder(shouldRecord)
+  record(
+    shouldRecord: ShouldRecord = defaultShouldRecord,
+    shouldResolve: ShouldRecord = defaultShouldResolve,
+    shouldReject: ShouldRecord = defaultShouldReject,
+  ): Recorder {
+    const recorder = new Recorder(shouldRecord, shouldResolve, shouldReject)
     this.recorders.push(recorder)
     return recorder
   }
@@ -36,6 +40,10 @@ export class WaitMiddleware {
    */
   async waitForRecorded(recorder: Recorder, timeout?: number): Promise<void> {
     this.stopRecording(recorder)
+    const error = recorder.getError()
+    if (error) {
+      return Promise.reject(error)
+    }
     await this.wait(recorder.getActionTypes(), timeout)
   }
 
@@ -43,19 +51,17 @@ export class WaitMiddleware {
    * Waits for actions to be resolved or rejected. Times out after 10 seconds
    * by default.
    */
-  async wait(actions: string[], timeout = 10000): Promise<void> {
+  async wait(actions: Record<string, number>, timeout = 10000): Promise<void> {
     if (this.notify) {
       throw new Error('WaitMiddleware.wait - already waiting!')
     }
 
-    const actionsByName = actions.reduce((obj, type) => {
-      obj[type] = (obj[type] || 0) + 1
-      return obj
-    }, {} as Record<string, number>)
-    let count = actions.length
+    let count = Object.keys(actions).reduce((count, type) => {
+      return count + actions[type]
+    }, 0)
 
     return new Promise((resolve, reject) => {
-      if (!actions.length) {
+      if (!count) {
         resolve()
         this.notify = undefined
         return
@@ -67,14 +73,14 @@ export class WaitMiddleware {
       }, timeout)
 
       this.notify = (action: AsyncAction<unknown, string>) => {
-        if (!actionsByName[action.type]) {
+        if (!actions[action.type]) {
           return
         }
         switch (action.status) {
           case 'pending':
             return
           case 'resolved':
-            actionsByName[action.type]--
+            actions[action.type]--
             count--
             if (count === 0) {
               clearTimeout(t)
@@ -100,19 +106,39 @@ export type ShouldRecord = (action: AnyAction) => boolean
 
 export const defaultShouldRecord: ShouldRecord =
   (action: AnyAction) => 'status' in action && action.status === 'pending'
+export const defaultShouldResolve: ShouldRecord =
+  (action: AnyAction) => 'status' in action && action.status === 'resolved'
+export const defaultShouldReject: ShouldRecord =
+  (action: AnyAction) => 'status' in action && action.status === 'rejected'
 
 class Recorder {
-  protected actionTypes: string[] = []
+  protected actionTypes: Record<string, number> = {}
+  protected error?: Error
 
-  constructor(protected readonly shouldRecord: ShouldRecord) {}
+  constructor(
+    protected readonly shouldRecord: ShouldRecord,
+    protected readonly shouldResolve: ShouldRecord,
+    protected readonly shouldReject: ShouldRecord,
+  ) {}
 
-  getActionTypes(): string[] {
-    return this.actionTypes.slice()
+  getActionTypes() {
+    return {...this.actionTypes}
+  }
+
+  getError() {
+    return this.error
   }
 
   record(action: AnyAction) {
     if (this.shouldRecord(action)) {
-      this.actionTypes.push(action.type)
+      this.actionTypes[action.type] = (this.actionTypes[action.type] || 0) + 1
+    }
+    if (this.shouldResolve(action)) {
+      this.actionTypes[action.type] = (this.actionTypes[action.type] || 0) - 1
+    }
+    if (this.shouldReject(action)) {
+      this.actionTypes[action.type] = (this.actionTypes[action.type] || 0) - 1
+      this.error = action.payload
     }
   }
 }
