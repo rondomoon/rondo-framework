@@ -12,6 +12,14 @@ export interface CaptchaState {
   attempt: number
 }
 
+const flex = {
+  display: 'flex',
+}
+
+const flexItemRight = {
+  marginLeft: 'auto',
+}
+
 export class Captcha extends React.PureComponent<CaptchaProps, CaptchaState> {
   state: CaptchaState = {
     type: 'image',
@@ -37,26 +45,38 @@ export class Captcha extends React.PureComponent<CaptchaProps, CaptchaState> {
       <div className='captcha'>
         {type === 'image' && (
           <>
-            <img key={attempt} src={imageUrl} />
-            <a className='action-refresh' onClick={this.refresh}>
-              Refresh
-            </a>
-            {this.props.audioUrl && (
-              <a className='action-audio' onClick={this.changeToAudio}>
-                Click here for audio version
+            <img key={attempt} src={imageUrl + '?' + attempt} width='100%' />
+            <div style={flex}>
+              <a className='action-refresh' onClick={this.refresh}>
+                Refresh
+              </a>
+              {this.props.audioUrl && (
+                <a
+                  className='action-audio'
+                  onClick={this.changeToAudio}
+                  style={flexItemRight}
+                >
+                  Audio version
                 </a>
-            )}
+              )}
+            </div>
           </>
         )}
         {type === 'audio' && (
           <>
-            <audio key={attempt} controls src={audioUrl} />
-            <a className='action-refresh' onClick={this.refresh}>
-              Refresh
-            </a>
-            <a className='action-image' onClick={this.changeToImage}>
-              Click here for image version
-            </a>
+            <audio key={attempt} controls src={audioUrl + '?' + attempt} />
+            <div style={flex}>
+              <a className='action-refresh' onClick={this.refresh}>
+                Refresh
+              </a>
+              <a
+                className='action-image'
+                onClick={this.changeToImage}
+                style={flexItemRight}
+              >
+                Image version
+              </a>
+            </div>
           </>
         )}
       </div>
