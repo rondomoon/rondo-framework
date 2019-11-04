@@ -9,11 +9,13 @@ export function configureAuthRoutes(
   t: AsyncRouter<APIDef>,
 ) {
 
-  t.get('/auth/captcha.svg', image({
+  // use router because async router tries to send a json after promise
+  // succeeds and interrupts the output stream.
+  t.router.get('/auth/captcha.svg', image({
     size: 6,
-  }) as any)
+  }))
 
-  t.get('/auth/captcha.wav', audio({
+  t.router.get('/auth/captcha.wav', audio({
     commands: [espeak({})],
     size: 6,
   }))
