@@ -20,7 +20,7 @@ describe('configureRegister', () => {
     select: state => state.Login,
   })
   .withComponent(
-    select => configureRegister(select, loginActions),
+    select => configureRegister(select, loginActions, '/app'),
   )
   .withJSX((Component, props) =>
     <MemoryRouter><Component {...props} /></MemoryRouter>,
@@ -41,6 +41,7 @@ describe('configureRegister', () => {
       password: 'pass',
       firstName: '',
       lastName: '',
+      captcha: '',
     }
     const onSuccess = jest.fn()
     let node: Element

@@ -6,16 +6,18 @@ import { LoginState } from './LoginReducer'
 import { RegisterForm } from './RegisterForm'
 import { withForm } from './withForm'
 
-const defaultCredentials: NewUser = {
+const defaultCredentials: NewUser & { captcha: string }= {
   username: '',
   password: '',
   firstName: '',
   lastName: '',
+  captcha: '',
 }
 
 export function configureRegister<State>(
   getLocalState: SelectState<State, LoginState>,
   loginActions: LoginActions,
+  baseUrl: string,
 ) {
   return pack(
     getLocalState,
@@ -25,6 +27,7 @@ export function configureRegister<State>(
       redirectTo: state.redirectTo,
     }),
     dispatch => ({
+      baseUrl,
       onSubmit: bindActionCreators(loginActions.register, dispatch),
       clearOnSuccess: true,
     }),

@@ -5,12 +5,14 @@ import { Link } from 'react-router-dom'
 import { Input } from '../components/Input'
 import { Redirect } from '../components/Redirect'
 import { Button } from '../components'
+import { Captcha } from '@rondo.dev/react-captcha'
 
 export interface RegisterFormProps {
+  baseUrl: string
   error?: string
   onSubmit: () => void
   onChange: (name: string, value: string) => void
-  data: NewUser
+  data: NewUser & { captcha: string }
   user?: UserProfile
   redirectTo: string
 }
@@ -73,6 +75,19 @@ export class RegisterForm extends React.PureComponent<RegisterFormProps> {
           onChange={this.props.onChange}
           value={this.props.data.lastName}
           placeholder='Last name'
+        />
+        <Captcha 
+          imageUrl={this.props.baseUrl + '/api/auth/captcha.svg'}
+          audioUrl={this.props.baseUrl + '/api/auth/captcha.wav'}
+        />
+        <Input
+          Icon={undefined}
+          label='Captcha'
+          name='captcha'
+          type='text'
+          onChange={this.props.onChange}
+          value={this.props.data.captcha}
+          placeholder='Captcha'
         />
         <div className='text-center'>
           <Button name='submit' type='submit'>

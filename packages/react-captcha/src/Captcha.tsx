@@ -13,9 +13,6 @@ export interface CaptchaState {
 }
 
 export class Captcha extends React.PureComponent<CaptchaProps, CaptchaState> {
-  static defaultProps = {
-    name: 'captcha',
-  }
   state: CaptchaState = {
     type: 'image',
     attempt: 1,
@@ -46,7 +43,7 @@ export class Captcha extends React.PureComponent<CaptchaProps, CaptchaState> {
             </a>
             {this.props.audioUrl && (
               <a className='action-audio' onClick={this.changeToAudio}>
-                Click here for image version
+                Click here for audio version
                 </a>
             )}
           </>
@@ -58,7 +55,7 @@ export class Captcha extends React.PureComponent<CaptchaProps, CaptchaState> {
               Refresh
             </a>
             <a className='action-image' onClick={this.changeToImage}>
-              Click here for audio version
+              Click here for image version
             </a>
           </>
         )}

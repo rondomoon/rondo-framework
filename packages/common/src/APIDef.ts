@@ -10,7 +10,7 @@ export interface APIDef {
   }
   '/auth/register': {
     'post': {
-      body: NewUser
+      body: NewUser & { captcha: string }
       response: UserProfile
     }
   }

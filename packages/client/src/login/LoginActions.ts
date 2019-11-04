@@ -36,7 +36,7 @@ export class LoginActions {
     )
   }
 
-  register = (profile: NewUser) => {
+  register = (profile: NewUser & { captcha: string }) => {
     return createPendingAction(
       this.http.post('/auth/register', profile),
       'LOGIN_REGISTER',

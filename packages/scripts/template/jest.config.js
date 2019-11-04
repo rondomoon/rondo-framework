@@ -13,4 +13,5 @@ module.exports = {
     'jsx',
   ],
   setupFiles: ['<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/src/jest.env.ts'],
 }

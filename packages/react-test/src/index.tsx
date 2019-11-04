@@ -2,8 +2,10 @@
 import { createStore, SelectState, WaitMiddleware } from '@rondo.dev/redux'
 import React from 'react'
 import ReactDOM from 'react-dom'
+import T from 'react-dom/test-utils'
 import { Provider } from 'react-redux'
 import { Action, AnyAction, combineReducers, Reducer, ReducersMapObject } from 'redux'
+import { ThemeProvider, DefaultTheme } from 'styled-components'
 
 interface RenderParams<State, LocalState> {
   reducers: ReducersMapObject<State, any>
@@ -18,15 +20,24 @@ export class TestContainer extends React.Component<{}> {
 }
 
 export class TestUtils {
+  static defaultTheme?: DefaultTheme
+
   /**
    * Create a redux store
    */
   readonly createStore = createStore
+  readonly Utils = T
 
   render(jsx: JSX.Element) {
     const $div = document.createElement('div')
     const component = ReactDOM.render(
-      <TestContainer>{jsx}</TestContainer>, $div) as unknown as TestContainer
+      <TestContainer>
+        <ThemeProvider theme={TestUtils.defaultTheme}>
+          {jsx}
+        </ThemeProvider>
+      </TestContainer>,
+      $div,
+    ) as unknown as TestContainer
     const node = component.ref.current!.children[0]
     return {
       component,
