@@ -53,8 +53,9 @@
     - [ ] Moderation techniques described below
     - [ ] Require proof of work during acct creation?
     - [ ] Open Source machine learning model for posts, if it exists
-    - [ ] svg-captcha from npm. Could prevent blind users from creating an account. Also, new ML models can probably read this format.
-      - Possible solution: use TTS like say.js to generate audio. Use tasq lib to prevent too much cpu usage if more users arrive.
+    - [x] svg-captcha from npm. Could prevent blind users from creating an account. Also, new ML models can probably read this format.
+    - [x] Possible solution: use TTS like say.js to generate audio. Use tasq lib to prevent too much cpu usage if more users arrive.
+    - [ ] FIXME debug why espeak sometimes does not stream responses:w
   - [ ] Add privacy policy statement
 
 - [ ] Email
