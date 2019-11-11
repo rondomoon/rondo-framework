@@ -23,6 +23,83 @@ export class TestContainer extends React.Component<{}> {
   }
 }
 
+export class Selector {
+  constructor(
+    readonly element: Element = document.body,
+  ) {
+    expect(this.element).toBeDefined()
+  }
+
+  static findManyByQuery(root: Element, query: string): Selector[] {
+    return Array
+    .from(root.querySelectorAll(query))
+    .map(el => new Selector(el))
+  }
+
+  static findManyByQueryAndCondition(
+    root: Element,
+    query: string,
+    verify: (selector: Selector) => boolean,
+  ): Selector[] {
+    return this.findManyByQuery(root, query)
+    .filter(verify)
+  }
+
+  static findOneByQuery(root: Element, query: string): Selector {
+    const result = this.findManyByQuery(root, query)
+    expect(result.length).toBe(1)
+    return result[0]
+  }
+
+  static findOneByQueryAndCondition(
+    root: Element,
+    query: string,
+    verify: (selector: Selector) => boolean,
+  ): Selector {
+    const result = this.findManyByQueryAndCondition(root, query, verify)
+    expect(result.length).toBe(1)
+    return result[0]
+  }
+
+  type(value: string) {
+    T.Simulate.change(this.element, {
+      target: {
+        value,
+      } as any,
+    })
+  }
+  click() {
+    T.Simulate.click(this.element)
+  }
+  submit() {
+    T.Simulate.submit(this.element)
+  }
+  findOne(selector: string): Selector {
+    return Selector.findOneByQuery(this.element, selector)
+  }
+  findOneByContent(selector: string, content: string): Selector {
+    return Selector.findOneByQueryAndCondition(
+      this.element, selector, sel => sel.content() === content)
+  }
+  findOneByValue(selector: string, value: string): Selector {
+    return Selector.findOneByQueryAndCondition(
+      this.element, selector, sel => sel.value() === value)
+  }
+  value(): string {
+    return (this.element as HTMLInputElement).value
+  }
+  tag(): string {
+    return this.element.tagName
+  }
+  content(): string | null {
+    return this.element.textContent
+  }
+}
+
+export function select(element: Element): Selector {
+  return new Selector(element)
+}
+
 export class TestUtils {
   static defaultTheme?: DefaultTheme
 
