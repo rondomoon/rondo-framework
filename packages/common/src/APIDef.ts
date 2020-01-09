@@ -12,12 +12,14 @@ export interface APIDef {
     'post': {
       body: NewUser & { captcha: string }
       response: UserProfile
+      params: {}
     }
   }
   '/auth/login': {
     'post': {
       body: Credentials
       response: UserProfile
+      params: {}
     }
   }
   '/auth/logout': {
@@ -29,6 +31,7 @@ export interface APIDef {
         oldPassword: string
         newPassword: string
       }
+      params: {}
     }
   }
 }

@@ -250,12 +250,12 @@ export class CRUDReducer<
     }
   }
 
-    reduce = (
-    state: CRUDState<T> | undefined,
+  reduce = (
+    _state: CRUDState<T> | undefined,
     action: CRUDAction<T, ActionType>,
   ): CRUDState<T> => {
     const {defaultState} = this
-    state = state || defaultState
+    const state = _state || defaultState
 
     if (action.type !== this.actionName) {
       return state

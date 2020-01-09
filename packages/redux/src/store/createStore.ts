@@ -1,4 +1,4 @@
-import { Action, applyMiddleware, createStore as create, Middleware, Reducer, DeepPartial } from 'redux'
+import { Action, applyMiddleware, createStore as create, Middleware, PreloadedState, Reducer } from 'redux'
 import { PromiseMiddleware, ReduxLogger } from '../middleware'
 
 export interface CreateStoreParams<State, A extends Action> {
@@ -35,7 +35,7 @@ export function createStore<State, A extends Action>(
     params.reducer,
     // stupid warning about how Partial<State> | undefined cannot be used as
     // DeepPartial<State> | undefined
-    params.state as DeepPartial<State> | undefined,
+    params.state as PreloadedState<State> | undefined,
     applyMiddleware(...middleware),
   )
 }
