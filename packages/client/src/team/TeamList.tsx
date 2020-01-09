@@ -1,5 +1,5 @@
 import { ReadonlyRecord, Team, TeamActions } from '@rondo.dev/common'
-import { Button, Flex, Panel, PanelBlock, PanelHeading } from '../components'
+import { Button, Panel, PanelBlock, PanelHeading } from '../components'
 import React from 'react'
 import { FaEdit, FaPlus, FaTimes } from 'react-icons/fa'
 import { Link } from 'react-router-dom'

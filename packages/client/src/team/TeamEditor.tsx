@@ -1,4 +1,4 @@
-import { Button, Heading, Help, Input } from '../components'
+import { Button, Heading, Input } from '../components'
 import React from 'react'
 import { FaCheck, FaEdit, FaPlusSquare } from 'react-icons/fa'
 import { TeamActions, Team } from '@rondo.dev/common'
