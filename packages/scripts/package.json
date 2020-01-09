@@ -6,7 +6,7 @@
     "test": "jest",
     "lint": "tslint --project .",
     "compile": "tsc --build .",
-    "preinstall": "tsc --build .",
+    "preinstall": "node ./preinstall.js",
     "clean": "rm -rf lib/"
   },
   "bin": {
