@@ -24,7 +24,7 @@ export const audio = (config: AudioConfig) => async (
     speech = await speak(captcha, commands)
   } catch (err) {
     logger.error('Error generating speech: %s', err.stack)
-    res.status(200)
+    res.status(500)
     res.send('Internal server error')
     return
   }
