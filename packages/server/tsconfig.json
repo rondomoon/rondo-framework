@@ -9,6 +9,9 @@
       "path": "../argparse"
     },
     {
+      "path": "../captcha"
+    },
+    {
       "path": "../client"
     },
     {

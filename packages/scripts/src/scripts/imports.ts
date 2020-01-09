@@ -165,19 +165,19 @@ export function imports(...argv: string[]) {
   // eslint-disable-next-line
   const rootPackage = readJSON<Package>(args.root)
 
-  function resolveModule(name: string, version?: string) {
+  function resolveModule(
+    packagesDir: string,
+    projectDir: string,
+    name: string,
+    version?: string,
+  ) {
     if (!version) {
       throw new Error(`Module "${name}" not found in root package.json`)
     }
     if (version.startsWith('file:')) {
-      const pkg = readJSON<Package>(join(version.slice(5), 'package.json'))
-      if (!pkg.version) {
-        throw new Error(`Package.json of referenced module "${name}" ` +
-          'does not have version field')
-      }
-      return {name, version: pkg.version}
+      version = 'file:' + relative(projectDir, version.slice(5))
     }
-    name = name.split('/')[0]
+    // name = name.split('/')[0]
     return {name: name, version}
   }
 
@@ -189,26 +189,34 @@ export function imports(...argv: string[]) {
     return folders[0]
   }
 
-  function resolveDependencies(dependencies: string[]) {
+  function resolveDependencies(
+    packagesDir: string,
+    dependencies: string[],
+    projectDir: string,
+  ) {
     return dependencies
     .map(resolveModuleName)
     .reduce((obj, mod) => {
       const versionString =
         (rootPackage.dependencies || {})[mod] ||
         (rootPackage.devDependencies || {})[mod]
-      const resolvedModule = resolveModule(mod, versionString)
+      const resolvedModule = resolveModule(
+        packagesDir, projectDir, mod, versionString)
       obj[resolvedModule.name] = resolvedModule.version
       return obj
     }, {} as Record<string, string>)
   }
 
   function organizePackageDependencies(
+    packagesDir: string,
     imports: Dependencies,
+    projectDir: string,
     packageFile: string,
   ) {
     // handle imports
     const targetPackage = readJSON<Package>(packageFile)
-    const dependencies = resolveDependencies(imports.dependencies)
+    const dependencies = resolveDependencies(
+      packagesDir, imports.dependencies, projectDir)
     if (targetPackage.peerDependencies) {
       const peerDependencyNames = new Set(
         Object.keys(targetPackage.peerDependencies),
@@ -227,7 +235,8 @@ export function imports(...argv: string[]) {
     } else {
       targetPackage.dependencies = dependencies
     }
-    targetPackage.devDependencies = resolveDependencies(imports.devDependencies)
+    targetPackage.devDependencies = resolveDependencies(
+      packagesDir, imports.devDependencies, projectDir)
     debug('dependencies: %o', targetPackage.dependencies)
     debug('devDependencies: %o', targetPackage.devDependencies)
     return {filename: packageFile, json: targetPackage}
@@ -273,7 +282,8 @@ export function imports(...argv: string[]) {
     const packageFile = join(pkgDir, 'package.json')
 
     return [
-      organizePackageDependencies(imports, packageFile),
+      organizePackageDependencies(
+        args.packagesDir, imports, pkgDir, packageFile),
       organizeProjectReferences(
         args.packagesDir, imports, pkgDir, tsConfigFileName),
     ]

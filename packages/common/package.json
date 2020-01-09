@@ -6,7 +6,7 @@
   "module": "esm/index.js",
   "types": "lib/index.d.ts",
   "dependencies": {
-    "@rondo.dev/jsonrpc": "0.0.1",
+    "@rondo.dev/jsonrpc": "file:../jsonrpc",
     "ts-transformer-keys": "^0.3.5"
   },
   "devDependencies": {}

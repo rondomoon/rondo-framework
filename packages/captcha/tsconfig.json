@@ -6,6 +6,9 @@
   },
   "references": [
     {
+      "path": "../logger"
+    },
+    {
       "path": "../test-utils"
     }
   ]

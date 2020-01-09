@@ -14,5 +14,8 @@
   "main": "lib/index.js",
   "module": "esm/index.js",
   "types": "lib/index.d.ts",
-  "devDependencies": {}
+  "devDependencies": {
+    "@rondo.dev/react-test": "file:../react-test",
+    "react-dom": "^16.11.0"
+  }
 }

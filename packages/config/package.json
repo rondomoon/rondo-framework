@@ -9,7 +9,7 @@
     "clean": "rm -rf lib/"
   },
   "dependencies": {
-    "@rondo.dev/logger": "0.0.1",
+    "@rondo.dev/logger": "file:../logger",
     "js-yaml": "^3.13.1"
   },
   "main": "lib/index.js",

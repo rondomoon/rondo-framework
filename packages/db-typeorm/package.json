@@ -9,8 +9,8 @@
     "clean": "rm -rf lib/"
   },
   "dependencies": {
-    "@rondo.dev/db": "0.0.1",
-    "@rondo.dev/logger": "0.0.1",
+    "@rondo.dev/db": "file:../db",
+    "@rondo.dev/logger": "file:../logger",
     "cls-hooked": "^4.2.2",
     "shortid": "^2.2.15",
     "typeorm": "^0.2.20"
