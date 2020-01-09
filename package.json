@@ -2,9 +2,6 @@
   "dependencies": {
     "@rondo.dev/argparse": "file:packages/argparse",
     "@rondo.dev/client": "file:packages/client",
-    "@rondo.dev/comments-client": "file:packages/comments-client",
-    "@rondo.dev/comments-common": "file:packages/comments-common",
-    "@rondo.dev/comments-server": "file:packages/comments-server",
     "@rondo.dev/common": "file:packages/common",
     "@rondo.dev/config": "file:packages/config",
     "@rondo.dev/http-client": "file:packages/http-client",

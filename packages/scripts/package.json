@@ -5,7 +5,8 @@
   "scripts": {
     "test": "jest",
     "lint": "tslint --project .",
-    "compile": "tsc",
+    "compile": "tsc --build .",
+    "preinstall": "tsc --build .",
     "clean": "rm -rf lib/"
   },
   "bin": {
