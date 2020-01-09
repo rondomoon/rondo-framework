@@ -9,11 +9,12 @@
     "clean": "rm -rf lib/"
   },
   "dependencies": {
-    "@rondo.dev/redux": "0.0.1",
+    "@rondo.dev/redux": "file:../redux",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-redux": "^7.1.1",
-    "redux": "^4.0.4"
+    "redux": "^4.0.4",
+    "styled-components": "^4.4.1"
   },
   "main": "lib/index.js",
   "module": "esm/index.js",

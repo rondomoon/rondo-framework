@@ -11,7 +11,7 @@
   "dependencies": {},
   "types": "lib/index.d.ts",
   "devDependencies": {
-    "@rondo.dev/test-utils": "0.0.1"
+    "@rondo.dev/test-utils": "file:../test-utils"
   },
   "module": "esm/index.js",
   "main": "lib/index.js"

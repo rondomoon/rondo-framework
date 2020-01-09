@@ -18,7 +18,7 @@ export class CSRFMiddleware implements Middleware {
         httpOnly: true,
         sameSite: true,
         secure: params.baseUrl.protocol === 'https',
-        path: params.baseUrl.path,
+        path: params.baseUrl.path !== null ? params.baseUrl.path : undefined,
         key: params.cookieName,
       },
     })

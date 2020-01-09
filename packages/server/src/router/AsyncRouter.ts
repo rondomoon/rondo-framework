@@ -19,14 +19,12 @@ export class AsyncRouter<R extends Routes> {
       TypedHandler<R, P, M>,
     ]
   ) {
-    const addRoute = this.router[method].bind(this.router as any)
-
     if (handlers.length === 2) {
       const middleware = handlers[0]
       const handler = handlers[1]
-      addRoute(path, ...middleware, this.wrapHandler(handler))
+      this.router[method](path, ...middleware, this.wrapHandler(handler))
     } else {
-      addRoute(path, this.wrapHandler(handlers[0]))
+      this.router[method](path, this.wrapHandler(handlers[0]))
     }
 
   }

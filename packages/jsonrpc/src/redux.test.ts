@@ -237,7 +237,7 @@ describe('createActions', () => {
           method: 'missingMethod',
           status: 'resolved',
           payload: null,
-        })
+        } as any)
       })
     })
   })

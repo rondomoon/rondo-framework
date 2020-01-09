@@ -6,14 +6,14 @@
     "test": "jest",
     "lint": "tslint --project .",
     "compile": "tsc --build .",
-    "preinstall": "tsc --build .",
+    "preinstall": "node ./preinstall.js",
     "clean": "rm -rf lib/"
   },
   "bin": {
     "rondo": "./lib/index.js"
   },
   "dependencies": {
-    "@rondo.dev/argparse": "0.0.1",
+    "@rondo.dev/argparse": "file:../argparse",
     "browser-unpack": "^1.4.2",
     "rimraf": "^3.0.0",
     "typescript": "^3.6.4"
