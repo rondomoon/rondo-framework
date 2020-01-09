@@ -1,7 +1,7 @@
 export * from './LoggerFactory'
 export * from './Message'
 export * from './LogLevel'
-export * from './Logger'
+export * from './logger'
 export * from './LoggerFactory'
 
 import {SimpleLoggerFactory} from './SimpleLoggerFactory'
