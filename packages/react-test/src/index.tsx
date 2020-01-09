@@ -114,9 +114,15 @@ export class TestUtils {
     const component: TestContainer | null = await new Promise(resolve => {
       ReactDOM.render(
         <TestContainer ref={instance => resolve(instance)}>
-          <ThemeProvider theme={TestUtils.defaultTheme}>
-            {jsx}
-          </ThemeProvider>
+          {
+            TestUtils.defaultTheme
+            ? (
+              <ThemeProvider theme={TestUtils.defaultTheme}>
+                {jsx}
+              </ThemeProvider>
+            )
+            : jsx
+          }
         </TestContainer>,
         $div,
       )
