@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "clean": "lerna exec rimraf -- lib/ esm/ *.tsbuildinfo",
+    "lint": "eslint --ext .ts,.tsx,.ts .",
+    "bootstrap": "ttsc --build packages/scripts && lerna exec rondo -- build"
+  },
   "dependencies": {
     "@rondo.dev/argparse": "file:packages/argparse",
     "@rondo.dev/client": "file:packages/client",
