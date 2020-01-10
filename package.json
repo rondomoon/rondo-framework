@@ -2,7 +2,7 @@
   "scripts": {
     "clean": "lerna exec rimraf --stream -- lib/ esm/ *.tsbuildinfo",
     "lint": "eslint --ext .ts,.tsx,.ts .",
-    "bootstrap": "ttsc --build packages/scripts",
+    "bootstrap": "ttsc --build packages/rondo-cli",
     "compile": "npm run compile:lib && npm run compile:esm",
     "compile:lib": "lerna exec rondo --stream -- build",
     "compile:esm": "lerna exec rondo --stream -- build --esm",
@@ -27,7 +27,7 @@
     "@rondo.dev/react-captcha": "file:packages/react-captcha",
     "@rondo.dev/react-test": "file:packages/react-test",
     "@rondo.dev/redux": "file:packages/redux",
-    "@rondo.dev/scripts": "file:packages/scripts",
+    "@rondo.dev/rondo-cli": "file:packages/rondo-cli",
     "@rondo.dev/server": "file:packages/server",
     "@rondo.dev/tasq": "file:packages/tasq",
     "@rondo.dev/test-utils": "file:packages/test-utils",
