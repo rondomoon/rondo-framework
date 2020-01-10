@@ -195,7 +195,9 @@ export function imports(...argv: string[]) {
     projectDir: string,
   ) {
     return dependencies
+    .slice()
     .map(resolveModuleName)
+    .sort()
     .reduce((obj, mod) => {
       const versionString =
         (rootPackage.dependencies || {})[mod] ||

@@ -8,30 +8,30 @@
     "compile:esm": "lerna exec rondo --stream -- build --esm",
     "test:ci": "jest --roots '<rootDir>/lib' --testRegex '\\.test\\.js$' --testTimeout 15000",
     "test": "jest",
-    "prepublish": "npm run compile"
+    "prepublishOnly": "npm run compile"
   },
   "dependencies": {
     "@rondo.dev/argparse": "file:packages/argparse",
+    "@rondo.dev/captcha": "file:packages/captcha",
     "@rondo.dev/client": "file:packages/client",
     "@rondo.dev/common": "file:packages/common",
     "@rondo.dev/config": "file:packages/config",
+    "@rondo.dev/db": "file:packages/db",
+    "@rondo.dev/db-typeorm": "file:packages/db-typeorm",
     "@rondo.dev/http-client": "file:packages/http-client",
     "@rondo.dev/http-types": "file:packages/http-types",
     "@rondo.dev/image-upload": "file:packages/image-upload",
     "@rondo.dev/jsonrpc": "file:packages/jsonrpc",
     "@rondo.dev/logger": "file:packages/logger",
+    "@rondo.dev/middleware": "file:packages/middleware",
+    "@rondo.dev/react-captcha": "file:packages/react-captcha",
+    "@rondo.dev/react-test": "file:packages/react-test",
     "@rondo.dev/redux": "file:packages/redux",
     "@rondo.dev/scripts": "file:packages/scripts",
     "@rondo.dev/server": "file:packages/server",
     "@rondo.dev/tasq": "file:packages/tasq",
     "@rondo.dev/test-utils": "file:packages/test-utils",
-    "@rondo.dev/validator": "file:packages/validator",
-    "@rondo.dev/db": "file:packages/db",
-    "@rondo.dev/db-typeorm": "file:packages/db-typeorm",
-    "@rondo.dev/middleware": "file:packages/middleware",
-    "@rondo.dev/captcha": "file:packages/captcha",
-    "@rondo.dev/react-captcha": "file:packages/react-captcha",
-    "@rondo.dev/react-test": "file:packages/react-test"
+    "@rondo.dev/validator": "file:packages/validator"
   },
   "devDependencies": {
     "@hot-loader/react-dom": "^16.10.2",
