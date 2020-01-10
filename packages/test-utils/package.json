@@ -9,9 +9,7 @@
     "compile": "tsc",
     "clean": "rm -rf lib/"
   },
-  "dependencies": {},
   "main": "lib/index.js",
   "module": "esm/index.js",
-  "types": "lib/index.d.ts",
-  "devDependencies": {}
+  "types": "lib/index.d.ts"
 }

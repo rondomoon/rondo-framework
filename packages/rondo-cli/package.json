@@ -20,7 +20,6 @@
     "typescript": "^3.6.4"
   },
   "types": "lib/index.d.ts",
-  "devDependencies": {},
   "module": "esm/index.js",
   "main": "lib/index.js"
 }
