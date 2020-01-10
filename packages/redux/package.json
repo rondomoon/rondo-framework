@@ -1,4 +1,7 @@
 {
+  "publishConfig": {
+    "access": "public"
+  },
   "name": "@rondo.dev/redux",
   "repository": "https://github.com/rondomoon/rondo-framework/tree/master/packages/redux",
   "version": "0.0.2",

@@ -1,4 +1,7 @@
 {
+  "publishConfig": {
+    "access": "public"
+  },
   "name": "@rondo.dev/react-captcha",
   "repository": "https://github.com/rondomoon/rondo-framework/tree/master/packages/react-captcha",
   "version": "0.0.2",

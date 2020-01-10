@@ -1,4 +1,7 @@
 {
+  "publishConfig": {
+    "access": "public"
+  },
   "name": "@rondo.dev/package",
   "version": "0.0.1",
   "private": true,

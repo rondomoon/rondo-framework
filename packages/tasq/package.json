@@ -1,4 +1,7 @@
 {
+  "publishConfig": {
+    "access": "public"
+  },
   "name": "@rondo.dev/tasq",
   "repository": "https://github.com/rondomoon/rondo-framework/tree/master/packages/tasq",
   "version": "0.0.2",

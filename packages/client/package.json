@@ -1,4 +1,7 @@
 {
+  "publishConfig": {
+    "access": "public"
+  },
   "name": "@rondo.dev/client",
   "repository": "https://github.com/rondomoon/rondo-framework/tree/master/packages/client",
   "version": "0.0.2",

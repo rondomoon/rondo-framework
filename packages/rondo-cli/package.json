@@ -1,4 +1,7 @@
 {
+  "publishConfig": {
+    "access": "public"
+  },
   "name": "@rondo.dev/rondo-cli",
   "repository": "https://github.com/rondomoon/rondo-framework/tree/master/packages/rondo-cli",
   "version": "0.0.2",

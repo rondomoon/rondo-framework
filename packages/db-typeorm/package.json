@@ -1,4 +1,7 @@
 {
+  "publishConfig": {
+    "access": "public"
+  },
   "name": "@rondo.dev/db-typeorm",
   "repository": "https://github.com/rondomoon/rondo-framework/tree/master/packages/db-typeorm",
   "version": "0.0.2",

@@ -1,4 +1,7 @@
 {
+  "publishConfig": {
+    "access": "public"
+  },
   "name": "@rondo.dev/test-utils",
   "repository": "https://github.com/rondomoon/rondo-framework/tree/master/packages/test-utils",
   "version": "0.0.2",

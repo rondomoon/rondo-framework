@@ -1,4 +1,7 @@
 {
+  "publishConfig": {
+    "access": "public"
+  },
   "name": "@rondo.dev/config",
   "repository": "https://github.com/rondomoon/rondo-framework/tree/master/packages/config",
   "version": "0.0.2",
