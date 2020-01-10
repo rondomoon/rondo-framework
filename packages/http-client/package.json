@@ -1,7 +1,8 @@
 {
   "name": "@rondo.dev/http-client",
+  "repository": "https://github.com/rondomoon/rondo-framework/tree/master/packages/http-client",
   "version": "0.0.1",
-  "private": true,
+  "license": "MIT",
   "scripts": {
     "test": "jest",
     "lint": "tslint --project .",

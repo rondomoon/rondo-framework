@@ -140,5 +140,8 @@
     "uglifyify": "^5.0.2",
     "watchify": "^3.11.1"
   },
-  "name": "node"
+  "name": "rondo-framework",
+  "license": "MIT",
+  "repository": "https://github.com/rondomoon/rondo-framework",
+  "version": "0.0.0"
 }

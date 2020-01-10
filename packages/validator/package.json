@@ -1,7 +1,8 @@
 {
   "name": "@rondo.dev/validator",
+  "repository": "https://github.com/rondomoon/rondo-framework/tree/master/packages/validator",
   "version": "0.0.1",
-  "private": true,
+  "license": "MIT",
   "scripts": {
     "test": "jest",
     "lint": "tslint --project .",
