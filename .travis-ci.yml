@@ -1,0 +1,9 @@
+language: node_js
+node_js:
+  - "12"
+script:
+  - npm run lint
+  - npm run bootstrap
+  - npm run compile:lib
+  - npm run test:ci
+  - npm run compile:esm
