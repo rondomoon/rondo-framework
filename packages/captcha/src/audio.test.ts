@@ -3,7 +3,7 @@ import session from 'express-session'
 import cookieParser from 'cookie-parser'
 import request from 'supertest'
 import { audio, speak } from './audio'
-import { join } from 'path'
+import { extname, join } from 'path'
 
 describe('speak', () => {
   it('writes speech data to stdin and returns rw streams', async () => {
@@ -23,7 +23,7 @@ describe('speak', () => {
 
     const command = {
       cmd: process.argv[0],
-      args: [join(__dirname, 'testProcess.ts')],
+      args: [join(__dirname, 'testProcess' + extname(__filename))],
       contentType: 'text/plain',
     }
     const rw = await speak('mytest', [command])

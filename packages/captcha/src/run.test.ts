@@ -1,6 +1,6 @@
 import { run } from './run'
 import { getError } from '@rondo.dev/test-utils'
-import { join } from 'path'
+import { extname, join } from 'path'
 
 describe('run', () => {
 
@@ -22,7 +22,7 @@ describe('run', () => {
   it('runs a process and returns stdin/stdout/contentType', async () => {
     const result = await run({
       cmd: process.argv[0],
-      args: [join(__dirname, 'testProcess.ts')],
+      args: [join(__dirname, 'testProcess' + extname(__filename))],
       contentType: 'text/plain',
     })
     expect(result.contentType).toBe('text/plain')

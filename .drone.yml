@@ -10,10 +10,10 @@ steps:
       - npm install
       - npm run lint
       - npm run bootstrap
-      - ./node_modules/.bin/jest
-      - ./node_modules/.bin/lerna exec rondo -- build --esm
+      - npm run test:ci
+      - npm run esm
 ---
 kind: signature
-hmac: 75cb50df9833086e4b9705f592b78ee8c12479ab8b2041577c4660ecc8364295
+hmac: 2a4dd894429afc6c3908a5d53cab57cac9a3918260a01e3f845db9aba53d6316
 
 ...

@@ -1,7 +1,3 @@
-/**
- * @jest-environment node
- */
-
 import bodyParser from 'body-parser'
 import express from 'express'
 import {AddressInfo} from 'net'

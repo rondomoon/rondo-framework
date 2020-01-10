@@ -1,8 +1,11 @@
 {
   "scripts": {
-    "clean": "lerna exec rimraf -- lib/ esm/ *.tsbuildinfo",
+    "clean": "lerna exec rimraf --stream -- lib/ esm/ *.tsbuildinfo",
     "lint": "eslint --ext .ts,.tsx,.ts .",
-    "bootstrap": "ttsc --build packages/scripts && lerna exec rondo -- build"
+    "bootstrap": "ttsc --build packages/scripts && lerna exec rondo --stream -- build",
+    "esm": "lerna exec rondo --stream -- build --esm",
+    "test:ci": "jest --roots '<rootDir>/lib' --testRegex '\\.test\\.js$'",
+    "test": "jest"
   },
   "dependencies": {
     "@rondo.dev/argparse": "file:packages/argparse",

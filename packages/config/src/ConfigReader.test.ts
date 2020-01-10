@@ -6,7 +6,7 @@ describe('ConfigReader', () => {
 
   beforeAll(() => {
     writeFileSync(
-      join(__dirname, 'test-files', 'package.json'),
+      join(__dirname, '..', 'test-files', 'package.json'),
       '{}',
     )
   })
@@ -20,7 +20,7 @@ describe('ConfigReader', () => {
 
     it('reads and merges configuration files from CWD', () => {
       const config = new ConfigReader(
-        join(__dirname, 'test-files', 'dir'),
+        join(__dirname, '..', 'test-files', 'dir'),
         '/tmp/path',
       ).read()
       expect(config.value()).toEqual({
@@ -53,7 +53,7 @@ describe('ConfigReader', () => {
       it('succeeds when config from env variable is read', () => {
         process.env.CONFIG = '---\na: 2'
         const config = new ConfigReader(
-          join(__dirname, 'test-files', 'dir'),
+          join(__dirname, '..', 'test-files', 'dir'),
           '/tmp/path',
         ).read()
         expect(config.value()).toEqual({

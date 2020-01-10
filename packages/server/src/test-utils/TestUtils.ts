@@ -138,8 +138,6 @@ export class TestUtils<T extends Routes> {
     })
     .expect(200)
 
-    console.log('registered?')
-
     const cookies = this.getCookies(response.header['set-cookie'])
 
     return {

@@ -1,7 +1,3 @@
-/**
- * @jest-environment node
- */
-
 import { createStore } from '@rondo.dev/redux'
 import bodyParser from 'body-parser'
 import express from 'express'

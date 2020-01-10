@@ -4,6 +4,7 @@ module.exports = {
       compiler: 'ttypescript',
     },
   },
+  testEnvironment: 'node',
   roots: [
     '<rootDir>/src',
   ],
