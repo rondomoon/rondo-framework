@@ -4,7 +4,7 @@
   },
   "name": "@rondo.dev/client",
   "repository": "https://github.com/rondomoon/rondo-framework/tree/master/packages/client",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "peerDependencies": {
     "axios": "^0.19.0",

@@ -4,7 +4,7 @@
   },
   "name": "@rondo.dev/image-upload",
   "repository": "https://github.com/rondomoon/rondo-framework/tree/master/packages/image-upload",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "peerDependencies": {
     "react": "^16.7.0",

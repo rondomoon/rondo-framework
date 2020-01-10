@@ -4,7 +4,7 @@
   },
   "name": "@rondo.dev/rondo-cli",
   "repository": "https://github.com/rondomoon/rondo-framework/tree/master/packages/rondo-cli",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "scripts": {
     "test": "jest",
