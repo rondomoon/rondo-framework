@@ -30,7 +30,7 @@
 
 - [ ] Styled components
   - [x] SSR
-  - [ ] Replace bulma/blommer css framework with styled components
+  - [x] Replace bulma/blommer css framework with styled components
   - [ ] Check if reakit still significantly slows down TS compilation
 
 - [x] Use JSON schema instead of @Entity decorators
